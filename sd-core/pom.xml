@@ -1,88 +1,81 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<!--
-  ~ Copyright 2014 Cisco Systems, Inc.
-  ~
-  ~  Licensed under the Apache License, Version 2.0 (the "License");
-  ~  you may not use this file except in compliance with the License.
-  ~  You may obtain a copy of the License at
-  ~
-  ~  http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~  Unless required by applicable law or agreed to in writing, software
-  ~  distributed under the License is distributed on an "AS IS" BASIS,
-  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~  See the License for the specific language governing permissions and
-  ~  limitations under the License.
-  -->
+<!-- ~ Copyright 2014 Cisco Systems, Inc. ~ ~ Licensed under the Apache License, 
+	Version 2.0 (the "License"); ~ you may not use this file except in compliance 
+	with the License. ~ You may obtain a copy of the License at ~ ~ http://www.apache.org/licenses/LICENSE-2.0 
+	~ ~ Unless required by applicable law or agreed to in writing, software ~ 
+	distributed under the License is distributed on an "AS IS" BASIS, ~ WITHOUT 
+	WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. ~ See the 
+	License for the specific language governing permissions and ~ limitations 
+	under the License. -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <parent>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<parent>
 		<groupId>com.cisco.oss.foundation</groupId>
 		<artifactId>foundation-common-base</artifactId>
 		<version>0.0.0-5</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
-    <groupId>com.cisco.oss.foundation.directory</groupId>
+	</parent>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.cisco.oss.foundation.directory</groupId>
 	<artifactId>vcsf-sd-core</artifactId>
 	<name>VCSF Service Directory Core Classes</name>
 	<version>${vcsf.sd.version}</version>
 	<description>The common project for the Directory Service and SD API.</description>
-    <url>https://github.com/foundation-runtime/service-directory/sd-core</url>
-    <packaging>jar</packaging>
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-    <issueManagement>
-        <system>Github
+	<url>https://github.com/foundation-runtime/service-directory/sd-core</url>
+	<packaging>jar</packaging>
+	<licenses>
+		<license>
+			<name>The Apache Software License, Version 2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<issueManagement>
+		<system>Github
         </system>
-        <url>{URL in JIRA or Product name in CQ}</url>
-    </issueManagement>
-    <mailingLists>
-        <mailingList />
-    </mailingLists>
-    <developers>
-        <developer>
-            <id>Zuochang Xiang</id>
-            <name>Zuochang Xiang</name>
-            <email>zuxiang@cisco.com</email>
-            <organization>Cisco</organization>
-            <organizationUrl>http://www.cisco.com</organizationUrl>
-            <roles>
-                <role>Developer</role>
-            </roles>
-        </developer>
-        <developer>
-            <id>Xuan Zhong</id>
-            <name>Xuan Zhong</name>
-            <email>xuzhong@cisco.com</email>
-            <organization>Cisco</organization>
-            <organizationUrl>http://www.cisco.com</organizationUrl>
-            <roles>
-                <role>Developer</role>
-            </roles>
-        </developer>
-    </developers>
-    <properties>
-      <vcsf.sd.version>1.1-SNAPSHOT</vcsf.sd.version>
-      <iteration>58</iteration>
-    </properties>
+		<url>{URL in JIRA or Product name in CQ}</url>
+	</issueManagement>
+	<mailingLists>
+		<mailingList />
+	</mailingLists>
+	<developers>
+		<developer>
+			<id>Zuochang Xiang</id>
+			<name>Zuochang Xiang</name>
+			<email>zuxiang@cisco.com</email>
+			<organization>Cisco</organization>
+			<organizationUrl>http://www.cisco.com</organizationUrl>
+			<roles>
+				<role>Developer</role>
+			</roles>
+		</developer>
+		<developer>
+			<id>Xuan Zhong</id>
+			<name>Xuan Zhong</name>
+			<email>xuzhong@cisco.com</email>
+			<organization>Cisco</organization>
+			<organizationUrl>http://www.cisco.com</organizationUrl>
+			<roles>
+				<role>Developer</role>
+			</roles>
+		</developer>
+	</developers>
+	<properties>
+		<vcsf.sd.version>1.1-SNAPSHOT</vcsf.sd.version>
+		<iteration>58</iteration>
+	</properties>
 
-   <scm>
-        <connection>scm:git:git@github.com:foundation-runtime/service-directory.git</connection>
-        <developerConnection>scm:git:git@github.com:foundation-runtime/service-directory.git</developerConnection>
-        <url>https://github.com/foundation-runtime/service-directory.git</url>
-        <tag>HEAD</tag>
-    </scm>
-    <organization>
-        <name>Cisco</name>
-        <url>http://www.cisco.com</url>
-    </organization>
-    	<build>
-
+	<scm>
+		<connection>scm:git:git@github.com:foundation-runtime/service-directory.git</connection>
+		<developerConnection>scm:git:git@github.com:foundation-runtime/service-directory.git</developerConnection>
+		<url>https://github.com/foundation-runtime/service-directory.git</url>
+		<tag>HEAD</tag>
+	</scm>
+	<organization>
+		<name>Cisco</name>
+		<url>http://www.cisco.com</url>
+	</organization>
+	<build>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -111,7 +104,7 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 	<dependencies>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -148,7 +141,5 @@
 			<artifactId>configuration-lib</artifactId>
 			<version>0.0.0-5</version>
 		</dependency>
-	
-
-		</dependencies>
+	</dependencies>
 </project>
