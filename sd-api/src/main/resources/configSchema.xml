@@ -3,7 +3,7 @@
 	xsi:noNamespaceSchemaLocation="../../ccp_schema/CCP_XML.xsd"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<NamespaceDefinition>
-		<NamespaceIdentifier version="1.0.0" name="com.cisco.vss.foundation.directory.api" />
+		<NamespaceIdentifier version="1.0.0" name="com.cisco.oss.foundation.directory.api" />
 		
 		<Parameter name="cache.enabled" type="BOOLEAN" description="">
 			<DefaultValue>

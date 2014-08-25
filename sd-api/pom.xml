@@ -20,7 +20,7 @@
 	<artifactId>vcsf-sd-api</artifactId>
 	<name>VCSF Service Directory API</name>
 	<version>${vcsf.sd.version}</version>
-	<description>This project is the service directory API library in the cisco vss foundation runtime</description>
+	<description>This project is the service directory API library in the cisco oss foundation runtime</description>
 	<url>https://github.com/foundation-runtime/service-directory/sd-api</url>
 	<packaging>jar</packaging>
 	<licenses>
@@ -98,14 +98,14 @@
 					</entries>
 				</configuration>
 			</plugin>
-			<plugin>
+			<!--plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>
 				</configuration>
-			</plugin>
+			</plugin-->
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.7</version>
@@ -232,7 +232,7 @@
 			<version>1.6.1</version>
 		</dependency>
 		<dependency>
-			<groupId>com.cisco.vss.foundation.directory</groupId>
+			<groupId>com.cisco.oss.foundation.directory</groupId>
 			<artifactId>vcsf-sd-core</artifactId>
 			<version>${vcsf.sd.version}</version>
 		</dependency>
