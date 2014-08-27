@@ -136,11 +136,28 @@ public enum ErrorCode {
 	UPDATE_MONITOR_ENABLED_ERROR("500.7"),
 	
 	/**
-	 * Update the status filed error when the ServiceInstance is monitor enabled.
-	 * Message: Cannot update the status fields for the ProvidedServiceInstance of monitorEnabled with true.
+	 * The Directory API doesn't own the updated moitorEnabled ProvidedServiceInstance.
+	 * Message: The Directory API doesn't own the updated monitorEnabled ProvidedServiceInstance.
 	 */
-	UPDATE_STATUS_ERROR("500.8"),
-
+	ILLEGAL_SERVICE_INSTANCE_OWNER_ERROR("500.8"),
+	
+	/**
+	 * Invoke the ServiceDirectory while it shutdown.
+	 * Message: The ServiceDirectory already shutdown.
+	 */
+	SERVICE_DIRECTORY_IS_SHUTDOWN("500.10"),
+	
+	/**
+	 * ServiceInstanceHealth only for the monitorEnabled ProvidedServiceInstance.
+	 * Message: Cannot register the monitor disabled ProvidedServiceInstance with ServiceInstanceHealth.
+	 */
+	SERVICE_INSTANCE_HEALTH_ERROR("500.9"),
+	
+	/**
+	 * Invoke the RegistrationManager or LookupManager of the closed ServiceDirectoryManagerFactory.
+	 * Message: The ServiceDirectoryManagerFactory already closed.
+	 */
+	SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED("500.11"),
 
 	// Directory Service Client error in Directory API.
 	/**

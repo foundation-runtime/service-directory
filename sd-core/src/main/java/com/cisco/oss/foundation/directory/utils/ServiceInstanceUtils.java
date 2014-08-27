@@ -8,10 +8,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
-import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
@@ -161,7 +161,7 @@ public class ServiceInstanceUtils {
 			return ErrorCode.SERVICE_INSTANCE_URI_FORMAT_ERROR;
 		}
 		if (!isMustFieldValid(uri, urlRegEx)
-				|| invalidBrace(uri)) {
+				|| ! isValidBrace(uri)) {
 			return ErrorCode.SERVICE_INSTANCE_URI_FORMAT_ERROR;
 		}
 		return ErrorCode.OK;
@@ -212,30 +212,35 @@ public class ServiceInstanceUtils {
 	 * @param url
 	 * 		the URL String.
 	 * @return
-	 * 		true if URL match the pattern.
+	 * 		false if brace is invalid or URL is empty.
 	 */
-	private static boolean invalidBrace(String url) {
+	private static boolean isValidBrace(String url) {
 		if (null == url || url.trim().length() == 0) {
-			return true;
-		}
-		try {
-			new UriSpec(url);
 			return false;
-		} catch (IllegalStateException e) {
-			return true;
 		}
-	}
-
-	/**
-	 * Build the URL for the Instance in UriSpec.
-	 * 
-	 * @param si
-	 * 		the ServiceInstance.
-	 * @return
-	 * 		the URL String.
-	 */
-	public static String buildURL(ServiceInstance si) {
-		UriSpec spec = new UriSpec(si.getUri());
-		return spec.build(si);
+		
+		boolean             isInsideVariable = false;
+        StringTokenizer     tokenizer = new StringTokenizer(url, "{}", true);
+        while ( tokenizer.hasMoreTokens() )
+        {
+            String  token = tokenizer.nextToken();
+            if ( token.equals("{") )
+            {
+            	// { is not allowed inside of a variable specification
+            	if(isInsideVariable){
+            		return false;
+            	}
+                isInsideVariable = true;
+            }
+            else if ( token.equals("}") )
+            {
+            	// } must be preceded by {;
+                if( ! isInsideVariable){
+                	return false;
+                }
+                isInsideVariable = false;
+            }
+        }
+        return true;
 	}
 }
