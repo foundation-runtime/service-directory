@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.codehaus.jackson.JsonParseException;
@@ -19,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import com.cisco.oss.foundation.directory.Configurations;
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
+import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.OperationResult;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
@@ -101,6 +103,14 @@ public class DirectoryServiceClient{
 		String directoryAddresses = "http://" + sdFQDN + ":" + port;
 		this.invoker = new DirectoryInvoker(directoryAddresses, serializer);
 	}
+	
+	/**
+	 * Close the DirectoryServiceClient.
+	 */
+	public void close(){
+		this.invoker = null;
+		this.serializer = null;
+	}
 
 	/**
 	 * Register a ServiceInstance.
@@ -154,13 +164,15 @@ public class DirectoryServiceClient{
 	 * 		the instance id.
 	 * @param status
 	 * 		the ServiceInstance OperationalStatus.
+	 * @param isOwned
+	 * 		whether the DirectoryAPI owns this ServiceProvider.
 	 */
-	public void updateInstanceStatus(String serviceName, String instanceId, OperationalStatus status){
+	public void updateInstanceStatus(String serviceName, String instanceId, OperationalStatus status, boolean isOwned){
 		String uri = "/service/" + serviceName + "/" + instanceId + "/status";
 		
 		String body = null;
 		try {
-			body = "status=" + URLEncoder.encode(status.toString(), "UTF-8");
+			body = "status=" + URLEncoder.encode(status.toString(), "UTF-8") + "&isOwned=" + isOwned;
 		} catch (UnsupportedEncodingException e) {
 			LOGGER.error("URLEncoder can not encode the status - " + status);
 			LOGGER.debug("URLEncoder can not encode the status.", e);
@@ -188,12 +200,14 @@ public class DirectoryServiceClient{
 	 * 		the instance id.
 	 * @param uri
 	 * 		the ServiceInstance URI.
+	 * @param isOwned
+	 * 		whether the DirectoryAPI owns this ServiceProvider.
 	 */
-	public void updateInstanceUri(String serviceName, String instanceId, String uri){
+	public void updateInstanceUri(String serviceName, String instanceId, String uri, boolean isOwned){
 		String serviceUri = "/service/" + serviceName + "/" + instanceId + "/uri" ;
 		String body = null;
 		try {
-			body = "uri=" + URLEncoder.encode(uri, "UTF-8");
+			body = "uri=" + URLEncoder.encode(uri, "UTF-8") + "&isOwned=" + isOwned;
 		} catch (UnsupportedEncodingException e) {
 			LOGGER.error("URLEncoder can not encode the URI - " + uri);
 			LOGGER.debug("URLEncoder can not encode the URI.", e);
@@ -222,9 +236,11 @@ public class DirectoryServiceClient{
 	 * 		service name.
 	 * @param instanceId
 	 * 		the instance id.
+	 * @param isOwned
+	 * 		whether the DirectoryAPI owns this ServiceProvider.
 	 */
-	public void unregisterInstance(String serviceName, String instanceId){
-		String uri = "/service/" + serviceName + "/" + instanceId ;
+	public void unregisterInstance(String serviceName, String instanceId, boolean isOwned){
+		String uri = "/service/" + serviceName + "/" + instanceId + "/" + isOwned;
 		HttpResponse result = invoker.invoke(uri, null,
 				HttpMethod.DELETE);
 
@@ -280,6 +296,20 @@ public class DirectoryServiceClient{
 
 		ModelService service = deserialize(result.getRetBody(), ModelService.class);
 		return service;
+	}
+	
+	public List<ModelServiceInstance> getAllInstances(){
+		HttpResponse result = invoker.invoke("/service" , null, HttpMethod.GET);
+
+		if (result.getHttpCode() != 200) {
+			LOGGER.error("getAllInstances failed, httpCode=" + result.getHttpCode());
+			ServiceDirectoryError sde = new ServiceDirectoryError(
+					ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
+			throw new DirectoryServerClientException(sde);
+		}
+
+		List<ModelServiceInstance> allInstances = deserialize(result.getRetBody(), new TypeReference<List<ModelServiceInstance>>(){});
+		return allInstances;
 	}
 	
 	/**
@@ -451,6 +481,7 @@ public class DirectoryServiceClient{
 	/**
 	 * Keep it default for unit test.
 	 * @return
+	 * 		the DirectoryInvoker
 	 */
 	DirectoryInvoker getDirectoryInvoker(){
 		return invoker;

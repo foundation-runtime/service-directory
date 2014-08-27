@@ -14,6 +14,8 @@ import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
+import com.cisco.oss.foundation.directory.exception.ServiceException;
+import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
 
 /**
  * It is the Directory LookupService to perform the lookup functionality.
@@ -158,6 +160,17 @@ public class DirectoryLookupService {
 	}
 	
 	/**
+	 * Get All ModelServiceInstance in the ServiceDirectory.
+	 * 
+	 * @return
+	 * 		the ModelServiceInstance List.
+	 */
+	public List<ModelServiceInstance> getAllInstances(){
+		List<ModelServiceInstance> allInstances = getDirectoryServiceClient().getAllInstances();
+		return allInstances;
+	}
+	
+	/**
 	 * Get the UP ModelServiceInstance list of the Service.
 	 * 
 	 * It only return the UP ServiceInstance of the Service.
@@ -221,6 +234,10 @@ public class DirectoryLookupService {
 	 * 		the DirectoryServiceClient
 	 */
 	protected DirectoryServiceClient getDirectoryServiceClient(){
-		return directoryServiceClientManager.getDirectoryServiceClient();
+		try {
+			return directoryServiceClientManager.getDirectoryServiceClient();
+		} catch (ServiceException e) {
+			throw new ServiceRuntimeException(e.getServiceDirectoryError());
+		}
 	}
 }

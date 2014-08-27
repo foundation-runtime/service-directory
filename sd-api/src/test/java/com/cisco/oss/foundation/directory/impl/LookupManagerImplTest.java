@@ -145,6 +145,8 @@ public class LookupManagerImplTest {
 			}
 		});
 		
+		impl.start();
+		
 		ServiceInstanceQuery query = new ServiceInstanceQuery().getEqualQueryCriterion("solution", "core");
 		try {
 			Assert.assertEquals(impl.getAllInstances(serviceName).get(0).getInstanceId(), instanceId);

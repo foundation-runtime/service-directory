@@ -6,11 +6,9 @@ package com.cisco.oss.foundation.directory.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
@@ -28,6 +26,8 @@ import com.cisco.oss.foundation.directory.entity.OperationResult;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstanceHeartbeat;
+import com.cisco.oss.foundation.directory.exception.ErrorCode;
+import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
 import com.cisco.oss.foundation.directory.lifecycle.Closable;
 
@@ -94,7 +94,7 @@ public class HeartbeatDirectoryRegistrationService extends
 	/**
 	 * All ServiceInstanceHealth set collection.
 	 */
-	private Set<CachedProviderServiceInstance> instanceCache;
+	private HashMap<ServiceInstanceId, CachedProviderServiceInstance> instanceCache;
 
 	/**
 	 * ServiceInstanceHealth check ExecutorService.
@@ -176,30 +176,33 @@ public class HeartbeatDirectoryRegistrationService extends
 	@Override
 	public void registerService(ProvidedServiceInstance serviceInstance) {
 		super.registerService(serviceInstance);
-		addCachedServiceInstance(serviceInstance, null);
+		if(serviceInstance.isMonitorEnabled()){
+			registerCachedServiceInstance(serviceInstance, null);
+		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void registerService(ProvidedServiceInstance serviceInstance,
-			OperationalStatus status) {
-		super.registerService(serviceInstance, status);
-		serviceInstance.setStatus(status);
-		addCachedServiceInstance(serviceInstance, null);
+	public void registerService(ProvidedServiceInstance serviceInstance, ServiceInstanceHealth registryHealth) {
+		super.registerService(serviceInstance, registryHealth);
+		registerCachedServiceInstance(serviceInstance, registryHealth);
 	}
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void registerService(ProvidedServiceInstance serviceInstance,
-			OperationalStatus status, ServiceInstanceHealth registryHealth) {
-		super.registerService(serviceInstance, status, registryHealth);
-		serviceInstance.setStatus(status);
-		addCachedServiceInstance(serviceInstance, registryHealth);
+	public void updateServiceUri(String serviceName, String providerId, String uri){
+		boolean isOwned = false;
+		CachedProviderServiceInstance inst = getCachedServiceInstance(serviceName, providerId);
 		
+		if(inst != null){
+			isOwned = true;
+		}
+		
+		this.getServiceDirectoryClient().updateInstanceUri(serviceName, providerId, uri, isOwned);
 	}
 
 	/**
@@ -208,12 +211,15 @@ public class HeartbeatDirectoryRegistrationService extends
 	@Override
 	public void updateServiceOperationalStatus(String serviceName,
 			String providerId, OperationalStatus status) {
-		super.updateServiceOperationalStatus(serviceName, providerId, status);
+		boolean isOwned = false;
 		CachedProviderServiceInstance inst = getCachedServiceInstance(serviceName, providerId);
+		
 		if(inst != null){
+			isOwned = true;
 			inst.setStatus(status);
 		}
-
+		
+		this.getServiceDirectoryClient().updateInstanceStatus(serviceName, providerId, status, isOwned);
 	}
 
 	/**
@@ -221,10 +227,17 @@ public class HeartbeatDirectoryRegistrationService extends
 	 */
 	@Override
 	public void updateService(ProvidedServiceInstance serviceInstance) {
-		super.updateService(serviceInstance);
-		if(! serviceInstance.isMonitorEnabled()){
+		if(serviceInstance.isMonitorEnabled()){
+			CachedProviderServiceInstance inst = getCachedServiceInstance(serviceInstance.getServiceName(), 
+					serviceInstance.getProviderId());
+			
+			if(inst == null){
+				throw new ServiceRuntimeException(new ServiceDirectoryError(ErrorCode.ILLEGAL_SERVICE_INSTANCE_OWNER_ERROR));
+			}
 			this.editCachedServiceInstance(serviceInstance);
+			
 		}
+		super.updateService(serviceInstance);
 	}
 
 	/**
@@ -232,15 +245,22 @@ public class HeartbeatDirectoryRegistrationService extends
 	 */
 	@Override
 	public void unregisterService(String serviceName, String providerId) {
-		super.unregisterService(serviceName, providerId);
-		this.deleteCachedServiceInstance(serviceName, providerId);
+		boolean isOwned = false;
+		CachedProviderServiceInstance inst = getCachedServiceInstance(serviceName, providerId);
+		
+		if(inst != null){
+			isOwned = true;
+			this.unregisterCachedServiceInstance(serviceName, providerId);
+		}
+		
+		this.getServiceDirectoryClient().unregisterInstance(serviceName, providerId, isOwned);
 	}
 
 	/**
-	 * Add a ProvidedServiceInstance to the Cache.
+	 * Register a ProvidedServiceInstance to the Cache.
 	 * 
-	 * Add the ProvidedServiceInstance to cache, if it already exits, remove it
-	 * and add a new one.
+	 * Register the ProvidedServiceInstance to cache, if not exits, add a new one,
+	 * if it already exits, update it.
 	 * 
 	 * It is thread safe.
 	 * 
@@ -249,22 +269,25 @@ public class HeartbeatDirectoryRegistrationService extends
 	 * @param registryHealth
 	 * 		the ServiceInstanceHealth callback.
 	 */
-	private void addCachedServiceInstance(ProvidedServiceInstance instance, ServiceInstanceHealth registryHealth) {
+	private void registerCachedServiceInstance(ProvidedServiceInstance instance, ServiceInstanceHealth registryHealth) {
 		try {
 			write.lock();
-			CachedProviderServiceInstance cachedinstance = getCachedServiceInstance(instance.getServiceName(),
+			ServiceInstanceId id = new ServiceInstanceId(instance.getServiceName(),
 					instance.getProviderId());
-			if (cachedinstance != null) {
-				getCacheServiceInstances().remove(cachedinstance);
-			}
+			CachedProviderServiceInstance cachedInstance = getCacheServiceInstances().get(id);
 			
-			CachedProviderServiceInstance cachedInstance = new CachedProviderServiceInstance(
+			if(cachedInstance == null){
+				cachedInstance = new CachedProviderServiceInstance(
 					instance);
-			LOGGER.info("add cached ProvidedServiceInstance, serviceName=" + instance.getServiceName()
+				getCacheServiceInstances().put(id, cachedInstance);
+				
+			}
+			if(LOGGER.isDebugEnabled()){
+				LOGGER.debug("add cached ProvidedServiceInstance, serviceName=" + instance.getServiceName()
 					+ ", providerId=" + instance.getProviderId() + ", monitor=" + instance.isMonitorEnabled()
 					+ ", status=" + instance.getStatus() + ", instance=" + cachedInstance.toString());
+			}
 			cachedInstance.setServiceInstanceHealth(registryHealth);
-			getCacheServiceInstances().add(cachedInstance);
 		} finally {
 			write.unlock();
 		}
@@ -273,21 +296,25 @@ public class HeartbeatDirectoryRegistrationService extends
 	/**
 	 * Edit the Cached ProvidedServiceInstance when updateService.
 	 * 
+	 * if it cached, update, if not, do nothing.
+	 * 
 	 * @param instance
 	 * 		the ProvidedServiceInstance.
 	 */
 	private void editCachedServiceInstance(ProvidedServiceInstance instance) {
 		try {
 			write.lock();
-			CachedProviderServiceInstance cachedinstance = getCachedServiceInstance(instance.getServiceName(),
+			ServiceInstanceId id = new ServiceInstanceId(instance.getServiceName(),
 					instance.getProviderId());
-			LOGGER.info("update cached ProvidedServiceInstance, serviceName=" + instance.getServiceName()
+			CachedProviderServiceInstance cachedInstance = getCacheServiceInstances().get(id);
+			if(cachedInstance != null){
+				cachedInstance.setMonitorEnabled(instance.isMonitorEnabled());
+				cachedInstance.setStatus(instance.getStatus());
+			}
+			if(LOGGER.isDebugEnabled()){
+				LOGGER.debug("update cached ProvidedServiceInstance, serviceName=" + instance.getServiceName()
 					+ ", providerId=" + instance.getProviderId() + ", monitor=" + instance.isMonitorEnabled()
 					+ ", status=" + instance.getStatus());
-			if (cachedinstance != null) {
-				cachedinstance.setMonitorEnabled(instance.isMonitorEnabled());
-				cachedinstance.setStatus(instance.getStatus());
-				LOGGER.info("instance=" + cachedinstance.toString());
 			}
 			
 		} finally {
@@ -311,16 +338,11 @@ public class HeartbeatDirectoryRegistrationService extends
 			String serviceName, String providerId) {
 		try {
 			read.lock();
-			for (CachedProviderServiceInstance instance : getCacheServiceInstances()) {
-				if (instance.equalToProvidedServiceInstance(serviceName,
-						providerId)) {
-					return instance;
-				}
-			}
+			ServiceInstanceId id = new ServiceInstanceId(serviceName, providerId);
+			return getCacheServiceInstances().get(id);
 		} finally {
 			read.unlock();
 		}
-		return null;
 	}
 
 	/**
@@ -334,15 +356,15 @@ public class HeartbeatDirectoryRegistrationService extends
 	 * @param providerId
 	 * 		the providerId.
 	 */
-	private void deleteCachedServiceInstance(
+	private void unregisterCachedServiceInstance(
 			String serviceName, String providerId) {
 		try {
 			write.lock();
-			LOGGER.info("delete cached ProvidedServiceInstance, serviceName=" + serviceName
+			ServiceInstanceId id = new ServiceInstanceId(serviceName, providerId);
+			getCacheServiceInstances().remove(id);
+			if(LOGGER.isDebugEnabled()){
+				LOGGER.debug("delete cached ProvidedServiceInstance, serviceName=" + serviceName
 					+ ", providerId=" + providerId);
-			CachedProviderServiceInstance instance = getCachedServiceInstance(serviceName, providerId);
-			if(instance != null){
-				getCacheServiceInstances().remove(instance);
 			}
 		} finally {
 			write.unlock();
@@ -357,11 +379,11 @@ public class HeartbeatDirectoryRegistrationService extends
 	 * @return
 	 * 		the CachedProviderServiceInstance Set.
 	 */
-	private Set<CachedProviderServiceInstance> getCacheServiceInstances() {
+	private HashMap<ServiceInstanceId, CachedProviderServiceInstance> getCacheServiceInstances() {
 		if (instanceCache == null) {
 			synchronized (this) {
 				if (instanceCache == null) {
-					instanceCache = new HashSet<CachedProviderServiceInstance>();
+					instanceCache = new HashMap<ServiceInstanceId, CachedProviderServiceInstance>();
 					initJobTasks();
 				}
 			}
@@ -428,19 +450,18 @@ public class HeartbeatDirectoryRegistrationService extends
 		public void run() {
 			read.lock();
 			try {
-				LOGGER.info("Kickoff the HealthCheckTask thread");
+				if(LOGGER.isDebugEnabled()){
+					LOGGER.debug("Kickoff the HealthCheckTask thread");
+				}
 				
-				for (CachedProviderServiceInstance ist : getCacheServiceInstances()) {
+				for (CachedProviderServiceInstance ist : getCacheServiceInstances().values()) {
 					if (ist.getServiceInstanceHealth() == null) {
 						continue;
 					}
-					LOGGER.info("Check the Health for service=" + ist.getServiceName() + ", providerId=" + ist.getProviderId());
-					boolean ret = ist.getServiceInstanceHealth().isHealthy();
-					if (!ret && OperationalStatus.UP.equals(ist.getStatus())) {
-						ist.setStatus(OperationalStatus.DOWN);
-					} else if(ret && OperationalStatus.DOWN.equals(ist.getStatus())) {
-						ist.setStatus(OperationalStatus.UP);
+					if(LOGGER.isDebugEnabled()){
+						LOGGER.debug("Check the Health for service=" + ist.getServiceName() + ", providerId=" + ist.getProviderId());
 					}
+					ist.isHealth = ist.getServiceInstanceHealth().isHealthy();
 				}
 			} catch (Exception e) {
 				LOGGER.error("ServiceInstanceHealth callback check failed.", e);
@@ -463,13 +484,16 @@ public class HeartbeatDirectoryRegistrationService extends
 		public void run() {
 			read.lock();
 			try {
-				LOGGER.info("Kickoff the heartbeat thread");
+				if(LOGGER.isDebugEnabled()){
+					LOGGER.debug("Kickoff the heartbeat thread");
+				}
 				List<ServiceInstanceHeartbeat> serviceHBList = new ArrayList<ServiceInstanceHeartbeat>();
-				for (CachedProviderServiceInstance cachedInstance : getCacheServiceInstances()) {
-					LOGGER.info("Search for, " + cachedInstance.toString()	);
-					if (cachedInstance.isMonitorEnabled()
-							&& OperationalStatus.UP.equals(cachedInstance
-									.getStatus())) {
+				for (CachedProviderServiceInstance cachedInstance : getCacheServiceInstances().values()) {
+					if(LOGGER.isDebugEnabled()){
+						LOGGER.debug("Search for, " + cachedInstance.toString()	);
+					}
+					if (cachedInstance.monitorEnabled && OperationalStatus.UP.equals(cachedInstance.status)
+							&& cachedInstance.isHealth) {
 						ServiceInstanceHeartbeat hb = new ServiceInstanceHeartbeat(
 								cachedInstance.getServiceName(),
 								cachedInstance.getProviderId());
@@ -552,6 +576,12 @@ public class HeartbeatDirectoryRegistrationService extends
 		 * The ServiceInstanceHealth callback of the ProvidedServiceInstance.
 		 */
 		private ServiceInstanceHealth healthCallback;
+		
+		/**
+		 * Store the ServiceInstanceHealth call back result.
+		 * If the ServiceInstanceHealth is null, default to true;
+		 */
+		private boolean isHealth = true;
 
 		/**
 		 * Constructor
@@ -576,6 +606,7 @@ public class HeartbeatDirectoryRegistrationService extends
 		public void setServiceInstanceHealth(
 				ServiceInstanceHealth healthCallback) {
 			this.healthCallback = healthCallback;
+			this.isHealth = true;
 		}
 
 		/**
@@ -645,13 +676,27 @@ public class HeartbeatDirectoryRegistrationService extends
 
 		@Override
 		public String toString() {
-			return "serviceName=" + serviceName + ", providerId=" + providerId + ", status=" + status +", monitor=" + monitorEnabled;
+			return "serviceName=" + serviceName + ", providerId=" + providerId + ", status=" + status +", monitor=" + monitorEnabled + ", isHealth=" + isHealth;
+		}
+	}
+	
+	private static class ServiceInstanceId{
+		private String serviceName;
+		private String providerId;
+		
+		public ServiceInstanceId(String serviceName, String providerId){
+			this.serviceName = serviceName;
+			this.providerId = providerId;
+		}
+		@Override
+		public String toString() {
+			return "serviceName=" + serviceName + ", providerId=" + providerId;
 		}
 
 		@Override
 		public boolean equals(Object obj) {
-			if (obj != null && obj instanceof CachedProviderServiceInstance) {
-				CachedProviderServiceInstance instance = (CachedProviderServiceInstance) obj;
+			if (obj != null && obj instanceof ServiceInstanceId) {
+				ServiceInstanceId instance = (ServiceInstanceId) obj;
 				return (instance.serviceName.equals(serviceName) && instance.providerId
 						.equals(providerId));
 			}
@@ -665,19 +710,5 @@ public class HeartbeatDirectoryRegistrationService extends
 					: 0;
 			return result;
 		}
-
-		/**
-		 * check equal to the ProvidedServiceInstance.
-		 * 
-		 * @param serviceInstance
-		 *            the ProvidedServiceInstance.
-		 * @return true if the serviceName and instanceId is the same.
-		 */
-		public boolean equalToProvidedServiceInstance(String serviceName,
-				String providerId) {
-			return (this.serviceName.equals(serviceName) && this.providerId
-					.equals(providerId));
-		}
 	}
-
 }

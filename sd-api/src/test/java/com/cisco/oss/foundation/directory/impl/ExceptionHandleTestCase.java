@@ -54,10 +54,11 @@ public class ExceptionHandleTestCase  {
 
 	/**
 	 * Test the exception handling in register, update, unregister and lookup ServiceInstance.
+	 * @throws ServiceException 
 	 * 
 	 */
 	@Test
-	public void testRegistrationManager() {
+	public void testRegistrationManager() throws ServiceException {
 		DirectoryServiceClient client = ((DirectoryServiceClientManager)ServiceDirectoryImpl.getInstance()).getDirectoryServiceClient();
 		String serviceName = "mock-test01";
 		final ProvidedServiceInstance instance = createInstance(serviceName);
@@ -112,7 +113,7 @@ public class ExceptionHandleTestCase  {
 		} catch (ServiceException e) {
 			Assert.assertEquals(
 					e.getServiceDirectoryError().getExceptionCode(),
-					ErrorCode.SERVICE_INSTANCE_NOT_EXIST);
+					ErrorCode.ILLEGAL_SERVICE_INSTANCE_OWNER_ERROR);
 		}
 
 

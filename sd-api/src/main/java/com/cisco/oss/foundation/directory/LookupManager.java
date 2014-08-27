@@ -149,4 +149,13 @@ public interface LookupManager {
 	 * @throws ServiceException
 	 */
 	public List<ServiceInstance> getAllInstancesByKey(ServiceInstanceQuery query) throws ServiceException;
+	
+	/**
+	 * Get the all ServiceInstances in the ServiceDirectory including the DOWN ServiceInstance.
+	 * 
+	 * @return
+	 * 		the ServiceInstance List.
+	 * @throws ServiceException
+	 */
+	public List<ServiceInstance> getAllInstances() throws ServiceException;
 }

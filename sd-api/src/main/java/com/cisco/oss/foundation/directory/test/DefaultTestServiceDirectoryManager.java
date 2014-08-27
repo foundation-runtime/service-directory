@@ -231,34 +231,13 @@ public class DefaultTestServiceDirectoryManager implements
 	 * 
 	 * @param serviceInstance
 	 * 		the ProvidedServiceInstance.
-	 * @param status
-	 * 		the OperationalStatus of the ProvidedServiceInstance.
-	 * @throws ServiceException
-	 */
-	@Override
-	public void registerService(ProvidedServiceInstance serviceInstance,
-			OperationalStatus status) throws ServiceException {
-		serviceInstance.setStatus(status);
-		registerService(serviceInstance);
-		
-	}
-
-	/**
-	 * {@inheritDoc}
-	 * 
-	 * @param serviceInstance
-	 * 		the ProvidedServiceInstance.
-	 * @param status
-	 * 		the OperationalStatus of ProvidedServiceInstance.
 	 * @param registryHealth
 	 * 		the ServiceInstanceHealth callback of the ServiceInstance.
 	 * @throws ServiceException
 	 */
 	@Override
-	public void registerService(ProvidedServiceInstance serviceInstance,
-			OperationalStatus status, ServiceInstanceHealth registryHealth)
+	public void registerService(ProvidedServiceInstance serviceInstance, ServiceInstanceHealth registryHealth)
 			throws ServiceException {
-		serviceInstance.setStatus(status);
 		registerService(serviceInstance);
 	}
 
@@ -499,6 +478,29 @@ public class DefaultTestServiceDirectoryManager implements
 			ServiceInstanceQuery query) throws ServiceException {
 		List<ServiceInstance> instances = this.getAllInstances(serviceName);
 		return ServiceInstanceQueryHelper.filterServiceInstance(query, instances);
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<ServiceInstance> getAllInstances() throws ServiceException {
+		
+		List<ServiceInstance> instances = null;
+		for(ProvidedService service : cache.getAllServices()){
+			if(instances == null){
+				instances = new ArrayList<ServiceInstance>();
+			}
+			for(ProvidedServiceInstance model : service.getServiceInstances()){
+				instances.add(new ServiceInstance(model.getServiceName(), model.getProviderId(), model.getUri(), 
+						model.isMonitorEnabled(), model.getStatus(), model.getMetadata()));
+			}
+		}
+		if(instances == null ){
+			return Collections.emptyList();
+		}else{
+			return instances;
+		}
 	}
 
 	/**

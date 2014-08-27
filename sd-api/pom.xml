@@ -256,19 +256,7 @@
 			<artifactId>jackson-mapper-asl</artifactId>
 			<version>1.9.12</version>
 		</dependency>
-
-		<dependency>
-			<groupId>com.cisco.oss.foundation</groupId>
-			<artifactId>logging-log4j</artifactId>
-			<version>0.0.0-5</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.cisco.oss.foundation</groupId>
-			<artifactId>logging-api</artifactId>
-			<version>0.0.0-5</version>
-			<scope>test</scope>
-		</dependency>
+		
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

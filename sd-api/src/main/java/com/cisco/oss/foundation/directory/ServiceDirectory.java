@@ -92,6 +92,20 @@ public class ServiceDirectory {
 		return getServiceDirectoryConfig().getBoolean(SD_API_SERVICE_DIRECTORY_ENABLED_PROPERTY, 
 				SD_API_SERVICE_DIRECTORY_ENABLED_DEFAULT);
 	}
+	
+	/**
+	 * Shutdown the ServiceDirectory.
+	 * 
+	 * Be careful to invoke this method, it used to help gc
+	 * in shutdown the jvm.
+	 * The whole ServiceDirectory shutdown, it cannot be used unless restart the jvm 
+	 * and reload the ServiceDirectory class. The methods throw SERVICE_DIRECTORY_IS_SHUTDOWN error.
+	 * 
+	 * 
+	 */
+	public static void shutdown(){
+		getImpl().shutdown();
+	}
 
 	/**
 	 * Get the ServiceDirectory implementation.
@@ -102,4 +116,7 @@ public class ServiceDirectory {
 	private static ServiceDirectoryImpl getImpl() {
 		return ServiceDirectoryImpl.getInstance();
 	}
+	
+	
+	
 }

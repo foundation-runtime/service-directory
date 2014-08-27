@@ -58,8 +58,8 @@ public class InMemTestCase {
 		RegistrationManager register = ServiceDirectory.getRegistrationManager();
 		LookupManager lookup = ServiceDirectory.getLookupManager();
 		
-		
-		register.registerService(ist, OperationalStatus.UP);
+		ist.setStatus(OperationalStatus.UP);
+		register.registerService(ist);
 		ServiceInstance instance = lookup.lookupInstance(serviceName);
 		
 		Assert.assertEquals(instance.getInstanceId(), ist.getProviderId());
@@ -76,7 +76,8 @@ public class InMemTestCase {
 		ProvidedServiceInstance instance = createInstance(serviceName);
 		
 		RegistrationManager register = ServiceDirectory.getRegistrationManager();
-		register.registerService(instance, OperationalStatus.UP);
+		instance.setStatus(OperationalStatus.UP);
+		register.registerService(instance);
 
 		
 		LookupManager lookup = ServiceDirectory.getLookupManager();
@@ -117,19 +118,20 @@ public class InMemTestCase {
 		
 		ist.getMetadata().put("key", "instance1");
 		ist.setPort(8091);
-		register.registerService(ist, OperationalStatus.UP);
+		ist.setStatus(OperationalStatus.UP);
+		register.registerService(ist);
 		
 		ist.getMetadata().put("key", "instance2");
 		ist.setPort(8092);
-		register.registerService(ist, OperationalStatus.UP);
+		register.registerService(ist);
 		
 		ist.getMetadata().put("key", "instance3");
 		ist.setPort(8093);
-		register.registerService(ist, OperationalStatus.UP);
+		register.registerService(ist);
 		
 		ist.getMetadata().put("key", "instance4");
 		ist.setPort(8094);
-		register.registerService(ist, OperationalStatus.UP);
+		register.registerService(ist);
 		
 		ServiceInstanceQuery query = new ServiceInstanceQuery();
 		query.addQueryCriterion(new ServiceInstanceQuery.EqualQueryCriterion("key", "instance1"));
@@ -167,22 +169,26 @@ public class InMemTestCase {
 		ProvidedServiceInstance ist1 = createInstance(serviceName1);
 		ist1.getMetadata().put("datacenter", "dc01");
 		ist1.setPort(8091);
-		register.registerService(ist1, OperationalStatus.UP);
+		ist1.setStatus(OperationalStatus.UP);
+		register.registerService(ist1);
 		
 		ProvidedServiceInstance ist2 = createInstance(serviceName1);
 		ist2.getMetadata().put("datacenter", "dc02");
 		ist2.setPort(8092);
-		register.registerService(ist2, OperationalStatus.UP);
+		ist2.setStatus(OperationalStatus.UP);
+		register.registerService(ist2);
 		
 		ProvidedServiceInstance ist3 = createInstance(serviceName2);
 		ist3.getMetadata().put("datacenter", "dc01");
 		ist3.setPort(8093);
-		register.registerService(ist3, OperationalStatus.UP);
+		ist3.setStatus(OperationalStatus.UP);
+		register.registerService(ist3);
 		
 		ProvidedServiceInstance ist4 = createInstance(serviceName2);
 		ist4.getMetadata().put("datacenter", "dc02");
 		ist4.setPort(8094);
-		register.registerService(ist4, OperationalStatus.UP);
+		ist4.setStatus(OperationalStatus.UP);
+		register.registerService(ist4);
 		
 		ServiceInstanceQuery query = new ServiceInstanceQuery().getEqualQueryCriterion("meta1", "value1");
 		List<ServiceInstance> list1 = lookup.queryInstancesByKey(query);
@@ -217,7 +223,7 @@ public class InMemTestCase {
 		Assert.assertTrue(countMap.get(ist2.getProviderId()) == 2);
 		Assert.assertTrue(countMap.get(ist4.getProviderId()) == 2);
 		
-		
+		Assert.assertEquals(4, lookup.getAllInstances().size());
 		
 		register.unregisterService(ist1.getServiceName(), ist1.getProviderId());
 		register.unregisterService(ist2.getServiceName(), ist2.getProviderId());

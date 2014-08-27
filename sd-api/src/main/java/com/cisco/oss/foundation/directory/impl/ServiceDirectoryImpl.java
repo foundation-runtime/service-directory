@@ -13,6 +13,8 @@ import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
 import com.cisco.oss.foundation.directory.config.ServiceDirectoryConfig;
+import com.cisco.oss.foundation.directory.exception.ErrorCode;
+import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.lifecycle.Closable;
 
@@ -47,6 +49,8 @@ public class ServiceDirectoryImpl implements DirectoryServiceClientManager{
 	 * The singleton instance.
 	 */
 	private static ServiceDirectoryImpl instance = new ServiceDirectoryImpl(); 
+	
+	private boolean isShutdown = false;
 	
 	// Singleton, private the constructor.
 	private ServiceDirectoryImpl() {
@@ -99,44 +103,78 @@ public class ServiceDirectoryImpl implements DirectoryServiceClientManager{
 	 * 
 	 * @param factory
 	 * 		the ServiceDirectoryManagerFactory.
+	 * @throws ServiceException 
 	 */
-	public void reinitServiceDirectoryManagerFactory(ServiceDirectoryManagerFactory factory){
+	public void reinitServiceDirectoryManagerFactory(ServiceDirectoryManagerFactory factory) throws ServiceException{
 		if (factory == null) {
 			throw new IllegalArgumentException("The ServiceDirectoryManagerFactory cannot be NULL.");
 		}
 			
-		if (this.directoryManagerFactory != null) {
-
-			if(directoryManagerFactory instanceof Closable){
-				((Closable) directoryManagerFactory).stop();
+		synchronized(this){
+			if(isShutdown){
+				ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_IS_SHUTDOWN);
+				throw new ServiceException(error);
 			}
 			
-			LOGGER.info("Resetting ServiceDirectoryManagerFactory, old="
-					+ this.directoryManagerFactory.getClass().getName()
-					+ ", new=" + factory.getClass().getName() + ".");
+			if (this.directoryManagerFactory != null) {
 
-			this.directoryManagerFactory = factory;
-		} else {
-			this.directoryManagerFactory = factory;
-			LOGGER.info("Setting ServiceDirectoryManagerFactory,  factory="
-					+ factory.getClass().getName() + ".");
+				if (directoryManagerFactory instanceof Closable) {
+					((Closable) directoryManagerFactory).stop();
+				}
+
+				LOGGER.info("Resetting ServiceDirectoryManagerFactory, old="
+						+ this.directoryManagerFactory.getClass().getName()
+						+ ", new=" + factory.getClass().getName() + ".");
+
+				this.directoryManagerFactory = factory;
+			} else {
+				this.directoryManagerFactory = factory;
+				LOGGER.info("Setting ServiceDirectoryManagerFactory,  factory="
+						+ factory.getClass().getName() + ".");
+			}
+			this.directoryManagerFactory.initialize(this);
 		}
-		this.directoryManagerFactory.initialize(this);
 	}
 	
 	/**
 	 * {@inheritDoc}
+	 * @throws ServiceException 
 	 */
 	@Override
-	public DirectoryServiceClient getDirectoryServiceClient(){
+	public DirectoryServiceClient getDirectoryServiceClient() throws ServiceException{
 		if(client == null){
 			synchronized(this){
+				if(isShutdown){
+					ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_IS_SHUTDOWN);
+					throw new ServiceException(error);
+				}
 				if(client == null){
 					client = new DirectoryServiceClient();
 				}
 			}
 		}
 		return client;
+	}
+	
+	/**
+	 * Shutdown the ServiceDirectory and the ServiceDirectoryManagerFactory.
+	 */
+	public void shutdown(){
+		synchronized(this){
+			if(! isShutdown){
+				if (directoryManagerFactory != null) {
+					if (directoryManagerFactory instanceof Closable) {
+						((Closable) directoryManagerFactory).stop();
+					}
+					directoryManagerFactory = null;
+				}
+				if (client != null) {
+					client.close();
+					client = null;
+				}
+				this.isShutdown = true;
+			}
+		}
 	}
 	
 	/**
@@ -152,6 +190,10 @@ public class ServiceDirectoryImpl implements DirectoryServiceClientManager{
 	private ServiceDirectoryManagerFactory getServiceDirectoryManagerFactory() throws ServiceException{
 		if(directoryManagerFactory == null){
 			synchronized(this){
+				if(isShutdown){
+					ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_IS_SHUTDOWN);
+					throw new ServiceException(error);
+				}
 				if(directoryManagerFactory == null){
 					String custProvider = Configurations
 							.getString(SD_API_SERVICE_DIRECTORY_MANAGER_FACTORY_PROVIDER_PROPERTY);
@@ -183,4 +225,13 @@ public class ServiceDirectoryImpl implements DirectoryServiceClientManager{
 		}
 		return directoryManagerFactory;
 	}
+	
+	/**
+	 * Keep it default for Unit test.
+	 * Revert the ServiceDirectory from shutdown.
+	 */
+	void revertForUnitTest(){
+		isShutdown= false;
+	}
+	
 }

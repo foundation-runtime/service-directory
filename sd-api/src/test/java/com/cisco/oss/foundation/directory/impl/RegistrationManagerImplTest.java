@@ -15,6 +15,7 @@ import com.cisco.oss.foundation.directory.entity.OperationResult;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstanceHeartbeat;
+import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 
 public class RegistrationManagerImplTest {
@@ -68,22 +69,25 @@ public class RegistrationManagerImplTest {
 					}
 					
 					@Override
-					public void updateInstanceStatus(String serviceName, String instanceId, OperationalStatus status){
+					public void updateInstanceStatus(String serviceName, String instanceId, OperationalStatus status, boolean isOwned){
 						statusInvoked.incrementAndGet();
 						Assert.assertEquals(serviceName, "odrm");
 						Assert.assertEquals(instanceId, "192.168.7.4-8901");
 						Assert.assertEquals(OperationalStatus.DOWN, status);
+						Assert.assertTrue(isOwned);
 					}
 					
 					@Override
-					public void unregisterInstance(String serviceName, String instanceId){
+					public void unregisterInstance(String serviceName, String instanceId, boolean isOwned){
 						unregisterInvoked.incrementAndGet();
 						Assert.assertEquals(serviceName, "odrm");
 						Assert.assertEquals(instanceId, "192.168.7.4-8901");
+						Assert.assertTrue(isOwned);
 					}
 				};
 			}
 		});
+		impl.start();
 		
 		final AtomicBoolean ret = new AtomicBoolean(false);
 		ServiceInstanceHealth health = new ServiceInstanceHealth(){
@@ -97,7 +101,8 @@ public class RegistrationManagerImplTest {
 		try {
 			impl.registerService(instance);
 			impl.registerService(instance2);
-			impl.registerService(instance, OperationalStatus.UP);
+			instance.setStatus(OperationalStatus.UP);
+			impl.registerService(instance);
 //			impl.registerService(instance, OperationalStatus.UP, health);
 		} catch (ServiceException e) {
 			// TODO Auto-generated catch block
@@ -117,7 +122,7 @@ public class RegistrationManagerImplTest {
 		
 		
 		try {
-			impl.registerService(instance, OperationalStatus.UP, health);
+			impl.registerService(instance, health);
 		} catch (ServiceException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -219,20 +224,30 @@ public class RegistrationManagerImplTest {
 					}
 					
 					@Override
-					public void updateInstanceStatus(String serviceName, String instanceId, OperationalStatus status){
+					public void updateInstanceStatus(String serviceName, String instanceId, OperationalStatus status, boolean isOwned){
 						statusInvoked.incrementAndGet();
 						Assert.assertEquals(serviceName, "odrm");
 						Assert.assertEquals(instanceId, "192.168.7.4-8901");
 						Assert.assertEquals(OperationalStatus.DOWN, status);
+						Assert.assertTrue(isOwned);
 					}
 					
 					@Override
-					public void updateInstanceUri(String serviceName, String instanceId, String uri){
+					public void updateInstanceUri(String serviceName, String instanceId, String uri, boolean isOwned){
 						uriInvoked.incrementAndGet();
 						Assert.assertEquals(serviceName, "odrm");
 						Assert.assertEquals(instanceId, "192.168.7.4-8901");
 						Assert.assertEquals("new", uri);
+						Assert.assertTrue(isOwned);
 					}
+					
+					@Override
+					public void unregisterInstance(String serviceName, String instanceId, boolean isOwned){
+						Assert.assertEquals(serviceName, "odrm");
+						Assert.assertEquals(instanceId, "192.168.7.4-8901");
+						Assert.assertTrue(isOwned);
+					}
+					
 				};
 			}
 			
@@ -240,6 +255,7 @@ public class RegistrationManagerImplTest {
 			
 			
 		});
+		impl.start();
 		
 		try {
 			impl.registerService(instance);
@@ -274,6 +290,20 @@ public class RegistrationManagerImplTest {
 		
 		// Updated the ServiceInstance to DOWN, it should have no heartbeat.
 		Assert.assertTrue(hbInvoked.get() ==0);
+		
+		try {
+			impl.unregisterService(instance.getServiceName(), instance.getProviderId());
+		} catch (ServiceException e) {
+			e.printStackTrace();
+			Assert.assertTrue("unregisterService failed.", false);
+		}
+		
+		try {
+			impl.updateService(instance);
+		} catch (ServiceException e) {
+			e.printStackTrace();
+			Assert.assertEquals(ErrorCode.ILLEGAL_SERVICE_INSTANCE_OWNER_ERROR, e.getServiceDirectoryError().getExceptionCode());
+		}
 		
 	}
 

@@ -25,6 +25,7 @@ import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstanceHeartbeat;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
+import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.utils.HttpResponse;
 import com.cisco.oss.foundation.directory.utils.HttpUtils;
 import com.cisco.oss.foundation.directory.utils.JsonSerializer;
@@ -39,7 +40,7 @@ public class DirectoryServiceClientTest {
 	}
 	
 	@Test
-	public void testRegisterInstance(){
+	public void testRegisterInstance() throws ServiceException{
 		DirectoryServiceClient client = ((DirectoryServiceClientManager)ServiceDirectoryImpl.getInstance()).getDirectoryServiceClient();
 		
 		final ProvidedServiceInstance instance = new ProvidedServiceInstance("odrm", "192.168.7.4", 8901);
@@ -68,7 +69,7 @@ public class DirectoryServiceClientTest {
 	}
 	
 	@Test
-	public void testupdateInstance(){
+	public void testupdateInstance() throws ServiceException{
 		DirectoryServiceClient client = ((DirectoryServiceClientManager)ServiceDirectoryImpl.getInstance()).getDirectoryServiceClient();
 		
 		final ProvidedServiceInstance instance = new ProvidedServiceInstance("odrm", "192.168.7.4", 8901);
@@ -97,7 +98,7 @@ public class DirectoryServiceClientTest {
 	}
 	
 	@Test
-	public void testupdateInstanceStatus(){
+	public void testupdateInstanceStatus() throws ServiceException{
 		DirectoryServiceClient client = ((DirectoryServiceClientManager)ServiceDirectoryImpl.getInstance()).getDirectoryServiceClient();
 		
 		
@@ -111,19 +112,19 @@ public class DirectoryServiceClientTest {
 					throws IOException {
 				
 				Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName + "/" + instanceId + "/status", urlStr);
-				Assert.assertEquals(body, "status=" + status);
+				Assert.assertEquals(body, "status=" + status + "&isOwned=true");
 				return new HttpResponse(200, null);
 				
 			}
 		};
 		client.getDirectoryInvoker().setHttpUtils(utils);
 		
-		client.updateInstanceStatus(serviceName, instanceId, status);
+		client.updateInstanceStatus(serviceName, instanceId, status, true);
 	}
 	
 	
 	@Test
-	public void testupdateInstanceUri(){
+	public void testupdateInstanceUri() throws ServiceException{
 		DirectoryServiceClient client = ((DirectoryServiceClientManager)ServiceDirectoryImpl.getInstance()).getDirectoryServiceClient();
 		
 		
@@ -137,18 +138,18 @@ public class DirectoryServiceClientTest {
 					throws IOException {
 				
 				Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName + "/" + instanceId + "/uri", urlStr);
-				Assert.assertEquals(body, "uri=" + URLEncoder.encode(uri, "UTF-8"));
+				Assert.assertEquals(body, "uri=" + URLEncoder.encode(uri, "UTF-8") + "&isOwned=false");
 				return new HttpResponse(200, null);
 				
 			}
 		};
 		client.getDirectoryInvoker().setHttpUtils(utils);
 		
-		client.updateInstanceUri(serviceName, instanceId, uri);
+		client.updateInstanceUri(serviceName, instanceId, uri, false);
 	}
 	
 	@Test
-	public void testunregisterInstance(){
+	public void testunregisterInstance() throws ServiceException{
 		DirectoryServiceClient client = ((DirectoryServiceClientManager)ServiceDirectoryImpl.getInstance()).getDirectoryServiceClient();
 		
 		
@@ -160,18 +161,18 @@ public class DirectoryServiceClientTest {
 			public HttpResponse deleteJson(String urlStr)
 					throws IOException {
 				
-				Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName + "/" + instanceId , urlStr);
+				Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName + "/" + instanceId + "/true" , urlStr);
 				return new HttpResponse(200, null);
 				
 			}
 		};
 		client.getDirectoryInvoker().setHttpUtils(utils);
 		
-		client.unregisterInstance(serviceName, instanceId);
+		client.unregisterInstance(serviceName, instanceId, true);
 	}
 	
 	@Test
-	public void testsendHeartBeat(){
+	public void testsendHeartBeat() throws ServiceException{
 		DirectoryServiceClient client = ((DirectoryServiceClientManager)ServiceDirectoryImpl.getInstance()).getDirectoryServiceClient();
 		
 		final Map<String, ServiceInstanceHeartbeat> heartbeatMap = new HashMap<String, ServiceInstanceHeartbeat>(); 
@@ -203,7 +204,7 @@ public class DirectoryServiceClientTest {
 	
 	
 	@Test
-	public void testgetMetadataKey(){
+	public void testgetMetadataKey() throws ServiceException{ 
 		DirectoryServiceClient client = ((DirectoryServiceClientManager)ServiceDirectoryImpl.getInstance()).getDirectoryServiceClient();
 		
 		final String keyName = "datacenter";
@@ -250,7 +251,7 @@ public class DirectoryServiceClientTest {
 	}
 	
 	@Test
-	public void testlookupService(){
+	public void testlookupService() throws ServiceException{
 		DirectoryServiceClient client = ((DirectoryServiceClientManager)ServiceDirectoryImpl.getInstance()).getDirectoryServiceClient();
 		
 		final String serviceName = "odrm";
@@ -294,7 +295,7 @@ public class DirectoryServiceClientTest {
 	}
 	
 	@Test
-	public void testgetServiceChanging(){
+	public void testgetServiceChanging() throws ServiceException{
 		DirectoryServiceClient client = ((DirectoryServiceClientManager)ServiceDirectoryImpl.getInstance()).getDirectoryServiceClient();
 		
 		final Date date = new Date();

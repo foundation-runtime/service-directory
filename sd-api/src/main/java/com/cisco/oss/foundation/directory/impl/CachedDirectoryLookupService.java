@@ -25,6 +25,7 @@ import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.OperationResult;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.lifecycle.Closable;
+import com.cisco.oss.foundation.directory.utils.JsonSerializer;
 
 /**
  * It is the DirectoryLookupService with Cache.
@@ -39,6 +40,11 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 
 	private static final Logger LOGGER = LoggerFactory
 			.getLogger(CachedDirectoryLookupService.class);
+	
+	// Set this log to DEBUG to enable Service Cache dump in LookupManager.
+	// It will dump the whole ServiceCache to log file when the Logger Changed first time,
+	// and every time the Service Cache has new update.
+	private static final Logger CacheDumpLogger = LoggerFactory.getLogger("com.cisco.oss.foundation.directory.cache.dump");
 	
 	/**
 	 * The LookupManager cache sync executor kick off delay time property name in seconds.
@@ -90,6 +96,11 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 	 * Mark whether component is started.
 	 */
 	private boolean isStarted = false;
+	
+	/**
+	 * The JsonSerializer used in dump cache to serialize the ModelService.
+	 */
+	private JsonSerializer dumper = null;
 	
 	/**
 	 * Constructor.
@@ -325,6 +336,34 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 	}
 	
 	/**
+	 * Dump the ServiceCache to CacheDumpLogger Logger.
+	 * 
+	 * @return
+	 * 		true if dump complete.
+	 * @throws Exception
+	 */
+	private boolean dumpCache() throws Exception{
+		
+		if(CacheDumpLogger.isDebugEnabled()){
+			
+			List<ModelService> services = getCache().getAllServicesWithInstance();
+			 if(dumper == null){
+				 dumper = new JsonSerializer();
+			 }
+			 
+			StringBuilder sb = new StringBuilder();
+			sb.append("LookupManager dump Service Cache at: ").append(System.currentTimeMillis()).append("\n");
+			for(ModelService service : services){
+				sb.append(new String(dumper.serialize(service))).append("\n");
+			}
+			CacheDumpLogger.debug(sb.toString());
+			return true;
+		} else {
+			return false;
+		}
+	}
+	
+	/**
 	 * The Runnable for Cache Sync.
 	 * 
 	 * @author zuxiang
@@ -332,6 +371,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 	 */
 	private static class CacheSyncTask implements Runnable{
 
+		private boolean lastCacheDump = false;
 		private CachedDirectoryLookupService cachedLookupService;
 		public CacheSyncTask(CachedDirectoryLookupService cachedLookupService){
 			this.cachedLookupService = cachedLookupService;
@@ -339,6 +379,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 		@Override
 		public void run() {
 			try{
+				
 				
 				List<ModelMetadataKey> keys = cachedLookupService.getAllMetadataKeysForSync();
 				if(keys.size() > 0){
@@ -373,7 +414,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 			}
 			
 			try{
-				
+				boolean cacheUpdated = false;
 				List<ModelService> services = cachedLookupService.getAllServicesForSync();
 				if(services.size() > 0){
 					Map<String, ModelService> serviceMap = new HashMap<String, ModelService>();
@@ -382,6 +423,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 					}
 					Map<String, OperationResult<ModelService>> deltaSvcs = cachedLookupService.getServiceChanging(serviceMap);
 					if(deltaSvcs != null){
+						cacheUpdated = true;
 						for(Entry<String, OperationResult<ModelService>> deltaService : deltaSvcs.entrySet()){
 							String serviceName = deltaService.getKey();
 							OperationResult<ModelService> result = deltaService.getValue();
@@ -400,6 +442,17 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 					}
 				} else {
 					LOGGER.info("No service in the cache, skip cache sync.");
+				}
+				
+				try{
+					if (cacheUpdated || lastCacheDump == false) {
+						lastCacheDump = cachedLookupService.dumpCache();
+					}
+				} catch(Exception e){
+					LOGGER.warn("Dump Service Cache failed. Set Logger " + CacheDumpLogger.getName() + " to INFO to close this message.");
+					if(LOGGER.isTraceEnabled()){
+						LOGGER.trace("Dump Service Cache failed.", e);
+					}
 				}
 			}catch(Exception e){
 				LOGGER.error("Sync ModelService cache from ServiceDirectory Server failed", e);

@@ -29,29 +29,17 @@ public interface RegistrationManager {
 	public void registerService(ProvidedServiceInstance serviceInstance) throws ServiceException;
 	
 	/**
-	 * Register a new ProvidedServiceInstance with OperationalStatus.
+	 * Register a new ProviderServiceInstance with ServiceInstanceHealth.
 	 * 
-	 * It is a convenient method to register a new ProvidedServiceInstance to Service Directory and set OperationalStatus together.
-	 * 
-	 * @param serviceInstance	The ProvidedServiceInstance.
-	 * @param status			The OperationalStatus of the ProvidedServiceInstance.
-	 * @throws ServiceException
-	 */
-	public void registerService(ProvidedServiceInstance serviceInstance, OperationalStatus status) throws ServiceException;
-	
-	/**
-	 * Register a new ProviderServiceInstance with OperationalStatus and ServiceInstanceHealth.
-	 * 
-	 * It registers a new ProviderServiceInstance with OperationalStatus and attaches a ServiceInstanceHealth callback. 
+	 * It registers a new ProviderServiceInstance and attaches a ServiceInstanceHealth callback. 
 	 * Directory server will invoke ServiceInstanceHealth periodically to update the OperationalStatus of the ProviderServiceInstance on behalf of 
 	 * the Service Provider.
 	 * 
 	 * @param serviceInstance	The ProvidedServiceInstance.
-	 * @param status			The OperationalStatus of the ProvidedServiceInstance.
 	 * @param registryHealth		The ServiceInstanceHealth.
 	 * @throws ServiceException
 	 */
-	public void registerService(ProvidedServiceInstance serviceInstance, OperationalStatus status, ServiceInstanceHealth registryHealth) throws ServiceException;
+	public void registerService(ProvidedServiceInstance serviceInstance, ServiceInstanceHealth registryHealth) throws ServiceException;
 	
 	/**
 	 * Update the OperationalStatus of the ProvidedServiceInstance.

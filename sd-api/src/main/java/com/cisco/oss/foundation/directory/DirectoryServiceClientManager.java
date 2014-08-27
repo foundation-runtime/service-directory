@@ -4,6 +4,7 @@
  */
 package com.cisco.oss.foundation.directory;
 
+import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.impl.DirectoryServiceClient;
 
 /**
@@ -22,7 +23,9 @@ public interface DirectoryServiceClientManager {
 	 * 
 	 * @return
 	 * 		the directory server client.
+	 * @throws ServiceException 
+	 * 		Throw SERVICE_DIRECTORY_IS_SHUTDOWN error when ServiceDirectory shutdown.
 	 */
-	public DirectoryServiceClient getDirectoryServiceClient();
+	public DirectoryServiceClient getDirectoryServiceClient() throws ServiceException;
 
 }

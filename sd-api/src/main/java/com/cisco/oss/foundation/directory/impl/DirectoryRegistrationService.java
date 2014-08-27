@@ -8,6 +8,10 @@ import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
+import com.cisco.oss.foundation.directory.exception.ErrorCode;
+import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
+import com.cisco.oss.foundation.directory.exception.ServiceException;
+import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
 
 /**
  * It is the Directory Registration Service to perform the ServiceInstance registration.
@@ -61,18 +65,19 @@ public class DirectoryRegistrationService {
 	}
 
 	/**
-	 * Register a ProvidedServiceInstance with the OperationalStatus and the ServiceInstanceHealth callback.
+	 * Register a ProvidedServiceInstance with the ServiceInstanceHealth callback.
 	 * 
 	 * @param serviceInstance
 	 * 		the ProvidedServiceInstance.
-	 * @param status
-	 * 		the OperationalStatus of the ProvidedServiceInstance.
 	 * @param registryHealth
 	 * 		the ServiceInstanceHealth callback.
 	 */
-	public void registerService(ProvidedServiceInstance serviceInstance,
-			OperationalStatus status, ServiceInstanceHealth registryHealth) {
-		registerService(serviceInstance, status);
+	public void registerService(ProvidedServiceInstance serviceInstance, ServiceInstanceHealth registryHealth) {
+		// Monitor disabled ProvidedServiceInstance should not have the ServiceInstanceHealth.
+		if(serviceInstance.isMonitorEnabled()== false){
+			throw new ServiceRuntimeException(new ServiceDirectoryError(ErrorCode.SERVICE_INSTANCE_HEALTH_ERROR));
+		}
+		registerService(serviceInstance);
 	}
 
 	/**
@@ -88,7 +93,7 @@ public class DirectoryRegistrationService {
 	public void updateServiceUri(String serviceName, String providerId,
 			String uri) {
 		getServiceDirectoryClient().updateInstanceUri(serviceName, providerId,
-				uri);
+				uri, false);
 	}
 
 	/**
@@ -104,7 +109,7 @@ public class DirectoryRegistrationService {
 	public void updateServiceOperationalStatus(String serviceName,
 			String providerId, OperationalStatus status) {
 		getServiceDirectoryClient().updateInstanceStatus(serviceName,
-				providerId, status);
+				providerId, status, false);
 
 	}
 
@@ -128,7 +133,7 @@ public class DirectoryRegistrationService {
 	 * 		the provierId of ProvidedServiceInstance.
 	 */
 	public void unregisterService(String serviceName, String providerId) {
-		getServiceDirectoryClient().unregisterInstance(serviceName, providerId);
+		getServiceDirectoryClient().unregisterInstance(serviceName, providerId, false);
 	}
 
 	/**
@@ -137,6 +142,10 @@ public class DirectoryRegistrationService {
 	 * @return the DirectoryServiceClient to access remote directory server.
 	 */
 	protected DirectoryServiceClient getServiceDirectoryClient() {
-		return directoryServiceClientManager.getDirectoryServiceClient();
+		try {
+			return directoryServiceClientManager.getDirectoryServiceClient();
+		} catch (ServiceException e) {
+			throw new ServiceRuntimeException(e.getServiceDirectoryError());
+		}
 	}
 }
