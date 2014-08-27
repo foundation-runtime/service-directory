@@ -102,7 +102,4 @@ public class ServiceDirectory {
 	private static ServiceDirectoryImpl getImpl() {
 		return ServiceDirectoryImpl.getInstance();
 	}
-	
-	
-	
 }
