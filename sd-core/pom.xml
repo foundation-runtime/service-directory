@@ -17,9 +17,9 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.cisco.oss.foundation.directory</groupId>
-	<artifactId>vcsf-sd-core</artifactId>
-	<name>VCSF Service Directory Core Classes</name>
-	<version>${vcsf.sd.version}</version>
+	<artifactId>sd-core</artifactId>
+	<name>Service Directory Core Classes</name>
+	<version>${sd.version}</version>
 	<description>The common project for the Directory Service and SD API.</description>
 	<url>https://github.com/foundation-runtime/service-directory/sd-core</url>
 	<packaging>jar</packaging>
@@ -61,8 +61,7 @@
 		</developer>
 	</developers>
 	<properties>
-		<vcsf.sd.version>1.1-SNAPSHOT</vcsf.sd.version>
-		<iteration>58</iteration>
+		<sd.version>1.0.0-1</sd.version>
 	</properties>
 
 	<scm>

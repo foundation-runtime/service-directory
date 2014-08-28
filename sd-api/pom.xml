@@ -17,9 +17,9 @@
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.cisco.oss.foundation.directory</groupId>
-	<artifactId>vcsf-sd-api</artifactId>
-	<name>VCSF Service Directory API</name>
-	<version>${vcsf.sd.version}</version>
+	<artifactId>sd-api</artifactId>
+	<name>Service Directory API</name>
+	<version>${sd.version}</version>
 	<description>This project is the service directory API library in the cisco oss foundation runtime</description>
 	<url>https://github.com/foundation-runtime/service-directory/sd-api</url>
 	<packaging>jar</packaging>
@@ -61,8 +61,7 @@
 		</developer>
 	</developers>
 	<properties>
-		<vcsf.sd.version>1.1-SNAPSHOT</vcsf.sd.version>
-		<iteration>58</iteration>
+		<sd.version>1.0.0-1</sd.version>
 	</properties>
 
 	<scm>
@@ -76,28 +75,8 @@
 		<url>http://www.cisco.com</url>
 	</organization>
 	<build>
-		<finalName>cisco.vcsf.sd.api-${vcsf.sd.version}.${iteration}</finalName>
+		<finalName>cisco.oss.sd.api-${sd.version}</finalName>
 		<plugins>
-			<plugin>
-				<groupId>com.google.code.maven-svn-revision-number-plugin</groupId>
-				<artifactId>svn-revision-number-maven-plugin</artifactId>
-				<version>1.13</version> <!-- please use the latest version -->
-				<executions>
-					<execution>
-						<goals>
-							<goal>revision</goal>
-						</goals>
-					</execution>
-				</executions>
-				<configuration>
-					<entries>
-						<entry>
-							<path>${project.basedir}</path>
-							<prefix>prefix</prefix>
-						</entry>
-					</entries>
-				</configuration>
-			</plugin>
 			<!--plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -233,8 +212,8 @@
 		</dependency>
 		<dependency>
 			<groupId>com.cisco.oss.foundation.directory</groupId>
-			<artifactId>vcsf-sd-core</artifactId>
-			<version>${vcsf.sd.version}</version>
+			<artifactId>sd-core</artifactId>
+			<version>${sd.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.cisco.oss.foundation</groupId>
