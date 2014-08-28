@@ -29,7 +29,7 @@ public class ServiceInstanceUtils {
 	public static final String hostnameRegEx = "^[0-9a-zA-Z][\\w-.]{0,253}[0-9a-zA-Z]$";
 	public static final String versionRegEx = "^[0-9a-zA-Z][\\w-.]{0,127}$";
 	public static final String metaKeyRegEx = "^[0-9a-zA-Z][\\w-.]{0,127}$";
-	public static final String ipRegEx = "^[1-9][0-9]{0,2}\\.[1-9][0-9]{0,2}\\.[1-9][0-9]{0,2}\\.[1-9][0-9]{0,2}$";
+	public static final String ipRegEx = "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
 	
 	/**
 	 * Transfer a ModelServiceInstance to a ServiceInstance object.
@@ -188,6 +188,16 @@ public class ServiceInstanceUtils {
 		}
 		
 		retstr = isUriValid(serviceInstance.getUri());
+		if (retstr != ErrorCode.OK) {
+			return retstr;
+		}
+		
+		retstr = isPortValid(serviceInstance.getPort());
+		if (retstr != ErrorCode.OK) {
+			return retstr;
+		}
+		
+		retstr = isAddressValid(serviceInstance.getAddress());
 		if (retstr != ErrorCode.OK) {
 			return retstr;
 		}
