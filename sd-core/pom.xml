@@ -61,7 +61,7 @@
 		</developer>
 	</developers>
 	<properties>
-		<sd.version>1.0.0-1</sd.version>
+		<sd.version>1.0.0-1-SNAPSHOT</sd.version>
 	</properties>
 
 	<scm>
@@ -76,18 +76,18 @@
 	</organization>
 	<build>
 		<plugins>
-			<!--plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
+					<source>1.6</source>
+					<target>1.6</target>
 					<showDeprecation>true</showDeprecation>
 					<showWarnings>true</showWarnings>
 					<executable>${env.JAVA_HOME}/bin/javac</executable>
 					<fork>true</fork>
 				</configuration>
-			</plugin-->
+			</plugin>
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.7</version>
@@ -133,12 +133,12 @@
 		<dependency>
 			<groupId>com.cisco.oss.foundation</groupId>
 			<artifactId>configuration-api</artifactId>
-			<version>0.0.0-5</version>
+			<version>1.0.2-1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.cisco.oss.foundation</groupId>
 			<artifactId>configuration-lib</artifactId>
-			<version>0.0.0-5</version>
+			<version>1.0.2-1</version>
 		</dependency>
 	</dependencies>
 </project>
