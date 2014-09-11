@@ -61,7 +61,7 @@
 		</developer>
 	</developers>
 	<properties>
-		<sd.version>1.0.0-1-SNAPSHOT</sd.version>
+		<sd.version>1.1.0-0-SNAPSHOT</sd.version>
 	</properties>
 
 	<scm>
