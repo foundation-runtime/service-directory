@@ -23,7 +23,7 @@ import com.cisco.oss.foundation.directory.exception.ErrorCode;
  *
  */
 public class ServiceInstanceUtils {
-	public static final String nameRegEx = "^[0-9a-zA-Z][\\w-.]{0,127}$";
+	public static final String nameRegEx = "^[0-9a-zA-Z][\\w-.:]{0,127}$";
 	public static final String idRegEx = "^[0-9a-zA-Z][\\w-.]{0,63}$";
 	public static final String urlRegEx = "^[0-9a-zA-Z{}][^\\s]{0,1023}$";
 	public static final String hostnameRegEx = "^[0-9a-zA-Z][\\w-.]{0,253}[0-9a-zA-Z]$";

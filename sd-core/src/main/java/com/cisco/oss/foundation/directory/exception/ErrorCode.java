@@ -26,7 +26,7 @@ public enum ErrorCode {
 
 	/**
 	 * Service Instance name string format error.
-	 * Message: ServiceInstance name format is wrong. It must start with character or number, other parts can contain character, number, '_', '-' or '.'.
+	 * Message: ServiceInstance name format is wrong. It must start with character or number, other parts can contain character, number, '_', '-', ':' or '.'.
 	 */
 	SERVICE_INSTANCE_NAME_FORMAT_ERROR("400.2"), 
 	
