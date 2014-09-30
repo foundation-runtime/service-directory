@@ -20,7 +20,7 @@
 	<artifactId>sd-api</artifactId>
 	<name>Service Directory API</name>
 	<version>${sd.version}</version>
-	<description>This project is the service directory API library in the cisco oss foundation runtime</description>
+	<description>Project for Cisco OSS service directory API library.</description>
 	<url>https://github.com/foundation-runtime/service-directory/sd-api</url>
 	<packaging>jar</packaging>
 	<licenses>
@@ -97,11 +97,6 @@
 						<phase>package</phase>
 					</execution>
 				</executions>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-site-plugin</artifactId>
-				<version>3.4</version>
 			</plugin>
 			<plugin>
 				<artifactId>maven-assembly-plugin</artifactId>
@@ -205,6 +200,11 @@
 						</configuration>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<version>3.4</version>
 			</plugin>
 		</plugins>
 	</build>

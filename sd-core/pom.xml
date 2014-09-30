@@ -20,7 +20,7 @@
 	<artifactId>sd-core</artifactId>
 	<name>Service Directory Core Classes</name>
 	<version>${sd.version}</version>
-	<description>The common project for the Directory Service and SD API.</description>
+	<description>Project for the common library shared by Cisco directory service and Cisco OSS service directory API.</description>
 	<url>https://github.com/foundation-runtime/service-directory/sd-core</url>
 	<packaging>jar</packaging>
 	<licenses>
