@@ -163,7 +163,7 @@ public class LookupManagerImplTest {
 		
 		// wait for cache sync.
 		try {
-			Thread.sleep(4000);
+			Thread.sleep(8000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
