@@ -9,6 +9,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.ServiceDirectory;
@@ -21,6 +23,8 @@ import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
 
 public class LookupManagerImplTest {
+	
+	public static final Logger LOGGER = LoggerFactory.getLogger(LookupManagerImplTest.class);
 
 	@Test
 	public void test01(){
@@ -162,12 +166,14 @@ public class LookupManagerImplTest {
 		Assert.assertEquals(keyInvoked.get(), 1);
 		
 		// wait for cache sync.
+		LOGGER.info("Start sleep.....");
 		try {
 			Thread.sleep(8000);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		LOGGER.info("finished sleep.....");
 		
 		List<String> list = new ArrayList<String>();
 		list.add("core02");
