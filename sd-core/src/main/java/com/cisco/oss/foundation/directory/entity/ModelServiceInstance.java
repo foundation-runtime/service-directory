@@ -7,6 +7,8 @@ package com.cisco.oss.foundation.directory.entity;
 import java.util.Date;
 import java.util.Map;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 /**
  * The Model ServiceInstance object in Service Directory.
  * 
@@ -15,6 +17,7 @@ import java.util.Map;
  * @author zuxiang
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ModelServiceInstance {
 
 	/**

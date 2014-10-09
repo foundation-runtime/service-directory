@@ -7,6 +7,8 @@ package com.cisco.oss.foundation.directory.entity;
 import java.util.Date;
 import java.util.List;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 /**
  * The Service Model Object in Service Directory.
  * 
@@ -16,6 +18,7 @@ import java.util.List;
  * @author zuxiang
  *
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ModelService {
 
 	/**
