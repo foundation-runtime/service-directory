@@ -59,9 +59,6 @@
 			</roles>
 		</developer>
 	</developers>
-	<properties>
-		<sd.version>1.1.0-0-SNAPSHOT</sd.version>
-	</properties>
 
 	<scm>
 		<connection>scm:git:git@github.com:foundation-runtime/service-directory.git</connection>
@@ -74,7 +71,7 @@
 		<url>http://www.cisco.com</url>
 	</organization>
 	<build>
-		<finalName>cisco.sd.api-${sd.version}</finalName>
+		<finalName>cisco.sd.api-${version}</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -240,7 +237,7 @@
 		<dependency>
 			<groupId>com.cisco.oss.foundation.directory</groupId>
 			<artifactId>sd-core</artifactId>
-			<version>1.1.0-0</version>
+			<version>${version}</version>
 		</dependency>
 		<dependency>
 			<groupId>com.cisco.oss.foundation</groupId>
