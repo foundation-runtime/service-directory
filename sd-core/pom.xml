@@ -18,7 +18,7 @@
 	<groupId>com.cisco.oss.foundation.directory</groupId>
 	<artifactId>sd-core</artifactId>
 	<name>Service Directory Core Classes</name>
-	<version>1.1.0-1</version>
+	<version>1.1.0-2-SNAPSHOT</version>
 	<description>Project for the common library shared by Cisco directory service and Cisco OSS service directory API.</description>
 	<url>https://github.com/foundation-runtime/service-directory/sd-core</url>
 	<packaging>jar</packaging>
@@ -64,7 +64,7 @@
 		<connection>scm:git:git@github.com:foundation-runtime/service-directory.git</connection>
 		<developerConnection>scm:git:git@github.com:foundation-runtime/service-directory.git</developerConnection>
 		<url>https://github.com/foundation-runtime/service-directory.git</url>
-		<tag>sd-core-1.1.0-1</tag>
+		<tag>HEAD</tag>
 	</scm>
 	<organization>
 		<name>Cisco</name>
