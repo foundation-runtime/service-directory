@@ -4,7 +4,6 @@
  */
 package com.cisco.oss.foundation.directory.impl;
 
-import com.cisco.oss.foundation.directory.Configurations;
 import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
@@ -23,23 +22,11 @@ import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
  *
  */
 public class DirectoryRegistrationService {
-	
-	/**
-	 * The property to disable the ILLEGAL_SERVICE_INSTANCE_OWNER_ERROR error in the Directory tool.
-	 */
-	public static final String SD_API_REGISTRY_DISABLE_OWNER_ERROR_PROPERTY_NAME = "registry.disable.owner.error";
-	
-	/**
-	 * Default to enable ILLEGAL_SERVICE_INSTANCE_OWNER_ERROR.
-	 */
-	public static final boolean SD_API_REGISTRY_DISABLE_OWNER_ERROR_DEFAULT = false;
 
 	/**
 	 * The remote ServiceDirectory node client.
 	 */
 	private final DirectoryServiceClientManager directoryServiceClientManager;
-	
-	private boolean disableOwnerError = false;
 
 	/**
 	 * Constructor.
@@ -50,8 +37,6 @@ public class DirectoryRegistrationService {
 	public DirectoryRegistrationService(
 			DirectoryServiceClientManager directoryServiceClientManager) {
 		this.directoryServiceClientManager = directoryServiceClientManager;
-		disableOwnerError = Configurations.getBoolean(SD_API_REGISTRY_DISABLE_OWNER_ERROR_PROPERTY_NAME, 
-				SD_API_REGISTRY_DISABLE_OWNER_ERROR_DEFAULT);
 	}
 
 	/**
@@ -108,7 +93,7 @@ public class DirectoryRegistrationService {
 	public void updateServiceUri(String serviceName, String providerId,
 			String uri) {
 		getServiceDirectoryClient().updateInstanceUri(serviceName, providerId,
-				uri, disableOwnerError);
+				uri, false);
 	}
 
 	/**
@@ -124,7 +109,7 @@ public class DirectoryRegistrationService {
 	public void updateServiceOperationalStatus(String serviceName,
 			String providerId, OperationalStatus status) {
 		getServiceDirectoryClient().updateInstanceStatus(serviceName,
-				providerId, status, disableOwnerError);
+				providerId, status, false);
 
 	}
 
@@ -148,7 +133,7 @@ public class DirectoryRegistrationService {
 	 * 		the provierId of ProvidedServiceInstance.
 	 */
 	public void unregisterService(String serviceName, String providerId) {
-		getServiceDirectoryClient().unregisterInstance(serviceName, providerId, disableOwnerError);
+		getServiceDirectoryClient().unregisterInstance(serviceName, providerId, false);
 	}
 
 	/**
