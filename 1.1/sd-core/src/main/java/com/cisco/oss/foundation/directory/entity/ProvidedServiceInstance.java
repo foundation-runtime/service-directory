@@ -36,7 +36,7 @@ public class ProvidedServiceInstance {
 	private String uri;
 	
 	/**
-	 * The real address of the instance
+	 * The real address of the instance, it can be real IP or host name
 	 */
 	private String address;
 	
@@ -73,7 +73,7 @@ public class ProvidedServiceInstance {
 	 * @param serviceName
 	 * 		the service name.
 	 * @param address
-	 * 		the real ip address.
+	 * 		the server address, it can be real IP or host name.
 	 * @param port
 	 * 		the port.
 	 */
@@ -89,7 +89,7 @@ public class ProvidedServiceInstance {
 	 * @param serviceName
 	 * 		the service name.
 	 * @param address
-	 * 		the real ip address.
+	 * 		the server address, it can be real IP or host name.
 	 * @param port
 	 * 		the port.
 	 * @param uri
@@ -127,7 +127,7 @@ public class ProvidedServiceInstance {
 	}
 
 	/**
-	 * Get the real address.
+	 * Get the real address, it can be real IP or host name.
 	 * 
 	 * @return
 	 * 		the real address.
@@ -137,7 +137,7 @@ public class ProvidedServiceInstance {
 	}
 
 	/**
-	 * Set the real address.
+	 * Set the real address, it can be real IP or host name.
 	 * 
 	 * @param address
 	 * 		the real address.
