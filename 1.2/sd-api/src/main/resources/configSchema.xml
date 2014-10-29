@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<NamespaceDefinitions
+	xsi:noNamespaceSchemaLocation="../../ccp_schema/CCP_XML.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<NamespaceDefinition>
+		<NamespaceIdentifier version="1.0.0" name="com.cisco.oss.foundation.directory.api" />
+		
+		<Parameter name="cache.enabled" type="BOOLEAN" description="">
+			<DefaultValue>
+				<PrimitiveValue value="true" />
+			</DefaultValue>
+		</Parameter>
+		
+		<Parameter name="heartbeat.enabled" type="BOOLEAN" description="">
+			<DefaultValue>
+				<PrimitiveValue value="true" />
+			</DefaultValue>
+		</Parameter>
+		
+		<Parameter name="httpclient.read.timeout" type="INTEGER" description="">
+			<DefaultValue>
+				<PrimitiveValue value="5" />
+			</DefaultValue>
+		</Parameter>
+		
+		<Parameter name="heartbeat.interval" type="INTEGER" description="">
+			<DefaultValue>
+				<PrimitiveValue value="10" />
+			</DefaultValue>
+		</Parameter>
+		
+		<Parameter name="registry.health.check.interval" type="INTEGER" description="">
+			<DefaultValue>
+				<PrimitiveValue value="5" />
+			</DefaultValue>
+		</Parameter>
+		
+		<Parameter name="heartbeat.delay" type="INTEGER" description="">
+			<DefaultValue>
+				<PrimitiveValue value="1" />
+			</DefaultValue>
+		</Parameter>
+		
+		<Parameter name="registry.health.check.delay" type="INTEGER" description="">
+			<DefaultValue>
+				<PrimitiveValue value="1" />
+			</DefaultValue>
+		</Parameter>
+		
+		<Parameter name="server.fqdn" type="STRING" description="">
+			<DefaultValue>
+				<PrimitiveValue value="vcsdirsvc" />
+			</DefaultValue>
+		</Parameter>
+		
+		<Parameter name="server.port" type="INTEGER" description="">
+			<DefaultValue>
+				<PrimitiveValue value="2013" />
+			</DefaultValue>
+		</Parameter>
+		
+		<Parameter name="cache.sync.delay" type="INTEGER" description="">
+			<DefaultValue>
+				<PrimitiveValue value="1" />
+			</DefaultValue>
+		</Parameter>
+		
+		<Parameter name="cache.sync.interval" type="INTEGER" description="">
+			<DefaultValue>
+				<PrimitiveValue value="10" />
+			</DefaultValue>
+		</Parameter>
+		
+		<Parameter name="service.directory.manager.factory.provider" type="STRING" description="">
+			<DefaultValue>
+				<PrimitiveValue value="" />
+			</DefaultValue>
+		</Parameter>
+		
+		<Parameter name="service.directory.enabled" type="BOOLEAN" description="">
+			<DefaultValue>
+				<PrimitiveValue value="true" />
+			</DefaultValue>
+		</Parameter>
+		
+	</NamespaceDefinition>
+</NamespaceDefinitions>
