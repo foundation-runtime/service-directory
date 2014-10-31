@@ -197,10 +197,13 @@ public class ServiceInstanceUtils {
 			return retstr;
 		}
 		
+		/**
+		* Skip the ip validation.
 		retstr = isAddressValid(serviceInstance.getAddress());
 		if (retstr != ErrorCode.OK) {
 			return retstr;
 		}
+		**/
 		
 		Map<String, String> metadata = serviceInstance.getMetadata();
 		if (metadata != null && metadata.size() > 0) {

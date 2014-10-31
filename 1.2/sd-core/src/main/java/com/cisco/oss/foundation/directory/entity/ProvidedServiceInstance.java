@@ -42,7 +42,7 @@ public class ProvidedServiceInstance implements Serializable{
 	private String uri;
 	
 	/**
-	 * The real address of the instance
+	 * The real address of the instance, it can be real IP or host name.
 	 */
 	private String address;
 	
@@ -79,7 +79,7 @@ public class ProvidedServiceInstance implements Serializable{
 	 * @param serviceName
 	 * 		the service name.
 	 * @param address
-	 * 		the real ip address.
+	 * 		The real address of the instance, it can be real IP or host name.
 	 * @param port
 	 * 		the port.
 	 */
@@ -95,7 +95,7 @@ public class ProvidedServiceInstance implements Serializable{
 	 * @param serviceName
 	 * 		the service name.
 	 * @param address
-	 * 		the real ip address.
+	 * 		The real address of the instance, it can be real IP or host name.
 	 * @param port
 	 * 		the port.
 	 * @param uri
@@ -133,7 +133,7 @@ public class ProvidedServiceInstance implements Serializable{
 	}
 
 	/**
-	 * Get the real address.
+	 * Get the real address of the instance, it can be real IP or host name
 	 * 
 	 * @return
 	 * 		the real address.
@@ -143,7 +143,7 @@ public class ProvidedServiceInstance implements Serializable{
 	}
 
 	/**
-	 * Set the real address.
+	 * Set the real address of the instance, it can be real IP or host name
 	 * 
 	 * @param address
 	 * 		the real address.
