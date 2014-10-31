@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -60,7 +61,7 @@ public class TestDirectoryConnection {
 	public void testInit(){
 		final AtomicBoolean cleanupInvoked = new AtomicBoolean(false);
 //		final Map<ProtocolType, Integer> sendPacket = new HashMap<ProtocolType, Integer>();
-		final Map<String, Integer> eventMap = new HashMap<String, Integer>();
+		final Map<String, Integer> eventMap = new ConcurrentHashMap<String, Integer>();
 		
 		List<String> servers = new ArrayList<String>();
 		servers.add("localhost:8901");
