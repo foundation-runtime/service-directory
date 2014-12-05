@@ -85,10 +85,6 @@ public class ModelService implements Serializable{
 	 * 		the name.
 	 * @param id
 	 * 		the instanceId.
-	 * @param modifiedTime
-	 * 		the last modified time stamp.
-	 * @param createTime
-	 * 		the create time stamp.
 	 */
 	public ModelService(String name, String id){
 		this.name = name;

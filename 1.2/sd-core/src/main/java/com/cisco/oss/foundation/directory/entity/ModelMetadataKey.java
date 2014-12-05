@@ -74,10 +74,6 @@ public class ModelMetadataKey implements Serializable{
 	 * 		the key name.
 	 * @param id
 	 * 		the id.
-	 * @param modifiedTime
-	 * 		the last modified time stamp.
-	 * @param createTime
-	 * 		the create time stamp.
 	 */
 	public ModelMetadataKey(String name, String id){
 		this.id = id;

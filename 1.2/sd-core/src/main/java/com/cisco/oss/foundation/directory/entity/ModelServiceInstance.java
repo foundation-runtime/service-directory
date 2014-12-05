@@ -91,10 +91,6 @@ public class ModelServiceInstance implements Serializable{
 	 * 		the uri of the ServiceInstance.
 	 * @param status
 	 * 		the OperationalStatus.
-	 * @param modifiedTime
-	 * 		the last modified time stamp.
-	 * @param createTime
-	 * 		the create time stamp.
 	 * @param metadata
 	 * 		the metadata map.
 	 */
