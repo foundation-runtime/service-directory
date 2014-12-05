@@ -112,8 +112,6 @@ public class DirectoryRegistrationService {
 	 * 
 	 * @param serviceInstance
 	 * 		the ProvidedServiceInstance.
-	 * @param status
-	 * 		the OperationalStatus of the ProvidedServiceInstance.
 	 * @param registryHealth
 	 * 		the ServiceInstanceHealth callback.
 	 */
@@ -178,30 +176,82 @@ public class DirectoryRegistrationService {
 		getCacheServiceInstances().remove(new ServiceInstanceToken(serviceName, providerId));
 	}
 	
+	/**
+	 * Create a User.
+	 * 
+	 * @param user
+	 * 		the User.
+	 * @param password
+	 * 		the user password.
+	 */
 	public void createUser(User user, String password){
 		getServiceDirectoryClient().createUser(user, password);
 	}
 	
+	/**
+	 * Get the User by name.
+	 * 
+	 * @param name
+	 * 		the user name.
+	 * @return
+	 * 		the User.
+	 */
 	public User getUser(String name) {
 		return getServiceDirectoryClient().getUser(name);
 	}
 
+	/**
+	 * Update the User.
+	 * 
+	 * @param user
+	 * 		the User.
+	 */
 	public void updateUser(User user) {
 		getServiceDirectoryClient().updateUser(user);
 	}
 
+	/**
+	 * Delete the User by name.
+	 * 
+	 * @param name
+	 * 		the user name.
+	 */
 	public void deleteUser(String name) {
 		getServiceDirectoryClient().deleteUser(name);
 	}
 
+	/**
+	 * Set the user permission.
+	 * 
+	 * @param userName
+	 * 		the user name.
+	 * @param permissions
+	 * 		the user permission.
+	 */
 	public void setUserPermission(String userName, List<Permission> permissions){
 		getServiceDirectoryClient().setACL(new ACL(AuthScheme.DIRECTORY, userName, PermissionUtil.permissionList2Id(permissions)));
 	}
 	
+	/**
+	 * Set the user password.
+	 * 
+	 * @param userName
+	 * 		the user name.
+	 * @param password
+	 * 		the user password.
+	 */
 	public void setUserPassword(String userName, String password) {
 		getServiceDirectoryClient().setUserPassword(userName, password);
 	}
 	
+	/**
+	 * Set the user permission.
+	 * 
+	 * @param userName
+	 * 		the user name.
+	 * @param permission
+	 * 		 the user permission.
+	 */
 	public void setUserPermission(String userName, Permission permission){
 		if(permission == null){
 			permission = Permission.NONE;
@@ -209,6 +259,14 @@ public class DirectoryRegistrationService {
 		getServiceDirectoryClient().setACL(new ACL(AuthScheme.DIRECTORY, userName, permission.getId()));
 	}
 
+	/**
+	 * Get the user permission.
+	 * 
+	 * @param userName
+	 * 		user name.
+	 * @return
+	 * 		the permission list.
+	 */
 	public List<Permission> getUserPermission(String userName) {
 		ACL acl = getServiceDirectoryClient().getACL(AuthScheme.DIRECTORY, userName);
 		
@@ -219,6 +277,12 @@ public class DirectoryRegistrationService {
 		return PermissionUtil.id2Permissions(permissionId);
 	}
 	
+	/**
+	 * Get all users.
+	 * 
+	 * @return
+	 * 		the all User list.
+	 */
 	public List<User> getAllUser(){
 		return getServiceDirectoryClient().getAllUser();
 	}
@@ -253,6 +317,9 @@ public class DirectoryRegistrationService {
 		return instanceCache;
 	}
 	
+	/**
+	 * Attache the ServiceInstance to current session.
+	 */
 	private void attachSession(){
 		if(instanceCache != null){
 			getServiceDirectoryClient().attachSession(new ArrayList<ServiceInstanceToken>(instanceCache.keySet()));
@@ -341,6 +408,12 @@ public class DirectoryRegistrationService {
 
 	}
 	
+	/**
+	 * The SessionListener for Session Created and REOPEN.
+	 * 
+	 * @author zuxiang
+	 *
+	 */
 	private class SessionListener implements ServiceDirectoryListener{
 
 		@Override
@@ -359,10 +432,34 @@ public class DirectoryRegistrationService {
 		
 	}
 	
+	/**
+	 * The ServiceInstance to ServiceInstanceHealth paire.
+	 * 
+	 * @author zuxiang
+	 *
+	 */
 	private static class InstanceHealthPair{
+		/**
+		 * The ServiceInstanceHealth.
+		 */
 		ServiceInstanceHealth healthCallback;
+		
+		/**
+		 * last health check result.
+		 */
 		boolean lastResult;
+		
+		/**
+		 * Is initied.
+		 */
 		boolean isInited = false;
+		
+		/**
+		 * Constructor.
+		 * 
+		 * @param healthCallback
+		 * 		the ServiceInstanceHealth.
+		 */
 		public InstanceHealthPair(ServiceInstanceHealth healthCallback){
 			this.healthCallback = healthCallback;
 		}

@@ -233,8 +233,6 @@ public class DefaultTestServiceDirectoryManager implements
 	 * 
 	 * @param serviceInstance
 	 * 		the ProvidedServiceInstance.
-	 * @param status
-	 * 		the OperationalStatus of ProvidedServiceInstance.
 	 * @param registryHealth
 	 * 		the ServiceInstanceHealth callback of the ServiceInstance.
 	 * @throws ServiceException

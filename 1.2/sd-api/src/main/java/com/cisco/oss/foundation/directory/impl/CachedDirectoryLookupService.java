@@ -12,10 +12,8 @@ import org.slf4j.LoggerFactory;
 
 import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.async.Watcher;
-import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
-import com.cisco.oss.foundation.directory.entity.WatcherType;
 import com.cisco.oss.foundation.directory.lifecycle.Closable;
 import com.cisco.oss.foundation.directory.proto.ServiceInstanceOperate;
 import com.cisco.oss.foundation.directory.utils.JsonSerializer;
@@ -75,11 +73,6 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 	private ServiceDirectoryCache<String, ModelService> cache;
 	
 	/**
-	 * Internal map cache for the MetadataKey.
-	 */
-	private ServiceDirectoryCache<String, ModelMetadataKey> metaKeyCache;
-	
-	/**
 	 * Mark whether component is started.
 	 */
 	private boolean isStarted = false;
@@ -91,6 +84,9 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 	 */
 	private JsonSerializer dumper = null;
 	
+	/**
+	 * Indicate whether last cache dumped.
+	 */
 	private boolean lastCacheDump = false;
 	
 	/**
@@ -131,7 +127,6 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 		synchronized (this) {
 			if (this.isStarted == true) {
 				getCache().refresh();
-				getMetadataCache().refresh();
 				this.isStarted = false;
 			}
 		}
@@ -154,52 +149,11 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 			service = getCache().getService(serviceName);
 		} else {
 			service= this.getDirectoryServiceClient().getService(serviceName, watcher);
-//			service = super.getModelService(serviceName);
-			getCache().putService(serviceName, service);
-		}
-		return service;
-	}
-	
-	/**
-	 * Get the ModelMetadataKey
-	 * 
-	 * It will query the cache first, if the cache enabled.
-	 * 
-	 * @param keyName
-	 * 		the metadata key name.
-	 * @return
-	 * 		the ModelMetadataKey.
-	 */
-	@Override
-	public ModelMetadataKey getModelMetadataKey(String keyName){
-		ModelMetadataKey key = null;
-		if(this.getMetadataCache().isCached(keyName)){
-			key = getMetadataCache().getService(keyName);
-		} else {
-//			key = super.getModelMetadataKey(keyName);
-			key = this.getDirectoryServiceClient().getMetadata(keyName, watcher);
-			getMetadataCache().putService(keyName, key);
-		}
-		return key;
-	}
-	
-	/**
-	 * Get the ServiceDirectoryCache that caches metadata key map, it is lazy initialized.
-	 * 
-	 * It is thread safe.
-	 * 
-	 * @return
-	 * 		the ServiceDirectoryCache.
-	 */
-	private ServiceDirectoryCache<String, ModelMetadataKey> getMetadataCache(){
-		if(metaKeyCache == null){
-			synchronized(this){
-				if(metaKeyCache == null){
-					metaKeyCache = new ServiceDirectoryCache<String, ModelMetadataKey>();
-				}
+			if(service != null){
+				getCache().putService(serviceName, service);
 			}
 		}
-		return metaKeyCache;
+		return service;
 	}
 	
 	/**
@@ -249,28 +203,31 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 		}
 	}
 	
+	/**
+	 * The CacheSync wather.
+	 * 
+	 * Used to listen to the Server Watcher and update the local cache.
+	 * 
+	 * @author zuxiang
+	 *
+	 */
 	class CacheSyncWatcher implements Watcher{
 
+		/**
+		 * listen the ServiceInstanceOperate and update the cache.
+		 * 
+		 * {@inheritDoc}
+		 */
 		@Override
-		public void process(String name, WatcherType type, ServiceInstanceOperate operate) {
+		public void process(String name, ServiceInstanceOperate operate) {
 			boolean cacheUpdated = false;
-			if(WatcherType.SERVICE.equals(type)){
+			
+			if(getCache().isCached(name)){
+				processServiceInstanceOperate(getCache().getService(name).getServiceInstances(), operate);
 				cacheUpdated = true;
-				if(getCache().isCached(name)){
-					processServiceInstanceOperate(getCache().getService(name).getServiceInstances(), operate);
-					LOGGER.warn("Update the ModelService in the cache, serviceName=" + name + ", instanceId=" + operate.getInstanceId());
-				} else {
-					LOGGER.warn("Drop the ServiceInstanceEvent, the service doesn't in the cache, serviceName=" + operate.getServiceName() + ", instanceId=" + operate.getInstanceId());
-				}
-			} else if(WatcherType.METADATA.equals(type)){
-				if(getMetadataCache().isCached(name)){
-					processServiceInstanceOperate(getMetadataCache().getService(name).getServiceInstances(), operate);
-					LOGGER.warn("Update the ModelMetadata in the cache, serviceName=" + operate.getServiceName() + ", instanceId=" + operate.getInstanceId() + ", metaName=" + name);
-				} else {
-					LOGGER.warn("Drop the MetadataEvent, the service doesn't in the cache, serviceName=" + operate.getServiceName() + ", instanceId=" + operate.getInstanceId() + ", metaName=" + name);
-				}
+				LOGGER.warn("Update the ModelService in the cache, serviceName=" + name + ", instanceId=" + operate.getInstanceId());
 			} else {
-				LOGGER.warn("Unknown WatcherEvent, type=" + type + ", object=" + name + ", service=" + operate.getServiceName() + ", instanceId=" + operate.getInstanceId() + ", class=" + operate.getClass().getName());
+				LOGGER.warn("Drop the ServiceInstanceEvent, the service doesn't in the cache, serviceName=" + operate.getServiceName() + ", instanceId=" + operate.getInstanceId());
 			}
 			
 			try{
@@ -285,6 +242,14 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 			}
 		}
 		
+		/**
+		 * Process the cache update.
+		 * 
+		 * @param instances
+		 * 		the instances list.
+		 * @param operate
+		 * 		the ServiceInstanceOperate.
+		 */
 		private void processServiceInstanceOperate(List<ModelServiceInstance> instances, ServiceInstanceOperate operate){
 			switch(operate.getType()){
 			case Add:

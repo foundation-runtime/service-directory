@@ -184,7 +184,7 @@ public class ExceptionHandleTestCase  {
 		}
 
 		@Override
-		public boolean connect(InetSocketAddress address) throws IOException {
+		public boolean connect(InetSocketAddress address) {
 			
 			Assert.assertEquals("vcsdirsvc", address.getHostName());
 			Assert.assertEquals(2013, address.getPort()); 

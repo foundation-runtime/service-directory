@@ -1,22 +1,48 @@
+/**
+ * Copyright (c) 2013-2014 by Cisco Systems, Inc. 
+ * All rights reserved. 
+ */
 package com.cisco.oss.foundation.directory.connect;
 
 import java.net.InetSocketAddress;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The remote Directory Servers.
+ * 
+ * It used to save all Directory Server address in the remote cluster.
+ * It supply getNextDirectoryServer() method to get next Directory Server.
+ * 
+ * @author zuxiang
+ *
+ */
 public class DirectoryServers {
 	
-//	private final static Logger LOGGER = LoggerFactory.getLogger(DirectoryServers.class);
-	
+	/**
+	 * The server list.
+	 */
 	private List<InetSocketAddress> servers ;
 	
+	/**
+	 * The server index.
+	 */
 	private int index = -1;
 
+	/**
+	 * Constructor.
+	 */
 	public DirectoryServers(){
 		servers = new ArrayList<InetSocketAddress>();
 		servers.add(InetSocketAddress.createUnresolved("vcsdirsvc", 2013));
 	}
 	
+	/**
+	 * Constructor.
+	 * 
+	 * @param servers
+	 * 		the Server list.
+	 */
 	public DirectoryServers(List<String> servers){
 		parseServers(servers);
 		if(servers.size() == 0){
@@ -24,6 +50,12 @@ public class DirectoryServers {
 		}
 	}
 	
+	/**
+	 * Set the Servers.
+	 * 
+	 * @param servers
+	 * 		the server list.
+	 */
 	public void setServers(List<String> servers){
 		
 		parseServers(servers);
@@ -32,6 +64,12 @@ public class DirectoryServers {
 		}
 	}
 	
+	/**
+	 * Get the next directory server.
+	 * 
+	 * @return
+	 * 		the Directory Server InetSocketAddress.
+	 */
 	public InetSocketAddress getNextDirectoryServer(){
 		
 		index = index + 1;
@@ -59,6 +97,12 @@ public class DirectoryServers {
 		return new InetSocketAddress(unresolved.getHostName(), unresolved.getPort());
 	}
 	
+	/**
+	 * Parser the server list.
+	 * 
+	 * @param servers
+	 * 		the server list.
+	 */
 	private void parseServers(List<String> servers){
 		if(servers != null && servers.size() > 0){
 			this.servers = new ArrayList<InetSocketAddress>();
@@ -80,6 +124,16 @@ public class DirectoryServers {
 		}
 	}
 	
+	/**
+	 * Validate the host and port.
+	 * 
+	 * @param host
+	 * 		the host string.
+	 * @param port
+	 * 		the port number.
+	 * @return
+	 * 		true for success.
+	 */
 	private boolean validateServer(String host, int port){
 		if(host==null || host.isEmpty()){
 			return false;

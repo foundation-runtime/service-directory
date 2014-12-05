@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) 2013-2014 by Cisco Systems, Inc. 
+ * All rights reserved. 
+ */
 package com.cisco.oss.foundation.directory.async;
 
 import java.util.concurrent.ExecutionException;
@@ -8,13 +12,42 @@ import java.util.concurrent.TimeoutException;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.proto.Response;
 
+/**
+ * The Future of the Service Directory request.
+ * 
+ * For the asynchronized method in DirectoryServiceClient, it returns this Future object.
+ * Then the upper application can use the Future.
+ * 
+ * @author zuxiang
+ *
+ */
 public class ServiceDirectoryFuture implements Future<Response> {
 
+	/**
+	 * Indicate whether the Future complete.
+	 */
 	private volatile boolean completed = false;
+	
+	/**
+	 * Indicate whether the Future cancelled.
+	 */
 	private volatile boolean cancelled = false;
+	
+	/**
+	 * The Directory Request Response.
+	 */
 	private volatile Response result;
+	
+	/**
+	 * The ServiceException of the Directory Request.
+	 */
 	private volatile ServiceException ex;
 
+	/**
+	 * Cancel the Directory Request.
+	 * 
+	 * {@inheritDoc}
+	 */
 	@Override
 	public synchronized boolean cancel(boolean mayInterruptIfRunning) {
 		if (completed) {
@@ -26,16 +59,27 @@ public class ServiceDirectoryFuture implements Future<Response> {
 		return true;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean isCancelled() {
 		return cancelled;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean isDone() {
 		return completed;
 	}
 
+	/**
+	 * Get the Directory Request Response.
+	 * 
+	 * {@inheritDoc}
+	 */
 	@Override
 	public synchronized Response get() throws InterruptedException, ExecutionException {
 		while (! this.completed) {
@@ -44,6 +88,11 @@ public class ServiceDirectoryFuture implements Future<Response> {
 		return this.getResult();
 	}
 
+	/**
+	 * Get the Directory Request Response.
+	 * 
+	 * {@inheritDoc}
+	 */
 	@Override
 	public synchronized Response get(long timeout, TimeUnit unit)
 			throws InterruptedException, ExecutionException, TimeoutException {
@@ -69,6 +118,14 @@ public class ServiceDirectoryFuture implements Future<Response> {
 		}
 	}
 
+	/**
+	 * Complete the Future.
+	 * 
+	 * @param result
+	 * 		The Directory Request Response.
+	 * @return
+	 * 		true for complete success.
+	 */
 	public synchronized boolean complete(Response result) {
 		if (completed) {
 			return false;
@@ -79,6 +136,14 @@ public class ServiceDirectoryFuture implements Future<Response> {
 		return true;
 	}
 
+	/**
+	 * Fail the Future.
+	 * 
+	 * @param ex
+	 * 		the ServiceException of the Directory Request.
+	 * @return
+	 * 		true for success.
+	 */
 	public synchronized boolean fail(ServiceException ex) {
 		if (completed) {
 			return false;
@@ -89,6 +154,16 @@ public class ServiceDirectoryFuture implements Future<Response> {
 		return true;
 	}
 
+	/**
+	 * Get the Directory Request Response.
+	 * 
+	 * If the Future failed, return the Exception.
+	 * 
+	 * @return
+	 * 		the Directory Request Response.
+	 * @throws ExecutionException
+	 * 		the ServiceException.
+	 */
 	private synchronized Response getResult() throws ExecutionException {
 		if (this.ex != null) {
 			throw new ExecutionException(ex);

@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import com.cisco.oss.foundation.directory.proto.QueryServiceProtocol.QueryCommand;
+
 /**
  * The ServiceInstance query container for filtering ServiceInstances.
  * 
@@ -194,7 +196,9 @@ public class ServiceInstanceQuery {
 	 * @author zuxiang
 	 *
 	 */
-	public static class NotEqualQueryCriterion implements QueryCriterion{
+	public static class NotEqualQueryCriterion implements QueryCriterion, StringCommand{
+		
+		public static final String OP = "not equal";
 		
 		/**
 		 * The metadata key.
@@ -251,6 +255,14 @@ public class ServiceInstanceQuery {
 		public String getCriterion(){
 			return criterion;
 		}
+
+		@Override
+		public QueryCommand getStringCommand() {
+			List<String> values = new ArrayList<String>();
+			values.add(criterion);
+			QueryCommand c = new QueryCommand(key, OP, values);
+			return c;
+		}
 	}
 	
 	/**
@@ -261,7 +273,9 @@ public class ServiceInstanceQuery {
 	 * @author zuxiang
 	 *
 	 */
-	public static class EqualQueryCriterion implements QueryCriterion{
+	public static class EqualQueryCriterion implements QueryCriterion, StringCommand{
+		
+		public final static String OP = "equal";
 		
 		/**
 		 * The metadata key.
@@ -312,6 +326,14 @@ public class ServiceInstanceQuery {
 		public String getCriterion(){
 			return criterion;
 		}
+
+		@Override
+		public QueryCommand getStringCommand() {
+			List<String> values = new ArrayList<String>();
+			values.add(criterion);
+			QueryCommand c = new QueryCommand(key, OP, values);
+			return c;
+		}
 	}
 	
 	/**
@@ -322,8 +344,9 @@ public class ServiceInstanceQuery {
 	 * @author zuxiang
 	 *
 	 */
-	public static class PatternQueryCriterion implements QueryCriterion{
+	public static class PatternQueryCriterion implements QueryCriterion, StringCommand{
 
+		public static final String OP = "like";
 		/**
 		 * Metadata key.
 		 */
@@ -373,6 +396,14 @@ public class ServiceInstanceQuery {
 		public String getCriterion(){
 			return criterion;
 		}
+
+		@Override
+		public QueryCommand getStringCommand() {
+			List<String> values = new ArrayList<String>();
+			values.add(criterion);
+			QueryCommand c = new QueryCommand(key, OP, values);
+			return c;
+		}
 	}
 	
 	/**
@@ -383,8 +414,10 @@ public class ServiceInstanceQuery {
 	 * @author zuxiang
 	 *
 	 */
-	public static class ContainQueryCriterion implements QueryCriterion{
+	public static class ContainQueryCriterion implements QueryCriterion, StringCommand{
 
+		public static final String OP = "contain";
+		
 		/**
 		 * the metadata key.
 		 */
@@ -416,6 +449,12 @@ public class ServiceInstanceQuery {
 		public String toString(){
 			return "operation=contains, key=" + key + ", criterion=null";
 		}
+
+		@Override
+		public QueryCommand getStringCommand() {
+			QueryCommand c = new QueryCommand(key, OP, null);
+			return c;
+		}
 	}
 	
 	/**
@@ -426,8 +465,10 @@ public class ServiceInstanceQuery {
 	 * @author zuxiang
 	 *
 	 */
-	public static class NotContainQueryCriterion implements QueryCriterion{
+	public static class NotContainQueryCriterion implements QueryCriterion, StringCommand{
 
+		public static final String OP = "not contain";
+		
 		/**
 		 * the metadata key.
 		 */
@@ -459,6 +500,12 @@ public class ServiceInstanceQuery {
 		public String toString(){
 			return "operation=not contains, key=" + key + ", criterion=null";
 		}
+
+		@Override
+		public QueryCommand getStringCommand() {
+			QueryCommand c = new QueryCommand(key, OP, null);
+			return c;
+		}
 	}
 	
 	/**
@@ -469,8 +516,9 @@ public class ServiceInstanceQuery {
 	 * @author zuxiang
 	 *
 	 */
-	public static class InQueryCriterion implements QueryCriterion{
+	public static class InQueryCriterion implements QueryCriterion, StringCommand{
 
+		public static final String OP = "in";
 		/**
 		 * the metadata key.
 		 */
@@ -522,6 +570,12 @@ public class ServiceInstanceQuery {
 		public List<String> getCriterion(){
 			return list;
 		}
+
+		@Override
+		public QueryCommand getStringCommand() {
+			QueryCommand c = new QueryCommand(key, OP, list);
+			return c;
+		}
 	}
 	
 	/**
@@ -532,8 +586,10 @@ public class ServiceInstanceQuery {
 	 * @author zuxiang
 	 *
 	 */
-	public static class NotInQueryCriterion implements QueryCriterion{
+	public static class NotInQueryCriterion implements QueryCriterion, StringCommand{
 
+		public static final String OP = "not in";
+		
 		/**
 		 * the metadata key.
 		 */
@@ -588,6 +644,12 @@ public class ServiceInstanceQuery {
 		
 		public List<String> getCriterion(){
 			return list;
+		}
+
+		@Override
+		public QueryCommand getStringCommand() {
+			QueryCommand c = new QueryCommand(key, OP, list);
+			return c;
 		}
 	}
 }

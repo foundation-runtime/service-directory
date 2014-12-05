@@ -1,6 +1,11 @@
+/**
+ * Copyright (c) 2013-2014 by Cisco Systems, Inc. 
+ * All rights reserved. 
+ */
 package com.cisco.oss.foundation.directory.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -9,9 +14,9 @@ import org.slf4j.LoggerFactory;
 
 import com.cisco.oss.foundation.directory.ServiceDirectory;
 import com.cisco.oss.foundation.directory.async.Callback.AttachSessionCallback;
-import com.cisco.oss.foundation.directory.async.Callback.GetMetadataCallback;
 import com.cisco.oss.foundation.directory.async.Callback.GetServiceCallback;
 import com.cisco.oss.foundation.directory.async.Callback.ProtocolCallback;
+import com.cisco.oss.foundation.directory.async.Callback.QueryServiceCallback;
 import com.cisco.oss.foundation.directory.async.Callback.RegistrationCallback;
 import com.cisco.oss.foundation.directory.async.ServiceDirectoryFuture;
 import com.cisco.oss.foundation.directory.async.Watcher;
@@ -22,14 +27,12 @@ import com.cisco.oss.foundation.directory.connect.DirectorySocket;
 import com.cisco.oss.foundation.directory.connect.WSDirectorySocket;
 import com.cisco.oss.foundation.directory.entity.ACL;
 import com.cisco.oss.foundation.directory.entity.AuthScheme;
-import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstanceToken;
 import com.cisco.oss.foundation.directory.entity.User;
-import com.cisco.oss.foundation.directory.entity.WatcherType;
 import com.cisco.oss.foundation.directory.event.ConnectionStatus;
 import com.cisco.oss.foundation.directory.event.ServiceDirectoryListener;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
@@ -42,14 +45,15 @@ import com.cisco.oss.foundation.directory.proto.GetACLProtocol;
 import com.cisco.oss.foundation.directory.proto.GetACLResponse;
 import com.cisco.oss.foundation.directory.proto.GetAllServicesResponse;
 import com.cisco.oss.foundation.directory.proto.GetAllUserResponse;
-import com.cisco.oss.foundation.directory.proto.GetMetadataProtocol;
-import com.cisco.oss.foundation.directory.proto.GetMetadataResponse;
 import com.cisco.oss.foundation.directory.proto.GetServiceProtocol;
 import com.cisco.oss.foundation.directory.proto.GetServiceResponse;
 import com.cisco.oss.foundation.directory.proto.GetUserProtocol;
 import com.cisco.oss.foundation.directory.proto.GetUserResponse;
 import com.cisco.oss.foundation.directory.proto.ProtocolHeader;
 import com.cisco.oss.foundation.directory.proto.ProtocolType;
+import com.cisco.oss.foundation.directory.proto.QueryServiceProtocol;
+import com.cisco.oss.foundation.directory.proto.QueryServiceProtocol.QueryCommand;
+import com.cisco.oss.foundation.directory.proto.QueryServiceResponse;
 import com.cisco.oss.foundation.directory.proto.RegisterServiceInstanceProtocol;
 import com.cisco.oss.foundation.directory.proto.Response;
 import com.cisco.oss.foundation.directory.proto.SetACLProtocol;
@@ -60,6 +64,7 @@ import com.cisco.oss.foundation.directory.proto.UpdateServiceInstanceProtocol;
 import com.cisco.oss.foundation.directory.proto.UpdateServiceInstanceStatusProtocol;
 import com.cisco.oss.foundation.directory.proto.UpdateServiceInstanceUriProtocol;
 import com.cisco.oss.foundation.directory.proto.UpdateUserProtocol;
+import com.cisco.oss.foundation.directory.query.StringCommand;
 import com.cisco.oss.foundation.directory.utils.ObfuscatUtil;
 
 public class DirectoryServiceClient {
@@ -91,12 +96,31 @@ public class DirectoryServiceClient {
 	 */
 	public static final int SD_API_SD_SERVER_PORT_DEFAULT = 2013;
 	
+	/**
+	 * The DirectoryServers.
+	 */
 	private DirectoryServers directoryServers = null;
 	
+	/**
+	 * The DirectoryConnection in the DirectoryServiceClient.
+	 */
 	private DirectoryConnection connection = null;
 	
+	/**
+	 * The WatcherManager in the DirectoryConnection.
+	 */
 	WatcherManager watcherManager = new WatcherManager();
 	
+	/**
+	 * Constructor.
+	 * 
+	 * @param servers
+	 * 		the DirectoryServers.
+	 * @param userName
+	 * 		the user name.
+	 * @param password
+	 * 		the user password.
+	 */
 	public DirectoryServiceClient(List<String> servers, String userName, String password) {
 		this(servers, userName, password, null);
 		
@@ -106,9 +130,13 @@ public class DirectoryServiceClient {
 	 * Keep it default for unit test.
 	 * 
 	 * @param servers
+	 * 		the DirectoryServers.
 	 * @param userName
+	 * 		the user name.
 	 * @param password
+	 * 		the password.
 	 * @param socket
+	 * 		the DirectorySocket.
 	 */
 	DirectoryServiceClient(List<String> servers, String userName, String password, DirectorySocket socket) {
 		if(socket == null){
@@ -116,30 +144,60 @@ public class DirectoryServiceClient {
 		}
 		directoryServers = new DirectoryServers(servers);
 		
-		connection = new DirectoryConnection(this.directoryServers, watcherManager, socket, userName, password);
+		connection = new DirectoryConnection(this.directoryServers.getNextDirectoryServer(), watcherManager, socket, userName, password);
 		connection.start();
 		connection.blockUtilConnected();
 		
 	}
 	
+	/**
+	 * Set the Directory Server list.
+	 * 
+	 * @param servers
+	 * 		the Directory Server list.
+	 */
 	public void setDirectoryServers(List<String> servers){
 		if(servers == null || servers.size() == 0){
 			return;
 		}
 		directoryServers = new DirectoryServers(servers);
-		connection.setDirectoryServers(directoryServers);
+		connection.setDirectoryServers(directoryServers.getNextDirectoryServer());
 	}
 	
+	/**
+	 * Get the ConnectionStatus.
+	 * 
+	 * @return
+	 * 		the ConnectionStatus.
+	 */
 	public ConnectionStatus getStatus(){
 		return connection.getStatus();
 	}
 	
+	/**
+	 * Set the user for the DirectoryServiceClient.
+	 * 
+	 * It will ask the DirectoryConnection to do authentication again.
+	 * 
+	 * @param userName
+	 * 		the user name.
+	 * @param password
+	 * 		the password.
+	 */
 	public void setUser(String userName, String password){
 		if(userName != null && ! userName.isEmpty()){
 			connection.setDirectoryUser(userName, password);
 		}
 	}
 	
+	/**
+	 * Create a User.
+	 * 
+	 * @param user
+	 * 		the User.
+	 * @param password
+	 * 		the user password.
+	 */
 	public void createUser(User user, String password){
 		ProtocolHeader header = new ProtocolHeader();
 		header.setType(ProtocolType.CreateUser);
@@ -152,6 +210,14 @@ public class DirectoryServiceClient {
 		connection.submitRequest(header, p, null);
 	}
 	
+	/**
+	 * Set user password.
+	 * 
+	 * @param userName
+	 * 		the user name.
+	 * @param password
+	 * 		the user password.
+	 */
 	public void setUserPassword(String userName, String password) {
 		
 		ProtocolHeader header = new ProtocolHeader();
@@ -166,6 +232,12 @@ public class DirectoryServiceClient {
 		
 	}
 	
+	/**
+	 * Delete user by name.
+	 * 
+	 * @param userName
+	 * 		the user name.
+	 */
 	public void deleteUser(String userName){
 		ProtocolHeader header = new ProtocolHeader();
 		header.setType(ProtocolType.DeleteUser);
@@ -175,6 +247,12 @@ public class DirectoryServiceClient {
 		connection.submitRequest(header, p, null);
 	}
 	
+	/**
+	 * Update user.
+	 * 
+	 * @param user
+	 * 		the user.
+	 */
 	public void updateUser(User user){
 		ProtocolHeader header = new ProtocolHeader();
 		header.setType(ProtocolType.UpdateUser);
@@ -184,6 +262,12 @@ public class DirectoryServiceClient {
 		connection.submitRequest(header, p, null);
 	}
 	
+	/**
+	 * Get all Users.
+	 * 
+	 * @return
+	 * 		the user list.
+	 */
 	public List<User> getAllUser(){
 		ProtocolHeader header = new ProtocolHeader();
 		header.setType(ProtocolType.GetAllUser);
@@ -192,6 +276,14 @@ public class DirectoryServiceClient {
 		return ((GetAllUserResponse) resp).getUsers();
 	}
 	
+	/**
+	 * Get user by name.
+	 * 
+	 * @param name
+	 * 		the user name.
+	 * @return
+	 * 		the User.
+	 */
 	public User getUser(String name){
 		ProtocolHeader header = new ProtocolHeader();
 		header.setType(ProtocolType.GetUser);
@@ -202,6 +294,12 @@ public class DirectoryServiceClient {
 		return ((GetUserResponse) resp).getUser();
 	}
 	
+	/**
+	 * Set ACL.
+	 * 
+	 * @param acl
+	 * 		the ACL.
+	 */
 	public void setACL(ACL acl){
 		ProtocolHeader header = new ProtocolHeader();
 		header.setType(ProtocolType.SetACL);
@@ -211,6 +309,16 @@ public class DirectoryServiceClient {
 		connection.submitRequest(header, p, null);
 	}
 	
+	/**
+	 * Get the ACL.
+	 * 
+	 * @param scheme
+	 * 		the AuthScheme.
+	 * @param id
+	 * 		the identity.
+	 * @return
+	 * 		the ACL.
+	 */
 	public ACL getACL(AuthScheme scheme, String id){
 		ProtocolHeader header = new ProtocolHeader();
 		header.setType(ProtocolType.GetACL);
@@ -221,6 +329,12 @@ public class DirectoryServiceClient {
 		return ((GetACLResponse) resp).getAcl();
 	}
 	
+	/**
+	 * Register a ServiceInstance.
+	 * 
+	 * @param instance
+	 * 		the ProvidedServiceInstance.
+	 */
 	public void registerServiceInstance(ProvidedServiceInstance instance){
 		
 		ProtocolHeader header = new ProtocolHeader();
@@ -232,6 +346,16 @@ public class DirectoryServiceClient {
 		
 	}
 	
+	/**
+	 * Register ServiceInstance with Callback.
+	 * 
+	 * @param instance
+	 * 		the ProvidedServiceInstance.
+	 * @param cb
+	 * 		the callback.
+	 * @param context
+	 * 		the context Object.
+	 */
 	public void registerServiceInstance(ProvidedServiceInstance instance, final RegistrationCallback cb, Object context){
 		
 		ProtocolHeader header = new ProtocolHeader();
@@ -253,8 +377,16 @@ public class DirectoryServiceClient {
 		
 	}
 	
-	
-	
+	/**
+	 * Update ServiceInstance status.
+	 * 
+	 * @param serviceName
+	 * 		the service name.
+	 * @param instanceId
+	 * 		the instanceId.
+	 * @param status
+	 * 		the OeperationalStatus.
+	 */
 	public void updateServiceInstanceStatus(String serviceName, String instanceId, OperationalStatus status){
 		ProtocolHeader header = new ProtocolHeader();
 		header.setType(ProtocolType.UpdateServiceInstanceStatus);
@@ -263,6 +395,20 @@ public class DirectoryServiceClient {
 		connection.submitRequest(header, p, null);
 	}
 	
+	/**
+	 * Update ServiceInstance status with Callback.
+	 * 
+	 * @param serviceName
+	 * 		the servicename.
+	 * @param instanceId
+	 * 		the instanceId.
+	 * @param status
+	 * 		the OperationalStaus
+	 * @param cb
+	 * 		the Callback.
+	 * @param context
+	 * 		the context object.
+	 */
 	public void updateServiceInstanceStatus(String serviceName, String instanceId, OperationalStatus status, final RegistrationCallback cb, Object context){
 		ProtocolHeader header = new ProtocolHeader();
 		header.setType(ProtocolType.UpdateServiceInstanceStatus);
@@ -282,6 +428,16 @@ public class DirectoryServiceClient {
 		connection.submitCallbackRequest(header, p, pcb, context);
 	}
 	
+	/**
+	 * Update ServiceInstance internal status.
+	 * 
+	 * @param serviceName
+	 * 		the service name.
+	 * @param instanceId
+	 * 		the instanceId.
+	 * @param status
+	 * 		the OeperationalStatus.
+	 */
 	public void updateServiceInstanceInternalStatus(String serviceName, String instanceId, OperationalStatus status){
 		ProtocolHeader header = new ProtocolHeader();
 		header.setType(ProtocolType.UpdateServiceInstanceInternalStatus);
@@ -290,6 +446,20 @@ public class DirectoryServiceClient {
 		connection.submitRequest(header, protocol, null);
 	}
 	
+	/**
+	 * Update ServiceInstance internal status with Callback.
+	 * 
+	 * @param serviceName
+	 * 		the servicename.
+	 * @param instanceId
+	 * 		the instanceId.
+	 * @param status
+	 * 		the OperationalStaus
+	 * @param cb
+	 * 		the Callback.
+	 * @param context
+	 * 		the context object.
+	 */
 	public void updateServiceInstanceInternalStatus(String serviceName, String instanceId, OperationalStatus status, final RegistrationCallback cb, Object context){
 		ProtocolHeader header = new ProtocolHeader();
 		header.setType(ProtocolType.UpdateServiceInstanceInternalStatus);
@@ -309,6 +479,18 @@ public class DirectoryServiceClient {
 		connection.submitCallbackRequest(header, protocol, pcb, context);
 	}
 	
+	/**
+	 * Attach ServiceInstance to the Session.
+	 * 
+	 * When create a new session, it need to attach the session again.
+	 * 
+	 * @param instanceTokens
+	 * 		the instance list.
+	 * @param cb
+	 * 		the callback.
+	 * @param context
+	 * 		the context object.
+	 */
 	public void attachSession(List<ServiceInstanceToken> instanceTokens, final AttachSessionCallback cb, Object context){
 		ProtocolHeader header = new ProtocolHeader();
 		header.setType(ProtocolType.AttachSession);
@@ -329,16 +511,28 @@ public class DirectoryServiceClient {
 		connection.submitCallbackRequest(header, protocol, pcb, context);
 	}
 	
-	public Map<ServiceInstanceToken, ItemResult> attachSession(List<ServiceInstanceToken> instanceTokens){
+	/**
+	 * Attach ServiceInstance to the Session.
+	 * 
+	 * @param instanceTokens
+	 * 		the instance list.
+	 */
+	public void attachSession(List<ServiceInstanceToken> instanceTokens){
 		ProtocolHeader header = new ProtocolHeader();
 		header.setType(ProtocolType.AttachSession);
 		
 		String sessionId = connection.getSessionId();
 		AttachSessionProtocol protocol = new AttachSessionProtocol(instanceTokens, sessionId);
-		AttachSessionResponse resp = (AttachSessionResponse) connection.submitRequest(header, protocol, null);
-		return resp.getAttachingResult();
+		connection.submitRequest(header, protocol, null);
+		
 	}
 	
+	/**
+	 * Update the ServiceInstance.
+	 * 
+	 * @param instance
+	 * 		the ServiceInstance.
+	 */
 	public void updateServiceInstance(ProvidedServiceInstance instance){
 		ProtocolHeader header = new ProtocolHeader();
 		header.setType(ProtocolType.UpdateServiceInstance);
@@ -347,7 +541,16 @@ public class DirectoryServiceClient {
 		connection.submitRequest(header, p, null);
 	}
 	
-	
+	/**
+	 * Update the ServiceInstance with callback.
+	 * 
+	 * @param instance
+	 * 		the ServiceInstance.
+	 * @param cb
+	 * 		the Callback.
+	 * @param context
+	 * 		the context object.
+	 */
 	public void updateServiceInstance(ProvidedServiceInstance instance, final RegistrationCallback cb, Object context){
 		ProtocolHeader header = new ProtocolHeader();
 		header.setType(ProtocolType.UpdateServiceInstance);
@@ -365,6 +568,16 @@ public class DirectoryServiceClient {
 		connection.submitCallbackRequest(header, p, pcb, context);
 	}
 	
+	/**
+	 * Update ServiceInstance URI.
+	 * 
+	 * @param serviceName
+	 * 		the service name.
+	 * @param instanceId
+	 * 		the instance id.
+	 * @param uri
+	 * 		the new URI.
+	 */
 	public void updateServiceInstanceUri(String serviceName, String instanceId, String uri){
 		ProtocolHeader header = new ProtocolHeader();
 		header.setType(ProtocolType.UpdateServiceInstanceUri);
@@ -373,6 +586,20 @@ public class DirectoryServiceClient {
 		connection.submitRequest(header, p, null);
 	}
 	
+	/**
+	 * Update ServiceInstance URI in Callback.
+	 * 
+	 * @param serviceName
+	 * 		the service name.
+	 * @param instanceId
+	 * 		the instanceId.
+	 * @param uri
+	 * 		the new URI.
+	 * @param cb
+	 * 		the Callback.
+	 * @param context
+	 * 		the object context.
+	 */
 	public void updateServiceInstanceUri(String serviceName, String instanceId, String uri, final RegistrationCallback cb, Object context){
 		ProtocolHeader header = new ProtocolHeader();
 		header.setType(ProtocolType.UpdateServiceInstanceUri);
@@ -390,31 +617,14 @@ public class DirectoryServiceClient {
 		connection.submitCallbackRequest(header, p, pcb, context);
 	}
 	
-//	public void updateServiceInstancesHeartbeat(List<ServiceInstanceHeartbeat> instances, long time){
-//		ProtocolHeader header = new ProtocolHeader();
-//		header.setType(ProtocolType.UpdateHeartbeat);
-//		
-//		UpdateHeartbeatProtocol p = new UpdateHeartbeatProtocol(instances, time);
-//		connection.submitRequest(header, p, null);
-//	}
-//	
-//	public void updateServiceInstancesHeartbeat(List<ServiceInstanceHeartbeat> instances, long time, final RegistrationCallback cb, Object context){
-//		ProtocolHeader header = new ProtocolHeader();
-//		header.setType(ProtocolType.UpdateHeartbeat);
-//		
-//		UpdateHeartbeatProtocol p = new UpdateHeartbeatProtocol(instances, time);
-//		ProtocolCallback pcb = new ProtocolCallback(){
-//
-//			@Override
-//			public void call(boolean result, Response response,
-//					ErrorCode error, Object ctx) {
-//				cb.call(result, error, ctx);
-//			}
-//			
-//		};
-//		connection.submitCallbackRequest(header, p, pcb, context);
-//	}
-	
+	/**
+	 * Unregister the ServiceInstance.
+	 * 
+	 * @param serviceName
+	 * 		the service name.
+	 * @param instanceId
+	 * 		the instanceId.
+	 */
 	public void unregisterServiceInstance(String serviceName, String instanceId){
 		ProtocolHeader header = new ProtocolHeader();
 		header.setType(ProtocolType.UnregisterServiceInstance);
@@ -423,6 +633,18 @@ public class DirectoryServiceClient {
 		connection.submitRequest(header, p, null);
 	}
 	
+	/**
+	 * Unregister the ServiceInstance in Callback.
+	 * 
+	 * @param serviceName
+	 * 		the service name.
+	 * @param instanceId
+	 * 		the instanceId.
+	 * @param cb
+	 * 		the Callback.
+	 * @param context
+	 * 		the Callback context object.
+	 */
 	public void unregisterServiceInstance(String serviceName, String instanceId, final RegistrationCallback cb, Object context){
 		ProtocolHeader header = new ProtocolHeader();
 		header.setType(ProtocolType.UnregisterServiceInstance);
@@ -440,10 +662,20 @@ public class DirectoryServiceClient {
 		connection.submitCallbackRequest(header, p, pcb, context);
 	}
 	
+	/**
+	 * Get the Service.
+	 * 
+	 * @param serviceName
+	 * 		the serviceName.
+	 * @param watcher
+	 * 		the Watcher.
+	 * @return
+	 * 		the ModelService.
+	 */
 	public ModelService getService(String serviceName, Watcher watcher){
 		WatcherRegistration wcb = null;
         if (watcher != null) {
-            wcb = new WatcherRegistration(serviceName, watcher, WatcherType.SERVICE);
+            wcb = new WatcherRegistration(serviceName, watcher);
         }
         
 		ProtocolHeader header = new ProtocolHeader();
@@ -456,6 +688,16 @@ public class DirectoryServiceClient {
 		return resp.getService();
 	}
 	
+	/**
+	 * Get Service in Callback.
+	 * 
+	 * @param serviceName
+	 * 		the serviceName.
+	 * @param cb
+	 * 		the Callback.
+	 * @param context
+	 * 		the callback context object.
+	 */
 	public void getService(String serviceName, final GetServiceCallback cb, Object context){
 		ProtocolHeader header = new ProtocolHeader();
 		header.setType(ProtocolType.GetService);
@@ -480,10 +722,20 @@ public class DirectoryServiceClient {
 		connection.submitCallbackRequest(header, p,  pcb, context);
 	}
 	
+	/**
+	 * Asynchronized get Service.
+	 * 
+	 * @param serviceName
+	 * 		the service name.
+	 * @param watcher
+	 * 		the watcher.
+	 * @return
+	 * 		the ServiceDirectoryFuture
+	 */
 	public ServiceDirectoryFuture asyncGetService(String serviceName, Watcher watcher){
 		WatcherRegistration wcb = null;
         if (watcher != null) {
-            wcb = new WatcherRegistration(serviceName, watcher, WatcherType.SERVICE);
+            wcb = new WatcherRegistration(serviceName, watcher);
         }
         
 		ProtocolHeader header = new ProtocolHeader();
@@ -508,48 +760,97 @@ public class DirectoryServiceClient {
 		return resp.getInstances();
 	}
 	
+	/**
+	 * Validate whether the watcher registered.
+	 * 
+	 * @param serviceName
+	 * 		the serviceName.
+	 * @param watcher
+	 * 		the watcher.
+	 * @return
+	 * 		true for success.
+	 */
 	public boolean validateServiceWatcher(String serviceName, Watcher watcher){
-		return watcherManager.validateWatcher(serviceName, WatcherType.SERVICE, watcher);
+		return watcherManager.validateWatcher(serviceName, watcher);
 	}
 	
+	/**
+	 * delete the watcher.
+	 * 
+	 * @param serviceName
+	 * 		the service name.
+	 * @param watcher
+	 * 		the watcher.
+	 */
 	public void deleteServiceWatcher(String serviceName, Watcher watcher){
-		watcherManager.deleteWatcher(serviceName, WatcherType.SERVICE, watcher);
+		watcherManager.deleteWatcher(serviceName, watcher);
 	}
 	
+	/**
+	 * Clean the watchers oh the service.
+	 * 
+	 * @param serviceName
+	 * 		the service name.
+	 */
 	public void cleanServiceWatchers(String serviceName){
-		watcherManager.cleanWatchers(serviceName, WatcherType.SERVICE);
+		watcherManager.cleanWatchers(serviceName);
 	}
 	
-	public ModelMetadataKey getMetadata(String keyName, Watcher watcher){
-		WatcherRegistration wcb = null;
-        if (watcher != null) {
-            wcb = new WatcherRegistration(keyName, watcher, WatcherType.METADATA);
-        }
+	/**
+	 * Query Service.
+	 * 
+	 * it is the synchronized method.
+	 * 
+	 * @param commands
+	 * 		the StringCommand list.
+	 * @return
+	 * 		the ModelServiceInstance list.
+	 */
+	public List<ModelServiceInstance> queryService(List<StringCommand> commands){
         
 		ProtocolHeader header = new ProtocolHeader();
-		header.setType(ProtocolType.GetMetadata);
+		header.setType(ProtocolType.QueryService);
 		
-		GetMetadataProtocol p = new GetMetadataProtocol(keyName);
-		p.setWatcher(watcher != null);
-		GetMetadataResponse resp ;
-		resp = (GetMetadataResponse) connection.submitRequest(header, p,  wcb);
-		return resp.getMetadata();
+		List<QueryCommand> cs = new ArrayList<QueryCommand>();
+		for(StringCommand c : commands){
+			cs.add(c.getStringCommand());
+		}
+		
+		QueryServiceProtocol p = new QueryServiceProtocol(cs);
+		QueryServiceResponse resp ;
+		resp = (QueryServiceResponse) connection.submitRequest(header, p,  null);
+		return resp.getInstances();
 	}
 	
-	public void getMetadata(String keyName, final GetMetadataCallback cb, Object context){
+	/**
+	 * Query service in Callback.
+	 * 
+	 * @param commands
+	 * 		the StringCommand list.
+	 * @param cb
+	 * 		the Callback.
+	 * @param context
+	 * 		the Callback context object.
+	 */
+	public void queryService(List<StringCommand> commands, final QueryServiceCallback cb, Object context){
 		ProtocolHeader header = new ProtocolHeader();
-		header.setType(ProtocolType.GetMetadata);
+		header.setType(ProtocolType.QueryService);
 		
-		GetMetadataProtocol p = new GetMetadataProtocol(keyName);
+		List<QueryCommand> cs = new ArrayList<QueryCommand>();
+		for(StringCommand c : commands){
+			cs.add(c.getStringCommand());
+		}
+		
+		QueryServiceProtocol p = new QueryServiceProtocol(cs);
 		
 		ProtocolCallback pcb = new ProtocolCallback(){
 
 			@Override
 			public void call(boolean result, Response response,
 					ErrorCode error, Object ctx) {
-				ModelMetadataKey rsp = null;
+				List<ModelServiceInstance> rsp = null;
 				if(response != null){
-					rsp = ((GetMetadataResponse) response).getMetadata();
+					rsp = ((QueryServiceResponse) response).getInstances();
 				}
 				cb.call(result, rsp, error, ctx);
 			}
@@ -559,37 +860,46 @@ public class DirectoryServiceClient {
 		connection.submitCallbackRequest(header, p, pcb, context);
 	}
 	
-	public ServiceDirectoryFuture asyncGetMetadata(String keyName, Watcher watcher){
-		WatcherRegistration wcb = null;
-        if (watcher != null) {
-            wcb = new WatcherRegistration(keyName, watcher, WatcherType.METADATA);
-        }
-        ProtocolHeader header = new ProtocolHeader();
-		header.setType(ProtocolType.GetMetadata);
+	/**
+	 * Asynchronized query service.
+	 * 
+	 * @param commands
+	 * 		the StringCommand list.
+	 * @return
+	 * 		the ServiceDirectoryFuture.
+	 */
+	public ServiceDirectoryFuture asyncQueryService(List<StringCommand> commands){
+		ProtocolHeader header = new ProtocolHeader();
+		header.setType(ProtocolType.QueryService);
 		
-		GetMetadataProtocol p = new GetMetadataProtocol(keyName);
-		p.setWatcher(watcher != null);
-		return connection.submitAsyncRequest(header, p, wcb);
+		List<QueryCommand> cs = new ArrayList<QueryCommand>();
+		for(StringCommand c : commands){
+			cs.add(c.getStringCommand());
+		}
+		
+		QueryServiceProtocol p = new QueryServiceProtocol(cs);
+		return connection.submitAsyncRequest(header, p, null);
 	}
 	
+	/**
+	 * Register the ServiceDirectoryListener.
+	 * 
+	 * @param listener
+	 * 		the ServiceDirectoryListener.
+	 */
 	public void registerClientChangeListener(ServiceDirectoryListener listener){
 		connection.registerClientChangeListener(listener);
     }
     
+	/**
+	 * Unregister the ServiceDirectoryListener.
+	 * 
+	 * @param listener
+	 * 		the ServiceDirectoryListener.
+	 */
     public void unregisterClientChangeListener(ServiceDirectoryListener listener){
     	connection.unregisterClientChangeListener(listener);
     }
-	
-	public boolean validateMetadataKeyWatcher(String keyName, Watcher watcher){
-		return watcherManager.validateWatcher(keyName, WatcherType.METADATA, watcher);
-	}
-	public void deleteMetadataKeyWatcher(String keyName, Watcher watcher){
-		watcherManager.deleteWatcher(keyName, WatcherType.METADATA, watcher);
-	}
-	
-	public void cleanMetadataKeyWatchers(String keyName){
-		watcherManager.cleanWatchers(keyName, WatcherType.METADATA);
-	}
 	
 	/**
 	 * Close the DirectoryServiceClient.
@@ -609,6 +919,12 @@ public class DirectoryServiceClient {
 		}
 	}
 	
+	/**
+	 * Get the DirectorySoeckt.
+	 * 
+	 * @return
+	 * 		the DirectorySocket.
+	 */
 	private DirectorySocket getDirectorySocket(){
 		DirectorySocket socket = null;
 		if(ServiceDirectory.getServiceDirectoryConfig().containsProperty(SD_API_DIRECTORY_SOCKET_PROVIDER_PROPERTY)){
@@ -630,31 +946,64 @@ public class DirectoryServiceClient {
 			return socket;
 		}
 	}
+	
+	/**
+	 * The WatcherRegistration for the Service.
+	 * 
+	 * @author zuxiang
+	 *
+	 */
 	public static class WatcherRegistration {
+		/**
+		 * The service name.
+		 */
         private String name;
+        
+        /**
+         * The service Watcher.
+         */
         private Watcher watcher;
-        private WatcherType watcherType = WatcherType.SERVICE; 
-        public WatcherRegistration(String name, Watcher watcher, WatcherType watcherType)
+        
+        /**
+         * The Constructor.
+         * 
+         * @param name
+         * 		the service name.
+         * @param watcher
+         * 		the service Watcher.
+         */
+        public WatcherRegistration(String name, Watcher watcher)
         {
             this.setName(name);
             this.watcher = watcher;
-            this.watcherType = watcherType;
         }
 
+        /**
+         * Get the Watcher.
+         * 
+         * @return
+         * 		the Service Watcher.
+         */
 		public Watcher getWatcher(){
 			return this.watcher;
 		}
 
+		/**
+		 * Get ServiceName.
+		 * @return
+		 * 		the service name.
+		 */
 		public String getName() {
 			return name;
 		}
 
+		/**
+		 * Set the Service name.
+		 * @param name
+		 * 		the service name.
+		 */
 		public void setName(String name) {
 			this.name = name;
-		}
-
-		public WatcherType getWatcherType() {
-			return watcherType;
 		}
     }
 

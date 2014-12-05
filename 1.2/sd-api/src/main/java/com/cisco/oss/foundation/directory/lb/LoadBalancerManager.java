@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) 2013-2014 by Cisco Systems, Inc. 
+ * All rights reserved. 
+ */
 package com.cisco.oss.foundation.directory.lb;
 
 import java.util.ArrayList;
@@ -6,6 +10,12 @@ import java.util.List;
 import com.cisco.oss.foundation.directory.impl.DirectoryLookupService;
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
 
+/**
+ * The LoadBalance Manager for lookup Service.
+ * 
+ * @author zuxiang
+ *
+ */
 public class LoadBalancerManager {
 
 	/**
@@ -13,12 +23,27 @@ public class LoadBalancerManager {
 	 */
 	private final List<ServiceRRLoadBalancer> svcLBList;
 
+	/**
+	 * The Loadbalancer for the meta query.
+	 */
 	private final List<MetadataQueryRRLoadBalancer> metaQueryLBList;
 
+	/**
+	 * The loadbalancer for the service query.
+	 */
 	private final List<ServiceQueryRRLoadBalancer> svcQueryLBList;
 
+	/**
+	 * The Directory LookupService.
+	 */
 	private final DirectoryLookupService lookupService;
 
+	/**
+	 * Constructor.
+	 * 
+	 * @param lookupService
+	 * 		the DirectoryLookupService.
+	 */
 	public LoadBalancerManager(DirectoryLookupService lookupService) {
 		svcLBList = new ArrayList<ServiceRRLoadBalancer>();
 		metaQueryLBList = new ArrayList<MetadataQueryRRLoadBalancer>();
@@ -26,6 +51,14 @@ public class LoadBalancerManager {
 		this.lookupService = lookupService;
 	}
 
+	/**
+	 * Get the ServiceRRLoadBalancer.
+	 * 
+	 * @param serviceName
+	 * 		the service name.
+	 * @return
+	 * 		the ServiceRRLoadBalancer.
+	 */
 	public ServiceRRLoadBalancer getServiceRRLoadBalancer(String serviceName) {
 		for (ServiceRRLoadBalancer lb : svcLBList) {
 			if (lb.getServiceName().equals(serviceName)) {
@@ -38,6 +71,14 @@ public class LoadBalancerManager {
 		return lb;
 	}
 
+	/**
+	 * Get the MetadataQueryRRLoadBalancer.
+	 * 
+	 * @param query
+	 * 		the ServiceInstanceQuery.
+	 * @return
+	 * 		the MetadataQueryRRLoadBalancer.
+	 */
 	public MetadataQueryRRLoadBalancer getMetadataQueryRRLoadBalancer(
 			ServiceInstanceQuery query) {
 		for (MetadataQueryRRLoadBalancer lb : metaQueryLBList) {
@@ -51,6 +92,16 @@ public class LoadBalancerManager {
 		return lb;
 	}
 
+	/**
+	 * Get the ServiceQueryRRLoadBalancer.
+	 * 
+	 * @param serviceName
+	 * 		the service name.
+	 * @param query
+	 * 		the ServiceInstanceQuery.
+	 * @return
+	 * 		the ServiceQueryRRLoadBalancer.
+	 */
 	public ServiceQueryRRLoadBalancer getServiceQueryRRLoadBalancer(
 			String serviceName, ServiceInstanceQuery query) {
 		for (ServiceQueryRRLoadBalancer lb : svcQueryLBList) {

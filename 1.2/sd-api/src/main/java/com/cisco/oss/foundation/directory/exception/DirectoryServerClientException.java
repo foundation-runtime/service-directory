@@ -4,6 +4,12 @@
  */
 package com.cisco.oss.foundation.directory.exception;
 
+/**
+ * The DirectoryServer client exception.
+ * 
+ * @author zuxiang
+ *
+ */
 public class DirectoryServerClientException extends ServiceRuntimeException{
 	/**
 	 * serialVersionUID

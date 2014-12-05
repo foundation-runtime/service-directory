@@ -23,17 +23,16 @@ import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ServiceInstanceEvent;
-import com.cisco.oss.foundation.directory.entity.WatchedMetadataKey;
 import com.cisco.oss.foundation.directory.entity.WatchedService;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.proto.ConnectProtocol;
 import com.cisco.oss.foundation.directory.proto.ConnectResponse;
-import com.cisco.oss.foundation.directory.proto.GetMetadataResponse;
 import com.cisco.oss.foundation.directory.proto.GetServiceResponse;
 import com.cisco.oss.foundation.directory.proto.Protocol;
 import com.cisco.oss.foundation.directory.proto.ProtocolHeader;
 import com.cisco.oss.foundation.directory.proto.ProtocolType;
+import com.cisco.oss.foundation.directory.proto.QueryServiceResponse;
 import com.cisco.oss.foundation.directory.proto.Response;
 import com.cisco.oss.foundation.directory.proto.ResponseHeader;
 import com.cisco.oss.foundation.directory.proto.ServiceInstanceOperate.OperateType;
@@ -129,7 +128,7 @@ public class LookupManagerImplTest {
 		newInstance.setMetadata(changedMetadata); 
 		List<ModelServiceInstance> wInstances = new ArrayList<ModelServiceInstance>();
 		wInstances.add(newInstance);
-		WatcherEvent watcherEvent = new WatcherEvent(os, null, wInstances);
+		WatcherEvent watcherEvent = new WatcherEvent(os, wInstances);
 		socket.sendResponse(watcherHeader, watcherEvent);
 		
 		newInstance = duplicateInstance(newInstance);
@@ -140,23 +139,23 @@ public class LookupManagerImplTest {
 		os.add(wService);
 		wInstances = new ArrayList<ModelServiceInstance>();
 		wInstances.add(newInstance);
-		watcherEvent = new WatcherEvent(os, null, wInstances);
+		watcherEvent = new WatcherEvent(os, wInstances);
 		socket.sendResponse(watcherHeader, watcherEvent);
 		
-		ModelServiceInstance changedInstance = new ModelServiceInstance(serviceName, instanceId, "192.168.2.3-8901", "http://cisco.com/vbo/odrm/setupsession/v03", 
-				OperationalStatus.UP, changedMetadata);
-		
-		ModelMetadataKey key = new ModelMetadataKey();
-		key.setName(keyName);
-		WatchedMetadataKey wKey = new WatchedMetadataKey(key);
-		wKey.getServiceInstanceEvents().add(new ServiceInstanceEvent(serviceName, instanceId, OperateType.Add));
-		List<WatchedMetadataKey> wKeys = new ArrayList<WatchedMetadataKey>();
-		wKeys.add(wKey);
-		wInstances = new ArrayList<ModelServiceInstance>();
-		wInstances.add(changedInstance);
-		watcherEvent = new WatcherEvent(null, wKeys, wInstances);
-		
-		socket.sendResponse(watcherHeader, watcherEvent);
+//		ModelServiceInstance changedInstance = new ModelServiceInstance(serviceName, instanceId, "192.168.2.3-8901", "http://cisco.com/vbo/odrm/setupsession/v03", 
+//				OperationalStatus.UP, changedMetadata);
+//		
+//		ModelMetadataKey key = new ModelMetadataKey();
+//		key.setName(keyName);
+//		WatchedMetadataKey wKey = new WatchedMetadataKey(key);
+//		wKey.getServiceInstanceEvents().add(new ServiceInstanceEvent(serviceName, instanceId, OperateType.Add));
+//		List<WatchedMetadataKey> wKeys = new ArrayList<WatchedMetadataKey>();
+//		wKeys.add(wKey);
+//		wInstances = new ArrayList<ModelServiceInstance>();
+//		wInstances.add(changedInstance);
+//		watcherEvent = new WatcherEvent(null, wKeys, wInstances);
+//		
+//		socket.sendResponse(watcherHeader, watcherEvent);
 		
 		try {
 			Thread.sleep(1000);
@@ -174,7 +173,7 @@ public class LookupManagerImplTest {
 			Assert.assertEquals(impl.getAllInstances(serviceName).get(0).getInstanceId(), instanceId);
 			Assert.assertEquals(impl.getAllInstances(serviceName, query).get(0).getUri(), "http://cisco.com/vbo/odrm/setupsession/v02");
 			Assert.assertEquals(impl.getAllInstancesByKey(query).get(0).getInstanceId(),instanceId);
-			Assert.assertEquals(impl.getAllInstancesByKey(query).get(0).getUri(), "http://cisco.com/vbo/odrm/setupsession/v03");
+			Assert.assertEquals(impl.getAllInstancesByKey(query).get(0).getUri(), "http://cisco.com/vbo/odrm/setupsession");
 			Assert.assertEquals(impl.getInstance(serviceName, instanceId).getInstanceId(), instanceId);
 			Assert.assertEquals(impl.getInstance(serviceName, instanceId).getMetadata().get("solution"), "core02");
 		} catch (ServiceException e) {
@@ -211,7 +210,7 @@ public class LookupManagerImplTest {
 		}
 
 		@Override
-		public boolean connect(InetSocketAddress address) throws IOException {
+		public boolean connect(InetSocketAddress address) {
 
 			Assert.assertEquals("localhost", address.getHostName());
 			Assert.assertEquals(8901, address.getPort());
@@ -283,7 +282,7 @@ public class LookupManagerImplTest {
 				GetServiceResponse response = new GetServiceResponse(result);
 				t.queueResonse(new ResponseHeader(header.getXid(), 1,
 						ErrorCode.OK), response);
-			} else if (ProtocolType.GetMetadata.equals(header.getType())) {
+			} else if (ProtocolType.QueryService.equals(header.getType())) {
 
 				Map<String, String> metadata = new HashMap<String, String>();
 				metadata.put("datacenter", "dc01");
@@ -296,12 +295,12 @@ public class LookupManagerImplTest {
 //				instance.setHeartbeatTime(date);
 				instances.add(instance);
 
-				ModelMetadataKey keyResult = new ModelMetadataKey("solution",
-						"solution");
-				keyResult.setServiceInstances(instances);
+//				ModelMetadataKey keyResult = new ModelMetadataKey("solution",
+//						"solution");
+//				keyResult.setServiceInstances(instances);
 
-				GetMetadataResponse response = new GetMetadataResponse(
-						keyResult);
+				QueryServiceResponse response = new QueryServiceResponse(
+						instances);
 				t.queueResonse(new ResponseHeader(header.getXid(), 1,
 						ErrorCode.OK), response);
 			} else {

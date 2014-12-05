@@ -56,7 +56,14 @@ public class TestWSDirectorySocket {
 		InetSocketAddress address = new InetSocketAddress(
 				InetAddress.getLocalHost(), 8091);
 
+		DirectoryConnection conn = new DirectoryConnection(){
+			@Override
+			public void onSocketError(){
+		    }
+		};
+		
 		WSDirectorySocket sk = new WSDirectorySocket();
+		sk.setConnection(conn);
 		sk.setConnectTimeOut(1000);
 		
 		Assert.assertNull(sk.getLocalSocketAddress());
@@ -64,12 +71,8 @@ public class TestWSDirectorySocket {
 		Assert.assertFalse(sk.isConnected());
 		
 		// When connect failed, it do cleanup.
-		try {
+		
 			sk.connect(address);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		Assert.assertNull(sk.getLocalSocketAddress());
 		Assert.assertNull(sk.getRemoteSocketAddress());
 		Assert.assertFalse(sk.isConnected());
@@ -83,28 +86,33 @@ public class TestWSDirectorySocket {
 			e.printStackTrace();
 		}
 		
+		
+//			sk.connect(address);
 		try {
-			sk.connect(address);
-		} catch (IOException e) {
+			Thread.sleep(4000);
+		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e1.printStackTrace();
 		}
 		Assert.assertNotNull(sk.getLocalSocketAddress());
 		Assert.assertNotNull(sk.getRemoteSocketAddress());
 		Assert.assertTrue(sk.isConnected());
 		
+		LOGGER.info("...............cleanup");
 		// Test reconnect
 		sk.cleanup();
 		Assert.assertNull(sk.getLocalSocketAddress());
 		Assert.assertNull(sk.getRemoteSocketAddress());
 		Assert.assertFalse(sk.isConnected());
 		
+		LOGGER.info(".................connect");
+		sk.connect(address);
 		try {
-			sk.connect(address);
-		} catch (IOException e) {
+			Thread.sleep(4000);
+		} catch (InterruptedException e1) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+			e1.printStackTrace();
+		}	
 		Assert.assertNotNull(sk.getLocalSocketAddress());
 		Assert.assertNotNull(sk.getRemoteSocketAddress());
 		Assert.assertTrue(sk.isConnected());
@@ -143,12 +151,8 @@ public class TestWSDirectorySocket {
 		CustomerDirectoryConnect conn = new CustomerDirectoryConnect();
 		sk.setConnection(conn);
 		sk.setConnectTimeOut(4000);
-		try {
+		
 			sk.connect(address);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
 		final ProtocolHeader header = new ProtocolHeader(1, ProtocolType.GetService);
 		final GetServiceProtocol p = new GetServiceProtocol("mocksvc");

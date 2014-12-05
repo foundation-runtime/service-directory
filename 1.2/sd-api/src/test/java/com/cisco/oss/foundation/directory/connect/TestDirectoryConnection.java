@@ -29,7 +29,6 @@ import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ServerStatus;
 import com.cisco.oss.foundation.directory.entity.ServiceInstanceEvent;
 import com.cisco.oss.foundation.directory.entity.WatchedService;
-import com.cisco.oss.foundation.directory.entity.WatcherType;
 import com.cisco.oss.foundation.directory.event.ConnectionStatus;
 import com.cisco.oss.foundation.directory.event.ServiceDirectoryEvent;
 import com.cisco.oss.foundation.directory.event.ServiceDirectoryEvent.ClientSessionEvent;
@@ -59,6 +58,7 @@ public class TestDirectoryConnection {
 //	@Ignore
 	@Test
 	public void testInit(){
+		LOGGER.info("============testInit=====================");
 		final AtomicBoolean cleanupInvoked = new AtomicBoolean(false);
 //		final Map<ProtocolType, Integer> sendPacket = new HashMap<ProtocolType, Integer>();
 		final Map<String, Integer> eventMap = new ConcurrentHashMap<String, Integer>();
@@ -70,14 +70,14 @@ public class TestDirectoryConnection {
 		DirectorySocket socket = new DirectorySocket(){
 
 			private InetSocketAddress server = null;
-			private SocketThread t ;
+			private volatile SocketThread t ;
 			@Override
 			public boolean isConnected() {
 				return true;
 			}
 
 			@Override
-			public boolean connect(InetSocketAddress address) throws IOException {
+			public boolean connect(InetSocketAddress address) {
 				
 				Assert.assertEquals("localhost", address.getHostName());
 				Assert.assertEquals(8901, address.getPort()); 
@@ -129,13 +129,18 @@ public class TestDirectoryConnection {
 					ConnectResponse response = new ConnectResponse(0, 4000, "100", null, 1);
 					t.queueResonse(new ResponseHeader(header.getXid(), 1, ErrorCode.OK), response);
 				}
+//				else if(ProtocolType.Ping.equals(header.getType())){
+//					if(t != null){
+//						t.queueResonse(new ResponseHeader(-2, 1, ErrorCode.OK), null);
+//					}
+//				}
 			}
 			
 		};
 		
 		socket.getRemoteSocketAddress();
 		
-		DirectoryConnection connection = new DirectoryConnection(directoryServers, new WatcherManager(), socket, "user", "password");
+		DirectoryConnection connection = new DirectoryConnection(directoryServers.getNextDirectoryServer(), new WatcherManager(), socket, "user", "password");
 		socket.setConnection(connection);
 		ServiceDirectoryListener listener = new ServiceDirectoryListener(){
 
@@ -168,7 +173,7 @@ public class TestDirectoryConnection {
 		
 		try {
 			boolean b = true;
-			for(int j = 0; j < 10; j++){
+			for(int j = 0; j < 12; j++){
 				Thread.sleep(1000);
 				if(b){
 					Assert.assertEquals(ConnectionStatus.CONNECTED, connection.getStatus());
@@ -200,9 +205,9 @@ public class TestDirectoryConnection {
 		Assert.assertTrue(eventMap.get(ConnectionStatus.NOT_CONNECTED.name()).intValue() > 1);
 		Assert.assertTrue(eventMap.get(ConnectionStatus.CONNECTED.name()).intValue() > 1);
 		Assert.assertTrue(eventMap.get(ConnectionStatus.CLOSED.name()).intValue() == 1);
-		Assert.assertEquals(1, eventMap.get("S_" + SessionEvent.CREATED.name()).intValue());
-		Assert.assertEquals(1, eventMap.get("S_" + SessionEvent.CLOSED.name()).intValue());
-		Assert.assertTrue(eventMap.get("S_" + SessionEvent.REOPEN.name()).intValue() > 1);
+		Assert.assertTrue(eventMap.get("S_" + SessionEvent.CREATED.name()).intValue() > 1);
+		Assert.assertTrue(eventMap.get("S_" + SessionEvent.CLOSED.name()).intValue() > 1);
+		Assert.assertTrue(eventMap.get("S_" + SessionEvent.REOPEN.name()) == null);
 		
 		
 	}
@@ -210,13 +215,14 @@ public class TestDirectoryConnection {
 //	@Ignore
 	@Test
 	public void testSubmitRequest() throws InterruptedException, ExecutionException{
+		LOGGER.info("============testSubmitRequest=====================");
 		List<String> servers = new ArrayList<String>();
 		servers.add("localhost:8901");
 		DirectoryServers directoryServers = new DirectoryServers(servers);
 		
 		final CustomerDirectorySocket socket = new CustomerDirectorySocket();
 		
-		final DirectoryConnection connection = new DirectoryConnection(directoryServers, new WatcherManager(), socket, "user", "password");
+		final DirectoryConnection connection = new DirectoryConnection(directoryServers.getNextDirectoryServer(), new WatcherManager(), socket, "user", "password");
 		socket.setConnection(connection);
 		connection.start();
 		
@@ -285,6 +291,7 @@ public class TestDirectoryConnection {
 //	@Ignore
 	@Test
 	public void testSetUser(){
+		LOGGER.info("============testSetUser=====================");
 		List<String> servers = new ArrayList<String>();
 		servers.add("localhost:8901");
 		DirectoryServers directoryServers = new DirectoryServers(servers);
@@ -299,7 +306,7 @@ public class TestDirectoryConnection {
 			}
 
 			@Override
-			public boolean connect(InetSocketAddress address) throws IOException {
+			public boolean connect(InetSocketAddress address) {
 				
 				Assert.assertEquals("localhost", address.getHostName());
 				Assert.assertEquals(8901, address.getPort()); 
@@ -358,7 +365,7 @@ public class TestDirectoryConnection {
 		
 		socket.getRemoteSocketAddress();
 		
-		DirectoryConnection connection = new DirectoryConnection(directoryServers, new WatcherManager(), socket, "user", "password");
+		DirectoryConnection connection = new DirectoryConnection(directoryServers.getNextDirectoryServer(), new WatcherManager(), socket, "user", "password");
 		socket.setConnection(connection);
 		final AtomicInteger reopenInvoked = new AtomicInteger(0);
 		ServiceDirectoryListener listener = new ServiceDirectoryListener(){
@@ -407,6 +414,7 @@ public class TestDirectoryConnection {
 	
 	@Test
 	public void testWatcher(){
+		LOGGER.info("============testWatcher=====================");
 		List<String> servers = new ArrayList<String>();
 		servers.add("localhost:8901");
 		DirectoryServers directoryServers = new DirectoryServers(servers);
@@ -421,7 +429,7 @@ public class TestDirectoryConnection {
 			}
 
 			@Override
-			public boolean connect(InetSocketAddress address) throws IOException {
+			public boolean connect(InetSocketAddress address) {
 				
 				Assert.assertEquals("localhost", address.getHostName());
 				Assert.assertEquals(8901, address.getPort()); 
@@ -480,7 +488,7 @@ public class TestDirectoryConnection {
 					WatchedService wService = new WatchedService(mService);
 					wService.getServiceInstanceEvents().add(new ServiceInstanceEvent("mocksvc", "129.1.1.1-9080", OperateType.Update));
 					os.add(wService);
-		            t.queueResonse(new ResponseHeader(-1, 1, ErrorCode.OK), new WatcherEvent(os, null, wInstances));
+		            t.queueResonse(new ResponseHeader(-1, 1, ErrorCode.OK), new WatcherEvent(os, wInstances));
 		            
 		            
 		            instance = new ModelServiceInstance("othersvc", "129.1.1.1-9080", "op", null, 
@@ -495,7 +503,7 @@ public class TestDirectoryConnection {
 					wService = new WatchedService(mService);
 					wService.getServiceInstanceEvents().add(new ServiceInstanceEvent("othersvc", "129.1.1.1-9080", OperateType.Update));
 					os.add(wService);
-		            t.queueResonse(new ResponseHeader(-1, 1, ErrorCode.OK), new WatcherEvent(os, null, wInstances));
+		            t.queueResonse(new ResponseHeader(-1, 1, ErrorCode.OK), new WatcherEvent(os, wInstances));
 		            
 		            
 		            instance = new ModelServiceInstance("mocksvc", "ddd", "op", null, 
@@ -510,7 +518,7 @@ public class TestDirectoryConnection {
 					wService = new WatchedService(mService);
 					wService.getServiceInstanceEvents().add(new ServiceInstanceEvent("mocksvc", "ddd", OperateType.Add));
 					os.add(wService);
-		            t.queueResonse(new ResponseHeader(-1, 1, ErrorCode.OK), new WatcherEvent(os, null, wInstances));
+		            t.queueResonse(new ResponseHeader(-1, 1, ErrorCode.OK), new WatcherEvent(os, wInstances));
 		            
 		            
 //		            os = new ArrayList<WatchedService>();
@@ -522,7 +530,7 @@ public class TestDirectoryConnection {
 					wService = new WatchedService(mService);
 					wService.getServiceInstanceEvents().add(new ServiceInstanceEvent("mocksvc", "ddd", OperateType.Delete));
 					os.add(wService);
-		            t.queueResonse(new ResponseHeader(-1, 1, ErrorCode.OK), new WatcherEvent(os, null, null));
+		            t.queueResonse(new ResponseHeader(-1, 1, ErrorCode.OK), new WatcherEvent(os, null));
 				}
 			}
 			
@@ -530,7 +538,7 @@ public class TestDirectoryConnection {
 		
 		socket.getRemoteSocketAddress();
 		
-		DirectoryConnection connection = new DirectoryConnection(directoryServers, new WatcherManager(), socket, "user", "password");
+		DirectoryConnection connection = new DirectoryConnection(directoryServers.getNextDirectoryServer(), new WatcherManager(), socket, "user", "password");
 		socket.setConnection(connection);
 		ServiceDirectoryListener listener = new ServiceDirectoryListener(){
 
@@ -561,9 +569,9 @@ public class TestDirectoryConnection {
 		WatcherRegistration wr = new WatcherRegistration("mocksvc", new Watcher(){
 
 			@Override
-			public void process(String name, WatcherType type,
+			public void process(String name, 
 					ServiceInstanceOperate operate) {
-				LOGGER.info("Watcher event - name=" + name + ", WatcherType={}, OperateType={}", type, operate.getType()); 
+				LOGGER.info("Watcher event - name=" + name + ", OperateType={}", operate.getType()); 
 				String n = operate.getType().name();
 				int i = 0;
 				if(watchers.containsKey(n)){
@@ -573,7 +581,7 @@ public class TestDirectoryConnection {
 				watchers.put(n, i);
 			}
 			
-		}, WatcherType.SERVICE);
+		});
 		connection.submitRequest(new ProtocolHeader(3, ProtocolType.GetService), new GetServiceProtocol("mocksvc"), wr) ;
 		try {
 			Thread.sleep(400);
@@ -596,6 +604,7 @@ public class TestDirectoryConnection {
 //	@Ignore
 	@Test
 	public void testServerNotification(){
+		LOGGER.info("============testServerNotification=====================");
 		List<String> servers = new ArrayList<String>();
 		servers.add("localhost:8901");
 		DirectoryServers directoryServers = new DirectoryServers(servers);
@@ -610,7 +619,7 @@ public class TestDirectoryConnection {
 			}
 
 			@Override
-			public boolean connect(InetSocketAddress address) throws IOException {
+			public boolean connect(InetSocketAddress address) {
 				
 				Assert.assertEquals("localhost", address.getHostName());
 				Assert.assertEquals(8901, address.getPort()); 
@@ -668,7 +677,7 @@ public class TestDirectoryConnection {
 		
 		socket.getRemoteSocketAddress();
 		
-		DirectoryConnection connection = new DirectoryConnection(directoryServers, new WatcherManager(), socket, "user", "password");
+		DirectoryConnection connection = new DirectoryConnection(directoryServers.getNextDirectoryServer(), new WatcherManager(), socket, "user", "password");
 		socket.setConnection(connection);
 		ServiceDirectoryListener listener = new ServiceDirectoryListener(){
 
@@ -712,6 +721,7 @@ public class TestDirectoryConnection {
 //	@Ignore
 	@Test
 	public void testPackageSequence(){
+		LOGGER.info("============testPackageSequence=====================");
 		List<String> servers = new ArrayList<String>();
 		servers.add("localhost:8901");
 		DirectoryServers directoryServers = new DirectoryServers(servers);
@@ -727,7 +737,7 @@ public class TestDirectoryConnection {
 			}
 
 			@Override
-			public boolean connect(InetSocketAddress address) throws IOException {
+			public boolean connect(InetSocketAddress address) {
 				
 				Assert.assertEquals("localhost", address.getHostName());
 				Assert.assertEquals(8901, address.getPort()); 
@@ -789,7 +799,7 @@ public class TestDirectoryConnection {
 		
 		socket.getRemoteSocketAddress();
 		
-		final DirectoryConnection connection = new DirectoryConnection(directoryServers, new WatcherManager(), socket, "user", "password");
+		final DirectoryConnection connection = new DirectoryConnection(directoryServers.getNextDirectoryServer(), new WatcherManager(), socket, "user", "password");
 		socket.setConnection(connection);
 		ServiceDirectoryListener listener = new ServiceDirectoryListener(){
 
@@ -884,6 +894,7 @@ public class TestDirectoryConnection {
 //	@Ignore
 	@Test
 	public void testPacketLoss(){
+		LOGGER.info("============testPacketLoss=====================");
 		List<String> servers = new ArrayList<String>();
 		servers.add("localhost:8901");
 		DirectoryServers directoryServers = new DirectoryServers(servers);
@@ -899,7 +910,7 @@ public class TestDirectoryConnection {
 			}
 
 			@Override
-			public boolean connect(InetSocketAddress address) throws IOException {
+			public boolean connect(InetSocketAddress address) {
 				
 				Assert.assertEquals("localhost", address.getHostName());
 				Assert.assertEquals(8901, address.getPort()); 
@@ -963,7 +974,7 @@ public class TestDirectoryConnection {
 		
 		socket.getRemoteSocketAddress();
 		
-		final DirectoryConnection connection = new DirectoryConnection(directoryServers, new WatcherManager(), socket, "user", "password");
+		final DirectoryConnection connection = new DirectoryConnection(directoryServers.getNextDirectoryServer(), new WatcherManager(), socket, "user", "password");
 		socket.setConnection(connection);
 		ServiceDirectoryListener listener = new ServiceDirectoryListener(){
 
@@ -1098,7 +1109,7 @@ public class TestDirectoryConnection {
 		}
 
 		@Override
-		public boolean connect(InetSocketAddress address) throws IOException {
+		public boolean connect(InetSocketAddress address) {
 			
 			Assert.assertEquals("localhost", address.getHostName());
 			Assert.assertEquals(8901, address.getPort()); 

@@ -10,10 +10,12 @@ import java.util.List;
 
 import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.NotificationHandler;
-import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
+import com.cisco.oss.foundation.directory.query.QueryCriterion;
+import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
+import com.cisco.oss.foundation.directory.query.StringCommand;
 
 /**
  * It is the Directory LookupService to perform the lookup functionality.
@@ -54,19 +56,6 @@ public class DirectoryLookupService {
 	}
 	
 	/**
-	 * Get the ModelMetadataKey
-	 * 
-	 * @param keyName
-	 * 		the metadata key name.
-	 * @return
-	 * 		the ModelMetadataKey.
-	 */
-	public ModelMetadataKey getModelMetadataKey(String keyName){
-		ModelMetadataKey key = getDirectoryServiceClient().getMetadata(keyName, null);
-		return key;
-	}
-	
-	/**
 	 * Get the ModelServiceInstance by serviceName and instanceId.
 	 * 
 	 * @param serviceName
@@ -90,54 +79,50 @@ public class DirectoryLookupService {
 	}
 	
 	/**
-	 * Get the ModelServiceInstance list by the Metadata Key.
+	 * Query the ModelServiceInstance.
 	 * 
-	 * @param keyName
-	 * 		the metadata key name.
+	 * @param query
+	 * 		the query criteria.
 	 * @return
-	 * 		the UP ModelServiceInstances that has the metadata key.
+	 * 		the ModelServiceInstance list.
 	 */
-	public List<ModelServiceInstance> getModelInstancesByKey(String keyName){
-		ModelMetadataKey key = getModelMetadataKey(keyName);
-		if(key == null || key.getServiceInstances().size() == 0){
-			return Collections.emptyList();
-		}else{
-			return new ArrayList<ModelServiceInstance>(key.getServiceInstances());
+	public List<ModelServiceInstance> queryModelInstances(ServiceInstanceQuery query){
+		List<StringCommand> commands = new ArrayList<StringCommand>(query.getCriteria().size());
+		for(QueryCriterion q : query.getCriteria()){
+			commands.add((StringCommand) q);
 		}
+		List<ModelServiceInstance> instances = getDirectoryServiceClient().queryService(commands);
+		return instances;
+		
 	}
 	
 	/**
-	 * Get the UP ModelServiceInstance list by the Metadata Key.
+	 * Query the UP ModelServiceInstance.
 	 * 
-	 * It only return the UP ServiceInstance.
-	 * 
-	 * @param keyName
-	 * 		the metadata key name.
+	 * @param query
+	 * 		the query criteria.
 	 * @return
-	 * 		the ModelServiceInstances that has the metadata key.
+	 * 		the ModelServiceInstance list.
 	 */
-	public List<ModelServiceInstance> getUPModelInstancesByKey(String keyName){
-		ModelMetadataKey key = getModelMetadataKey(keyName);
-		
-		List<ModelServiceInstance> list = null;
-		if(key != null && key.getServiceInstances().size() > 0){
+	public List<ModelServiceInstance> queryUPModelInstances(ServiceInstanceQuery query){
+		List<ModelServiceInstance> upInstances= null;
+		List<ModelServiceInstance> instances = queryModelInstances(query);
+		if(instances != null && instances.size() > 0){
 			
-			for(ModelServiceInstance instance : new ArrayList<ModelServiceInstance>(key.getServiceInstances())){
-				if(instance.getStatus().equals(OperationalStatus.UP)){
-					if(list == null){
-						list = new ArrayList<ModelServiceInstance>();
+			for(ModelServiceInstance instance : instances){
+				if(OperationalStatus.UP.equals(instance.getStatus())){
+					if(upInstances == null){
+						upInstances = new ArrayList<ModelServiceInstance>();
 					}
-					list.add(instance);
+					upInstances.add(instance);
 				}
 			}
-			
 		}
-		
-		if(list == null){
+		if(upInstances == null){
 			return Collections.emptyList();
-		}else{
-			return list;
 		}
+		return upInstances;
+		
 	}
 	
 	/**

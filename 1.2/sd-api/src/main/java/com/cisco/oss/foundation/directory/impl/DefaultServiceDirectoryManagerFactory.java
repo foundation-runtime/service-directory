@@ -115,11 +115,17 @@ public class DefaultServiceDirectoryManagerFactory implements
 		
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void start() {
 		// do nothing now.
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void stop() {
 		if(registrationManager != null){

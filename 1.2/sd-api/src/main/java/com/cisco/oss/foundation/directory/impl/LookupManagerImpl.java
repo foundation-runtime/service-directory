@@ -26,10 +26,7 @@ import com.cisco.oss.foundation.directory.lb.MetadataQueryRRLoadBalancer;
 import com.cisco.oss.foundation.directory.lb.ServiceQueryRRLoadBalancer;
 import com.cisco.oss.foundation.directory.lb.ServiceRRLoadBalancer;
 import com.cisco.oss.foundation.directory.lifecycle.Closable;
-import com.cisco.oss.foundation.directory.query.QueryCriterion;
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
-import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery.ContainQueryCriterion;
-import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery.NotContainQueryCriterion;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 
 /**
@@ -216,7 +213,15 @@ public class LookupManagerImpl implements LookupManager, Closable {
 			ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
 			throw new ServiceException(error);
 		}
-		validateServiceInstanceQuery(query);
+//		validateServiceInstanceQuery(query);
+		
+		if(query == null ){
+			throw new IllegalArgumentException("ServiceInstanceQuery cannot be null.");
+		}
+		
+		if(query.getCriteria() == null || query.getCriteria().size() == 0){
+			return null;
+		}
 		
 		try{
 			MetadataQueryRRLoadBalancer lb = lbManager.getMetadataQueryRRLoadBalancer(query);
@@ -236,26 +241,24 @@ public class LookupManagerImpl implements LookupManager, Closable {
 			ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
 			throw new ServiceException(error);
 		}
-		validateServiceInstanceQuery(query);
-		try{
+//		validateServiceInstanceQuery(query);
+		if(query == null ){
+			throw new IllegalArgumentException("ServiceInstanceQuery cannot be null.");
+		}
+		
+		if(query.getCriteria() == null || query.getCriteria().size() == 0){
+			return Collections.emptyList();
+		}
+		
+		try{		
 			List<ServiceInstance> instances = null;
-			String keyName = null;
-			if (query.getCriteria().size() > 0) {
-				keyName = query.getCriteria().get(0).getMetadataKey();
-			}
-			if (keyName != null && !keyName.isEmpty()) {
-				List<ModelServiceInstance> modelInstances = getLookupService()
-						.getUPModelInstancesByKey(keyName);
-				List<ModelServiceInstance> filteredInstances = ServiceInstanceQueryHelper
-						.filter(query, modelInstances);
-				if (filteredInstances.size() > 0) {
-					if (instances == null) {
-						instances = new ArrayList<ServiceInstance>();
-					}
-					for (ModelServiceInstance model : filteredInstances) {
-						instances.add(ServiceInstanceUtils
-								.transferFromModelServiceInstance(model));
-					}
+			
+			List<ModelServiceInstance> modelInstances = getLookupService().queryUPModelInstances(query);
+			if(modelInstances != null && modelInstances.size()> 0){
+				instances = new ArrayList<ServiceInstance>();
+				for(ModelServiceInstance model : modelInstances){
+					instances.add(ServiceInstanceUtils
+							.transferFromModelServiceInstance(model));
 				}
 			}
 
@@ -364,26 +367,25 @@ public class LookupManagerImpl implements LookupManager, Closable {
 			ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
 			throw new ServiceException(error);
 		}
-		validateServiceInstanceQuery(query);
-		try{
+//		validateServiceInstanceQuery(query);
+		if(query == null ){
+			throw new IllegalArgumentException("ServiceInstanceQuery cannot be null.");
+		}
+		
+		if(query.getCriteria() == null || query.getCriteria().size() == 0){
+			return Collections.emptyList();
+		}
+		
+		
+		try{		
 			List<ServiceInstance> instances = null;
-			String keyName = null;
-			if (query.getCriteria().size() > 0) {
-				keyName = query.getCriteria().get(0).getMetadataKey();
-			}
-			if (keyName != null && !keyName.isEmpty()) {
-				List<ModelServiceInstance> modelInstances = getLookupService()
-						.getModelInstancesByKey(keyName);
-				List<ModelServiceInstance> filteredInstances = ServiceInstanceQueryHelper
-						.filter(query, modelInstances);
-				if (filteredInstances.size() > 0) {
-					if (instances == null) {
-						instances = new ArrayList<ServiceInstance>();
-					}
-					for (ModelServiceInstance model : filteredInstances) {
-						instances.add(ServiceInstanceUtils
-								.transferFromModelServiceInstance(model));
-					}
+			
+			List<ModelServiceInstance> modelInstances = getLookupService().queryModelInstances(query);
+			if(modelInstances != null && modelInstances.size()> 0){
+				instances = new ArrayList<ServiceInstance>();
+				for(ModelServiceInstance model : modelInstances){
+					instances.add(ServiceInstanceUtils
+							.transferFromModelServiceInstance(model));
 				}
 			}
 
@@ -454,25 +456,5 @@ public class LookupManagerImpl implements LookupManager, Closable {
 			}
 		}
 		return lookupService;
-	}
-	
-	/**
-	 * Validate the ServiceInstanceQuery for the queryInstanceByKey, queryInstancesByKey 
-	 * and getAllInstancesByKey method.
-	 * 
-	 * For those methods, the ContainQueryCriterion and NotContainQueryCriterion are not supported.
-	 * 
-	 * @param query
-	 * 		the ServiceInstanceQuery to validate.
-	 * @throws ServiceException
-	 * 		when the ServiceInstanceQuery has ContainQueryCriterion or NotContainQueryCriterion.
-	 */
-	private void validateServiceInstanceQuery(ServiceInstanceQuery query) throws ServiceException{
-		for(QueryCriterion criterion : query.getCriteria()){
-			if(criterion instanceof ContainQueryCriterion || criterion instanceof NotContainQueryCriterion){
-				ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.QUERY_CRITERION_ILLEGAL_IN_QUERY);
-				throw new ServiceException(error);
-			}
-		}
 	}
 }

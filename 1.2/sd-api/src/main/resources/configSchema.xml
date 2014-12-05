@@ -83,5 +83,11 @@
 			</DefaultValue>
 		</Parameter>
 		
+		<Parameter name="session.timeout" type="INTEGER" description="">
+			<DefaultValue>
+				<PrimitiveValue value="4000" />
+			</DefaultValue>
+		</Parameter>
+		
 	</NamespaceDefinition>
 </NamespaceDefinitions>

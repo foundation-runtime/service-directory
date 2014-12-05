@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) 2013-2014 by Cisco Systems, Inc. 
+ * All rights reserved. 
+ */
 package com.cisco.oss.foundation.directory.connect;
 
 import java.io.IOException;
@@ -9,11 +13,14 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cisco.oss.foundation.directory.Configurations;
 import com.cisco.oss.foundation.directory.ServiceDirectoryThread;
 import com.cisco.oss.foundation.directory.async.Callback.ProtocolCallback;
 import com.cisco.oss.foundation.directory.async.ServiceDirectoryFuture;
@@ -23,9 +30,7 @@ import com.cisco.oss.foundation.directory.entity.AuthScheme;
 import com.cisco.oss.foundation.directory.entity.EventType;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstanceEvent;
-import com.cisco.oss.foundation.directory.entity.WatchedMetadataKey;
 import com.cisco.oss.foundation.directory.entity.WatchedService;
-import com.cisco.oss.foundation.directory.entity.WatcherType;
 import com.cisco.oss.foundation.directory.event.ConnectionStatus;
 import com.cisco.oss.foundation.directory.event.ServiceDirectoryEvent;
 import com.cisco.oss.foundation.directory.event.ServiceDirectoryEvent.ClientSessionEvent;
@@ -54,53 +59,139 @@ import com.cisco.oss.foundation.directory.proto.WatcherEvent;
 import com.cisco.oss.foundation.directory.stats.PacketLatency;
 import com.cisco.oss.foundation.directory.utils.ObfuscatUtil;
 
+/**
+ * The SD API Connection.
+ * 
+ * It maintains the SD API connection to Directory Server.
+ * 
+ * @author zuxiang
+ *
+ */
 public class DirectoryConnection {
 	
 	private final static Logger LOGGER = LoggerFactory.getLogger(DirectoryConnection.class);
+	
+	/**
+	 * The session timeout value property name.
+	 */
+	public final static String SESSION_TIMEOUT_PROPERTY_NAME = "session.timeout";
     
-    private final static int defaultSessionTimeOut = 4000; 
+	/**
+	 * The default session timeout value.
+	 */
+    private final static int SESSION_TIMEOUT_DEFAULT_VALUE = 4000; 
 
+    /**
+     * The packet length limitation.
+     */
 	public static final int packetLen = 4096*1024;
 	
+	/**
+	 * The death object for the EventManager. When EventManager see the Object,
+	 * stop it self.
+	 */
 	private Object eventOfDeath = new Object();
 	
+	/**
+	 * The AuthData of the Connection. It generates the anonymous by default. 
+	 */
 	private AuthData authData = generateDirectoryAuthData("anonymous", null);
 	
+	/**
+	 * The Queue for the all pending Packet that submitted and not get response from Directory Server.
+	 */
     private final LinkedList<Packet> pendingQueue = new LinkedList<Packet>();
+    
+    /**
+     * The ServiceDirectoryListener list registered.
+     */
     private final List<ServiceDirectoryListener> statusListeners = new ArrayList<ServiceDirectoryListener>();
 
-    
+    /**
+     * Indicate whether the Connection is closing.
+     */
     private volatile boolean closing = false;
     
+    /**
+     * The Session object of the Connection.
+     */
     private Session session;
     
-//    private Random random = new Random(System.nanoTime());
-    
+    /**
+     * The xid of the packet, every time send a packet increase it by 1.
+     */
     private AtomicInteger xid = new AtomicInteger(1);
     
+    /**
+     * Last xid of the Directory Server.
+     */
     private volatile long lastDxid = -1;
     
+    /**
+     * The ConnectionStatus.
+     */
     private volatile ConnectionStatus status = ConnectionStatus.NEW;
     
+    /**
+     * The EventThread to handle the Event.
+     */
     private EventThread eventThread;
-    private ConnectionThread connectionThread;
+    
+    /**
+     * The deamon thread to maintain the Conenction.
+     */
+    private Thread connectionThread;
     
     private DirectorySocket clientSocket;
     
-    private DirectoryServers directoryServers;
+    /**
+     * The Directory Server connected to.
+     */
+    private InetSocketAddress directoryServer;
     
+    /**
+     * The WatcherManager that manages all Service Watchers.
+     */
     private WatcherManager watcherManager;
     
+    /**
+     * The AtomicReference to the Ping Response.
+     */
+    private AtomicReference<ResponseHeader> pingResponse = new AtomicReference<ResponseHeader>();
+    
+    /**
+     * the time of the latest ping send time, use to measure Ping time.
+     */
+    private long lastPingSentNs = 0;
+    /**
+     * Default constructor.
+     */
     public DirectoryConnection(){
     	
     }
     
-	public DirectoryConnection(DirectoryServers directoryServers, 
+    /**
+     * The DirectoryConnection constructor.
+     * 
+     * @param directoryServer
+     * 		the Directory Server to connect.
+     * @param watcherManager
+     * 		the WatcherManager.
+     * @param clientSocket
+     * 		the DirectorySocket implementation that used.
+     * @param userName
+     * 		the user name for auth.
+     * @param password
+     * 		the password.
+     */
+	public DirectoryConnection(InetSocketAddress directoryServer, 
 			WatcherManager watcherManager, DirectorySocket clientSocket, String userName, String password){
-		this.directoryServers = directoryServers;
+		this.directoryServer = directoryServer;
 		this.watcherManager = watcherManager;
 		this.clientSocket = clientSocket;
 		session = new Session();
+		
+		session.timeOut = Configurations.getInt(SESSION_TIMEOUT_PROPERTY_NAME, SESSION_TIMEOUT_DEFAULT_VALUE);
 		
 		if(userName != null && ! userName.isEmpty()){
 			this.authData = this.generateDirectoryAuthData(userName, password);
@@ -110,8 +201,16 @@ public class DirectoryConnection {
 		eventThread = new EventThread();
 	}
 	
-	public void setDirectoryServers(DirectoryServers directoryServers){
-		this.directoryServers = directoryServers;
+	/**
+	 * Set a new Directory Server address.
+	 * 
+	 * DirectoryConenction will reopen the session to the new Directory Server.
+	 * 
+	 * @param directoryServer
+	 * 		the Directory Server address.
+	 */
+	public void setDirectoryServers(InetSocketAddress directoryServer){
+		this.directoryServer = directoryServer;
 		reopenSession();
 	}
 	
@@ -124,33 +223,96 @@ public class DirectoryConnection {
 	 * And it doesn't block the Thread interruption.
 	 */
 	public void blockUtilConnected(){
-		synchronized(this){
-			if (getStatus().isConnected()) {
-				return;
-			}
-			try {
-				this.wait();
-			} catch (InterruptedException e) {
-				LOGGER.warn("Block Util Connected interrupted.");
+		
+		if(getStatus().isConnected()){
+			return;
+		}
+			
+		int to = getConnectTimeOut();
+		final Object o = new Object();
+		
+		long now = System.currentTimeMillis();
+		
+		synchronized(o){
+			
+			ServiceDirectoryListener listener = new ServiceDirectoryListener(){
+
+				@Override
+				public void notify(ServiceDirectoryEvent event) {
+					synchronized(o){
+						o.notifyAll();
+					}
+				}
+				
+			};
+			
+			registerClientChangeListener(listener);
+			try{
+				while(to > 0){
+					if (getStatus().isConnected()) {
+						return;
+					}
+					try {
+						o.wait(to);
+					} catch (InterruptedException e) {
+						LOGGER.warn("Block Util Connected interrupted.");
+					}
+					
+					to -= (System.currentTimeMillis() - now);
+				}
+			}finally{
+				unregisterClientChangeListener(listener);
 			}
 		}
 		
+		
 	}
+	
+	/**
+	 * Start the DirectoryConnection.
+	 * 
+	 * It is not thread safe.
+	 */
 	public void start() {
 		setStatus(ConnectionStatus.NOT_CONNECTED);
+		InetSocketAddress address = directoryServer;
+		clientSocket.connect(address);
 		eventThread.start();
-		connectionThread = new ConnectionThread();
+		connectionThread = new Thread(new ConnectTask());
+		connectionThread.setDaemon(true);
+		connectionThread.setName(ServiceDirectoryThread.getThreadName("Client_Connect_Thread"));
 		connectionThread.start();
     }
 	
+	/**
+	 * Get the session id.
+	 */
 	public String getSessionId(){
 		return session.id;
 	}
     
-    public void close() throws IOException {
+	/**
+	 * Close the Directory Connection.
+	 * 
+	 * It is thread safe.
+	 * 
+	 * @throws IOException
+	 * 		the IOException in closing.
+	 */
+    public synchronized void close() throws IOException {
+    	if(getStatus().equals(ConnectionStatus.CLOSED)){
+    		return ;
+    	}
         if (LOGGER.isDebugEnabled()) {
             LOGGER.debug("Closing client for session: 0x"
                       + getSessionId());
+        }
+        connectRun.set(false);
+        
+        try{
+        	clientSocket.cleanup();
+        }catch(Exception e){
+        	LOGGER.warn("Close the WSDirectorySocket get error.", e);
         }
 
         try {
@@ -163,6 +325,18 @@ public class DirectoryConnection {
         } 
     }
     
+    /**
+     * Submit a Request.
+     * 
+     * @param h
+     * 		the ProtocolHeader.
+     * @param request
+     * 		the Protocol.
+     * @param wr
+     * 		the WatcherRegistration
+     * @return
+     * 		the Response of the Request.
+     */
     public Response submitRequest(ProtocolHeader h, Protocol request, 
     		WatcherRegistration wr){
         Packet packet = queuePacket(h, request, null, null, null, wr);
@@ -181,17 +355,66 @@ public class DirectoryConnection {
         return packet.response;
     }
     
+    /**
+     * Submit a Request with Callback.
+     * 
+     * It is a asynchronized method, it returns on until Request complete.
+     * When the Request complete, SD API will invoke the Callback.
+     * 
+     * @param h
+     * 		the ProtocolHeader.
+     * @param request
+     * 		the Protocol.
+     * @param callBack
+     * 		the Callback.
+     * @param context
+     * 		the Context object of the Callback.
+     */
     public void submitCallbackRequest(ProtocolHeader h, Protocol request, ProtocolCallback callBack, Object context){
     	queuePacket(h, request, callBack, context, null, null);
     }
     
+    /**
+     * Submit a Request in asynchronizing, it return a Future for the 
+     * Request Response.
+     * 
+     * @param h
+     * 		the ProtocolHeader.
+     * @param request
+     * 		the Protocol.
+     * @param wr
+     * 		the WatcherRegistration of the Service.
+     * @return
+     * 		the Future.
+     */
     public ServiceDirectoryFuture submitAsyncRequest(ProtocolHeader h, Protocol request, WatcherRegistration wr){
     	ServiceDirectoryFuture future = new ServiceDirectoryFuture();
     	queuePacket(h, request, null, null, future, wr);
     	return future;
     }
 
-    public Packet queuePacket(ProtocolHeader header, Protocol protocol,
+    /**
+     * Queue the Packet to Connection.
+     * 
+     * The DirectoryConnect Queue the Packet to the internal Queue and send it to remote
+     * Directory Server.
+     * 
+     * @param header
+     * 		the ProtocolHeader.
+     * @param protocol
+     * 		the Protocol.
+     * @param cb
+     * 		the Callback.
+     * @param context
+     * 		the context Object of the Callback.
+     * @param future
+     * 		the Future.
+     * @param wr
+     * 		WatcherRegistration
+     * @return
+     * 		the queued Packet.
+     */
+    private Packet queuePacket(ProtocolHeader header, Protocol protocol,
     		ProtocolCallback cb, Object context, ServiceDirectoryFuture future, WatcherRegistration wr)
     {
         Packet packet = new Packet(header, protocol, wr);
@@ -231,6 +454,14 @@ public class DirectoryConnection {
         return packet;
     }
     
+    /**
+     * On the DirectoryConnection receive Response from DirectorySocket.
+     * 
+     * @param header
+     * 		the Response Header.
+     * @param response
+     * 		the Response.
+     */
     public void onReceivedPesponse(ResponseHeader header, Response response){
     	Packet packet = null;
     	updateRecv();
@@ -276,7 +507,12 @@ public class DirectoryConnection {
             // -2 is the xid for pings
         	if(LOGGER.isTraceEnabled()){
         		LOGGER.info("Got ping response for sessionid: 0x" + session.id
-        				+ " after " + ((System.nanoTime() - lastPingSentNs) / 1000000) + "ms");
+        				+ " after " + (System.currentTimeMillis() - lastPingSentNs) + "ms");
+        	}
+        	
+        	pingResponse.set(header);
+        	synchronized(pingResponse){
+        		pingResponse.notifyAll();
         	}
             return;
         }
@@ -361,11 +597,22 @@ public class DirectoryConnection {
     	}
     }
 
+    /**
+     * Get the ConenctionStatus.
+     * @return
+     * 		the DirectoryConnection ConenctionStatus.
+     */
     public ConnectionStatus getStatus() {
         return status;
     }
     
-    public void setStatus(ConnectionStatus status){
+    /**
+     * Set the DirectoryConnection ConenctionStatus.
+     * 
+     * @param status
+     * 		the ConenctionStatus.
+     */
+    private void setStatus(ConnectionStatus status){
     	if(LOGGER.isDebugEnabled()){
     		LOGGER.debug("Set status to - " + status);
     	}
@@ -376,18 +623,42 @@ public class DirectoryConnection {
     	}
     }
     
+    /**
+     * Register a ServiceDirectoryListener.
+     * 
+     * @param listener
+     * 		the ServiceDirectoryListener.
+     */
     public void registerClientChangeListener(ServiceDirectoryListener listener){
     	synchronized(statusListeners){
     		this.statusListeners.add(listener);
     	}
     }
     
+    /**
+     * Unregister the ServiceDirectoryListener.
+     * 
+     * @param listener
+     * 		the ServiceDirectoryListener.
+     */
     public void unregisterClientChangeListener(ServiceDirectoryListener listener){
     	synchronized(statusListeners){
     		this.statusListeners.remove(listener);
     	}
     }
     
+    /**
+     * On the DirectoryConnection setup connection to DirectoryServer.
+     * 
+     * @param serverSessionTimeout
+     * 		the session timeout.
+     * @param sessionId
+     * 		the session id.
+     * @param sessionPassword
+     * 		the session password.
+     * @param serverId
+     * 		the remote server id.
+     */
     public void onConnected(int serverSessionTimeout, String sessionId, byte[] sessionPassword, int serverId) {
     	
         if (serverSessionTimeout <= 0) {
@@ -416,10 +687,19 @@ public class DirectoryConnection {
         
     }
     
+    /**
+     * On the DirectorySocket has error.
+     */
     public void onSocketError(){
     	reopenSession();
     }
     
+    /**
+     * Send the CloseSession packet.
+     * 
+     * @throws IOException
+     * 		the IOException.
+     */
     private void sendCloseSession() throws IOException{
     	ProtocolHeader h = new ProtocolHeader();
         h.setType(ProtocolType.CloseSession);
@@ -428,71 +708,32 @@ public class DirectoryConnection {
     }
     
     /**
-     * Connect to the remote DirectoryServer, it include two phase.
-     * 1. socket connect.
-     * 2. setup session and authentication.
-     * 
-     * This method block connection until success to Connect time out.
+     * Connect to the remote DirectoryServer.
      * 
      * @throws IOException
      */
     private void doConnect() throws SessionTimeOutException{
-    	boolean connected = false;
     	long to = getConnectTimeOut();
-    	
-		InetSocketAddress address = directoryServers.getNextDirectoryServer();
-		long n = System.currentTimeMillis();
-		long left = to;
 		
-		SessionTimeOutException e = null;
-		while(connected == false && e == null){
-			if(LOGGER.isTraceEnabled()){
-				LOGGER.trace("Socket connect to - " + address + ", left=" + left);
-			}
-			try {
-				if (clientSocket.connect(address)) {
-					connected = true;
-					LOGGER.info("Open socket to server - " + address);
-				} else {
-					LOGGER.error("Fail open socket to server - " + address);
-				}
-			} catch (IOException exception) {
-				LOGGER.error("Fail open socket to server - " + exception.getMessage() +  " - " + address );
-			}
-			left = to - (System.currentTimeMillis() - n);
-			
-			if(left < 0 ){
-				e = new SessionTimeOutException("Socket connect timeout.");
-			}
-		}
-		
-		while (! getStatus().isConnected() && e == null) {
-			if(LOGGER.isTraceEnabled()){
-				LOGGER.trace("CreateConnect to - " + address + ", left=" + left);
-			}
-			ErrorCode ec = sendConnectProtocol(to - (System.currentTimeMillis() - n));
+		if(clientSocket.isConnected()){
+			ErrorCode ec = sendConnectProtocol(to);
 			// CONNECTION_LOSS means client data is inconsistence with server. now we check the last dxid of client.
 			// if dxid of the client is bigger than server actual dxid, return CONNECTION_LOSS.
 			if(ErrorCode.SESSION_EXPIRED.equals(ec) || ErrorCode.CONNECTION_LOSS.equals(equals(ec))){
 				LOGGER.info("Session Expired, cleanup the client session.");
 				cleanupSession();
-			} else if(! ErrorCode.OK.equals(ec)){
-				left = to - (System.currentTimeMillis() - n);
-				if (left < 0) {
-					e = new SessionTimeOutException("create session timeout.");
-				}
-			}
-		}
-		
-		synchronized(this){
-			// Notify DirectoryConnection connect finished.
-			this.notifyAll();
-		}
-		if(e != null){
-			throw e;
+			} 
 		}
     }
     
+    /**
+     * Send the Connect Protocol to the remote Directory Server.
+     * 
+     * @param to
+     * 		the connection timeout.
+     * @return
+     * 		the ErrorCode of the request, OK for success.
+     */
     private ErrorCode sendConnectProtocol(long to) {
     	String sessId = session.id;
     	ErrorCode ec = ErrorCode.OK;
@@ -535,6 +776,12 @@ public class DirectoryConnection {
 		clientSocket.sendPacket(header, protocol);
 	}
 	
+	/**
+	 * The Packet finished.
+	 * 
+	 * @param p
+	 * 		the Packet.
+	 */
 	private void finishPacket(Packet p) {
 		
         if (p.watcherRegistration != null) {
@@ -555,6 +802,12 @@ public class DirectoryConnection {
         
     }
 
+	/**
+	 * On the Packet lost in the DirectoryConnection.
+	 * 
+	 * @param p
+	 * 		the Packet.
+	 */
     private void onLossPacket(Packet p) {
         if (p.respHeader == null) {
             p.respHeader = new ResponseHeader(-1, -1, ErrorCode.OK);
@@ -572,6 +825,9 @@ public class DirectoryConnection {
         finishPacket(p);
     }
     
+    /**
+     * On the session close.
+     */
     private void onSessionClose(){
     	synchronized(pendingQueue){
     		while(! pendingQueue.isEmpty()){
@@ -588,16 +844,22 @@ public class DirectoryConnection {
      * try to do connect soon.
      */
     private void closeSession(){
-    	
-    	closing = true;
-    	if(getStatus().isAlive()){
-    		setStatus(ConnectionStatus.NOT_CONNECTED);
+    	if(LOGGER.isDebugEnabled()){
+    		LOGGER.debug("Close the session, sessionId=" + session.id + ", timeOut=" + session.timeOut);
     	}
-    	cleanupSession();
-    	clientSocket.cleanup();
-    	closing = false;
+    	if(! closing && getStatus().isConnected()){
+	    	closing = true;
+	    	if(getStatus().isAlive()){
+	    		setStatus(ConnectionStatus.NOT_CONNECTED);
+	    	}
+	    	cleanupSession();
+	    	closing = false;
+    	}
     }
     
+    /**
+     * Cleanup the session in the DirectoryConnection.
+     */
     private void cleanupSession(){
     	eventThread.queueClientEvent(new ClientSessionEvent(SessionEvent.CLOSED));
     	watcherManager.cleanup();
@@ -618,30 +880,72 @@ public class DirectoryConnection {
      * Send packet failed donot reopen the session.
      */
     private void reopenSession(){
-    	closing = true;
-    	if(getStatus().isAlive()){
-    		setStatus(ConnectionStatus.NOT_CONNECTED);
+    	if(! closing && getStatus().isConnected()){
+	    	closing = true;
+	    	if(getStatus().isAlive()){
+	    		setStatus(ConnectionStatus.NOT_CONNECTED);
+	    	}
+	    	closing = false;
     	}
-//    	onSessionClose();
-    	clientSocket.cleanup();
-    	closing = false;
     }
     
-    private long lastPingSentNs = 0;
-    
-    private void sendPing() throws IOException {
+    /**
+     * Send the Ping Request.
+     * 
+     * @return
+     * 		the ErrorCode, OK for success.
+     * @throws IOException
+     * 		the IOException.
+     */
+    private ErrorCode sendPing() throws IOException {
         if(LOGGER.isTraceEnabled()){
     		LOGGER.trace("......................send Ping");
     	}
-        lastPingSentNs = System.nanoTime();
+        lastPingSentNs = System.currentTimeMillis();
         ProtocolHeader h = new ProtocolHeader(-2, ProtocolType.Ping);
         sendAdminPacket(h, null);
+        
+        int waitTime = session.pingWaitTimeOut;
+        
+        synchronized(pingResponse){
+        	while(waitTime > 0){
+        		try {
+					pingResponse.wait(waitTime);
+				} catch (InterruptedException e) {
+					// Do nothing.
+				}
+        		
+				ResponseHeader header = pingResponse.get();
+				if (header != null) {
+					pingResponse.set(null);
+					return header.getErr();
+				}
+				waitTime -= (System.currentTimeMillis() - lastPingSentNs);
+        	}
+        }
+        return ErrorCode.PING_TIMEOUT;
     }
     
+    /**
+     * Get the ConnectTimeOut.
+     * 
+     * @return
+     * 		the Connect timeout.
+     */
     private int getConnectTimeOut(){
     	return session.timeOut;
     }
     
+    /**
+     * Generate the obfuscated auth data.
+     * 
+     * @param userName
+     * 		the user name.
+     * @param password
+     * 		the password.
+     * @return
+     * 		the AuthData.
+     */
     private AuthData generateDirectoryAuthData(String userName, String password)  {
     	
     	if(password != null && ! password.isEmpty()){
@@ -652,68 +956,130 @@ public class DirectoryConnection {
     	}
     }
 	
-	
-	
+    /**
+     * the current time in ms.
+     */
 	private long now = 0;
 	
-	private long lastSendMilli = 0;
-	
+	/**
+	 * last time receive response from Directory Server in ms.
+	 */
 	private long lastRecvMilli = 0;
 	
+	/**
+	 * Update the current time.
+	 */
 	private void updateNow(){
 		now = System.currentTimeMillis();
 	}
 	
-	private void updateSend(){
-		now = System.currentTimeMillis();
-		lastSendMilli = now;
-	}
-	
-	private void updateSendAndNow(){
-		lastSendMilli = System.currentTimeMillis();
-	}
-	
+	/**
+	 * Update the last receive response time.
+	 */
 	private void updateRecv(){
 		lastRecvMilli = System.currentTimeMillis();
 	}
 	
+	/**
+	 * Get the idle of the Receive.
+	 * 
+	 * @return
+	 * 		the time gap in ms.
+	 */
 	private long getRecvIdle(){
 		return now - lastRecvMilli;
 	}
 	
-	private long getSendIdle(){
-		return now - lastSendMilli;
-	}
-	
+	/**
+	 * The Packet of the Request.
+	 * 
+	 * @author zuxiang
+	 *
+	 */
 	public static class Packet {
+		/**
+		 * The ProtocolHeader.
+		 */
         ProtocolHeader protoHeader;
 
+        /**
+         * The ResponseHeader.
+         */
         ResponseHeader respHeader;
 
+        /**
+         * The Protocol.
+         */
         Protocol protocol;
 
+        /**
+         * The Response.
+         */
         Response response;
 
+        /**
+         * Indicate whether the Packet complete.
+         */
         boolean finished;
 
+        /**
+         * The Callback.
+         */
         ProtocolCallback cb;
 
+        /**
+         * The ServiceDirectoryFuture.
+         */
         ServiceDirectoryFuture future;
         
+        /**
+         * The context Object of the Callback.
+         */
         Object context;
 
+        /**
+         * Indicate whether the request is readonly.
+         */
         public boolean readOnly;
         
+        /**
+         * The WatcherRegistration.
+         */
         WatcherRegistration watcherRegistration;
         
+        /**
+         * The create time of the Packet.
+         */
         long createTime;
 
+        /**
+         * The constructor.
+         * 
+         * @param requestHeader
+         * 		the ProtocolHeader.
+         * @param request
+         * 		the Protocol
+         * @param watcherRegistration
+         * 		the WatcherRegistration.
+         */
         Packet(ProtocolHeader requestHeader, 
         		Protocol request, WatcherRegistration watcherRegistration) {
             this(requestHeader,  request, 
             		watcherRegistration, false);
         }
 
+        /**
+         * The constructor.
+         * 
+         * @param protoHeader
+         * 		the ProtocolHeader.
+         * @param protocol
+         * 		the Protocol.
+         * @param watcherRegistration
+         * 		the WatcherRegistration.
+         * @param readOnly
+         * 		readOnly flag.
+         */
         Packet(ProtocolHeader protoHeader, 
         		Protocol protocol, WatcherRegistration watcherRegistration, boolean readOnly) {
 
@@ -724,10 +1090,22 @@ public class DirectoryConnection {
             this.respHeader = new ResponseHeader();
         }
         
+        /**
+         * Set the createTime.
+         * 
+         * @param createTime
+         * 		the createTime.
+         */
         public void setCreateTime(long createTime){
         	this.createTime = createTime;
         }
         
+        /**
+         * Get the createTime.
+         * 
+         * @return
+         * 		the createTime.
+         */
         public long getCreateTime(){
         	return this.createTime;
         }
@@ -746,39 +1124,102 @@ public class DirectoryConnection {
         }
     }
 	
+	/**
+	 * The Session of the DirectoryServer.
+	 * 
+	 * @author zuxiang
+	 *
+	 */
 	class Session {
+		/**
+		 * The SessionId.
+		 */
 		private String id = "";
+		
+		/**
+		 * The remote server id.
+		 */
 	    private int serverId = -1;
 	    
+	    /**
+	     * The sesion password.
+	     */
 	    private byte password[] = null;
+	    
 	    // Time out in milli seconds.
-	    private int timeOut = defaultSessionTimeOut;
+	    private int timeOut = SESSION_TIMEOUT_DEFAULT_VALUE;
+	    
+	    // The time ping request wait for.
+	    private int pingWaitTimeOut = timeOut / 4;
 	}
 	
+	/**
+	 * The EventThread to handle the event.
+	 * 
+	 * @author zuxiang
+	 *
+	 */
 	class EventThread extends Thread {
+		/**
+		 * The event Queue.
+		 */
         private final LinkedBlockingQueue<Object> waitingEvents =
             new LinkedBlockingQueue<Object>();
 
+        /**
+         * Indicate whether killed.
+         */
        private volatile boolean wasKilled = false;
+       
+       /**
+        * Indicate whether running.
+        */
        private volatile boolean isRunning = false;
 
-        EventThread() {
-            super("SD-EventThread");
-            setDaemon(true);
-        }
+       /**
+        * Constructor.
+        */
+       EventThread() {
+    	   super("SD-EventThread");
+    	   setDaemon(true);
+       }
         
-        public void queueServerEvent(ServerEvent event){
-        	waitingEvents.add(event);
-        }
+       /**
+        * Queue a Server Event.
+        * 
+        * @param event
+        * 		the ServerEvent.
+        */
+       public void queueServerEvent(ServerEvent event){
+    	   waitingEvents.add(event);
+       }
         
-        public void queueClientEvent(ServiceDirectoryEvent event){
-        	waitingEvents.add(event);
-        }
+       /**
+        * Queue a Client Event.
+        * 
+        * @param event
+        * 		the ClientEvent.
+        */
+       public void queueClientEvent(ServiceDirectoryEvent event){
+    	   waitingEvents.add(event);
+       }
 
-        public void queueWatcherEvent(WatcherEvent event) {
-            waitingEvents.add(event);
-        }
+       /**
+        * Queue a Watcher Event.
+        * 	
+        * @param event
+        * 		the WatcherEvent.
+        */
+       public void queueWatcherEvent(WatcherEvent event) {
+    	   waitingEvents.add(event);
+       }
 
+       /**
+        * Queue a Packet.
+        * 
+        * @param packet
+        * 	The Packet.
+        */
        public void queuePacket(Packet packet) {
           if (wasKilled) {
              synchronized (waitingEvents) {
@@ -790,10 +1231,16 @@ public class DirectoryConnection {
           }
        }
 
+       /**
+        * Queue the death event.
+        */
         public void queueEventOfDeath() {
             waitingEvents.add(eventOfDeath);
         }
 
+        /**
+         * The main run method.
+         */
         @Override
         public void run() {
            try {
@@ -820,11 +1267,19 @@ public class DirectoryConnection {
            LOGGER.info("EventThread shut down");
         }
 
-       private void processEvent(Object event) {
-          try {
-        	  if(LOGGER.isDebugEnabled()){
-        		  LOGGER.debug("Process event - " + event);
-        	  }
+        /**
+         * Process the event.
+         * 
+         * The EventThread process the ServerEvent, ClientEvent and Packet.
+         * 
+         * @param event
+         * 		the Event Object.
+         */
+        private void processEvent(Object event) {
+        	try {
+        		if(LOGGER.isDebugEnabled()){
+        			LOGGER.debug("Process event - " + event);
+        		}
               if (event instanceof Event) {
             	  EventType type = ((Event) event).getEventType();
             	  if(EventType.Server.equals(type)){
@@ -835,7 +1290,7 @@ public class DirectoryConnection {
             		  if(watcherEvent.getServices() != null && watcherEvent.getServices().size() > 0){
 	            		  for(WatchedService wService : watcherEvent.getServices()){
 	            			  String serviceName = wService.getService().getName();
-	            			  List<Watcher> watchers = watcherManager.getWatchers(serviceName, WatcherType.SERVICE);
+	            			  List<Watcher> watchers = watcherManager.getWatchers(serviceName);
 	            			  
 	            			  if(watchers == null || watchers.size() == 0
 	            					  || wService.getServiceInstanceEvents() == null || wService.getServiceInstanceEvents().size() == 0){
@@ -856,49 +1311,15 @@ public class DirectoryConnection {
 	            						  serviceInstance, instanceEvent.getOperateType());
 	            				  for(Watcher w : watchers){
 	            					  try{
-	            						  w.process(serviceName, WatcherType.SERVICE, o);
+	            						  w.process(serviceName, o);
 	            					  } catch(Exception e){
-	            						  LOGGER.warn("Watcher process failed, name=" + serviceName + ", type=" + WatcherType.SERVICE, e);
+	            						  LOGGER.warn("Watcher process failed, name=" + serviceName, e);
 	            					  }
 	            				  }
 	            			  }
 	            		  }
             		  }
             		  
-            		  if(watcherEvent.getMetadataKeys() != null && watcherEvent.getMetadataKeys().size() > 0){
-	            		  for(WatchedMetadataKey wKey : watcherEvent.getMetadataKeys()){
-	            			  String keyName = wKey.getMetadataKey().getName();
-	            			  List<Watcher> watchers = watcherManager.getWatchers(keyName, WatcherType.METADATA);
-	            			  
-	            			  if(watchers == null || watchers.size() == 0
-	            					  || wKey.getServiceInstanceEvents() == null 
-	            					  || wKey.getServiceInstanceEvents().size() == 0){
-	            				  continue;
-	            			  }
-	            			  
-	            			  for(ServiceInstanceEvent instanceEvent : wKey.getServiceInstanceEvents()){
-	            				  String serviceName = instanceEvent.getServiceName();
-	            				  String instanceId = instanceEvent.getInstanceId();
-	            				  ModelServiceInstance serviceInstance = null;
-	            				  if(! OperateType.Delete.equals(instanceEvent.getOperateType())){
-	            					  for(ModelServiceInstance k : watcherEvent.getServiceInstances()){
-	            						  if(serviceName.equals(k.getServiceName()) && instanceId.equals(k.getInstanceId())){
-	            							  serviceInstance = k;
-	            						  }
-	            					  }
-	            				  }
-	            				  ServiceInstanceOperate o = new ServiceInstanceOperate(serviceName, instanceId, 
-	            						  serviceInstance, instanceEvent.getOperateType());
-	            				  for(Watcher w : watchers){
-	            					  try{
-	            						  w.process(keyName, WatcherType.METADATA, o);
-	            					  } catch(Exception e){
-	            						  LOGGER.warn("Watcher process failed, name=" + keyName + ", type=" + WatcherType.METADATA, e);
-	            					  }
-	            				  }
-	            			  }
-	            		  }
-            		  }
             	  } else {
             		  LOGGER.error("Unkonwn event type - " + type);
             	  }
@@ -952,99 +1373,140 @@ public class DirectoryConnection {
        }
     }
 	
+	/**
+	 * On the DirectoryConnection session timeout.
+	 */
+	private void onSessionTimeOut(){
+		closeSession();
+	}
+	
+	/**
+	 * On the Ping failed.
+	 * 
+	 * @param code
+	 * 		the ErrorCode.
+	 */
+	private void onPingFailed(ErrorCode code){
+		
+	}
+	
+	/**
+	 * The AuthData.
+	 * 
+	 * @author zuxiang
+	 *
+	 */
 	static class AuthData {
+		/**
+		 * The AuthScheme.
+		 */
+		AuthScheme scheme;
+		
+		/**
+		 * The userName.
+		 */
+        String userName;
+
+        /**
+         * The secret byte array.
+         */
+        byte secret[];
+        
+        /**
+         * Whether obfuscated.
+         */
+        boolean obfuscated;
+        
+		/**
+		 * The Constructor.
+		 * 
+		 * @param scheme
+		 * 		the AuthScheme.
+		 * @param userName
+		 * 		the userName.
+		 * @param secret
+		 * 		the secret byte array.
+		 * @param obfuscated
+		 * 		whether it obfuscated.
+		 */
         AuthData(AuthScheme scheme, String userName, byte secret[], boolean obfuscated) {
             this.scheme = scheme;
             this.secret = secret;
             this.userName = userName;
             this.obfuscated = obfuscated;
         }
-        
-        
-
-        AuthScheme scheme;
-        String userName;
-
-        byte secret[];
-        boolean obfuscated;
     }
 	
-	class ConnectionThread extends Thread {
-		
-		public ConnectionThread(){
-			super(ServiceDirectoryThread.getThreadName("Client_Connect_Thread"));
-		}
-		
-		@Override
-		public void run(){
-			while(getStatus().isAlive() ){
-				
-				try {
-					updateNow();
-					if (! getStatus().isConnected() && !closing) {
-						try{
-							Thread.sleep(100);
-						} catch(Exception e){
-							// do nothing.
-						}
-						doConnect();
-						if(getStatus().isConnected()){
-							updateSendAndNow();
-						}
-						
-						
-					} else if(getStatus().isConnected()) {
-						int to = (int) (session.timeOut - getRecvIdle());
+	/**
+	 * Control whether the deamon connect task to run.
+	 */
+	private AtomicBoolean connectRun = new AtomicBoolean(true);
+	
+	/**
+	 * The deamon connection thread task.
+	 * 
+	 * @author zuxiang
+	 *
+	 */
+	class ConnectTask implements Runnable {
 
-						if (to < 0) {
-							throw new SessionTimeOutException();
+		@Override
+		public void run() {
+			while(connectRun.get()){
+				try{
+					if (!getStatus().isConnected() && !closing) {
+
+						doConnect();
+					} else if(getStatus().isConnected()) {
+						try {
+							updateNow();
+							long idle = getRecvIdle();
+							
+							if(idle > session.timeOut){
+								LOGGER.info("Doesn't heared response from Directory Server in timeout " + session.timeOut + ", close the session.");
+								onSessionTimeOut();
+							} else {
+								int sleepTO = (int) (session.timeOut / 2 - idle);
+								if(sleepTO > 0){
+									try{
+										Thread.sleep(sleepTO);
+									}catch(Exception e){
+										// do noting
+									}
+								}
+								ErrorCode error = sendPing();
+								if(! ErrorCode.OK.equals(error)){
+									onPingFailed(error);
+								}
+							}
+							
+						} catch (IOException ioe) {
+							if(LOGGER.isTraceEnabled()){
+								LOGGER.trace("Ping get exception.", ioe);
+							}
+							onPingFailed(null);
+						} catch (Exception e){
+							if(LOGGER.isTraceEnabled()){
+								LOGGER.trace("Ping get exception.", e);
+							}
+							onPingFailed(null);
 						}
-						
-						int sendTo = (int) (session.timeOut / 2 - getSendIdle());
-						
-						if(sendTo < 0){
-							sendPing();
-							updateSend();
-						} 
-						
-						try{
-							Thread.sleep(session.timeOut / 2);
-						} catch(InterruptedException e){
-							// do nothing
-						}
-						
-						
 					} 
-				} catch (Throwable e) {
-					if(! getStatus().isConnected()){
-						LOGGER.error("Connect failed, reopen session.");
-						if(LOGGER.isTraceEnabled()){
-							LOGGER.trace("Connect failed.", e);
-						}
-						reopenSession();
-					} else {
-						
-						if( e instanceof SessionTimeOutException){
-							LOGGER.error("Session timeout exception, close the session.");
-							if(LOGGER.isTraceEnabled()){
-								LOGGER.trace("Session timeout exception", e);
-							}
-							reopenSession();
-						} else if(e instanceof IOException){
-							LOGGER.error("Send Ping failed, reopen the session.");
-							if(LOGGER.isTraceEnabled()){
-								LOGGER.trace("Send Ping failed.", e);
-							}
-							reopenSession();
-						} else {
-							LOGGER.error("Unexpected exception, reopen the session.", e);
-							reopenSession();
-						}
-						
+					try {
+						Thread.sleep(50);
+					} catch (Exception e) {
+						// do nothing.
+					}
+					
+				} catch(Throwable e){
+					if(LOGGER.isTraceEnabled()){
+						LOGGER.trace("connect get error.", e);
 					}
 				}
 			}
-			LOGGER.info("ConnectionThread shutdown");
+			
 		}
+		
 	}
+	
 }

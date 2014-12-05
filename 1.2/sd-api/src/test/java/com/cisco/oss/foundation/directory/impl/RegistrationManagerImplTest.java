@@ -21,7 +21,6 @@ import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.Permission;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.entity.Role;
-import com.cisco.oss.foundation.directory.entity.ServiceInstanceHeartbeat;
 import com.cisco.oss.foundation.directory.entity.User;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
