@@ -1,6 +1,15 @@
+/**
+ * Copyright (c) 2013-2014 by Cisco Systems, Inc. 
+ * All rights reserved. 
+ */
 package com.cisco.oss.foundation.directory.proto;
 
-
+/**
+ * Get Metadata Protocol.
+ * 
+ * @author zuxiang
+ *
+ */
 public class GetMetadataProtocol extends Protocol {
 
 	/**
@@ -8,9 +17,10 @@ public class GetMetadataProtocol extends Protocol {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	/**
+	 * The meta key name.
+	 */
 	private String keyName;
-	
-	private boolean watcher = false;
 	
 	public GetMetadataProtocol(){
 		
@@ -26,14 +36,6 @@ public class GetMetadataProtocol extends Protocol {
 
 	public void setKeyName(String keyName) {
 		this.keyName = keyName;
-	}
-
-	public boolean isWatcher() {
-		return watcher;
-	}
-
-	public void setWatcher(boolean watcher) {
-		this.watcher = watcher;
 	}
 	
 	

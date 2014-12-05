@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) 2013-2014 by Cisco Systems, Inc. 
+ * All rights reserved. 
+ */
 package com.cisco.oss.foundation.directory.proto;
 
 import java.io.IOException;
@@ -6,14 +10,32 @@ import java.io.ObjectOutputStream;
 
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 
+/**
+ * Register ServiceInstance Protocol.
+ * 
+ * @author zuxiang
+ *
+ */
 public class RegisterServiceInstanceProtocol extends Protocol{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	/**
+	 * The ProvidedServiceInstance.
+	 */
 	private ProvidedServiceInstance instance;
+	
+	/**
+	 * Indicate whether is HTTP Rest request.
+	 */
 	private boolean restRequest = false;
+	
+	/**
+	 * Indicate wheter is session based request.
+	 */
 	private boolean noSession = false;
 	
 	public RegisterServiceInstanceProtocol(){};

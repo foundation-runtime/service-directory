@@ -1,7 +1,17 @@
+/**
+ * Copyright (c) 2013-2014 by Cisco Systems, Inc. 
+ * All rights reserved. 
+ */
 package com.cisco.oss.foundation.directory.proto;
 
 import java.util.Map;
 
+/**
+ * Get Service Change by version Protocol.
+ * 
+ * @author zuxiang
+ *
+ */
 public class GetServiceChangingByVersionProtocol extends Protocol {
 
 	/**
@@ -9,6 +19,9 @@ public class GetServiceChangingByVersionProtocol extends Protocol {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	/**
+	 * the ModelService version map.
+	 */
 	private Map<String, Long> services;
 	
 	public GetServiceChangingByVersionProtocol(){

@@ -1,31 +1,82 @@
+/**
+ * Copyright (c) 2013-2014 by Cisco Systems, Inc. 
+ * All rights reserved. 
+ */
 package com.cisco.oss.foundation.directory.entity;
 
+/**
+ * The ServiceInstanceToken identity of the ServiceInstance.
+ * 
+ * @author zuxiang
+ *
+ */
 public class ServiceInstanceToken {
 
+	/**
+	 * The ServiceName.
+	 */
 	private String serviceName;
+	
+	/**
+	 * The instanceId.
+	 */
 	private String instanceId;
 	
+	/**
+	 * Constructor.
+	 */
 	public ServiceInstanceToken(){
 		
 	}
 	
+	/**
+	 * Constructor.
+	 * 
+	 * @param serviceName
+	 * 		the serviceName.
+	 * @param instanceId
+	 * 		the instanceId
+	 */
 	public ServiceInstanceToken(String serviceName, String instanceId){
 		this.serviceName = serviceName;
 		this.instanceId = instanceId;
 	}
 
+	/**
+	 * Get the service name.
+	 * 
+	 * @return
+	 * 		the service name.
+	 */
 	public String getServiceName() {
 		return serviceName;
 	}
 
+	/**
+	 * Set the service name.
+	 * 
+	 * @param serviceName
+	 * 		the service name.
+	 */
 	public void setServiceName(String serviceName) {
 		this.serviceName = serviceName;
 	}
 
+	/**
+	 * Get the instance id.
+	 * @return
+	 * 		the instance id.
+	 */
 	public String getInstanceId() {
 		return instanceId;
 	}
 
+	/**
+	 * Set the instance id.
+	 * 
+	 * @param instanceId
+	 * 		the instance id.
+	 */
 	public void setInstanceId(String instanceId) {
 		this.instanceId = instanceId;
 	}

@@ -1,15 +1,36 @@
+/**
+ * Copyright (c) 2013-2014 by Cisco Systems, Inc. 
+ * All rights reserved. 
+ */
 package com.cisco.oss.foundation.directory.proto;
 
 import com.cisco.oss.foundation.directory.entity.AuthScheme;
 
+/**
+ * Directory Authenticate Protocol.
+ * 
+ * @author zuxiang
+ *
+ */
 public class DirectoryAuthProtocol extends AuthProtocol {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	/**
+	 * User name.
+	 */
 	private String userName;
+	
+	/**
+	 * User secret.
+	 */
 	private byte[] secret;
+	
+	/**
+	 * Indicate wheter secret obfuscated.
+	 */
 	private boolean obfuscated;
 
 	public DirectoryAuthProtocol() {

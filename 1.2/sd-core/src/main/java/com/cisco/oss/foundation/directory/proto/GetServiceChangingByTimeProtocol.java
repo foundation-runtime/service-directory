@@ -1,9 +1,19 @@
+/**
+ * Copyright (c) 2013-2014 by Cisco Systems, Inc. 
+ * All rights reserved. 
+ */
 package com.cisco.oss.foundation.directory.proto;
 
 import java.util.Map;
 
 import com.cisco.oss.foundation.directory.entity.ModelService;
 
+/**
+ * Get the Service Change by time Protocol.
+ * 
+ * @author zuxiang
+ *
+ */
 public class GetServiceChangingByTimeProtocol extends Protocol {
 
 	/**
@@ -11,6 +21,9 @@ public class GetServiceChangingByTimeProtocol extends Protocol {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	/**
+	 * the ModelService map.
+	 */
 	private Map<String, ModelService> services;
 	
 	public GetServiceChangingByTimeProtocol(){

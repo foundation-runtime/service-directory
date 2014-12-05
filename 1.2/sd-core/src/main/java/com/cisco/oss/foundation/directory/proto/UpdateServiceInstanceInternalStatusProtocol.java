@@ -1,7 +1,17 @@
+/**
+ * Copyright (c) 2013-2014 by Cisco Systems, Inc. 
+ * All rights reserved. 
+ */
 package com.cisco.oss.foundation.directory.proto;
 
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 
+/**
+ * Update ServiceInstance internal Status protocol.
+ * 
+ * @author zuxiang
+ *
+ */
 public class UpdateServiceInstanceInternalStatusProtocol extends Protocol {
 
 	/**
@@ -9,11 +19,34 @@ public class UpdateServiceInstanceInternalStatusProtocol extends Protocol {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	/**
+	 * Service name.
+	 */
 	private String serviceName;
+	
+	/**
+	 * instanceId.
+	 */
 	private String instanceId;
+	
+	/**
+	 * The OperationalStatus.
+	 */
 	private OperationalStatus status;
+	
+	/**
+	 * is owned the ServiceInstance.
+	 */
 	private boolean isOwned = false;
+	
+	/**
+	 * is the rest request.
+	 */
 	private boolean restRequest = false;
+	
+	/**
+	 * is session based request.
+	 */
 	private boolean noSession = false;
 	
 	public UpdateServiceInstanceInternalStatusProtocol(){

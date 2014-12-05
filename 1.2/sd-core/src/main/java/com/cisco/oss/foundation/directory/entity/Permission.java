@@ -1,6 +1,15 @@
+/**
+ * Copyright (c) 2013-2014 by Cisco Systems, Inc. 
+ * All rights reserved. 
+ */
 package com.cisco.oss.foundation.directory.entity;
 
-
+/**
+ * The Permission enum supported in ServiceDirectory.
+ * 
+ * @author zuxiang
+ *
+ */
 public enum Permission {
 	/**
 	 * No permission.
@@ -30,18 +39,23 @@ public enum Permission {
 	 */
 	ADMIN(16);
 	
+	/**
+	 * The permission id.
+	 */
 	private int id;
 	
 	Permission(int id){
 		this.id = id;
 	}
 
+	/**
+	 * Get the id.
+	 * 
+	 * @return
+	 * 		the id.
+	 */
 	public int getId() {
 		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
 	}
 	
 }

@@ -1,5 +1,15 @@
+/**
+ * Copyright (c) 2013-2014 by Cisco Systems, Inc. 
+ * All rights reserved. 
+ */
 package com.cisco.oss.foundation.directory.entity;
 
+/**
+ * The Authentication Scheme type.
+ * 
+ * @author zuxiang
+ *
+ */
 public enum AuthScheme {
 	
 	/**

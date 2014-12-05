@@ -128,9 +128,29 @@ public enum ErrorCode {
 	 */
 	USER_NOT_EXIST("400.18"),
 	
+	/**
+	 * Session already exists.
+	 * Message: Session already exists.
+	 */
 	SESSION_ALREADY_EXIST("400.19"),
 	
+	/**
+	 * Session desn't exist.
+	 * Message: Session doesn't exist.
+	 */
 	SESSION_NOT_EXIST("400.20"),
+	
+	/**
+	 * Invalid Protocol.
+	 * Message: Invalid Protocol.
+	 */
+	INVALID_PROTOCOL("400.21"),
+	
+	/**
+	 * SD API ping timeout.
+	 * Message: SD API Ping timeout.
+	 */
+	PING_TIMEOUT("400.22"),
 	
 	// Service Instance operation error.
 	/**

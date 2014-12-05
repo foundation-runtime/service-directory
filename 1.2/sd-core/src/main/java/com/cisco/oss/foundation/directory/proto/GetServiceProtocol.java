@@ -1,6 +1,15 @@
+/**
+ * Copyright (c) 2013-2014 by Cisco Systems, Inc. 
+ * All rights reserved. 
+ */
 package com.cisco.oss.foundation.directory.proto;
 
-
+/**
+ * Get Service Protocol.
+ * 
+ * @author zuxiang
+ *
+ */
 public class GetServiceProtocol extends Protocol {
 
 	/**
@@ -8,8 +17,19 @@ public class GetServiceProtocol extends Protocol {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	/**
+	 * The serviceName.
+	 */
 	private String serviceName;
+	
+	/**
+	 * Indicate whether watcher the Service.
+	 */
 	private boolean watcher = false;
+	
+	/**
+	 * Get Service whether include all ServiceInstances.
+	 */
 	private boolean withInstances = true;
 	
 	public GetServiceProtocol(){

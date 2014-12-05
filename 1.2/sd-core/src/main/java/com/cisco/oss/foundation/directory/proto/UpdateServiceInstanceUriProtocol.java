@@ -1,6 +1,15 @@
+/**
+ * Copyright (c) 2013-2014 by Cisco Systems, Inc. 
+ * All rights reserved. 
+ */
 package com.cisco.oss.foundation.directory.proto;
 
-
+/**
+ * Update ServiceInstance URI Protocol.
+ * 
+ * @author zuxiang
+ *
+ */
 public class UpdateServiceInstanceUriProtocol extends Protocol{
 
 	/**
@@ -8,11 +17,34 @@ public class UpdateServiceInstanceUriProtocol extends Protocol{
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	/**
+	 * service name.
+	 */
 	private String serviceName;
+	
+	/**
+	 * the instance id.
+	 */
 	private String instanceId;
+	
+	/**
+	 * the ServiceInstance URI.
+	 */
 	private String uri;
+	
+	/**
+	 * is owned the ServiceInstance.
+	 */
 	private boolean isOwned = false;
+	
+	/**
+	 * is rest request.
+	 */
 	private boolean restRequest = false;
+	
+	/**
+	 * is session based request.
+	 */
 	private boolean noSession = false;
 	
 	public UpdateServiceInstanceUriProtocol(){}

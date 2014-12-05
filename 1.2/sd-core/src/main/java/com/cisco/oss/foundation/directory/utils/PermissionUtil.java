@@ -1,3 +1,7 @@
+/**
+ * Copyright (c) 2013-2014 by Cisco Systems, Inc. 
+ * All rights reserved. 
+ */
 package com.cisco.oss.foundation.directory.utils;
 
 import java.util.ArrayList;
@@ -5,8 +9,22 @@ import java.util.List;
 
 import com.cisco.oss.foundation.directory.entity.Permission;
 
+/**
+ * The permission tranfer utils.
+ * 
+ * @author zuxiang
+ *
+ */
 public class PermissionUtil {
 	
+	/**
+	 * Transfer the permission id to Permission list.
+	 * 
+	 * @param id
+	 * 		the permission id.
+	 * @return
+	 * 		the Permission list.
+	 */
 	public static List<Permission> id2Permissions(int id){
 		List<Permission> list = new ArrayList<Permission>();
 		if(id <= 0 || id > 31){
@@ -31,6 +49,14 @@ public class PermissionUtil {
 		return list;
 	}
 	
+	/**
+	 * Transfer the Permission List to id.
+	 * 
+	 * @param permissions
+	 * 		the Permission list.
+	 * @return
+	 * 		the permission id.
+	 */
 	public static int permissionList2Id(List<Permission> permissions){
 		int id = 0;
 		if(permissions != null && ! permissions.isEmpty()){
@@ -41,6 +67,14 @@ public class PermissionUtil {
 		return id;
 	}
 	
+	/**
+	 * Transfer the Permission Array to id.
+	 * 
+	 * @param permissions
+	 * 		the Permission Array.
+	 * @return
+	 * 		the permission id.
+	 */
 	public static int permissionArray2Id(Permission[] permissions){
 		int id = 0;
 		if(permissions != null && permissions.length != 0){

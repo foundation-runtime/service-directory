@@ -1,5 +1,15 @@
+/**
+ * Copyright (c) 2013-2014 by Cisco Systems, Inc. 
+ * All rights reserved. 
+ */
 package com.cisco.oss.foundation.directory.proto;
 
+/**
+ * Unregister ServiceInstance Protocol.
+ * 
+ * @author zuxiang
+ *
+ */
 public class UnregisterServiceInstanceProtocol extends Protocol {
 
 	/**
@@ -7,10 +17,29 @@ public class UnregisterServiceInstanceProtocol extends Protocol {
 	 */
 	private static final long serialVersionUID = 1L;
 	
+	/**
+	 * Service name.
+	 */
 	private String serviceName;
+	
+	/**
+	 * Instance id.
+	 */
 	private String instanceId;
+	
+	/**
+	 * is own the ServiceInstanc.
+	 */
 	private boolean isOwned = false;
+	
+	/**
+	 * is rest request.
+	 */
 	private boolean restRequest = false;
+	
+	/**
+	 * is session based.
+	 */
 	private boolean noSession = false;
 	
 	public UnregisterServiceInstanceProtocol(){

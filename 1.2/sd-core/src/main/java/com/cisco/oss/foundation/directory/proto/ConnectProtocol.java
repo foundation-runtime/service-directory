@@ -1,22 +1,67 @@
+/**
+ * Copyright (c) 2013-2014 by Cisco Systems, Inc. 
+ * All rights reserved. 
+ */
 package com.cisco.oss.foundation.directory.proto;
 
+import com.cisco.oss.foundation.directory.entity.ClientType;
 
-
+/**
+ * SD API connect Protocol.
+ * 
+ * @author zuxiang
+ *
+ */
 public class ConnectProtocol extends Protocol {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * protocolVersion.
+	 */
 	private int protocolVersion;
+	
+	/**
+	 * Last server xid seen.
+	 */
 	private long lastDxidSeen;
+	
+	/**
+	 * Sesion timeout.
+	 */
 	private int timeOut;
+	
+	/**
+	 * Session id.
+	 */
 	private String sessionId;
+	
+	/**
+	 * Session password.
+	 */
 	private byte[] passwd;
 	
+	/**
+	 * SD API ClientType.
+	 */
+	private ClientType clientType;
+	
 	// Auth data for the Directory Authentication.
+	/**
+	 * User name.
+	 */
 	private String userName;
+	
+	/**
+	 * The password.
+	 */
 	private byte[] secret;
+	
+	/**
+	 * Whether the secret obfuscated.
+	 */
 	private boolean obfuscated;
 
 	public ConnectProtocol() {
@@ -32,6 +77,7 @@ public class ConnectProtocol extends Protocol {
 		this.userName = userName;
 		this.secret = secret;
 		this.obfuscated = obfuscated;
+		setClientType(ClientType.WEBSOCKET);
 	}
 
 	public long getLastDxidSeen() {
@@ -96,6 +142,14 @@ public class ConnectProtocol extends Protocol {
 
 	public void setObfuscated(boolean obfuscated) {
 		this.obfuscated = obfuscated;
+	}
+
+	public ClientType getClientType() {
+		return clientType;
+	}
+
+	public void setClientType(ClientType clientType) {
+		this.clientType = clientType;
 	}
 	
 	

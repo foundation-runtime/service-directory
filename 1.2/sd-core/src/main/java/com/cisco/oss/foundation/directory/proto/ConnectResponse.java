@@ -1,27 +1,47 @@
+/**
+ * Copyright (c) 2013-2014 by Cisco Systems, Inc. 
+ * All rights reserved. 
+ */
 package com.cisco.oss.foundation.directory.proto;
 
-
-
-
+/**
+ * The SD API client connect Response.
+ * 
+ * @author zuxiang
+ *
+ */
 public class ConnectResponse extends Response {
 
-	public int getServerId() {
-		return serverId;
-	}
-
-	public void setServerId(int serverId) {
-		this.serverId = serverId;
-	}
+	
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * The ProtocolVersion.
+	 */
 	private int protocolVersion;
+	
+	/**
+	 * The session timeout.
+	 */
 	private int timeOut;
+	
+	/**
+	 * The session id.
+	 */
 	private String sessionId;
+	
+	/**
+	 * The session password.
+	 */
 	private byte[] passwd;
+	
+	/**
+	 * The serverId.
+	 */
 	private int serverId;
 
 	public ConnectResponse() {
@@ -68,5 +88,11 @@ public class ConnectResponse extends Response {
 		this.passwd = passwd;
 	}
 	
-	
+	public int getServerId() {
+		return serverId;
+	}
+
+	public void setServerId(int serverId) {
+		this.serverId = serverId;
+	}
 }

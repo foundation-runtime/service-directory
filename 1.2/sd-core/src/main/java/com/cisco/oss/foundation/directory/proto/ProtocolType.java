@@ -1,9 +1,34 @@
+/**
+ * Copyright (c) 2013-2014 by Cisco Systems, Inc. 
+ * All rights reserved. 
+ */
 package com.cisco.oss.foundation.directory.proto;
 
+/**
+ * The ProtocolType enum.
+ * 
+ * @author zuxiang
+ *
+ */
 public enum ProtocolType {
+	/**
+	 * Empty Protocol.
+	 */
 	None(0),
+	
+	/**
+	 * CreateSession Protocol.
+	 */
 	CreateSession(1),
+	
+	/**
+	 * RegisterServiceInstance Protocol.
+	 */
 	RegisterServiceInstance(2),
+	
+	/**
+	 * UpdateServiceInstance protocol.
+	 */
 	UpdateServiceInstance(3),
 	UpdateServiceInstanceStatus(4),
 	UpdateServiceInstanceUri(11),
@@ -32,6 +57,7 @@ public enum ProtocolType {
 	AttachSession(27),
 	UpdateServiceInstanceInternalStatus(28),
 	GetServiceInstance(29),
+	QueryService(30),
 	;
 	
 
