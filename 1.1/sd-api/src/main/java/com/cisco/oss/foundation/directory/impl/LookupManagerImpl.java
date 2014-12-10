@@ -14,6 +14,8 @@ import org.slf4j.LoggerFactory;
 import com.cisco.oss.foundation.directory.Configurations;
 import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.LookupManager;
+import com.cisco.oss.foundation.directory.NotificationHandler;
+import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
@@ -477,6 +479,71 @@ public class LookupManagerImpl implements LookupManager, Closable {
 		}
 		
 		return instances;
+	}
+	
+	
+	/**
+	 * Add a NotificationHandler to the Service.
+	 * 
+	 * This method can check the duplicate NotificationHandler for the serviceName, if the NotificationHandler
+	 * already exists in the serviceName, do nothing.
+	 * 
+	 * Throw IllegalArgumentException if serviceName or handler is null.
+	 * 
+	 * @param serviceName
+	 * 		the service name.
+	 * @param handler
+	 * 		the NotificationHandler for the service.
+	 */
+	@Override
+	public void addNotificationHandler(String serviceName, NotificationHandler handler) throws ServiceException {
+		
+		if(! isStarted){
+			ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
+			throw new ServiceException(error);
+		}
+		
+		if(handler == null || serviceName == null || serviceName.isEmpty()){
+			throw new IllegalArgumentException();
+		}
+		
+		try{
+			ModelService service = getLookupService().getModelService(serviceName);
+			if(service == null){
+				ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_NOT_EXIST);
+				throw new ServiceException(error); 
+			}
+			getLookupService().addNotificationHandler(serviceName, handler);
+		} catch(ServiceRuntimeException e){
+			throw new ServiceException(e);
+		}
+	}
+	
+	/**
+	 * Remove the NotificationHandler from the Service.
+	 * 
+	 * @param serviceName
+	 * 		the service name.
+	 * @param handler
+	 * 		the NotificationHandler for the service.
+	 */
+	@Override
+	public void removeNotificationHandler(String serviceName, NotificationHandler handler) throws ServiceException {
+		
+		if(! isStarted){
+			ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
+			throw new ServiceException(error);
+		}
+		
+		if(handler == null || serviceName == null || serviceName.isEmpty()){
+			throw new IllegalArgumentException();
+		}
+		
+		try{
+			getLookupService().removeNotificationHandler(serviceName, handler);;
+		} catch(ServiceRuntimeException e){
+			throw new ServiceException(e);
+		}
 	}
 	
 	/**

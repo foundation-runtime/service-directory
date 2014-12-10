@@ -22,10 +22,12 @@ import com.cisco.oss.foundation.directory.Configurations;
 import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
+import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.OperationResult;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.lifecycle.Closable;
 import com.cisco.oss.foundation.directory.utils.JsonSerializer;
+import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 
 /**
  * It is the DirectoryLookupService with Cache.
@@ -429,10 +431,12 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 							OperationResult<ModelService> result = deltaService.getValue();
 							if(result.getResult()){
 								ModelService newService = result.getobject();
+								ModelService oldService = cachedLookupService.getCache().getService(serviceName);
 								if(newService != null){
 									cachedLookupService.getCache().putService(serviceName, newService);
 									LOGGER.info("Update the ModeService in cache, serviceName=" + serviceName);
 								}
+								onServiceChanged(newService, oldService);
 							} else {
 								LOGGER.info("Cache sync ModeService failed, serviceName=" + serviceName + " - " + result.getError().getErrorMessage());
 							}
@@ -458,6 +462,54 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 				LOGGER.error("Sync ModelService cache from ServiceDirectory Server failed", e);
 			}
 			
+			
+			
+		}
+		
+		private void onServiceChanged(ModelService newService, ModelService oldService){
+			if(newService == null || oldService == null || newService == oldService){
+				return;
+			}
+			
+			List<ModelServiceInstance> oldInstances = oldService.getServiceInstances();
+			List<ModelServiceInstance> newInstances = newService.getServiceInstances();
+			
+			if(newInstances == null || newInstances.size() == 0){
+				if(oldInstances != null && oldInstances.size() > 0){
+					for(ModelServiceInstance model : oldInstances){
+						cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
+					}
+				}
+			} else {
+				if(oldInstances == null || oldInstances.size() == 0){
+					for(ModelServiceInstance model : newInstances){
+						cachedLookupService.onServiceInstanceAvailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
+					}
+				} else {
+					for(ModelServiceInstance model : newInstances){
+						int index = -1;
+						for(int i = 0 ; i < oldInstances.size(); i ++ ){
+							ModelServiceInstance old = oldInstances.get(i);
+							if(old.getServiceName().equals(model.getServiceName()) && old.getInstanceId().equals(model.getInstanceId())){
+								index = i;
+								break;
+							}
+						}
+						if(index == -1){
+							cachedLookupService.onServiceInstanceAvailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
+						} else {
+							cachedLookupService.onServiceInstanceChanged(ServiceInstanceUtils.transferFromModelServiceInstance(model));
+							oldInstances.remove(index);
+						}
+					}
+					
+					if(oldInstances.size() > 0){
+						for(ModelServiceInstance model : oldInstances){
+							cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
+						}
+					}
+				}
+			}
 		}
 		
 	}

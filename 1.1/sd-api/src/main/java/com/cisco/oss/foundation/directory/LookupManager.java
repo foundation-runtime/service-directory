@@ -158,4 +158,33 @@ public interface LookupManager {
 	 * @throws ServiceException
 	 */
 	public List<ServiceInstance> getAllInstances() throws ServiceException;
+	
+	/**
+	 * Add a NotificationHandler to the Service.
+	 * 
+	 * This method can check the duplicate NotificationHandler for the serviceName, if the NotificationHandler
+	 * already exists in the serviceName, do nothing.
+	 * 
+	 * Throw IllegalArgumentException if serviceName or handler is null.
+	 * 
+	 * @param serviceName
+	 * 		the service name.
+	 * @param handler
+	 * 		the NotificationHandler for the service.
+	 * @throws ServiceException
+	 */
+	public void addNotificationHandler(String serviceName, NotificationHandler handler) throws ServiceException;
+	
+	/**
+	 * Remove the NotificationHandler from the Service.
+	 * 
+	 * Throw IllegalArgumentException if serviceName or handler is null.
+	 * 
+	 * @param serviceName
+	 * 		the service name.
+	 * @param handler
+	 * 		the NotificationHandler for the service.
+	 * @throws ServiceException
+	 */
+	public void removeNotificationHandler(String serviceName, NotificationHandler handler) throws ServiceException ;
 }

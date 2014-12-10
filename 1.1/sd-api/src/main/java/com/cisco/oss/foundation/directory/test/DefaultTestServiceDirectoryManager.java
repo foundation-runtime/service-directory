@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cisco.oss.foundation.directory.LookupManager;
+import com.cisco.oss.foundation.directory.NotificationHandler;
 import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
@@ -68,6 +69,12 @@ public class DefaultTestServiceDirectoryManager implements
 	 * Mark whether component is started or not.
 	 */
 	protected boolean isStarted = false;
+	
+	/**
+	 * The Service NotificationHandler Map.
+	 */
+	private Map<String, List<NotificationHandler>> notificationHandlers  = new HashMap<String, List<NotificationHandler>>();
+	
 	
 	/**
 	 * Constructor
@@ -223,6 +230,9 @@ public class DefaultTestServiceDirectoryManager implements
 		ProvidedServiceInstance cacheServiceInstance = deepCloneProvidedServiceInstance(serviceInstance);
 		service.getServiceInstances().add(cacheServiceInstance);
 		addMetadataKeyMap(serviceInstance);
+		
+		onServiceInstanceAvailable(new ServiceInstance(cacheServiceInstance.getServiceName(), cacheServiceInstance.getProviderId(), cacheServiceInstance.getUri(), 
+						cacheServiceInstance.isMonitorEnabled(), cacheServiceInstance.getStatus(), cacheServiceInstance.getMetadata())); 
 		LOGGER.info("Registered Service, name=" + serviceInstance.getServiceName());
 	}
 
@@ -280,6 +290,9 @@ public class DefaultTestServiceDirectoryManager implements
 		}
 		model.setStatus(status);
 		
+		onServiceInstanceChanged(new ServiceInstance(model.getServiceName(), model.getProviderId(), model.getUri(), 
+				model.isMonitorEnabled(), model.getStatus(), model.getMetadata()));
+		
 	}
 	
 	/**
@@ -316,6 +329,9 @@ public class DefaultTestServiceDirectoryManager implements
 			throw new DirectoryServerClientException(sde);
 		}
 		model.setUri(uri);
+		
+		onServiceInstanceChanged(new ServiceInstance(model.getServiceName(), model.getProviderId(), model.getUri(), 
+				model.isMonitorEnabled(), model.getStatus(), model.getMetadata()));
 	}
 
 	/**
@@ -382,6 +398,9 @@ public class DefaultTestServiceDirectoryManager implements
 		}
 		
 		getService(serviceName).getServiceInstances().remove(model);
+		
+		onServiceInstanceUnavailable(new ServiceInstance(model.getServiceName(), model.getProviderId(), model.getUri(), 
+				model.isMonitorEnabled(), model.getStatus(), model.getMetadata()));
 		
 	}
 	
@@ -532,6 +551,48 @@ public class DefaultTestServiceDirectoryManager implements
 	}
 	
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void addNotificationHandler(String serviceName,
+			NotificationHandler handler) throws ServiceException {
+		if(handler == null || serviceName == null || serviceName.isEmpty()){
+			throw new IllegalArgumentException();
+		}
+		
+		synchronized(notificationHandlers){
+			if(! notificationHandlers.containsKey(serviceName)){
+				notificationHandlers.put(serviceName, new ArrayList<NotificationHandler>());
+			}
+			
+			notificationHandlers.get(serviceName).add(handler);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void removeNotificationHandler(String serviceName,
+			NotificationHandler handler) throws ServiceException {
+		if(handler == null || serviceName == null || serviceName.isEmpty()){
+			throw new IllegalArgumentException();
+		}
+		
+		synchronized(notificationHandlers){
+			if(notificationHandlers.containsKey(serviceName)){
+				List<NotificationHandler> list = notificationHandlers.get(serviceName);
+				if(list.contains(handler)){
+					list.remove(handler);
+				}
+				if(list.size() == 0){
+					notificationHandlers.remove(serviceName);
+				}
+			}
+		}
+	}
+	
+	/**
 	 * Get the ServiceDirectoryCache.
 	 * 
 	 * @return
@@ -539,6 +600,66 @@ public class DefaultTestServiceDirectoryManager implements
 	 */
 	protected ServiceDirectoryCache<String, ProvidedService> getServiceDirectoryCache(){
 		return this.cache;
+	}
+	
+	/**
+	 * On a ServiceInstance Unavailable.
+	 * 
+	 * It will invoke the serviceInstanceUnavailable of the NotificationHandler.
+	 * 
+	 * @param instance
+	 * 		the ServiceInstance.
+	 */
+	private void onServiceInstanceUnavailable(ServiceInstance instance){
+		if(instance == null){
+			return ;
+		}
+		String serviceName = instance.getServiceName();
+		synchronized(notificationHandlers){
+			if(notificationHandlers.containsKey(serviceName)){
+				for(NotificationHandler h : notificationHandlers.get(serviceName)){
+					h.serviceInstanceUnavailable(instance);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * On a ServiceInstance Unavailable.
+	 * 
+	 * It will invoke the serviceInstanceChange of the NotificationHandler.
+	 * 
+	 * @param instance
+	 * 		the ServiceInstance.
+	 */
+	private void onServiceInstanceChanged(ServiceInstance instance){
+		String serviceName = instance.getServiceName();
+		synchronized(notificationHandlers){
+			if(notificationHandlers.containsKey(serviceName)){
+				for(NotificationHandler h : notificationHandlers.get(serviceName)){
+					h.serviceInstanceChange(instance);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * On a ServiceInstance Unavailable.
+	 * 
+	 * It will invoke the serviceInstanceAvailable of the NotificationHandler.
+	 * 
+	 * @param instance
+	 * 		the ServiceInstance.
+	 */
+	private void onServiceInstanceAvailable(ServiceInstance instance){
+		String serviceName = instance.getServiceName();
+		synchronized(notificationHandlers){
+			if(notificationHandlers.containsKey(serviceName)){
+				for(NotificationHandler h : notificationHandlers.get(serviceName)){
+					h.serviceInstanceAvailable(instance);
+				}
+			}
+		}
 	}
 	
 	/**
@@ -652,6 +773,8 @@ public class DefaultTestServiceDirectoryManager implements
 			}
 		}
 		
+		onServiceInstanceChanged(new ServiceInstance(model.getServiceName(), model.getProviderId(), model.getUri(), 
+				model.isMonitorEnabled(), model.getStatus(), model.getMetadata()));
 	}
 
 	/**

@@ -6,7 +6,9 @@ package com.cisco.oss.foundation.directory.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.NotificationHandler;
@@ -14,6 +16,7 @@ import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
+import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
 
@@ -31,6 +34,11 @@ public class DirectoryLookupService {
 	 * The DirectoryServiceClientManager to get the DirectoryServiceClient.
 	 */
 	private DirectoryServiceClientManager directoryServiceClientManager = null;
+	
+	/**
+	 * The Service NotificationHandler Map.
+	 */
+	private Map<String, List<NotificationHandler>> notificationHandlers  = new HashMap<String, List<NotificationHandler>>();
 	
 	/**
 	 * Constructor.
@@ -206,6 +214,11 @@ public class DirectoryLookupService {
 	/**
 	 * Add a NotificationHandler to the Service.
 	 * 
+	 * This method can check the duplicate NotificationHandler for the serviceName, if the NotificationHandler
+	 * already exists in the serviceName, do nothing.
+	 * 
+	 * Throw IllegalArgumentException if serviceName or handler is null.
+	 * 
 	 * @param serviceName
 	 * 		the service name.
 	 * @param handler
@@ -213,6 +226,17 @@ public class DirectoryLookupService {
 	 */
 	public void addNotificationHandler(String serviceName, NotificationHandler handler){
 		
+		if(handler == null || serviceName == null || serviceName.isEmpty()){
+			throw new IllegalArgumentException();
+		}
+		
+		synchronized(notificationHandlers){
+			if(! notificationHandlers.containsKey(serviceName)){
+				notificationHandlers.put(serviceName, new ArrayList<NotificationHandler>());
+			}
+			
+			notificationHandlers.get(serviceName).add(handler);
+		}
 	}
 	
 	/**
@@ -224,7 +248,21 @@ public class DirectoryLookupService {
 	 * 		the NotificationHandler for the service.
 	 */
 	public void removeNotificationHandler(String serviceName, NotificationHandler handler){
+		if(handler == null || serviceName == null || serviceName.isEmpty()){
+			throw new IllegalArgumentException();
+		}
 		
+		synchronized(notificationHandlers){
+			if(notificationHandlers.containsKey(serviceName)){
+				List<NotificationHandler> list = notificationHandlers.get(serviceName);
+				if(list.contains(handler)){
+					list.remove(handler);
+				}
+				if(list.size() == 0){
+					notificationHandlers.remove(serviceName);
+				}
+			}
+		}
 	}
 	
 	/**
@@ -238,6 +276,66 @@ public class DirectoryLookupService {
 			return directoryServiceClientManager.getDirectoryServiceClient();
 		} catch (ServiceException e) {
 			throw new ServiceRuntimeException(e.getServiceDirectoryError());
+		}
+	}
+	
+	/**
+	 * On a ServiceInstance Unavailable.
+	 * 
+	 * It will invoke the serviceInstanceUnavailable of the NotificationHandler.
+	 * 
+	 * @param instance
+	 * 		the ServiceInstance.
+	 */
+	protected void onServiceInstanceUnavailable(ServiceInstance instance){
+		if(instance == null){
+			return ;
+		}
+		String serviceName = instance.getServiceName();
+		synchronized(notificationHandlers){
+			if(notificationHandlers.containsKey(serviceName)){
+				for(NotificationHandler h : notificationHandlers.get(serviceName)){
+					h.serviceInstanceUnavailable(instance);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * On a ServiceInstance Unavailable.
+	 * 
+	 * It will invoke the serviceInstanceChange of the NotificationHandler.
+	 * 
+	 * @param instance
+	 * 		the ServiceInstance.
+	 */
+	protected void onServiceInstanceChanged(ServiceInstance instance){
+		String serviceName = instance.getServiceName();
+		synchronized(notificationHandlers){
+			if(notificationHandlers.containsKey(serviceName)){
+				for(NotificationHandler h : notificationHandlers.get(serviceName)){
+					h.serviceInstanceChange(instance);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * On a ServiceInstance Unavailable.
+	 * 
+	 * It will invoke the serviceInstanceAvailable of the NotificationHandler.
+	 * 
+	 * @param instance
+	 * 		the ServiceInstance.
+	 */
+	protected void onServiceInstanceAvailable(ServiceInstance instance){
+		String serviceName = instance.getServiceName();
+		synchronized(notificationHandlers){
+			if(notificationHandlers.containsKey(serviceName)){
+				for(NotificationHandler h : notificationHandlers.get(serviceName)){
+					h.serviceInstanceAvailable(instance);
+				}
+			}
 		}
 	}
 }

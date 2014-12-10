@@ -17,6 +17,12 @@
 			</DefaultValue>
 		</Parameter>
 		
+		<Parameter name="registry.disable.owner.error" type="BOOLEAN" description="">
+			<DefaultValue>
+				<PrimitiveValue value="false" />
+			</DefaultValue>
+		</Parameter>
+		
 		<Parameter name="httpclient.read.timeout" type="INTEGER" description="">
 			<DefaultValue>
 				<PrimitiveValue value="5" />

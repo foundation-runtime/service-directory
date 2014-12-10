@@ -5,6 +5,7 @@
 package com.cisco.oss.foundation.directory.utils;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -85,7 +86,7 @@ public class HttpUtils {
 
 		OutputStream out = urlConnection.getOutputStream();
 		out.write(body.getBytes());
-		ByteStreams.copy(ByteStreams.newInputStreamSupplier(body.getBytes()),
+		ByteStreams.copy(new ByteArrayInputStream(body.getBytes()),
 				out);
 		BufferedReader in = null;
 		try {
@@ -168,7 +169,7 @@ public class HttpUtils {
 		OutputStream out = urlConnection.getOutputStream();
 		if (body != null && body.length() > 0)
 			ByteStreams.copy(
-					ByteStreams.newInputStreamSupplier(body.getBytes()), out);
+					new ByteArrayInputStream(body.getBytes()), out);
 
 		BufferedReader in = null;
 		try {
