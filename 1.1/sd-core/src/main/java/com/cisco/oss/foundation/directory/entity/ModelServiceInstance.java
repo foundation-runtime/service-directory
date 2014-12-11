@@ -71,6 +71,16 @@ public class ModelServiceInstance {
 	private String serviceName;
 	
 	/**
+	 * The real address of the instance, it can be real IP or host name
+	 */
+	private String address;
+	
+	/**
+	 * The real port of the instance.
+	 */
+	private int port = 0;
+	
+	/**
 	 * Constructor.
 	 */
 	public ModelServiceInstance(){
@@ -90,6 +100,10 @@ public class ModelServiceInstance {
 	 * 		the uri of the ServiceInstance.
 	 * @param status
 	 * 		the OperationalStatus.
+	 * @param address
+	 * 		The real address of the instance, it can be real IP or host name.
+	 * @param port
+	 * 		The real port of the instance.
 	 * @param modifiedTime
 	 * 		the last modified time stamp.
 	 * @param createTime
@@ -98,7 +112,7 @@ public class ModelServiceInstance {
 	 * 		the metadata map.
 	 */
 	public ModelServiceInstance(String serviceName, String instanceId, String id, String uri, 
-			OperationalStatus status, Date modifiedTime, 
+			OperationalStatus status, String address, int port, Date modifiedTime, 
 			Date createTime, Map<String, String> metadata){
 		this.serviceName = serviceName;
 		this.instanceId = instanceId;
@@ -108,7 +122,8 @@ public class ModelServiceInstance {
 		this.metadata = metadata;
 		this.modifiedTime = modifiedTime;
 		this.createTime = createTime;
-		
+		this.address = address;
+		this.port = port;
 	}
 
 	/**
@@ -169,6 +184,46 @@ public class ModelServiceInstance {
 	 */
 	public void setUri(String uri) {
 		this.uri = uri;
+	}
+
+	/**
+	 * Get the real address, it can be real IP or host name.
+	 * 
+	 * @return
+	 * 		the real address.
+	 */
+	public String getAddress() {
+		return address;
+	}
+
+	/**
+	 * Set the real address, it can be real IP or host name.
+	 * 
+	 * @param address
+	 * 		the real address.
+	 */
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	/**
+	 * Get the port.
+	 * 
+	 * @return
+	 * 		the port.
+	 */
+	public int getPort() {
+		return port;
+	}
+
+	/**
+	 * Set the port.
+	 * 
+	 * @param port
+	 * 		the port.
+	 */
+	public void setPort(int port) {
+		this.port = port;
 	}
 
 	/**

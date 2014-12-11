@@ -151,7 +151,7 @@ public class DefaultTestServiceDirectoryManager implements
 			for(ProvidedServiceInstance model : service.getServiceInstances()){
 				if(model.getStatus() == OperationalStatus.UP){
 					list.add(new ServiceInstance(serviceName, model.getProviderId(), model.getUri(), 
-							model.isMonitorEnabled(), model.getStatus(), model.getMetadata()));
+							model.isMonitorEnabled(), model.getStatus(), model.getAddress(), model.getPort(), model.getMetadata()));
 				}
 			}
 			return list;
@@ -232,7 +232,7 @@ public class DefaultTestServiceDirectoryManager implements
 		addMetadataKeyMap(serviceInstance);
 		
 		onServiceInstanceAvailable(new ServiceInstance(cacheServiceInstance.getServiceName(), cacheServiceInstance.getProviderId(), cacheServiceInstance.getUri(), 
-						cacheServiceInstance.isMonitorEnabled(), cacheServiceInstance.getStatus(), cacheServiceInstance.getMetadata())); 
+						cacheServiceInstance.isMonitorEnabled(), cacheServiceInstance.getStatus(), cacheServiceInstance.getAddress(), cacheServiceInstance.getPort(), cacheServiceInstance.getMetadata())); 
 		LOGGER.info("Registered Service, name=" + serviceInstance.getServiceName());
 	}
 
@@ -291,7 +291,7 @@ public class DefaultTestServiceDirectoryManager implements
 		model.setStatus(status);
 		
 		onServiceInstanceChanged(new ServiceInstance(model.getServiceName(), model.getProviderId(), model.getUri(), 
-				model.isMonitorEnabled(), model.getStatus(), model.getMetadata()));
+				model.isMonitorEnabled(), model.getStatus(),model.getAddress(), model.getPort(),  model.getMetadata()));
 		
 	}
 	
@@ -331,7 +331,7 @@ public class DefaultTestServiceDirectoryManager implements
 		model.setUri(uri);
 		
 		onServiceInstanceChanged(new ServiceInstance(model.getServiceName(), model.getProviderId(), model.getUri(), 
-				model.isMonitorEnabled(), model.getStatus(), model.getMetadata()));
+				model.isMonitorEnabled(), model.getStatus(), model.getAddress(), model.getPort(), model.getMetadata()));
 	}
 
 	/**
@@ -400,7 +400,7 @@ public class DefaultTestServiceDirectoryManager implements
 		getService(serviceName).getServiceInstances().remove(model);
 		
 		onServiceInstanceUnavailable(new ServiceInstance(model.getServiceName(), model.getProviderId(), model.getUri(), 
-				model.isMonitorEnabled(), model.getStatus(), model.getMetadata()));
+				model.isMonitorEnabled(), model.getStatus(), model.getAddress(), model.getPort(), model.getMetadata()));
 		
 	}
 	
@@ -442,7 +442,7 @@ public class DefaultTestServiceDirectoryManager implements
 					if (model.getStatus() == OperationalStatus.UP) {
 						list.add(new ServiceInstance(model.getServiceName(),
 								model.getProviderId(), model.getUri(), model.isMonitorEnabled(),
-								model.getStatus(), model.getMetadata()));
+								model.getStatus(), model.getAddress(), model.getPort(), model.getMetadata()));
 					}
 				}
 
@@ -463,7 +463,7 @@ public class DefaultTestServiceDirectoryManager implements
 			throws ServiceException {
 		ProvidedServiceInstance instance = getProvidedServiceInstance(serviceName, instanceId);
 		return new ServiceInstance(serviceName, instance.getProviderId(), instance.getUri(), 
-				instance.isMonitorEnabled(), instance.getStatus(), instance.getMetadata());
+				instance.isMonitorEnabled(), instance.getStatus(), instance.getAddress(), instance.getPort(), instance.getMetadata());
 	}
 
 	/**
@@ -483,7 +483,7 @@ public class DefaultTestServiceDirectoryManager implements
 			List<ServiceInstance> list = new ArrayList<ServiceInstance>();
 			for(ProvidedServiceInstance model : service.getServiceInstances()){
 				list.add(new ServiceInstance(serviceName, model.getProviderId(), model.getUri(), 
-						model.isMonitorEnabled(), model.getStatus(), model.getMetadata()));
+						model.isMonitorEnabled(), model.getStatus(), model.getAddress(), model.getPort(), model.getMetadata()));
 			}
 			return list;
 		}
@@ -512,7 +512,7 @@ public class DefaultTestServiceDirectoryManager implements
 			}
 			for(ProvidedServiceInstance model : service.getServiceInstances()){
 				instances.add(new ServiceInstance(model.getServiceName(), model.getProviderId(), model.getUri(), 
-						model.isMonitorEnabled(), model.getStatus(), model.getMetadata()));
+						model.isMonitorEnabled(), model.getStatus(), model.getAddress(), model.getPort(), model.getMetadata()));
 			}
 		}
 		if(instances == null ){
@@ -539,7 +539,7 @@ public class DefaultTestServiceDirectoryManager implements
 				for (ProvidedServiceInstance model : instances) {
 					list.add(new ServiceInstance(model.getServiceName(),
 							model.getProviderId(), model.getUri(),
-							model.isMonitorEnabled(), model.getStatus(), model.getMetadata()));
+							model.isMonitorEnabled(), model.getStatus(), model.getAddress(), model.getPort(), model.getMetadata()));
 				}
 
 				return ServiceInstanceQueryHelper.filterServiceInstance(query,
@@ -774,7 +774,7 @@ public class DefaultTestServiceDirectoryManager implements
 		}
 		
 		onServiceInstanceChanged(new ServiceInstance(model.getServiceName(), model.getProviderId(), model.getUri(), 
-				model.isMonitorEnabled(), model.getStatus(), model.getMetadata()));
+				model.isMonitorEnabled(), model.getStatus(), model.getAddress(), model.getPort(), model.getMetadata()));
 	}
 
 	/**

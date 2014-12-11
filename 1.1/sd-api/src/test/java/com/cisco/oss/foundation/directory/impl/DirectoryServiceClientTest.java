@@ -216,7 +216,7 @@ public class DirectoryServiceClientTest {
 		metadata.put("solution", "core");
 		List<ModelServiceInstance> instances = new ArrayList<ModelServiceInstance>();
 		ModelServiceInstance instance = new ModelServiceInstance("odrm", "192.168.2.3-8901", "192.168.2.3-8901", "http://cisco.com/vbo/odrm/setupsession", 
-				OperationalStatus.UP, date, 
+				OperationalStatus.UP, null, 0, date, 
 				date, metadata);
 		instance.setHeartbeatTime(date);
 		instances.add(instance);
@@ -263,7 +263,7 @@ public class DirectoryServiceClientTest {
 		metadata.put("solution", "core");
 		List<ModelServiceInstance> instances = new ArrayList<ModelServiceInstance>();
 		ModelServiceInstance instance = new ModelServiceInstance("odrm", "192.168.2.3-8901", "192.168.2.3-8901", "http://cisco.com/vbo/odrm/setupsession", 
-				OperationalStatus.UP, date, 
+				OperationalStatus.UP, null, 0, date, 
 				date, metadata);
 		instance.setHeartbeatTime(date);
 		instances.add(instance);
@@ -312,7 +312,7 @@ public class DirectoryServiceClientTest {
 		metadata.put("solution", "core");
 		List<ModelServiceInstance> instances = new ArrayList<ModelServiceInstance>();
 		ModelServiceInstance instance = new ModelServiceInstance("odrm", "192.168.2.3-8901", "192.168.2.3-8901", "http://cisco.com/vbo/odrm/setupsession", 
-				OperationalStatus.UP, date, 
+				OperationalStatus.UP, null, 0, date, 
 				date, metadata);
 		instance.setHeartbeatTime(date);
 		instances.add(instance);
