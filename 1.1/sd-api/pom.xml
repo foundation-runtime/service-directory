@@ -197,6 +197,62 @@
 					</execution>
 				</executions>
 			</plugin>
+			
+			<plugin>
+        		<groupId>org.apache.maven.plugins</groupId>
+        		<artifactId>maven-dependency-plugin</artifactId>
+        		<executions>
+          			<execution>
+            		<id>copy-dependencies</id>
+            		<phase>prepare-package</phase>
+            		<goals>
+              			<goal>copy-dependencies</goal>
+            		</goals>
+            		<configuration>
+              			<outputDirectory>${project.build.directory}/lib</outputDirectory>
+              			<overWriteReleases>false</overWriteReleases>
+              			<overWriteSnapshots>false</overWriteSnapshots>
+              			<overWriteIfNewer>true</overWriteIfNewer>
+            		</configuration>
+          			</execution>
+        		</executions>
+      		</plugin>
+      		
+      		<plugin>
+  				<artifactId>exec-maven-plugin</artifactId>
+  				<groupId>org.codehaus.mojo</groupId>
+  				<executions>
+  					<execution><!-- Run our version calculation script -->
+      				<id>grant execute</id>
+      				<phase>package</phase>
+      				<goals>
+        				<goal>exec</goal>
+      				</goals>
+      				<configuration>
+      					<executable>chmod</executable>
+                        <arguments>
+                            <argument>+x</argument>
+                            <argument>${basedir}/src/main/script/module.sh</argument>
+                        </arguments>
+      				</configuration>
+    				</execution>
+    				<execution><!-- Run our version calculation script -->
+      				<id>generate module xml</id>
+      				<phase>package</phase>
+      				<goals>
+        				<goal>exec</goal>
+      				</goals>
+      				<configuration>
+      					<workingDirectory>${project.build.directory}</workingDirectory>
+        				<executable>${basedir}/src/main/script/module.sh</executable>
+        				<arguments>
+                            <argument>cisco.sd.api-jboss-module-${version}.jar</argument>
+                        </arguments>
+      				</configuration>
+    				</execution>
+  				</executions>
+			</plugin>	
+      
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
