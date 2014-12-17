@@ -217,12 +217,12 @@
           			</execution>
         		</executions>
       		</plugin>
-      		
+      		<!-- 
       		<plugin>
   				<artifactId>exec-maven-plugin</artifactId>
   				<groupId>org.codehaus.mojo</groupId>
   				<executions>
-  					<execution><!-- Run our version calculation script -->
+  					<execution>
       				<id>grant execute</id>
       				<phase>package</phase>
       				<goals>
@@ -236,7 +236,7 @@
                         </arguments>
       				</configuration>
     				</execution>
-    				<execution><!-- Run our version calculation script -->
+    				<execution>
       				<id>generate module xml</id>
       				<phase>package</phase>
       				<goals>
@@ -252,7 +252,7 @@
     				</execution>
   				</executions>
 			</plugin>	
-      
+      -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-site-plugin</artifactId>
