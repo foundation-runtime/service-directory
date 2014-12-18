@@ -19,7 +19,6 @@ import com.cisco.oss.foundation.directory.entity.User;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
-import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
 import com.cisco.oss.foundation.directory.lifecycle.Closable;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 
@@ -111,14 +110,11 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
 		
 		ErrorCode code = ServiceInstanceUtils.validateProvidedServiceInstance(serviceInstance);
 		if(! code.equals(ErrorCode.OK)){
-			ServiceDirectoryError error = new ServiceDirectoryError(code, serviceInstance.getServiceName());
+			ServiceDirectoryError error = new ServiceDirectoryError(code);
 			throw new ServiceException(error);
 		}
-		try{
-			getRegistrationService().registerService(serviceInstance);
-		} catch(ServiceRuntimeException e){
-			throw new ServiceException(e);
-		}
+		
+		getRegistrationService().registerService(serviceInstance);
 	}
 	
 	/**
@@ -140,14 +136,12 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
 		
 		ErrorCode code = ServiceInstanceUtils.validateProvidedServiceInstance(serviceInstance);
 		if(! code.equals(ErrorCode.OK)){
-			ServiceDirectoryError error = new ServiceDirectoryError(code, serviceInstance.getServiceName());
+			ServiceDirectoryError error = new ServiceDirectoryError(code);
 			throw new ServiceException(error);
 		}
-		try{
-			getRegistrationService().registerService(serviceInstance, registryHealth);
-		} catch(ServiceRuntimeException e){
-			throw new ServiceException(e);
-		}
+		
+		getRegistrationService().registerService(serviceInstance, registryHealth);
+		
 	}
 
 	/**
@@ -162,27 +156,23 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
 		}
 		ErrorCode code = ServiceInstanceUtils.isNameValid(serviceName);
 		if(! code.equals(ErrorCode.OK)){
-			ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
+			ServiceDirectoryError error = new ServiceDirectoryError(code);
 			throw new ServiceException(error);
 		}
 		
 		code = ServiceInstanceUtils.isIdValid(providerId);
 		if(! code.equals(ErrorCode.OK)){
-			ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
+			ServiceDirectoryError error = new ServiceDirectoryError(code);
 			throw new ServiceException(error);
 		}
 		
 		code = ServiceInstanceUtils.isUriValid(uri);
 		if(! code.equals(ErrorCode.OK)){
-			ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
+			ServiceDirectoryError error = new ServiceDirectoryError(code);
 			throw new ServiceException(error);
 		}
 		
-		try{
-			getRegistrationService().updateServiceUri(serviceName, providerId, uri);
-		} catch(ServiceRuntimeException e){
-			throw new ServiceException(e);
-		}
+		getRegistrationService().updateServiceUri(serviceName, providerId, uri);
 	}
 	
 	/**
@@ -197,21 +187,17 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
 		}
 		ErrorCode code = ServiceInstanceUtils.isNameValid(serviceName);
 		if(! code.equals(ErrorCode.OK)){
-			ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
+			ServiceDirectoryError error = new ServiceDirectoryError(code);
 			throw new ServiceException(error);
 		}
 		
 		code = ServiceInstanceUtils.isIdValid(providerId);
 		if(! code.equals(ErrorCode.OK)){
-			ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
+			ServiceDirectoryError error = new ServiceDirectoryError(code);
 			throw new ServiceException(error);
 		}
 		
-		try{
-			getRegistrationService().updateServiceOperationalStatus(serviceName, providerId, status);
-		} catch(ServiceRuntimeException e){
-			throw new ServiceException(e);
-		}
+		getRegistrationService().updateServiceOperationalStatus(serviceName, providerId, status);
 	}
 
 	/**
@@ -230,16 +216,11 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
 		
 		ErrorCode code = ServiceInstanceUtils.validateProvidedServiceInstance(serviceInstance);
 		if(! code.equals(ErrorCode.OK)){
-			ServiceDirectoryError error = new ServiceDirectoryError(code, serviceInstance.getServiceName());
+			ServiceDirectoryError error = new ServiceDirectoryError(code);
 			throw new ServiceException(error);
 		}
 		
-		try{
-			getRegistrationService().updateService(serviceInstance);
-			
-		} catch(ServiceRuntimeException e){
-			throw new ServiceException(e);
-		}
+		getRegistrationService().updateService(serviceInstance);
 		
 	}
 
@@ -255,21 +236,17 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
 		}
 		ErrorCode code = ServiceInstanceUtils.isNameValid(serviceName);
 		if(! code.equals(ErrorCode.OK)){
-			ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
+			ServiceDirectoryError error = new ServiceDirectoryError(code);
 			throw new ServiceException(error);
 		}
 		
 		code = ServiceInstanceUtils.isIdValid(providerId);
 		if(! code.equals(ErrorCode.OK)){
-			ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
+			ServiceDirectoryError error = new ServiceDirectoryError(code);
 			throw new ServiceException(error);
 		}
 		
-		try{
-			getRegistrationService().unregisterService(serviceName, providerId);
-		} catch(ServiceRuntimeException e){
-			throw new ServiceException(e);
-		}
+		getRegistrationService().unregisterService(serviceName, providerId);
 	}
 	
 	private DirectoryRegistrationService getRegistrationService(){
@@ -297,11 +274,7 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
 			throw new IllegalArgumentException("The User can not be null.");
 		}
 		
-		try{
-			getRegistrationService().createUser(user, password);
-		} catch(ServiceRuntimeException e){
-			throw new ServiceException(e);
-		}
+		getRegistrationService().createUser(user, password);
 	}
 
 	/**
@@ -317,11 +290,7 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
 			throw new IllegalArgumentException("The name can not be empty.");
 		}
 		
-		try{
-			return getRegistrationService().getUser(name);
-		} catch(ServiceRuntimeException e){
-			throw new ServiceException(e);
-		}
+		return getRegistrationService().getUser(name);
 	}
 
 	/**
@@ -337,11 +306,7 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
 			throw new IllegalArgumentException("The User can not be null.");
 		}
 		
-		try{
-			getRegistrationService().updateUser(user);
-		} catch(ServiceRuntimeException e){
-			throw new ServiceException(e);
-		}
+		getRegistrationService().updateUser(user);
 	}
 
 	/**
@@ -357,11 +322,7 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
 			throw new IllegalArgumentException("The name can not be empty.");
 		}
 		
-		try{
-			getRegistrationService().deleteUser(name);
-		} catch(ServiceRuntimeException e){
-			throw new ServiceException(e);
-		}
+		getRegistrationService().deleteUser(name);
 	}
 
 	/**
@@ -378,11 +339,7 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
 			throw new IllegalArgumentException("The user name can not be empty.");
 		}
 		
-		try{
-			getRegistrationService().setUserPermission(userName, permissions);
-		} catch(ServiceRuntimeException e){
-			throw new ServiceException(e);
-		}
+		getRegistrationService().setUserPermission(userName, permissions);
 	}
 
 	/**
@@ -394,11 +351,9 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
 			ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
 			throw new ServiceException(error);
 		}
-		try{
-			return getRegistrationService().getAllUser();
-		} catch (ServiceRuntimeException e) {
-			throw new ServiceException(e);
-		}
+		
+		return getRegistrationService().getAllUser();
+		
 	}
 
 	/**
@@ -411,11 +366,8 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
 			ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
 			throw new ServiceException(error);
 		}
-		try{
-			getRegistrationService().setUserPassword(userName, password);
-		} catch (ServiceRuntimeException e) {
-			throw new ServiceException(e);
-		}
+		
+		getRegistrationService().setUserPassword(userName, password);
 	}
 	
 }

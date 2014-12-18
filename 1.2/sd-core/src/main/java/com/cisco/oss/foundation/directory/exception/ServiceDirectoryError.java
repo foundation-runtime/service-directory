@@ -4,8 +4,6 @@
  */
 package com.cisco.oss.foundation.directory.exception;
 
-import java.text.MessageFormat;
-
 import org.codehaus.jackson.annotate.JsonIgnore;
 
 /**
@@ -24,10 +22,7 @@ public class ServiceDirectoryError {
 	 */
 	private ErrorCode exceptionCode;
 	
-	/**
-	 * resource bundle replacement.
-	 */
-	private Object[] params;
+	private String message;
 	
 	/**
 	 * Default constructor for JSON serializer.
@@ -35,18 +30,28 @@ public class ServiceDirectoryError {
 	public ServiceDirectoryError(){
 		
 	}
+	
+	/**
+	 * Constructor.
+	 * 
+	 * @param ec
+	 * 		the ExceptionCode.
+	 */
+	public ServiceDirectoryError(ErrorCode ec) {
+		this.exceptionCode = ec;
+	}
 
 	/**
 	 * Constructor.
 	 * 
 	 * @param ec
 	 * 		the ExceptionCode.
-	 * @param params
-	 * 		the string holder parameters.
+	 * @param message
+	 * 		the error extra message
 	 */
-	public ServiceDirectoryError(ErrorCode ec, Object... params) {
-		this.params = params;
+	public ServiceDirectoryError(ErrorCode ec, String message) {
 		this.exceptionCode = ec;
+		this.message = message;
 	}
 	
 	/**
@@ -57,21 +62,12 @@ public class ServiceDirectoryError {
 	 */
 	@JsonIgnore
 	public String getErrorMessage(){
-        if (params != null && params.length > 0) {
-            return (MessageFormat.format(exceptionCode.getMessage(), params));
-        } else {
-            return (exceptionCode.getMessage());
-        }
-	}
-	
-	/**
-	 * Get the String holder parameters.
-	 * 
-	 * @return
-	 * 		the String holder parameters.
-	 */
-	public Object[] getParams(){
-		return this.params;
+		StringBuilder sb = new StringBuilder();
+		sb.append(exceptionCode.getCode()).append(":").append(exceptionCode.getMessage());
+		if(this.message != null && ! this.message.isEmpty()){
+			sb.append(" - ").append(message);
+		}
+		return sb.toString();
 	}
 	
 	/**

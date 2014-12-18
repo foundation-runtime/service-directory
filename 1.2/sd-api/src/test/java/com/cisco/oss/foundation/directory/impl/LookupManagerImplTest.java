@@ -52,6 +52,8 @@ public class LookupManagerImplTest {
 				"registry.health.check.interval", 1);
 
 		final String serviceName = "odrm";
+		final String address = "192.168.2.3";
+		final int port = 8901;
 		final String instanceId = "192.168.2.3-8901";
 		final String keyName = "solution";
 
@@ -61,7 +63,7 @@ public class LookupManagerImplTest {
 		List<ModelServiceInstance> instances = new ArrayList<ModelServiceInstance>();
 		ModelServiceInstance instance = new ModelServiceInstance("odrm",
 				"192.168.2.3-8901", "192.168.2.3-8901",
-				"http://cisco.com/vbo/odrm/setupsession", OperationalStatus.UP,metadata);
+				"http://cisco.com/vbo/odrm/setupsession", OperationalStatus.UP, address, port, metadata);
 		instances.add(instance);
 		final ModelService result = new ModelService("odrm", "odrm");
 		result.setServiceInstances(instances);
@@ -192,7 +194,7 @@ public class LookupManagerImplTest {
 			}
 		}
 		ModelServiceInstance newInstance = new ModelServiceInstance(instance.getServiceName(), instance.getInstanceId(),
-				instance.getId(), instance.getUri(), instance.getStatus(), m);
+				instance.getId(), instance.getUri(), instance.getStatus(), instance.getAddress(), instance.getPort(), m);
 		return newInstance;
 	}
 
@@ -273,7 +275,7 @@ public class LookupManagerImplTest {
 				ModelServiceInstance instance = new ModelServiceInstance(
 						"odrm", "192.168.2.3-8901", "192.168.2.3-8901",
 						"http://cisco.com/vbo/odrm/setupsession",
-						OperationalStatus.UP, metadata);
+						OperationalStatus.UP, "192.168.2.3", 8901, metadata);
 //				instance.setHeartbeatTime(date);
 				instances.add(instance);
 				ModelService result = new ModelService("odrm", "odrm");
@@ -291,7 +293,7 @@ public class LookupManagerImplTest {
 				ModelServiceInstance instance = new ModelServiceInstance(
 						"odrm", "192.168.2.3-8901", "192.168.2.3-8901",
 						"http://cisco.com/vbo/odrm/setupsession",
-						OperationalStatus.UP, metadata);
+						OperationalStatus.UP, "192.168.2.3", 8901, metadata);
 //				instance.setHeartbeatTime(date);
 				instances.add(instance);
 

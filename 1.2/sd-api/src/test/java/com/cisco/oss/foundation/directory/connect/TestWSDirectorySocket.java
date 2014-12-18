@@ -162,7 +162,7 @@ public class TestWSDirectorySocket {
 		Map<String, String> metadata = new HashMap<String, String>();
 		metadata.put("dc", "usa");
 		ModelServiceInstance instance = new ModelServiceInstance("mocksvc", "127.0.0.1-9080", "0", "http://new.test.com/t", 
-				OperationalStatus.UP, metadata);
+				OperationalStatus.UP, "127.0.0.1", 9080, metadata);
 		serviceInstances.add(instance);
 		service.setServiceInstances(serviceInstances);
 		final ResponseHeader respHeader = new ResponseHeader(1, 2, ErrorCode.OK);

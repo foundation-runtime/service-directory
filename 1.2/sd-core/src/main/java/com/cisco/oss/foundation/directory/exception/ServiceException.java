@@ -12,25 +12,13 @@ package com.cisco.oss.foundation.directory.exception;
  * @author zuxiang
  *
  */
-public class ServiceException extends Exception {
+public class ServiceException extends RuntimeException {
 
 	private static final long serialVersionUID = -3706093386454084825L;
 	/**
 	 * The ExceptionCode.
 	 */
 	private ServiceDirectoryError error;
-	
-	/**
-	 * Constructor from the ServiceRuntimeException.
-	 * 
-	 * Transfer the ServiceRuntimeException to the checked ServiceException.
-	 * 
-	 * @param exception
-	 * 		the root ServiceRuntimeException.
-	 */
-	public ServiceException(ServiceRuntimeException exception){
-		this(exception.getServiceDirectoryError(), exception);
-	}
 
 	/**
 	 * Constructor.
@@ -40,6 +28,17 @@ public class ServiceException extends Exception {
 	 */
 	public ServiceException(ServiceDirectoryError error) {
 		super(error.getErrorMessage());
+		this.error = error;
+	}
+	
+	/**
+	 * Constructor.
+	 * 
+	 * @param error
+	 * 		the ServiceDirectoryError.
+	 */
+	public ServiceException(ServiceDirectoryError error, String message) {
+		super(error.getErrorMessage() + ", " + message);
 		this.error = error;
 	}
 	
@@ -67,7 +66,7 @@ public class ServiceException extends Exception {
 	 * 		the exception.
 	 */
 	public ServiceException(ServiceDirectoryError error, String message, Exception ex){
-		super(message, ex);
+		super(error.getErrorMessage() + ", " + message, ex);
 		this.error = error;
 	}
 

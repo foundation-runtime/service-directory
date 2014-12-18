@@ -479,7 +479,7 @@ public class TestDirectoryConnection {
 					
 					// -1 means watcher notification
 					ModelServiceInstance instance = new ModelServiceInstance("mocksvc", "129.1.1.1-9080", "op", null, 
-            				OperationalStatus.UP, null);
+            				OperationalStatus.UP, "129.1.1.1", 9080, null);
 					List<ModelServiceInstance> wInstances = new ArrayList<ModelServiceInstance>();
 					wInstances.add(instance);
 					List<WatchedService> os = new ArrayList<WatchedService>();
@@ -492,7 +492,7 @@ public class TestDirectoryConnection {
 		            
 		            
 		            instance = new ModelServiceInstance("othersvc", "129.1.1.1-9080", "op", null, 
-            				OperationalStatus.UP, null);
+            				OperationalStatus.UP, "129.1.1.1", 9080, null);
 //		            os = new ArrayList<WatchedService>();
 //		            os.add(new WatchedService("othersvc", WatcherType.SERVICE, OperateType.Update, 1));
 		            wInstances = new ArrayList<ModelServiceInstance>();
@@ -507,7 +507,7 @@ public class TestDirectoryConnection {
 		            
 		            
 		            instance = new ModelServiceInstance("mocksvc", "ddd", "op", null, 
-            				null, null);
+            				null, "129.1.1.1", 9080, null);
 //		            os = new ArrayList<WatchedService>();
 //		            os.add(new WatchedService("mocksvc", WatcherType.SERVICE, OperateType.Add, 2));
 		            wInstances = new ArrayList<ModelServiceInstance>();

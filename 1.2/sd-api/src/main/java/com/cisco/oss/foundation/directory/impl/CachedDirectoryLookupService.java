@@ -17,6 +17,7 @@ import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.lifecycle.Closable;
 import com.cisco.oss.foundation.directory.proto.ServiceInstanceOperate;
 import com.cisco.oss.foundation.directory.utils.JsonSerializer;
+import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 
 /**
  * It is the DirectoryLookupService with Cache.
@@ -253,7 +254,9 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 		private void processServiceInstanceOperate(List<ModelServiceInstance> instances, ServiceInstanceOperate operate){
 			switch(operate.getType()){
 			case Add:
-				instances.add(operate.getServiceInstance());
+				ModelServiceInstance model = operate.getServiceInstance();
+				instances.add(model);
+				CachedDirectoryLookupService.this.onServiceInstanceAvailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
 				break;
 			case Update:
 				
@@ -265,6 +268,12 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 						instance.setStatus(updated.getStatus());
 						instance.setUri(updated.getUri());
 						instance.setMetadata(updated.getMetadata());
+						instance.setAddress(updated.getAddress());
+						instance.setId(updated.getId());
+						instance.setInfo(updated.getInfo());
+						instance.setModifiedTime(updated.getModifiedTime());
+						instance.setPort(updated.getPort());
+						CachedDirectoryLookupService.this.onServiceInstanceChanged(ServiceInstanceUtils.transferFromModelServiceInstance(updated));
 						break;
 					}
 				}
@@ -274,10 +283,13 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 				while(it.hasNext()){
 					ModelServiceInstance instance = it.next();
 					
-					if(operate.getServiceName().equals(instance.getServiceName())
-							&& operate.getInstanceId().equals(instance.getInstanceId())){
-						it.remove();
-						break;
+					if(instance != null){
+						if(operate.getServiceName().equals(instance.getServiceName())
+								&& operate.getInstanceId().equals(instance.getInstanceId())){
+							CachedDirectoryLookupService.this.onServiceInstanceUnavailable(ServiceInstanceUtils.transferFromModelServiceInstance(instance));
+							it.remove();
+							break;
+						}
 					}
 				}
 				break;

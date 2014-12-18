@@ -10,7 +10,6 @@ import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.Permission;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.entity.User;
-import com.cisco.oss.foundation.directory.exception.ServiceException;
 
 /**
  * The service registration lifecycle management interface.
@@ -30,7 +29,7 @@ public interface RegistrationManager {
 	 * @param serviceInstance	The ProvidedServiceInstance.
 	 * @throws ServiceException
 	 */
-	public void registerService(ProvidedServiceInstance serviceInstance) throws ServiceException;
+	public void registerService(ProvidedServiceInstance serviceInstance);
 	
 	/**
 	 * Register a new ProviderServiceInstance with ServiceInstanceHealth.
@@ -43,7 +42,7 @@ public interface RegistrationManager {
 	 * @param registryHealth		The ServiceInstanceHealth.
 	 * @throws ServiceException
 	 */
-	public void registerService(ProvidedServiceInstance serviceInstance, ServiceInstanceHealth registryHealth) throws ServiceException;
+	public void registerService(ProvidedServiceInstance serviceInstance, ServiceInstanceHealth registryHealth);
 	
 	/**
 	 * Update the OperationalStatus of the ProvidedServiceInstance.
@@ -55,7 +54,7 @@ public interface RegistrationManager {
 	 * @param status		The OperationalStatus of the ProvidedServiceInstance.
 	 * @throws ServiceException
 	 */
-	public void updateServiceOperationalStatus(String serviceName, String providerId, OperationalStatus status) throws ServiceException;
+	public void updateServiceOperationalStatus(String serviceName, String providerId, OperationalStatus status);
 	
 	/**
 	 * Update the URI of the ProvidedServiceInstance.
@@ -67,7 +66,7 @@ public interface RegistrationManager {
 	 * @param uri		The URI of the ProvidedServiceInstance.
 	 * @throws ServiceException
 	 */
-	public void updateServiceUri(String serviceName, String providerId, String uri) throws ServiceException;
+	public void updateServiceUri(String serviceName, String providerId, String uri);
 	
 	
 	/**
@@ -79,7 +78,7 @@ public interface RegistrationManager {
 	 * @param serviceInstance	The ProvidedServiceInstance.
 	 * @throws ServiceException
 	 */
-	public void updateService(ProvidedServiceInstance serviceInstance) throws ServiceException;
+	public void updateService(ProvidedServiceInstance serviceInstance);
 	
 	/**
 	 * Unregister the ProvidedServiceInstance.
@@ -90,7 +89,7 @@ public interface RegistrationManager {
 	 * @param providerId	The providerId of ProvidedServiceInstance.
 	 * @throws ServiceException
 	 */
-	public void unregisterService(String serviceName, String providerId) throws ServiceException;
+	public void unregisterService(String serviceName, String providerId);
 	
 	/**
 	 * Create a new User.
@@ -99,7 +98,7 @@ public interface RegistrationManager {
 	 * 		the User.
 	 * @throws ServiceException
 	 */
-	public void createUser(User user, String password) throws ServiceException;
+	public void createUser(User user, String password);
 	
 	/**
 	 * Get a User by the name.
@@ -110,7 +109,7 @@ public interface RegistrationManager {
 	 * 		the User.
 	 * @throws ServiceException
 	 */
-	public User getUser(String name) throws ServiceException;
+	public User getUser(String name);
 	
 	/**
 	 * Get all Users.
@@ -119,7 +118,7 @@ public interface RegistrationManager {
 	 * 		all users.
 	 * @throws ServiceException
 	 */
-	public List<User> getAllUsers() throws ServiceException;
+	public List<User> getAllUsers();
 	
 	/**
 	 * Update the User.
@@ -128,7 +127,7 @@ public interface RegistrationManager {
 	 * 		the User.
 	 * @throws ServiceException
 	 */
-	public void updateUser(User user) throws ServiceException;
+	public void updateUser(User user);
 	
 	/**
 	 * Delete a User by name.
@@ -137,7 +136,7 @@ public interface RegistrationManager {
 	 * 		the name of the User.
 	 * @throws ServiceException
 	 */
-	public void deleteUser(String name) throws ServiceException;
+	public void deleteUser(String name);
 	
 	/**
 	 * Set the permission list for the user.
@@ -151,7 +150,7 @@ public interface RegistrationManager {
 	 * 		the permission list of the user.
 	 * @throws ServiceException
 	 */
-	public void setUserPermission(String userName, List<Permission> permissions) throws ServiceException;
+	public void setUserPermission(String userName, List<Permission> permissions);
 	
 	/**
 	 * Set the password for the User.
@@ -162,5 +161,5 @@ public interface RegistrationManager {
 	 * 		the password String.
 	 * @throws ServiceException
 	 */
-	public void setUserPassword(String userName, String password) throws ServiceException;
+	public void setUserPassword(String userName, String password);
 }

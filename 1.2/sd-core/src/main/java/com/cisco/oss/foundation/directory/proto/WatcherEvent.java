@@ -74,8 +74,12 @@ public class WatcherEvent extends Event {
 			sb.append("null");
 		}else{
 			sb.append("[");
-			for(ModelServiceInstance o : serviceInstances){
-				sb.append(o.toString()).append(",");
+			if(serviceInstances.size() > 0){
+				for(ModelServiceInstance o : serviceInstances){
+					if(o != null){
+						sb.append(o.toString()).append(",");
+					}
+				}
 			}
 			sb.append("]");
 		}

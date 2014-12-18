@@ -38,6 +38,16 @@ public class ServiceInstance {
 	private boolean monitorEnabled = true;
 	
 	/**
+	 * The real address of the instance, it can be real IP or host name
+	 */
+	private String address;
+	
+	/**
+	 * The real port of the instance.
+	 */
+	private int port = 0;
+	
+	/**
 	 * ServiceInstance metadata
 	 */
 	private final Map<String, String> metadata;
@@ -51,15 +61,22 @@ public class ServiceInstance {
 	 * 		the instance id.
 	 * @param uri
 	 * 		the uri.
+	 * @param address
+	 * 		The real address of the instance, it can be real IP or host name.
+	 * @param port
+	 * 		The real port of the instance.
 	 * @param metadata
 	 * 		the metadata Map.
 	 */
-	public ServiceInstance(String serviceName, String instanceId, String uri, boolean monitor, OperationalStatus status, Map<String, String> metadata) {
+	public ServiceInstance(String serviceName, String instanceId, String uri, boolean monitor, OperationalStatus status, 
+			String address, int port, Map<String, String> metadata) {
 		this.serviceName = serviceName;
 		this.instanceId = instanceId;
 		this.uri = uri;
 		this.monitorEnabled = monitor;
 		this.status = status;
+		this.address = address;
+		this.port = port;
 		this.metadata = new HashMap<String, String>();
 		if(metadata != null && metadata.size() != 0){
 			this.metadata.putAll(metadata);
@@ -113,6 +130,26 @@ public class ServiceInstance {
 	 */
 	public OperationalStatus getStatus() {
 		return status;
+	}
+	
+	/**
+	 * Get the real address, it can be real IP or host name.
+	 * 
+	 * @return
+	 * 		the real address.
+	 */
+	public String getAddress() {
+		return address;
+	}
+	
+	/**
+	 * Get the port.
+	 * 
+	 * @return
+	 * 		the port.
+	 */
+	public int getPort() {
+		return port;
 	}
 
 	/**

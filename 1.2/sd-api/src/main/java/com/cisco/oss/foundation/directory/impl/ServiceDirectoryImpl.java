@@ -20,7 +20,6 @@ import com.cisco.oss.foundation.directory.config.ServiceDirectoryConfig;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
-import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
 import com.cisco.oss.foundation.directory.lifecycle.Closable;
 
 /**
@@ -150,7 +149,7 @@ public class ServiceDirectoryImpl implements DirectoryServiceClientManager{
 			synchronized(this){
 				if(isShutdown){
 					ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_IS_SHUTDOWN);
-					throw new ServiceRuntimeException(error);
+					throw new ServiceException(error);
 				}
 				if(client == null){
 					try {

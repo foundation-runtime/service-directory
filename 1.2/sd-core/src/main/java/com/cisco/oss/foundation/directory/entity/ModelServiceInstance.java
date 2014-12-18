@@ -62,6 +62,16 @@ public class ModelServiceInstance implements Serializable{
 	private BaseInfo info;
 	
 	/**
+	 * The real address of the instance, it can be real IP or host name
+	 */
+	private String address;
+	
+	/**
+	 * The real port of the instance.
+	 */
+	private int port = 0;
+	
+	/**
 	 * The instance metadata info.
 	 */
 	private Map<String, String> metadata;
@@ -91,27 +101,56 @@ public class ModelServiceInstance implements Serializable{
 	 * 		the uri of the ServiceInstance.
 	 * @param status
 	 * 		the OperationalStatus.
+	 * @param address
+	 * 		The real address of the instance, it can be real IP or host name.
+	 * @param port
+	 * 		The real port of the instance.
 	 * @param metadata
 	 * 		the metadata map.
 	 */
 	public ModelServiceInstance(String serviceName, String instanceId, String id, String uri, 
-			OperationalStatus status, Map<String, String> metadata){
+			OperationalStatus status, String address, int port, Map<String, String> metadata){
 		this.serviceName = serviceName;
 		this.instanceId = instanceId;
 		this.id = id;
 		this.uri = uri;
 		this.status = status;
 		this.metadata = metadata;
-		
+		this.address = address;
+		this.port = port;
 	}
 	
+	/**
+	 * Constructor.
+	 * 
+	 * @param serviceName
+	 * 		the service name.
+	 * @param instanceId
+	 * 		the instance id.
+	 * @param id
+	 * 		the id.
+	 * @param uri
+	 * 		the uri of the ServiceInstance.
+	 * @param status
+	 * 		the OperationalStatus.
+	 * @param address
+	 * 		The real address of the instance, it can be real IP or host name.
+	 * @param port
+	 * 		The real port of the instance.
+	 * @param monitorEnabled
+	 * 		ServiceInstance enabled monitor if true.
+	 * @param metadata
+	 * 		the metadata map.
+	 */
 	public ModelServiceInstance(String serviceName, String instanceId, String id, String uri, 
-			OperationalStatus status, boolean monitorEnabled, Map<String, String> metadata){
+			OperationalStatus status, String address, int port, boolean monitorEnabled, Map<String, String> metadata){
 		this.serviceName = serviceName;
 		this.instanceId = instanceId;
 		this.id = id;
 		this.uri = uri;
 		this.status = status;
+		this.address = address;
+		this.port = port;
 		this.metadata = metadata;
 		this.monitorEnabled = monitorEnabled;
 	}
@@ -194,6 +233,46 @@ public class ModelServiceInstance implements Serializable{
 	 */
 	public void setStatus(OperationalStatus status) {
 		this.status = status;
+	}
+	
+	/**
+	 * Get the real address, it can be real IP or host name.
+	 * 
+	 * @return
+	 * 		the real address.
+	 */
+	public String getAddress() {
+		return address;
+	}
+
+	/**
+	 * Set the real address, it can be real IP or host name.
+	 * 
+	 * @param address
+	 * 		the real address.
+	 */
+	public void setAddress(String address) {
+		this.address = address;
+	}
+
+	/**
+	 * Get the port.
+	 * 
+	 * @return
+	 * 		the port.
+	 */
+	public int getPort() {
+		return port;
+	}
+
+	/**
+	 * Set the port.
+	 * 
+	 * @param port
+	 * 		the port.
+	 */
+	public void setPort(int port) {
+		this.port = port;
 	}
 	
 	/**

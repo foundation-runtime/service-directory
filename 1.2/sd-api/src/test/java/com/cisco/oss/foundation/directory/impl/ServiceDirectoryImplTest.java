@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.LookupManager;
+import com.cisco.oss.foundation.directory.NotificationHandler;
 import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectory;
 import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
@@ -312,6 +313,20 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory,
 		public List<ServiceInstance> getAllInstancesByKey(
 				ServiceInstanceQuery query) throws ServiceException {
 			return null;
+		}
+		
+		@Override
+		public void addNotificationHandler(String serviceName,
+				NotificationHandler handler) throws ServiceException {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void removeNotificationHandler(String serviceName,
+				NotificationHandler handler) throws ServiceException {
+			// TODO Auto-generated method stub
+			
 		}
 		
 	}

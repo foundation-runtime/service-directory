@@ -40,7 +40,6 @@ import com.cisco.oss.foundation.directory.event.ServiceDirectoryListener;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
-import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
 import com.cisco.oss.foundation.directory.exception.SessionTimeOutException;
 import com.cisco.oss.foundation.directory.impl.DirectoryServiceClient.WatcherRegistration;
 import com.cisco.oss.foundation.directory.proto.ConnectProtocol;
@@ -320,7 +319,7 @@ public class DirectoryConnection {
         	sendCloseSession();
             closeSession();
             eventThread.queueEventOfDeath();
-        } catch (ServiceRuntimeException e) {
+        } catch (ServiceException e) {
             LOGGER.warn("Execute the CloseSession Protocol failed when close", e);
         } 
     }
@@ -345,12 +344,14 @@ public class DirectoryConnection {
                 try {
 					packet.wait();
 				} catch (InterruptedException e) {
-					throw new ServiceRuntimeException(ErrorCode.REQUEST_INTERUPTED, e);
+					ServiceDirectoryError sde = new ServiceDirectoryError(ErrorCode.REQUEST_INTERUPTED);
+					throw new ServiceException(sde, e);
 				}
             }
         }
         if(! packet.respHeader.getErr().equals(ErrorCode.OK)){
-        	throw new ServiceRuntimeException(packet.respHeader.getErr());
+        	ServiceDirectoryError sde = new ServiceDirectoryError(packet.respHeader.getErr());
+        	throw new ServiceException(sde);
         }
         return packet.response;
     }

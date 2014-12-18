@@ -7,7 +7,6 @@ package com.cisco.oss.foundation.directory;
 import java.util.List;
 
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
-import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
 
 /**
@@ -29,7 +28,7 @@ public interface LookupManager {
 	 * @return				The ServiceInstance.
 	 * @throws ServiceException
 	 */
-	public ServiceInstance lookupInstance(String serviceName) throws ServiceException;
+	public ServiceInstance lookupInstance(String serviceName);
 	
 	/**
 	 * Look up a list of service instances for a given service.
@@ -40,7 +39,7 @@ public interface LookupManager {
 	 * @return				The ServiceInstance list.
 	 * @throws ServiceException
 	 */
-	public List<ServiceInstance> lookupInstances(String serviceName) throws ServiceException;
+	public List<ServiceInstance> lookupInstances(String serviceName);
 	
 	/**
 	 * Query for a service instance based on the service name and some filtering criteria on the service metadata.
@@ -53,7 +52,7 @@ public interface LookupManager {
 	 * @return				The ServiceInstance.
 	 * @throws ServiceException
 	 */
-	public ServiceInstance queryInstanceByName(String serviceName, ServiceInstanceQuery query) throws ServiceException;
+	public ServiceInstance queryInstanceByName(String serviceName, ServiceInstanceQuery query);
 	
 	/**
 	 * Query for all the ServiceInstances of the specified Service, which satisfy the query criteria on the service metadata.
@@ -66,7 +65,7 @@ public interface LookupManager {
 	 * @return				The ServiceInstance list.
 	 * @throws ServiceException
 	 */
-	public List<ServiceInstance> queryInstancesByName(String serviceName, ServiceInstanceQuery query) throws ServiceException;
+	public List<ServiceInstance> queryInstancesByName(String serviceName, ServiceInstanceQuery query);
 	
 	/**
 	 * Query for one the ServiceInstances which satisfy the query criteria on the service metadata.
@@ -78,7 +77,7 @@ public interface LookupManager {
 	 * @return				The ServiceInstance list.
 	 * @throws ServiceException
 	 */
-	public ServiceInstance queryInstanceByKey(ServiceInstanceQuery query) throws ServiceException;
+	public ServiceInstance queryInstanceByKey(ServiceInstanceQuery query);
 	
 	/**
 	 * Query for all the ServiceInstances which satisfy the query criteria on the service metadata.
@@ -89,7 +88,7 @@ public interface LookupManager {
 	 * @return				The ServiceInstance list.
 	 * @throws ServiceException
 	 */
-	public List<ServiceInstance> queryInstancesByKey(ServiceInstanceQuery query) throws ServiceException;
+	public List<ServiceInstance> queryInstancesByKey(ServiceInstanceQuery query);
 	
 	/**
 	 * Get a ServiceInstance.
@@ -104,7 +103,7 @@ public interface LookupManager {
 	 * 		the ServiceInstance.
 	 * @throws ServiceException
 	 */
-	public ServiceInstance getInstance(String serviceName, String instanceId) throws ServiceException;
+	public ServiceInstance getInstance(String serviceName, String instanceId);
 	
 	/**
 	 * Get all ServiceInstance List of the target Service, including the DOWN ServiceInstance.
@@ -117,7 +116,7 @@ public interface LookupManager {
 	 * 		the ServiceInstance List.
 	 * @throws ServiceException
 	 */
-	public List<ServiceInstance> getAllInstances(String serviceName) throws ServiceException;
+	public List<ServiceInstance> getAllInstances(String serviceName);
 	
 	/**
 	 * Get all ServiceInstances of the specified Service, including the DOWN ServiceIntance, 
@@ -134,7 +133,7 @@ public interface LookupManager {
 	 * 		the ServiceInstance List.
 	 * @throws ServiceException
 	 */
-	public List<ServiceInstance> getAllInstances(String serviceName, ServiceInstanceQuery query) throws ServiceException;
+	public List<ServiceInstance> getAllInstances(String serviceName, ServiceInstanceQuery query);
 	
 	/**
 	 * Get all the ServiceInstances, including the DOWN ServiceInstance, which satisfy the query criteria on the service metadata.
@@ -148,7 +147,7 @@ public interface LookupManager {
 	 * 		the ServiceInstance List.
 	 * @throws ServiceException
 	 */
-	public List<ServiceInstance> getAllInstancesByKey(ServiceInstanceQuery query) throws ServiceException;
+	public List<ServiceInstance> getAllInstancesByKey(ServiceInstanceQuery query);
 	
 	/**
 	 * Get the all ServiceInstances in the ServiceDirectory including the DOWN ServiceInstance.
@@ -157,5 +156,34 @@ public interface LookupManager {
 	 * 		the ServiceInstance List.
 	 * @throws ServiceException
 	 */
-	public List<ServiceInstance> getAllInstances() throws ServiceException;
+	public List<ServiceInstance> getAllInstances();
+	
+	/**
+	 * Add a NotificationHandler to the Service.
+	 * 
+	 * This method can check the duplicate NotificationHandler for the serviceName, if the NotificationHandler
+	 * already exists in the serviceName, do nothing.
+	 * 
+	 * Throw IllegalArgumentException if serviceName or handler is null.
+	 * 
+	 * @param serviceName
+	 * 		the service name.
+	 * @param handler
+	 * 		the NotificationHandler for the service.
+	 * @throws ServiceException
+	 */
+	public void addNotificationHandler(String serviceName, NotificationHandler handler);
+	
+	/**
+	 * Remove the NotificationHandler from the Service.
+	 * 
+	 * Throw IllegalArgumentException if serviceName or handler is null.
+	 * 
+	 * @param serviceName
+	 * 		the service name.
+	 * @param handler
+	 * 		the NotificationHandler for the service.
+	 * @throws ServiceException
+	 */
+	public void removeNotificationHandler(String serviceName, NotificationHandler handler) ;
 }

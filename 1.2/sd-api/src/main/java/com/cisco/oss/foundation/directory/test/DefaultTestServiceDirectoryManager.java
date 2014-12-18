@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cisco.oss.foundation.directory.LookupManager;
+import com.cisco.oss.foundation.directory.NotificationHandler;
 import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
@@ -23,11 +24,9 @@ import com.cisco.oss.foundation.directory.entity.Permission;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 import com.cisco.oss.foundation.directory.entity.User;
-import com.cisco.oss.foundation.directory.exception.DirectoryServerClientException;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
-import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
 import com.cisco.oss.foundation.directory.impl.ServiceDirectoryCache;
 import com.cisco.oss.foundation.directory.impl.ServiceInstanceQueryHelper;
 import com.cisco.oss.foundation.directory.lifecycle.Closable;
@@ -70,6 +69,11 @@ public class DefaultTestServiceDirectoryManager implements
 	 * Mark whether component is started or not.
 	 */
 	protected boolean isStarted = false;
+	
+	/**
+	 * The Service NotificationHandler Map.
+	 */
+	private Map<String, List<NotificationHandler>> notificationHandlers  = new HashMap<String, List<NotificationHandler>>();
 	
 	/**
 	 * Constructor
@@ -146,7 +150,7 @@ public class DefaultTestServiceDirectoryManager implements
 			for(ProvidedServiceInstance model : service.getServiceInstances()){
 				if(model.getStatus() == OperationalStatus.UP){
 					list.add(new ServiceInstance(serviceName, model.getProviderId(), model.getUri(), 
-							model.isMonitorEnabled(), model.getStatus(), model.getMetadata()));
+							model.isMonitorEnabled(), model.getStatus(), model.getAddress(), model.getPort(), model.getMetadata()));
 				}
 			}
 			return list;
@@ -209,13 +213,13 @@ public class DefaultTestServiceDirectoryManager implements
 		
 		ErrorCode code = ServiceInstanceUtils.validateProvidedServiceInstance(serviceInstance);
 		if(! code.equals(ErrorCode.OK)){
-			ServiceDirectoryError error = new ServiceDirectoryError(code, serviceInstance.getServiceName());
+			ServiceDirectoryError error = new ServiceDirectoryError(code);
 			throw new ServiceException(error);
 		}
 		
 		ProvidedServiceInstance cachedInstance = this.getProvidedServiceInstance(serviceInstance.getServiceName(), serviceInstance.getProviderId());
 		if(cachedInstance != null){
-			ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_INSTANCE_ALREADY_EXIST, serviceInstance.getServiceName());
+			ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_INSTANCE_ALREADY_EXIST);
 			throw new ServiceException(error);
 		}
 		String serviceName = serviceInstance.getServiceName();
@@ -225,6 +229,9 @@ public class DefaultTestServiceDirectoryManager implements
 		ProvidedServiceInstance cacheServiceInstance = deepCloneProvidedServiceInstance(serviceInstance);
 		service.getServiceInstances().add(cacheServiceInstance);
 		addMetadataKeyMap(serviceInstance);
+		
+		onServiceInstanceAvailable(new ServiceInstance(cacheServiceInstance.getServiceName(), cacheServiceInstance.getProviderId(), cacheServiceInstance.getUri(), 
+				cacheServiceInstance.isMonitorEnabled(), cacheServiceInstance.getStatus(), cacheServiceInstance.getAddress(), cacheServiceInstance.getPort(), cacheServiceInstance.getMetadata()));
 		LOGGER.info("Registered Service, name=" + serviceInstance.getServiceName());
 	}
 
@@ -261,13 +268,13 @@ public class DefaultTestServiceDirectoryManager implements
 		
 		ErrorCode code = ServiceInstanceUtils.isNameValid(serviceName);
 		if(! code.equals(ErrorCode.OK)){
-			ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
+			ServiceDirectoryError error = new ServiceDirectoryError(code);
 			throw new ServiceException(error);
 		}
 		
 		code = ServiceInstanceUtils.isIdValid(providerId);
 		if(! code.equals(ErrorCode.OK)){
-			ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
+			ServiceDirectoryError error = new ServiceDirectoryError(code);
 			throw new ServiceException(error);
 		}
 		
@@ -276,11 +283,13 @@ public class DefaultTestServiceDirectoryManager implements
 		if(model == null){
 			LOGGER.error("Update Service Instance OperationalStatus failed - can not find the ServiceInstance.");
 			ServiceDirectoryError sde = new ServiceDirectoryError(
-					ErrorCode.SERVICE_INSTANCE_NOT_EXIST,
-					serviceName);
-			throw new DirectoryServerClientException(sde);
+					ErrorCode.SERVICE_INSTANCE_NOT_EXIST);
+			throw new ServiceException(sde);
 		}
 		model.setStatus(status);
+		
+		onServiceInstanceChanged(new ServiceInstance(model.getServiceName(), model.getProviderId(), model.getUri(), 
+				model.isMonitorEnabled(), model.getStatus(),model.getAddress(), model.getPort(),  model.getMetadata()));
 		
 	}
 	
@@ -292,19 +301,19 @@ public class DefaultTestServiceDirectoryManager implements
 			String providerId, String uri) throws ServiceException {
 		ErrorCode code = ServiceInstanceUtils.isNameValid(serviceName);
 		if(! code.equals(ErrorCode.OK)){
-			ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
+			ServiceDirectoryError error = new ServiceDirectoryError(code);
 			throw new ServiceException(error);
 		}
 		
 		code = ServiceInstanceUtils.isIdValid(providerId);
 		if(! code.equals(ErrorCode.OK)){
-			ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
+			ServiceDirectoryError error = new ServiceDirectoryError(code);
 			throw new ServiceException(error);
 		}
 		
 		code = ServiceInstanceUtils.isUriValid(uri);
 		if(! code.equals(ErrorCode.OK)){
-			ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
+			ServiceDirectoryError error = new ServiceDirectoryError(code);
 			throw new ServiceException(error);
 		}
 		
@@ -313,11 +322,13 @@ public class DefaultTestServiceDirectoryManager implements
 		if(model == null){
 			LOGGER.error("Update Service Instance URI failed - can not find the ServiceInstance.");
 			ServiceDirectoryError sde = new ServiceDirectoryError(
-					ErrorCode.SERVICE_INSTANCE_NOT_EXIST,
-					serviceName);
-			throw new DirectoryServerClientException(sde);
+					ErrorCode.SERVICE_INSTANCE_NOT_EXIST);
+			throw new ServiceException(sde);
 		}
 		model.setUri(uri);
+		
+		onServiceInstanceChanged(new ServiceInstance(model.getServiceName(), model.getProviderId(), model.getUri(), 
+				model.isMonitorEnabled(), model.getStatus(), model.getAddress(), model.getPort(), model.getMetadata()));
 	}
 
 	/**
@@ -336,16 +347,13 @@ public class DefaultTestServiceDirectoryManager implements
 		
 		ErrorCode code = ServiceInstanceUtils.validateProvidedServiceInstance(serviceInstance);
 		if(! code.equals(ErrorCode.OK)){
-			ServiceDirectoryError error = new ServiceDirectoryError(code, serviceInstance.getServiceName());
+			ServiceDirectoryError error = new ServiceDirectoryError(code);
 			throw new ServiceException(error);
 		}
 		
 		updateMetadataKeyMap(serviceInstance);
-		try{
-			updateInstance(serviceInstance);
-		} catch(ServiceRuntimeException e){
-			throw new ServiceException(e);
-		}
+		
+		updateInstance(serviceInstance);
 		
 	}
 
@@ -363,13 +371,13 @@ public class DefaultTestServiceDirectoryManager implements
 			throws ServiceException {
 		ErrorCode code = ServiceInstanceUtils.isNameValid(serviceName);
 		if(! code.equals(ErrorCode.OK)){
-			ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
+			ServiceDirectoryError error = new ServiceDirectoryError(code);
 			throw new ServiceException(error);
 		}
 		
 		code = ServiceInstanceUtils.isIdValid(providerId);
 		if(! code.equals(ErrorCode.OK)){
-			ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
+			ServiceDirectoryError error = new ServiceDirectoryError(code);
 			throw new ServiceException(error);
 		}
 		
@@ -378,12 +386,14 @@ public class DefaultTestServiceDirectoryManager implements
 		if(model == null){
 			LOGGER.error("Unregister Service failed - can not find the ServiceInstance.");
 			ServiceDirectoryError sde = new ServiceDirectoryError(
-					ErrorCode.SERVICE_INSTANCE_NOT_EXIST,
-					serviceName);
-			throw new DirectoryServerClientException(sde);
+					ErrorCode.SERVICE_INSTANCE_NOT_EXIST);
+			throw new ServiceException(sde);
 		}
 		
 		getService(serviceName).getServiceInstances().remove(model);
+		
+		onServiceInstanceUnavailable(new ServiceInstance(model.getServiceName(), model.getProviderId(), model.getUri(), 
+				model.isMonitorEnabled(), model.getStatus(), model.getAddress(), model.getPort(), model.getMetadata()));
 		
 	}
 	
@@ -425,7 +435,7 @@ public class DefaultTestServiceDirectoryManager implements
 					if (model.getStatus() == OperationalStatus.UP) {
 						list.add(new ServiceInstance(model.getServiceName(),
 								model.getProviderId(), model.getUri(), model.isMonitorEnabled(),
-								model.getStatus(), model.getMetadata()));
+								model.getStatus(), model.getAddress(), model.getPort(), model.getMetadata()));
 					}
 				}
 
@@ -446,7 +456,7 @@ public class DefaultTestServiceDirectoryManager implements
 			throws ServiceException {
 		ProvidedServiceInstance instance = getProvidedServiceInstance(serviceName, instanceId);
 		return new ServiceInstance(serviceName, instance.getProviderId(), instance.getUri(), 
-				instance.isMonitorEnabled(), instance.getStatus(), instance.getMetadata());
+				instance.isMonitorEnabled(), instance.getStatus(), instance.getAddress(), instance.getPort(), instance.getMetadata());
 	}
 
 	/**
@@ -466,7 +476,7 @@ public class DefaultTestServiceDirectoryManager implements
 			List<ServiceInstance> list = new ArrayList<ServiceInstance>();
 			for(ProvidedServiceInstance model : service.getServiceInstances()){
 				list.add(new ServiceInstance(serviceName, model.getProviderId(), model.getUri(), 
-						model.isMonitorEnabled(), model.getStatus(), model.getMetadata()));
+						model.isMonitorEnabled(), model.getStatus(), model.getAddress(), model.getPort(), model.getMetadata()));
 			}
 			return list;
 		}
@@ -499,7 +509,7 @@ public class DefaultTestServiceDirectoryManager implements
 				for (ProvidedServiceInstance model : instances) {
 					list.add(new ServiceInstance(model.getServiceName(),
 							model.getProviderId(), model.getUri(),
-							model.isMonitorEnabled(), model.getStatus(), model.getMetadata()));
+							model.isMonitorEnabled(), model.getStatus(), model.getAddress(), model.getPort(), model.getMetadata()));
 				}
 
 				return ServiceInstanceQueryHelper.filterServiceInstance(query,
@@ -576,6 +586,48 @@ public class DefaultTestServiceDirectoryManager implements
 	}
 	
 	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void addNotificationHandler(String serviceName,
+			NotificationHandler handler) throws ServiceException {
+		if(handler == null || serviceName == null || serviceName.isEmpty()){
+			throw new IllegalArgumentException();
+		}
+		
+		synchronized(notificationHandlers){
+			if(! notificationHandlers.containsKey(serviceName)){
+				notificationHandlers.put(serviceName, new ArrayList<NotificationHandler>());
+			}
+			
+			notificationHandlers.get(serviceName).add(handler);
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public void removeNotificationHandler(String serviceName,
+			NotificationHandler handler) throws ServiceException {
+		if(handler == null || serviceName == null || serviceName.isEmpty()){
+			throw new IllegalArgumentException();
+		}
+		
+		synchronized(notificationHandlers){
+			if(notificationHandlers.containsKey(serviceName)){
+				List<NotificationHandler> list = notificationHandlers.get(serviceName);
+				if(list.contains(handler)){
+					list.remove(handler);
+				}
+				if(list.size() == 0){
+					notificationHandlers.remove(serviceName);
+				}
+			}
+		}
+	}
+	
+	/**
 	 * Get the ServiceDirectoryCache.
 	 * 
 	 * @return
@@ -583,6 +635,66 @@ public class DefaultTestServiceDirectoryManager implements
 	 */
 	protected ServiceDirectoryCache<String, ProvidedService> getServiceDirectoryCache(){
 		return this.cache;
+	}
+	
+	/**
+	 * On a ServiceInstance Unavailable.
+	 * 
+	 * It will invoke the serviceInstanceUnavailable of the NotificationHandler.
+	 * 
+	 * @param instance
+	 * 		the ServiceInstance.
+	 */
+	private void onServiceInstanceUnavailable(ServiceInstance instance){
+		if(instance == null){
+			return ;
+		}
+		String serviceName = instance.getServiceName();
+		synchronized(notificationHandlers){
+			if(notificationHandlers.containsKey(serviceName)){
+				for(NotificationHandler h : notificationHandlers.get(serviceName)){
+					h.serviceInstanceUnavailable(instance);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * On a ServiceInstance Unavailable.
+	 * 
+	 * It will invoke the serviceInstanceChange of the NotificationHandler.
+	 * 
+	 * @param instance
+	 * 		the ServiceInstance.
+	 */
+	private void onServiceInstanceChanged(ServiceInstance instance){
+		String serviceName = instance.getServiceName();
+		synchronized(notificationHandlers){
+			if(notificationHandlers.containsKey(serviceName)){
+				for(NotificationHandler h : notificationHandlers.get(serviceName)){
+					h.serviceInstanceChange(instance);
+				}
+			}
+		}
+	}
+	
+	/**
+	 * On a ServiceInstance Unavailable.
+	 * 
+	 * It will invoke the serviceInstanceAvailable of the NotificationHandler.
+	 * 
+	 * @param instance
+	 * 		the ServiceInstance.
+	 */
+	private void onServiceInstanceAvailable(ServiceInstance instance){
+		String serviceName = instance.getServiceName();
+		synchronized(notificationHandlers){
+			if(notificationHandlers.containsKey(serviceName)){
+				for(NotificationHandler h : notificationHandlers.get(serviceName)){
+					h.serviceInstanceAvailable(instance);
+				}
+			}
+		}
 	}
 	
 	/**
@@ -616,9 +728,8 @@ public class DefaultTestServiceDirectoryManager implements
 	private void validateProvidedServiceInstance(ProvidedServiceInstance instance){
 		if(instance.getUri() == null || instance.getUri().isEmpty()){
 			ServiceDirectoryError sde = new ServiceDirectoryError(
-					ErrorCode.SERVICE_INSTANCE_URI_FORMAT_ERROR,
-					instance.getServiceName());
-			throw new DirectoryServerClientException(sde);
+					ErrorCode.SERVICE_INSTANCE_URI_FORMAT_ERROR);
+			throw new ServiceException(sde);
 		}
 	}
 	
@@ -677,9 +788,8 @@ public class DefaultTestServiceDirectoryManager implements
 		if(model == null){
 			LOGGER.error("Update Service failed - cannot find the ServiceInstance");
 			ServiceDirectoryError sde = new ServiceDirectoryError(
-					ErrorCode.SERVICE_INSTANCE_NOT_EXIST,
-					instance.getServiceName());
-			throw new DirectoryServerClientException(sde);
+					ErrorCode.SERVICE_INSTANCE_NOT_EXIST);
+			throw new ServiceException(sde);
 		}
 		
 		model.setMonitorEnabled(instance.isMonitorEnabled());
@@ -695,6 +805,9 @@ public class DefaultTestServiceDirectoryManager implements
 				modelMetadata.put(entry.getKey(), entry.getValue());
 			}
 		}
+		
+		onServiceInstanceChanged(new ServiceInstance(model.getServiceName(), model.getProviderId(), model.getUri(), 
+				model.isMonitorEnabled(), model.getStatus(), model.getAddress(), model.getPort(), model.getMetadata()));
 		
 	}
 
@@ -716,9 +829,8 @@ public class DefaultTestServiceDirectoryManager implements
 		if(model == null){
 			LOGGER.error("Update Service OperationalStatus failed - cannot find the ServiceInstance");
 			ServiceDirectoryError sde = new ServiceDirectoryError(
-					ErrorCode.SERVICE_INSTANCE_NOT_EXIST,
-					serviceName);
-			throw new DirectoryServerClientException(sde);
+					ErrorCode.SERVICE_INSTANCE_NOT_EXIST);
+			throw new ServiceException(sde);
 		}
 		
 		model.setStatus(status);

@@ -10,9 +10,9 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cisco.oss.foundation.directory.exception.DirectoryServerClientException;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
+import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.utils.HttpResponse;
 import com.cisco.oss.foundation.directory.utils.HttpUtils;
 import com.cisco.oss.foundation.directory.utils.HttpUtils.HttpMethod;
@@ -70,8 +70,8 @@ public class DirectoryInvoker {
 			String errMsg = "Send HTTP Request to remote Directory Server failed";
 			LOGGER.error(errMsg);
 			LOGGER.debug(errMsg, e);
-			ServiceDirectoryError sde = new ServiceDirectoryError(ErrorCode.HTTP_CLIENT_ERROR, errMsg);
-			throw new DirectoryServerClientException(sde, e);
+			ServiceDirectoryError sde = new ServiceDirectoryError(ErrorCode.HTTP_CLIENT_ERROR);
+			throw new ServiceException(sde, errMsg, e);
 		}
 		
 		if (result.getHttpCode() < 200 || result.getHttpCode() >= 300) {
@@ -81,8 +81,8 @@ public class DirectoryInvoker {
 				LOGGER.error("Invoke remote directory server failed, status=" + result.getHttpCode() 
 						+ ", Error Message body is empty.");
 				ServiceDirectoryError sde = new ServiceDirectoryError(
-						ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "Error Message body is empty.");
-				throw new DirectoryServerClientException(sde);
+						ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR);
+				throw new ServiceException(sde, "Error Message body is empty.");
 			}
 			ServiceDirectoryError sde = null;
 			try {
@@ -93,12 +93,12 @@ public class DirectoryInvoker {
 				String errMsg = "Deserialize error body message failed";
 				LOGGER.error(errMsg);
 				LOGGER.debug(errMsg + ", messageBody=" + errorBody, e);
-				ServiceDirectoryError sde1 = new ServiceDirectoryError(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, errMsg);
-				throw new DirectoryServerClientException(sde1, e);
+				ServiceDirectoryError sde1 = new ServiceDirectoryError(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR);
+				throw new ServiceException(sde1, errMsg, e);
 			}
 
 			if (sde != null) {
-				throw new DirectoryServerClientException(sde);
+				throw new ServiceException(sde);
 			}
 		}
 		return result;
@@ -125,8 +125,8 @@ public class DirectoryInvoker {
 			String errMsg = "Send HTTP Request to remote Directory Server failed";
 			LOGGER.error(errMsg);
 			LOGGER.debug(errMsg, e);
-			ServiceDirectoryError sde = new ServiceDirectoryError(ErrorCode.HTTP_CLIENT_ERROR, errMsg);
-			throw new DirectoryServerClientException(sde, e);
+			ServiceDirectoryError sde = new ServiceDirectoryError(ErrorCode.HTTP_CLIENT_ERROR);
+			throw new ServiceException(sde, errMsg, e);
 		}
 		
 		if (result.getHttpCode() < 200 || result.getHttpCode() >= 300) {
@@ -136,8 +136,8 @@ public class DirectoryInvoker {
 				LOGGER.error("Invoke remote directory server failed, status=" + result.getHttpCode() 
 						+ ", Error Message body is empty.");
 				ServiceDirectoryError sde = new ServiceDirectoryError(
-						ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "Error Message body is empty.");
-				throw new DirectoryServerClientException(sde);
+						ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR);
+				throw new ServiceException(sde, "Error Message body is empty.");
 			}
 			ServiceDirectoryError sde = null;
 			try {
@@ -148,12 +148,12 @@ public class DirectoryInvoker {
 				String errMsg = "Deserialize error body message failed";
 				LOGGER.error(errMsg);
 				LOGGER.debug(errMsg + ", messageBody=" + errorBody, e);
-				ServiceDirectoryError sde1 = new ServiceDirectoryError(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, errMsg);
-				throw new DirectoryServerClientException(sde1, e);
+				ServiceDirectoryError sde1 = new ServiceDirectoryError(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR);
+				throw new ServiceException(sde1, errMsg, e);
 			}
 
 			if (sde != null) {
-				throw new DirectoryServerClientException(sde);
+				throw new ServiceException(sde);
 			}
 		}
 		return result;

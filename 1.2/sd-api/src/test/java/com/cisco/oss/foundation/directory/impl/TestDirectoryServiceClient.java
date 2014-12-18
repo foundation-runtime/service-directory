@@ -317,7 +317,7 @@ public class TestDirectoryServiceClient {
 		final AtomicInteger serviceInvoked = new AtomicInteger(0);
 		
 		final ModelServiceInstance instance = new ModelServiceInstance(
-				"service1", "127.2.3.1-8901", "0", "http://cisco.com/test/", OperationalStatus.UP, null);
+				"service1", "127.2.3.1-8901", "0", "http://cisco.com/test/", OperationalStatus.UP, "127.2.3.1", 8901, null);
 		Watcher watcher1 = new Watcher(){
 
 			@Override

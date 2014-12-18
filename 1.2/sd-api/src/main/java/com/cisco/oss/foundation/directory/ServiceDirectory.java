@@ -5,7 +5,6 @@
 package com.cisco.oss.foundation.directory;
 
 import com.cisco.oss.foundation.directory.config.ServiceDirectoryConfig;
-import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.impl.ServiceDirectoryImpl;
 
 /**
@@ -41,7 +40,7 @@ public class ServiceDirectory {
 	 * 		the implementation instance of LookupManager.
 	 * @throws ServiceException 
 	 */
-	public static LookupManager getLookupManager() throws ServiceException {
+	public static LookupManager getLookupManager() {
 		return getImpl().getLookupManager();
 	}
 	
@@ -52,7 +51,7 @@ public class ServiceDirectory {
 	 * 		the implementation instance of RegistrationManager.
 	 * @throws ServiceException 
 	 */
-	public static RegistrationManager getRegistrationManager() throws ServiceException {
+	public static RegistrationManager getRegistrationManager() {
 		return getImpl().getRegistrationManager();
 	}
 	
@@ -74,7 +73,7 @@ public class ServiceDirectory {
 	 * @param factory
 	 * 		the ServiceDirectoryManagerFactory which generates LookupManager and RegistrationManager.
 	 */
-	public static void reinitServiceDirectoryManagerFactory(ServiceDirectoryManagerFactory factory) throws ServiceException{
+	public static void reinitServiceDirectoryManagerFactory(ServiceDirectoryManagerFactory factory){
 		getImpl().reinitServiceDirectoryManagerFactory(factory);
 	}
 	
@@ -112,7 +111,7 @@ public class ServiceDirectory {
 	 * 		the password of the user.
 	 * @throws ServiceException
 	 */
-	public static void setUser(String userName, String password) throws ServiceException{
+	public static void setUser(String userName, String password){
 		getImpl().getDirectoryServiceClient().setUser(userName, password);
 	}
 	
