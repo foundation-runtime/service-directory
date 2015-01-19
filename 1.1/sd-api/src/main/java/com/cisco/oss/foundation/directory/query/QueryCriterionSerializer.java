@@ -140,12 +140,12 @@ public class QueryCriterionSerializer {
 				List<String> values = new ArrayList<String>();
 				boolean start = false;
 				for(String s : cmdList){
-					if(s.isEmpty() || s.equals(',')){
+					if(s.isEmpty() || s.equals(",")){
 						break;
-					} else if(s.equals('[')){
+					} else if(s.equals("[")){
 						start = true;
 						continue;
-					} else if(s.equals(']')){
+					} else if(s.equals("]")){
 						start = false;
 						break;
 					} else if(start){
