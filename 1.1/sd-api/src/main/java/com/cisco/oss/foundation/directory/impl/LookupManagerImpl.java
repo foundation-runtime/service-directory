@@ -330,7 +330,15 @@ public class LookupManagerImpl implements LookupManager, Closable {
 				return ServiceInstanceUtils.transferFromModelServiceInstance(instance);
 			}
 		} catch(ServiceRuntimeException e){
-			throw new ServiceException(e);
+            ServiceDirectoryError reason = e.getServiceDirectoryError();
+            if (reason != null && reason.getExceptionCode() != null
+                    && reason.getExceptionCode() == ErrorCode.SERVICE_NOT_EXIST) {
+                LOGGER.info(String.format(
+                        "The service name %s not found at Service Directory",
+                        serviceName));
+            } else {
+                throw new ServiceException(e);
+            }
 		}
 		return null;
 	}
