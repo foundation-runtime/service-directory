@@ -18,7 +18,7 @@
 	<groupId>com.cisco.oss.foundation.directory</groupId>
 	<artifactId>sd-core</artifactId>
 	<name>Service Directory Core Classes</name>
-	<version>1.1.0-5</version>
+	<version>1.1.0-5-SNAPSHOT</version>
 	<description>Project for the common library shared by Cisco directory service and Cisco OSS service directory API.</description>
 	<url>https://github.com/foundation-runtime/service-directory/sd-core</url>
 	<packaging>jar</packaging>
