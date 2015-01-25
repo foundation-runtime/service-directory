@@ -18,7 +18,7 @@
 	<groupId>com.cisco.oss.foundation.directory</groupId>
 	<artifactId>sd-api</artifactId>
 	<name>Service Directory API</name>
-	<version>1.1.0-6-SNAPSHOT</version>
+	<version>1.1.0-5-SNAPSHOT</version>
 	<description>Project for Cisco OSS service directory API library.</description>
 	<url>https://github.com/foundation-runtime/service-directory/1.1/sd-api</url>
 	<packaging>jar</packaging>
@@ -293,7 +293,7 @@
 		<dependency>
 			<groupId>com.cisco.oss.foundation.directory</groupId>
 			<artifactId>sd-core</artifactId>
-			<version>1.1.0-4</version>
+			<version>1.1.0-5</version>
 		</dependency>
 		<dependency>
 			<groupId>com.cisco.oss.foundation</groupId>
