@@ -1,3 +1,18 @@
+/**
+ * Copyright 2014 Cisco Systems, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package com.cisco.oss.foundation.directory.lb;
 
 import java.util.Collections;
@@ -10,34 +25,34 @@ import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
 
 public class MetadataQueryRRLoadBalancer extends RoundRobinLoadBalancer {
 
-		private final ServiceInstanceQuery query;
-		public MetadataQueryRRLoadBalancer(DirectoryLookupService lookupService, ServiceInstanceQuery query) {
-			super(lookupService);
-			this.query = query;
-		}
-		
-		public ServiceInstanceQuery getServiceInstanceQuery(){
-			return query;
-		}
+        private final ServiceInstanceQuery query;
+        public MetadataQueryRRLoadBalancer(DirectoryLookupService lookupService, ServiceInstanceQuery query) {
+            super(lookupService);
+            this.query = query;
+        }
 
-		@Override
-		public List<ModelServiceInstance> getServiceInstanceList() {
-			List<ModelServiceInstance> instances = null; 
-			String keyName = null;
-			if (query.getCriteria().size() > 0) {
-				keyName = query.getCriteria().get(0).getMetadataKey();
-			}
-			if (keyName != null && !keyName.isEmpty()) {
-				List<ModelServiceInstance> modelInstances = getLookupService()
-						.getUPModelInstancesByKey(keyName);
-				instances = ServiceInstanceQueryHelper
-						.filter(query, modelInstances);
-			}
+        public ServiceInstanceQuery getServiceInstanceQuery(){
+            return query;
+        }
 
-			if (instances != null) {
-				return instances;
-			} else {
-				return Collections.emptyList();
-			}
-		}
+        @Override
+        public List<ModelServiceInstance> getServiceInstanceList() {
+            List<ModelServiceInstance> instances = null;
+            String keyName = null;
+            if (query.getCriteria().size() > 0) {
+                keyName = query.getCriteria().get(0).getMetadataKey();
+            }
+            if (keyName != null && !keyName.isEmpty()) {
+                List<ModelServiceInstance> modelInstances = getLookupService()
+                        .getUPModelInstancesByKey(keyName);
+                instances = ServiceInstanceQueryHelper
+                        .filter(query, modelInstances);
+            }
+
+            if (instances != null) {
+                return instances;
+            } else {
+                return Collections.emptyList();
+            }
+        }
 }
