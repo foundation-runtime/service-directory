@@ -1,19 +1,19 @@
 /**
- * Copyright (c) 2013-2014 by Cisco Systems, Inc. 
- * All rights reserved. 
+ * Copyright (c) 2013-2014 by Cisco Systems, Inc.
+ * All rights reserved.
  */
 package com.cisco.oss.foundation.directory.entity;
 
 /**
  * The ServerStatus of the DirectoryServer.
- * 
+ *
  * @author zuxiang
  *
  */
 public enum ServerStatus {
-	/**
-	 * Unknown.
-	 */
+    /**
+     * Unknown.
+     */
     Unknown (-1),
 
     /**

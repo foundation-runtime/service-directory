@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2013-2014 by Cisco Systems, Inc. 
- * All rights reserved. 
+ * Copyright (c) 2013-2014 by Cisco Systems, Inc.
+ * All rights reserved.
  */
 package com.cisco.oss.foundation.directory.proto;
 
@@ -8,149 +8,149 @@ import com.cisco.oss.foundation.directory.entity.ClientType;
 
 /**
  * SD API connect Protocol.
- * 
+ *
  * @author zuxiang
  *
  */
 public class ConnectProtocol extends Protocol {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * protocolVersion.
-	 */
-	private int protocolVersion;
-	
-	/**
-	 * Last server xid seen.
-	 */
-	private long lastDxidSeen;
-	
-	/**
-	 * Sesion timeout.
-	 */
-	private int timeOut;
-	
-	/**
-	 * Session id.
-	 */
-	private String sessionId;
-	
-	/**
-	 * Session password.
-	 */
-	private byte[] passwd;
-	
-	/**
-	 * SD API ClientType.
-	 */
-	private ClientType clientType;
-	
-	// Auth data for the Directory Authentication.
-	/**
-	 * User name.
-	 */
-	private String userName;
-	
-	/**
-	 * The password.
-	 */
-	private byte[] secret;
-	
-	/**
-	 * Whether the secret obfuscated.
-	 */
-	private boolean obfuscated;
+    /**
+     * protocolVersion.
+     */
+    private int protocolVersion;
 
-	public ConnectProtocol() {
-	}
+    /**
+     * Last server xid seen.
+     */
+    private long lastDxidSeen;
 
-	public ConnectProtocol(int protocolVersion, long lastDxidSeen, int timeOut,
-			String sessionId, byte[] passwd, String userName, byte[] secret, boolean obfuscated) {
-		this.protocolVersion = protocolVersion;
-		this.lastDxidSeen = lastDxidSeen;
-		this.timeOut = timeOut;
-		this.sessionId = sessionId;
-		this.passwd = passwd;
-		this.userName = userName;
-		this.secret = secret;
-		this.obfuscated = obfuscated;
-		setClientType(ClientType.WEBSOCKET);
-	}
+    /**
+     * Sesion timeout.
+     */
+    private int timeOut;
 
-	public long getLastDxidSeen() {
-		return lastDxidSeen;
-	}
+    /**
+     * Session id.
+     */
+    private String sessionId;
 
-	public void setLastDxidSeen(long lastDxidSeen) {
-		this.lastDxidSeen = lastDxidSeen;
-	}
+    /**
+     * Session password.
+     */
+    private byte[] passwd;
 
-	public int getTimeOut() {
-		return timeOut;
-	}
+    /**
+     * SD API ClientType.
+     */
+    private ClientType clientType;
 
-	public void setTimeOut(int timeOut) {
-		this.timeOut = timeOut;
-	}
+    // Auth data for the Directory Authentication.
+    /**
+     * User name.
+     */
+    private String userName;
 
-	public String getSessionId() {
-		return sessionId;
-	}
+    /**
+     * The password.
+     */
+    private byte[] secret;
 
-	public void setSessionId(String sessionId) {
-		this.sessionId = sessionId;
-	}
+    /**
+     * Whether the secret obfuscated.
+     */
+    private boolean obfuscated;
 
-	public byte[] getPasswd() {
-		return passwd;
-	}
+    public ConnectProtocol() {
+    }
 
-	public void setPasswd(byte[] passwd) {
-		this.passwd = passwd;
-	}
+    public ConnectProtocol(int protocolVersion, long lastDxidSeen, int timeOut,
+            String sessionId, byte[] passwd, String userName, byte[] secret, boolean obfuscated) {
+        this.protocolVersion = protocolVersion;
+        this.lastDxidSeen = lastDxidSeen;
+        this.timeOut = timeOut;
+        this.sessionId = sessionId;
+        this.passwd = passwd;
+        this.userName = userName;
+        this.secret = secret;
+        this.obfuscated = obfuscated;
+        setClientType(ClientType.WEBSOCKET);
+    }
 
-	public int getProtocolVersion() {
-		return protocolVersion;
-	}
+    public long getLastDxidSeen() {
+        return lastDxidSeen;
+    }
 
-	public void setProtocolVersion(int protocolVersion) {
-		this.protocolVersion = protocolVersion;
-	}
+    public void setLastDxidSeen(long lastDxidSeen) {
+        this.lastDxidSeen = lastDxidSeen;
+    }
 
-	public String getUserName() {
-		return userName;
-	}
+    public int getTimeOut() {
+        return timeOut;
+    }
 
-	public void setUserName(String userName) {
-		this.userName = userName;
-	}
+    public void setTimeOut(int timeOut) {
+        this.timeOut = timeOut;
+    }
 
-	public byte[] getSecret() {
-		return secret;
-	}
+    public String getSessionId() {
+        return sessionId;
+    }
 
-	public void setSecret(byte[] secret) {
-		this.secret = secret;
-	}
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
 
-	public boolean isObfuscated() {
-		return obfuscated;
-	}
+    public byte[] getPasswd() {
+        return passwd;
+    }
 
-	public void setObfuscated(boolean obfuscated) {
-		this.obfuscated = obfuscated;
-	}
+    public void setPasswd(byte[] passwd) {
+        this.passwd = passwd;
+    }
 
-	public ClientType getClientType() {
-		return clientType;
-	}
+    public int getProtocolVersion() {
+        return protocolVersion;
+    }
 
-	public void setClientType(ClientType clientType) {
-		this.clientType = clientType;
-	}
-	
-	
+    public void setProtocolVersion(int protocolVersion) {
+        this.protocolVersion = protocolVersion;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public byte[] getSecret() {
+        return secret;
+    }
+
+    public void setSecret(byte[] secret) {
+        this.secret = secret;
+    }
+
+    public boolean isObfuscated() {
+        return obfuscated;
+    }
+
+    public void setObfuscated(boolean obfuscated) {
+        this.obfuscated = obfuscated;
+    }
+
+    public ClientType getClientType() {
+        return clientType;
+    }
+
+    public void setClientType(ClientType clientType) {
+        this.clientType = clientType;
+    }
+
+
 }

@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2013-2014 by Cisco Systems, Inc. 
- * All rights reserved. 
+ * Copyright (c) 2013-2014 by Cisco Systems, Inc.
+ * All rights reserved.
  */
 package com.cisco.oss.foundation.directory.proto;
 
@@ -10,34 +10,34 @@ import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 
 /**
  * Get the ModelMetadataKey change by version Response.
- * 
+ *
  * @author zuxiang
  *
  */
 public class GetMetadataChangingByVersionResponse extends Response {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * The ModelMetadataKey map.
-	 */
-	private Map<String, ModelMetadataKey> metadatas;
-	
-	public GetMetadataChangingByVersionResponse(){
-		
-	}
-	
-	public GetMetadataChangingByVersionResponse(Map<String, ModelMetadataKey> metadatas){
-		this.metadatas = metadatas;
-	}
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	public Map<String, ModelMetadataKey> getMetadatas() {
-		return metadatas;
-	}
+    /**
+     * The ModelMetadataKey map.
+     */
+    private Map<String, ModelMetadataKey> metadatas;
 
-	public void setMetadatas(Map<String, ModelMetadataKey> metadatas) {
-		this.metadatas = metadatas;
-	}
+    public GetMetadataChangingByVersionResponse(){
+
+    }
+
+    public GetMetadataChangingByVersionResponse(Map<String, ModelMetadataKey> metadatas){
+        this.metadatas = metadatas;
+    }
+
+    public Map<String, ModelMetadataKey> getMetadatas() {
+        return metadatas;
+    }
+
+    public void setMetadatas(Map<String, ModelMetadataKey> metadatas) {
+        this.metadatas = metadatas;
+    }
 }

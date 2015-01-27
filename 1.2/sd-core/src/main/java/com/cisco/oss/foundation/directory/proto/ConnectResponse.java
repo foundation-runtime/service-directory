@@ -1,98 +1,98 @@
 /**
- * Copyright (c) 2013-2014 by Cisco Systems, Inc. 
- * All rights reserved. 
+ * Copyright (c) 2013-2014 by Cisco Systems, Inc.
+ * All rights reserved.
  */
 package com.cisco.oss.foundation.directory.proto;
 
 /**
  * The SD API client connect Response.
- * 
+ *
  * @author zuxiang
  *
  */
 public class ConnectResponse extends Response {
 
-	
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
-	/**
-	 * The ProtocolVersion.
-	 */
-	private int protocolVersion;
-	
-	/**
-	 * The session timeout.
-	 */
-	private int timeOut;
-	
-	/**
-	 * The session id.
-	 */
-	private String sessionId;
-	
-	/**
-	 * The session password.
-	 */
-	private byte[] passwd;
-	
-	/**
-	 * The serverId.
-	 */
-	private int serverId;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	public ConnectResponse() {
-	}
+    /**
+     * The ProtocolVersion.
+     */
+    private int protocolVersion;
 
-	public ConnectResponse(int protocolVersion, int timeOut, String sessionId,
-			byte[] passwd, int serverId) {
-		this.protocolVersion = protocolVersion;
-		this.timeOut = timeOut;
-		this.sessionId = sessionId;
-		this.passwd = passwd;
-		this.serverId = serverId;
-	}
+    /**
+     * The session timeout.
+     */
+    private int timeOut;
 
-	public int getProtocolVersion() {
-		return protocolVersion;
-	}
+    /**
+     * The session id.
+     */
+    private String sessionId;
 
-	public void setProtocolVersion(int protocolVersion) {
-		this.protocolVersion = protocolVersion;
-	}
+    /**
+     * The session password.
+     */
+    private byte[] passwd;
 
-	public int getTimeOut() {
-		return timeOut;
-	}
+    /**
+     * The serverId.
+     */
+    private int serverId;
 
-	public void setTimeOut(int timeOut) {
-		this.timeOut = timeOut;
-	}
+    public ConnectResponse() {
+    }
 
-	public String getSessionId() {
-		return sessionId;
-	}
+    public ConnectResponse(int protocolVersion, int timeOut, String sessionId,
+            byte[] passwd, int serverId) {
+        this.protocolVersion = protocolVersion;
+        this.timeOut = timeOut;
+        this.sessionId = sessionId;
+        this.passwd = passwd;
+        this.serverId = serverId;
+    }
 
-	public void setSessionId(String sessionId) {
-		this.sessionId = sessionId;
-	}
+    public int getProtocolVersion() {
+        return protocolVersion;
+    }
 
-	public byte[] getPasswd() {
-		return passwd;
-	}
+    public void setProtocolVersion(int protocolVersion) {
+        this.protocolVersion = protocolVersion;
+    }
 
-	public void setPasswd(byte[] passwd) {
-		this.passwd = passwd;
-	}
-	
-	public int getServerId() {
-		return serverId;
-	}
+    public int getTimeOut() {
+        return timeOut;
+    }
 
-	public void setServerId(int serverId) {
-		this.serverId = serverId;
-	}
+    public void setTimeOut(int timeOut) {
+        this.timeOut = timeOut;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public void setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+    }
+
+    public byte[] getPasswd() {
+        return passwd;
+    }
+
+    public void setPasswd(byte[] passwd) {
+        this.passwd = passwd;
+    }
+
+    public int getServerId() {
+        return serverId;
+    }
+
+    public void setServerId(int serverId) {
+        this.serverId = serverId;
+    }
 }

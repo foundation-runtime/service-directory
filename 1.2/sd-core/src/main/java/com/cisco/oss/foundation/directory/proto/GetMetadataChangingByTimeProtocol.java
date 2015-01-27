@@ -1,6 +1,6 @@
 /**
- * Copyright (c) 2013-2014 by Cisco Systems, Inc. 
- * All rights reserved. 
+ * Copyright (c) 2013-2014 by Cisco Systems, Inc.
+ * All rights reserved.
  */
 package com.cisco.oss.foundation.directory.proto;
 
@@ -10,34 +10,34 @@ import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 
 /**
  * Get MetadataKey Changing by Time Protocol.
- * 
+ *
  * @author zuxiang
  *
  */
 public class GetMetadataChangingByTimeProtocol extends Protocol {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-	
-	/**
-	 * The ModelMetadataKey map.
-	 */
-	private Map<String, ModelMetadataKey> metadatas;
-	
-	public GetMetadataChangingByTimeProtocol(){
-		
-	}
-	
-	public GetMetadataChangingByTimeProtocol(Map<String, ModelMetadataKey> metadatas){
-		this.metadatas = metadatas;
-	}
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	public Map<String, ModelMetadataKey> getMetadatas() {
-		return metadatas;
-	}
+    /**
+     * The ModelMetadataKey map.
+     */
+    private Map<String, ModelMetadataKey> metadatas;
 
-	public void setMetadatas(Map<String, ModelMetadataKey> metadatas) {
-		this.metadatas = metadatas;
-	}
+    public GetMetadataChangingByTimeProtocol(){
+
+    }
+
+    public GetMetadataChangingByTimeProtocol(Map<String, ModelMetadataKey> metadatas){
+        this.metadatas = metadatas;
+    }
+
+    public Map<String, ModelMetadataKey> getMetadatas() {
+        return metadatas;
+    }
+
+    public void setMetadatas(Map<String, ModelMetadataKey> metadatas) {
+        this.metadatas = metadatas;
+    }
 }
