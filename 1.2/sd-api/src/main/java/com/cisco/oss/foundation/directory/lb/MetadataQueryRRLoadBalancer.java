@@ -25,62 +25,62 @@ import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
 
 /**
  * The metadata Query RondRonbin Loadbalancer when lookupInstance.
- * 
+ *
  * @author zuxiang
  *
  */
 public class MetadataQueryRRLoadBalancer extends RoundRobinLoadBalancer {
 
-	/**
-	 * The ServiceInstanceQuery.
-	 */
-	private final ServiceInstanceQuery query;
+    /**
+     * The ServiceInstanceQuery.
+     */
+    private final ServiceInstanceQuery query;
 
-	/**
-	 * Constructor.
-	 * 
-	 * @param lookupService
-	 * 		the DirectoryLookupService.
-	 * @param query
-	 * 		the ServiceInstanceQuery.
-	 */
-	public MetadataQueryRRLoadBalancer(DirectoryLookupService lookupService,
-			ServiceInstanceQuery query) {
-		super(lookupService);
-		this.query = query;
-	}
+    /**
+     * Constructor.
+     *
+     * @param lookupService
+     *         the DirectoryLookupService.
+     * @param query
+     *         the ServiceInstanceQuery.
+     */
+    public MetadataQueryRRLoadBalancer(DirectoryLookupService lookupService,
+            ServiceInstanceQuery query) {
+        super(lookupService);
+        this.query = query;
+    }
 
-	/**
-	 * Get the ServiceInstanceQuery.
-	 * 
-	 * @return	
-	 * 		get the ServiceInstanceQuery.
-	 */
-	public ServiceInstanceQuery getServiceInstanceQuery() {
-		return query;
-	}
+    /**
+     * Get the ServiceInstanceQuery.
+     *
+     * @return
+     *         get the ServiceInstanceQuery.
+     */
+    public ServiceInstanceQuery getServiceInstanceQuery() {
+        return query;
+    }
 
-	/**
-	 * {@inheritDoc}
-	 */
-	@Override
-	public List<ModelServiceInstance> getServiceInstanceList() {
-		List<ModelServiceInstance> instances = null;
-		String keyName = null;
-		if (query.getCriteria().size() > 0) {
-			keyName = query.getCriteria().get(0).getMetadataKey();
-		}
-		if (keyName != null && !keyName.isEmpty()) {
-			List<ModelServiceInstance> modelInstances = getLookupService()
-					.queryUPModelInstances(query);
-			instances = ServiceInstanceQueryHelper
-					.filter(query, modelInstances);
-		}
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<ModelServiceInstance> getServiceInstanceList() {
+        List<ModelServiceInstance> instances = null;
+        String keyName = null;
+        if (query.getCriteria().size() > 0) {
+            keyName = query.getCriteria().get(0).getMetadataKey();
+        }
+        if (keyName != null && !keyName.isEmpty()) {
+            List<ModelServiceInstance> modelInstances = getLookupService()
+                    .queryUPModelInstances(query);
+            instances = ServiceInstanceQueryHelper
+                    .filter(query, modelInstances);
+        }
 
-		if (instances != null) {
-			return instances;
-		} else {
-			return Collections.emptyList();
-		}
-	}
+        if (instances != null) {
+            return instances;
+        } else {
+            return Collections.emptyList();
+        }
+    }
 }

@@ -29,18 +29,18 @@ import com.cisco.oss.foundation.directory.ServiceDirectory;
  */
 public class ServiceDirectoryConfigTest {
 
-	@Test
-	public void testGetProperty(){
-		ServiceDirectoryConfig config = ServiceDirectory.getServiceDirectoryConfig();
-		
-		Assert.assertFalse(config.getBoolean("ddd"));
-		Assert.assertTrue(config.getDouble("notexists", 89.1) == 89.1);
-		try{
-			config.getDouble("notexists");
-		} catch(Exception e){
-			Assert.assertTrue(e instanceof NoSuchElementException);
-		}
-		
-		Assert.assertFalse(config.containsProperty("not_property"));
-	}
+    @Test
+    public void testGetProperty(){
+        ServiceDirectoryConfig config = ServiceDirectory.getServiceDirectoryConfig();
+
+        Assert.assertFalse(config.getBoolean("ddd"));
+        Assert.assertTrue(config.getDouble("notexists", 89.1) == 89.1);
+        try{
+            config.getDouble("notexists");
+        } catch(Exception e){
+            Assert.assertTrue(e instanceof NoSuchElementException);
+        }
+
+        Assert.assertFalse(config.containsProperty("not_property"));
+    }
 }

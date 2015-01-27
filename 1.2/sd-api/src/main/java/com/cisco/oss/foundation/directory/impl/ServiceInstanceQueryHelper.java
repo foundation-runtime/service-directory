@@ -26,89 +26,89 @@ import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
 
 /**
  * The helper class to do the ServiceInstances filter against the QueryCriterion.
- * 
+ *
  * @author zuxiang
  *
  */
 public class ServiceInstanceQueryHelper {
-	
-	/**
-	 * Filter the ModelServiceInstance list against the ServiceInstanceQuery.
-	 * 
-	 * @param query
-	 * 		the ServiceInstanceQuery matchers.
-	 * @param list
-	 * 		the ModelServiceInstance list.
-	 * @return
-	 * 		the matched ModelServiceInstance list.
-	 */
-	public static List<ModelServiceInstance> filter(ServiceInstanceQuery query, List<ModelServiceInstance> list) {
 
-		if (list == null || list.size() == 0) {
-			return Collections.emptyList();
-		}
+    /**
+     * Filter the ModelServiceInstance list against the ServiceInstanceQuery.
+     *
+     * @param query
+     *         the ServiceInstanceQuery matchers.
+     * @param list
+     *         the ModelServiceInstance list.
+     * @return
+     *         the matched ModelServiceInstance list.
+     */
+    public static List<ModelServiceInstance> filter(ServiceInstanceQuery query, List<ModelServiceInstance> list) {
 
-		List<QueryCriterion> criteria = query.getCriteria();
-		
-		if (criteria == null || criteria.size() == 0) {
-			return list;
-		}
+        if (list == null || list.size() == 0) {
+            return Collections.emptyList();
+        }
 
-		List<ModelServiceInstance> instances = new ArrayList<ModelServiceInstance>();
-		for (ModelServiceInstance instance : list) {
-			boolean passed = true;
-			for (QueryCriterion criterion : criteria) {
-				if (criterion.isMatch(instance.getMetadata()) == false) {
-					passed = false;
-					break;
-				}
-			}
-			if (passed) {
-				instances.add(instance);
-			}
-		}
+        List<QueryCriterion> criteria = query.getCriteria();
 
-		return instances;
+        if (criteria == null || criteria.size() == 0) {
+            return list;
+        }
 
-	}
-	
-	/**
-	 * Filter the ServiceInstance list against the ServiceInstanceQuery.
-	 * 
-	 * @param query
-	 * 		the ServiceInstanceQuery matchers.
-	 * @param list
-	 * 		the ServiceInstance list.
-	 * @return
-	 * 		the matched ServiceInstance list.
-	 */
-	public static List<ServiceInstance> filterServiceInstance(ServiceInstanceQuery query, List<ServiceInstance> list) {
+        List<ModelServiceInstance> instances = new ArrayList<ModelServiceInstance>();
+        for (ModelServiceInstance instance : list) {
+            boolean passed = true;
+            for (QueryCriterion criterion : criteria) {
+                if (criterion.isMatch(instance.getMetadata()) == false) {
+                    passed = false;
+                    break;
+                }
+            }
+            if (passed) {
+                instances.add(instance);
+            }
+        }
 
-		if (list == null || list.size() == 0) {
-			return Collections.emptyList();
-		}
+        return instances;
 
-		List<QueryCriterion> criteria = query.getCriteria();
-		
-		if (criteria == null || criteria.size() == 0) {
-			return list;
-		}
+    }
 
-		List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
-		for (ServiceInstance instance : list) {
-			boolean passed = true;
-			for (QueryCriterion criterion : criteria) {
-				if (criterion.isMatch(instance.getMetadata()) == false) {
-					passed = false;
-					break;
-				}
-			}
-			if (passed) {
-				instances.add(instance);
-			}
-		}
+    /**
+     * Filter the ServiceInstance list against the ServiceInstanceQuery.
+     *
+     * @param query
+     *         the ServiceInstanceQuery matchers.
+     * @param list
+     *         the ServiceInstance list.
+     * @return
+     *         the matched ServiceInstance list.
+     */
+    public static List<ServiceInstance> filterServiceInstance(ServiceInstanceQuery query, List<ServiceInstance> list) {
 
-		return instances;
+        if (list == null || list.size() == 0) {
+            return Collections.emptyList();
+        }
 
-	}
+        List<QueryCriterion> criteria = query.getCriteria();
+
+        if (criteria == null || criteria.size() == 0) {
+            return list;
+        }
+
+        List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
+        for (ServiceInstance instance : list) {
+            boolean passed = true;
+            for (QueryCriterion criterion : criteria) {
+                if (criterion.isMatch(instance.getMetadata()) == false) {
+                    passed = false;
+                    break;
+                }
+            }
+            if (passed) {
+                instances.add(instance);
+            }
+        }
+
+        return instances;
+
+    }
 }

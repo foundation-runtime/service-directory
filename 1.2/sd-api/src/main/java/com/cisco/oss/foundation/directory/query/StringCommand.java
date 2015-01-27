@@ -19,16 +19,16 @@ import com.cisco.oss.foundation.directory.proto.QueryServiceProtocol.QueryComman
 
 /**
  * The interface to get the QueryCommand from the QueryCritrion.
- * 
+ *
  * @author zuxiang
  *
  */
 public interface StringCommand {
-	/**
-	 * Get the QueryCommand of the QueryCriterion.
-	 * 
-	 * @return
-	 * 		the QueryCommand.
-	 */
-	public QueryCommand getStringCommand();
+    /**
+     * Get the QueryCommand of the QueryCriterion.
+     *
+     * @return
+     *         the QueryCommand.
+     */
+    public QueryCommand getStringCommand();
 }

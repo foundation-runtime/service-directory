@@ -25,66 +25,66 @@ import com.cisco.oss.foundation.directory.proto.ProtocolHeader;
 
 /**
  * The abstract DirectorySocket.
- * 
+ *
  * Now it has a NIO and WebSocket implementation.
- * 
+ *
  * @author zuxiang
  *
  */
 public abstract class DirectorySocket {
 
-//	private final static Logger LOGGER = LoggerFactory.getLogger(DirectorySocket.class);
-	
-	/**
-	 * Indicate whether is initialized.
-	 */
-	protected boolean initialized = false;
-	
-	/**
-	 * The length Buffer.
-	 */
-	protected final ByteBuffer lenBuffer = ByteBuffer.allocate(4);
-	
-	/**
-	 * The received buffer.
-	 */
-	protected ByteBuffer incomingBuffer = lenBuffer;
-	
-	/**
-	 * Socket connect timeout.
-	 */
-	protected int connectTimeOut;
-	
-	/**
-	 * All send count.
-	 */
-	protected long sentCount = 0;
-	
-	/**
-	 * All receive count.
-	 */
+//    private final static Logger LOGGER = LoggerFactory.getLogger(DirectorySocket.class);
+
+    /**
+     * Indicate whether is initialized.
+     */
+    protected boolean initialized = false;
+
+    /**
+     * The length Buffer.
+     */
+    protected final ByteBuffer lenBuffer = ByteBuffer.allocate(4);
+
+    /**
+     * The received buffer.
+     */
+    protected ByteBuffer incomingBuffer = lenBuffer;
+
+    /**
+     * Socket connect timeout.
+     */
+    protected int connectTimeOut;
+
+    /**
+     * All send count.
+     */
+    protected long sentCount = 0;
+
+    /**
+     * All receive count.
+     */
     protected long recvCount = 0;
-    
+
     /**
      * The last receive response time in ms.
      */
     protected long lastHeard;
-    
+
     /**
      * The last send request time in ms.
      */
     protected long lastSend;
-    
+
     /**
      * The current time in ms.
      */
     protected long now;
-    
+
     /**
      * The session id.
      */
     protected long sessionId;
-    
+
     /**
      * The DirectoryConnection.
      */
@@ -92,24 +92,24 @@ public abstract class DirectorySocket {
 
     /**
      * Set the DirectoryConnection.
-     * 
+     *
      * @param clientConnection
-     * 		the DirectoryConnection.
+     *         the DirectoryConnection.
      */
     void setConnection(DirectoryConnection clientConnection) {
         this.clientConnection = clientConnection;
     }
-    
+
     /**
      * Get the DirectoryConnection.
-     * 
+     *
      * @return
-     * 		the DirectoryConnection.
+     *         the DirectoryConnection.
      */
     protected DirectoryConnection getDirectoryConnection(){
-    	return this.clientConnection;
+        return this.clientConnection;
     }
-    
+
     /**
      * Update the current time.
      */
@@ -119,9 +119,9 @@ public abstract class DirectorySocket {
 
     /**
      * Get the idle gap of the receive response.
-     * 
+     *
      * @return
-     * 		the idle time of receive response.
+     *         the idle time of receive response.
      */
     int getIdleRecv() {
         return (int) (now - lastHeard);
@@ -129,9 +129,9 @@ public abstract class DirectorySocket {
 
     /**
      * Get the idle gap of the send request.
-     * 
+     *
      * @return
-     * 		the idle time of send request.
+     *         the idle time of send request.
      */
     int getIdleSend() {
         return (int) (now - lastSend);
@@ -139,9 +139,9 @@ public abstract class DirectorySocket {
 
     /**
      * Get the send count.
-     * 
+     *
      * @return
-     * 		the send count.
+     *         the send count.
      */
     long getSentCount() {
         return sentCount;
@@ -149,9 +149,9 @@ public abstract class DirectorySocket {
 
     /**
      * Get the receive count.
-     * 
+     *
      * @return
-     * 		the receive count.
+     *         the receive count.
      */
     long getRecvCount() {
         return recvCount;
@@ -170,17 +170,17 @@ public abstract class DirectorySocket {
     void updateLastSend() {
         this.lastSend = now;
     }
-    
+
     /**
      * Set the connect timeout.
-     * 
+     *
      * @param to
-     * 		the connect timeout.
+     *         the connect timeout.
      */
     public void setConnectTimeOut(int to){
-    	this.connectTimeOut = to;
+        this.connectTimeOut = to;
     }
-    
+
     /**
      * Update last send and receive time.
      */
@@ -188,41 +188,41 @@ public abstract class DirectorySocket {
         this.lastSend = now;
         this.lastHeard = now;
     }
-    
+
     /**
      * Indicate whether Sockect connected.
-     * 
+     *
      * @return
-     * 		true for connected.
+     *         true for connected.
      */
     public abstract boolean isConnected();
 
     /**
      * Connect to the remote DirectoryServer.
-     * 
+     *
      * When invoke the connect, the socket has to stop current connect,
      * and connect to new DirectoryServer.
-     * 
+     *
      * @param address
-     * 		the remote Directory Server address.
+     *         the remote Directory Server address.
      * @return
-     * 		true of success.
+     *         true of success.
      */
     public abstract boolean connect(InetSocketAddress address);
 
     /**
      * Get the remote server SocketAddress.
-     * 
+     *
      * @return
-     * 		the remote Directory Server SocketAddress.
+     *         the remote Directory Server SocketAddress.
      */
     public abstract SocketAddress getRemoteSocketAddress();
 
     /**
      * Get the local SocketAddress.
-     * 
+     *
      * @return
-     * 		the local SocketAddress of the socket.
+     *         the local SocketAddress of the socket.
      */
     public abstract SocketAddress getLocalSocketAddress();
 
@@ -230,16 +230,16 @@ public abstract class DirectorySocket {
      * Cleanup the socket connection.
      */
     public abstract void cleanup();
-    
+
     /**
      * Send a Packet.
-     * 
+     *
      * @param header
-     * 		the ProtocolHeader.
+     *         the ProtocolHeader.
      * @param p
-     * 		the Protocol.
+     *         the Protocol.
      * @throws IOException
-     * 		the IOException.
+     *         the IOException.
      */
     public abstract void sendPacket(ProtocolHeader header, Protocol p) throws IOException;
 }

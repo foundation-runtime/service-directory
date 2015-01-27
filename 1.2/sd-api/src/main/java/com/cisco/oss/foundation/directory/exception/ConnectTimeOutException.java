@@ -17,31 +17,31 @@ package com.cisco.oss.foundation.directory.exception;
 
 /**
  * The Connect timeout exception.
- * 
+ *
  * @author zuxiang
  *
  */
 public class ConnectTimeOutException extends Exception {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Constructor.
-	 */
-	public ConnectTimeOutException(){
-		
-	}
-	
-	/**
-	 * Constructor.
-	 * 
-	 * @param msg
-	 * 		the error message.
-	 */
-	public ConnectTimeOutException(String msg){
-		super(msg);
-	}
+    /**
+     * Constructor.
+     */
+    public ConnectTimeOutException(){
+
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param msg
+     *         the error message.
+     */
+    public ConnectTimeOutException(String msg){
+        super(msg);
+    }
 }

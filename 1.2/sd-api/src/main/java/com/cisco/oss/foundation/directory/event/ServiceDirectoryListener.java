@@ -17,18 +17,18 @@ package com.cisco.oss.foundation.directory.event;
 
 /**
  * The ServiceDirectoryEvent listener.
- * 
+ *
  * @author zuxiang
  *
  */
 public interface ServiceDirectoryListener {
 
-	/**
-	 * notify the listener the ServiceDirectoryEvent.
-	 * 
-	 * @param event
-	 * 		the ServiceDirectoryEvent.
-	 */
-	public void notify(ServiceDirectoryEvent event);
-	
+    /**
+     * notify the listener the ServiceDirectoryEvent.
+     *
+     * @param event
+     *         the ServiceDirectoryEvent.
+     */
+    public void notify(ServiceDirectoryEvent event);
+
 }

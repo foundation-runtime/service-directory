@@ -17,31 +17,31 @@ package com.cisco.oss.foundation.directory.exception;
 
 /**
  * The Read timeout exception in DirectorySocket.
- * 
+ *
  * @author zuxiang
  *
  */
 public class ReadTimeOutException extends Exception {
 
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+    /**
+     *
+     */
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Constructor.
-	 */
-	public ReadTimeOutException(){
-		
-	}
-	
-	/**
-	 * Constructor.
-	 * 
-	 * @param msg
-	 * 		the error message.
-	 */
-	public ReadTimeOutException(String msg){
-		super(msg);
-	}
+    /**
+     * Constructor.
+     */
+    public ReadTimeOutException(){
+
+    }
+
+    /**
+     * Constructor.
+     *
+     * @param msg
+     *         the error message.
+     */
+    public ReadTimeOutException(String msg){
+        super(msg);
+    }
 }

@@ -17,58 +17,58 @@ package com.cisco.oss.foundation.directory.event;
 
 /**
  * The enum for the DirectoryConnection connect status.
- * 
+ *
  * @author zuxiang
  *
  */
 public enum ConnectionStatus {
-	/**
-	 * The new created.
-	 */
-	NEW, 
-	
-	/**
-	 * Connected.
-	 */
-	CONNECTED, 
-	
-	/**
-	 * Connected with readonly.
-	 */
-	CONNECTEDREADONLY, 
-	
-	/**
-	 * Closed connection.
-	 */
-	CLOSED, 
-	
-	/**
-	 * Authentication failed.
-	 */
-	AUTH_FAILED, 
-	
-	/**
-	 * Not connected, it is connecting.
-	 */
-	NOT_CONNECTED;
+    /**
+     * The new created.
+     */
+    NEW,
 
-	/**
-	 * Whether the Connection is alive.
-	 * 
-	 * @return
-	 * 		true for alive.
-	 */
-	public boolean isAlive() {
-		return this != CLOSED;
-	}
+    /**
+     * Connected.
+     */
+    CONNECTED,
 
-	/**
-	 * Whether the connected.
-	 * 
-	 * @return
-	 * 		true for connected.
-	 */
-	public boolean isConnected() {
-		return this == CONNECTED || this == CONNECTEDREADONLY;
-	}
+    /**
+     * Connected with readonly.
+     */
+    CONNECTEDREADONLY,
+
+    /**
+     * Closed connection.
+     */
+    CLOSED,
+
+    /**
+     * Authentication failed.
+     */
+    AUTH_FAILED,
+
+    /**
+     * Not connected, it is connecting.
+     */
+    NOT_CONNECTED;
+
+    /**
+     * Whether the Connection is alive.
+     *
+     * @return
+     *         true for alive.
+     */
+    public boolean isAlive() {
+        return this != CLOSED;
+    }
+
+    /**
+     * Whether the connected.
+     *
+     * @return
+     *         true for connected.
+     */
+    public boolean isConnected() {
+        return this == CONNECTED || this == CONNECTEDREADONLY;
+    }
 }
