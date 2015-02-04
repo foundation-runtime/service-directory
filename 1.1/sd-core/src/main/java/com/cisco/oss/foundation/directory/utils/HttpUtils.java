@@ -41,7 +41,7 @@ public class HttpUtils {
         GET, PUT, POST, DELETE
     }
 
-    private static HttpUtils instance = null;
+    private volatile static HttpUtils instance = null;
 
     /**
      * protect the singleton.
