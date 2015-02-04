@@ -41,12 +41,12 @@ public class DefaultServiceDirectoryManagerFactory implements
     /**
      * RegistrationManager, it is lazy initialized.
      */
-    private RegistrationManagerImpl registrationManager;
+    private volatile RegistrationManagerImpl registrationManager;
 
     /**
      * The LookupManager, it is lazy initialized.
      */
-    private LookupManagerImpl lookupManager;
+    private volatile LookupManagerImpl lookupManager;
 
     /**
      * The DirectoryServiceClientManager.

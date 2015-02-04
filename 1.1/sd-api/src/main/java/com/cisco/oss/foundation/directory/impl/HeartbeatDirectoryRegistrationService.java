@@ -109,7 +109,7 @@ public class HeartbeatDirectoryRegistrationService extends
     /**
      * All ServiceInstanceHealth set collection.
      */
-    private HashMap<ServiceInstanceId, CachedProviderServiceInstance> instanceCache;
+    private volatile HashMap<ServiceInstanceId, CachedProviderServiceInstance> instanceCache;
 
     /**
      * ServiceInstanceHealth check ExecutorService.

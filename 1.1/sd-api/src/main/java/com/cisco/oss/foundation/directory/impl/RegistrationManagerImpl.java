@@ -64,12 +64,12 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
     /**
      * Mark component started or not
      */
-    private boolean isStarted = false;
+    private volatile boolean isStarted = false;
 
     /**
      * The DirectoryRegistrationService to do Service Registration.
      */
-    private DirectoryRegistrationService registrationService;
+    private volatile DirectoryRegistrationService registrationService;
 
     /**
      * Constructor.

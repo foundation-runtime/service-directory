@@ -43,7 +43,7 @@ public class TestServiceDirectoryManagerFactory implements
     /**
      * The DefaultTestServiceDirectoryManager.
      */
-    private DefaultTestServiceDirectoryManager testManager;
+    private volatile DefaultTestServiceDirectoryManager testManager;
 
     /**
      * Constructor.

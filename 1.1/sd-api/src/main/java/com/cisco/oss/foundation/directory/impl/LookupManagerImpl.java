@@ -82,12 +82,12 @@ public class LookupManagerImpl implements LookupManager, Closable {
     /**
      * The LookupService.
      */
-    private DirectoryLookupService lookupService;
+    private volatile DirectoryLookupService lookupService;
 
     /**
      * Mark component started or not
      */
-    private boolean isStarted=false;
+    private volatile boolean isStarted=false;
 
     /**
      * Constructor.

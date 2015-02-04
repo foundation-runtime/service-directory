@@ -97,22 +97,22 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     /**
      * ScheduledExecutorService to sync cache.
      */
-    private ScheduledExecutorService syncService;
+    private volatile ScheduledExecutorService syncService;
 
     /**
      * Internal map cache for Service.
      */
-    private ServiceDirectoryCache<String, ModelService> cache;
+    private volatile ServiceDirectoryCache<String, ModelService> cache;
 
     /**
      * Internal map cache for the MetadataKey.
      */
-    private ServiceDirectoryCache<String, ModelMetadataKey> metaKeyCache;
+    private volatile ServiceDirectoryCache<String, ModelMetadataKey> metaKeyCache;
 
     /**
      * Mark whether component is started.
      */
-    private boolean isStarted = false;
+    private volatile boolean isStarted = false;
 
     /**
      * The JsonSerializer used in dump cache to serialize the ModelService.
