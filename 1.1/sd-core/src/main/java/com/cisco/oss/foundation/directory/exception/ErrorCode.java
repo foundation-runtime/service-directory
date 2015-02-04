@@ -212,7 +212,7 @@ public enum ErrorCode {
      */
     public static String getMessage(String code) {
         for (ErrorCode s : ErrorCode.values()) {
-            if (s.getCode() == code) {
+            if (s.getCode().equals(code)) {
                 return ErrorCodeConfig.getStringProperty(s.getCode());
             }
         }
