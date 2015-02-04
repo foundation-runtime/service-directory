@@ -26,12 +26,12 @@ public enum OperationalStatus {
     /**
      * UP will be consumed in Service Consumer.
      */
-    UP("UP", 1),
+    UP("UP"),
 
     /**
      * The dead ServiceInstance, will be deleted automatically after a while.
      */
-    DOWN("DOWN", 2);
+    DOWN("DOWN");
 
     /**
      * the status name.
@@ -39,21 +39,13 @@ public enum OperationalStatus {
     private String name;
 
     /**
-     * the index.
-     */
-    private int index;
-
-    /**
      * Constructor.
      *
      * @param name
      *            the Status name.
-     * @param index
-     *            the Status index.
      */
-    private OperationalStatus(String name, int index) {
+    private OperationalStatus(String name) {
         this.name = name;
-        this.index = index;
     }
 
     /**
@@ -63,14 +55,5 @@ public enum OperationalStatus {
      */
     public String getName() {
         return this.name;
-    }
-
-    /**
-     * Get the OperatinalStatus index.
-     *
-     * @return the index.
-     */
-    public int getIndex() {
-        return this.index;
     }
 }
