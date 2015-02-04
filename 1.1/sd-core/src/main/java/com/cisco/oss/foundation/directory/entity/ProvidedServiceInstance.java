@@ -91,9 +91,8 @@ public class ProvidedServiceInstance {
      *            the port.
      */
     public ProvidedServiceInstance(String serviceName, String address, int port) {
-        this.serviceName = serviceName;
-        this.address = address;
-        this.port = port;
+        this(serviceName, address, port, null, null,null);
+
     }
 
     /**
@@ -115,7 +114,9 @@ public class ProvidedServiceInstance {
     public ProvidedServiceInstance(String serviceName, String address,
             int port, String uri, OperationalStatus status,
             Map<String, String> metadata) {
-        this(serviceName, address, port);
+        this.serviceName = serviceName;
+        this.address = address;
+        this.port = port;
         this.uri = uri;
         this.status = status;
         this.metadata = metadata;
