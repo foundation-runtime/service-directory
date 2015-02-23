@@ -158,7 +158,7 @@ public class HttpUtils {
         urlConnection.addRequestProperty("Accept", "application/json");
 
         urlConnection.setRequestMethod("PUT");
-        if (headers != null && headers.size() > 0) {
+        if (headers != null) {
             for (Entry<String, String> entry : headers.entrySet()) {
                 urlConnection.addRequestProperty(entry.getKey(),
                         entry.getValue());

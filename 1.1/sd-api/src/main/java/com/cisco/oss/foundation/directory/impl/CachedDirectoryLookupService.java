@@ -490,7 +490,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
             List<ModelServiceInstance> newInstances = newService.getServiceInstances();
 
             if(newInstances == null || newInstances.size() == 0){
-                if(oldInstances != null && oldInstances.size() > 0){
+                if(oldInstances != null){
                     for(ModelServiceInstance model : oldInstances){
                         cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
                     }
@@ -518,11 +518,10 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                         }
                     }
 
-                    if(oldInstances.size() > 0){
-                        for(ModelServiceInstance model : oldInstances){
-                            cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
-                        }
-                    }
+					for (ModelServiceInstance model : oldInstances) {
+						cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
+					}
+
                 }
             }
         }
