@@ -115,14 +115,15 @@ public class ServiceInstanceUtils {
     /**
      * Validate the Service Instance address.
      *
-     * It must be the ip address of the node.
+     * It must be the ip address or hostname of the node.
      *
      * @param address
      *            the address.
-     * @return OK if match the ip pattern.
+     * @return OK if it is not null or an empty string.
      */
     public static ErrorCode isAddressValid(String address) {
-        if (!isMustFieldValid(address, ipRegEx)) {
+        //if (!isMustFieldValid(address, ipRegEx)) {
+    	 if (address == null || address.length() == 0) {
             return ErrorCode.SERVICE_INSTANCE_ADDRESS_FORMAT_ERROR;
         }
         return ErrorCode.OK;
@@ -183,12 +184,7 @@ public class ServiceInstanceUtils {
     public static ErrorCode validateProvidedServiceInstance(
             ProvidedServiceInstance serviceInstance) {
 
-        ErrorCode retstr = isIdValid(serviceInstance.getProviderId());
-        if (retstr != ErrorCode.OK) {
-            return retstr;
-        }
-
-        retstr = isNameValid(serviceInstance.getServiceName());
+        ErrorCode retstr = isNameValid(serviceInstance.getServiceName());
         if (retstr != ErrorCode.OK) {
             return retstr;
         }
@@ -203,11 +199,16 @@ public class ServiceInstanceUtils {
             return retstr;
         }
 
-        /**
-         * Skip the ip validation. retstr =
-         * isAddressValid(serviceInstance.getAddress()); if (retstr !=
-         * ErrorCode.OK) { return retstr; }
-         **/
+		retstr = isAddressValid(serviceInstance.getAddress());
+		if (retstr != ErrorCode.OK) {
+			return retstr;
+		}	
+		 
+		retstr = isIdValid(serviceInstance.getProviderId());
+		if (retstr != ErrorCode.OK) {
+			return retstr;
+
+		}
 
         Map<String, String> metadata = serviceInstance.getMetadata();
         if (metadata != null && metadata.size() > 0) {

@@ -516,7 +516,7 @@ public class HeartbeatDirectoryRegistrationService extends
                     }
                 }
 
-                LOGGER.info("Send heartbeat for ServiceInstances, ServiceInstanceNumber="
+                LOGGER.debug("Send heartbeat for ServiceInstances, ServiceInstanceNumber="
                         + serviceHBList.size());
                 if (serviceHBList.size() == 0) {
                     return;
