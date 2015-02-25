@@ -274,8 +274,7 @@ public class HeartbeatDirectoryRegistrationService extends
     /**
      * Register a ProvidedServiceInstance to the Cache.
      *
-     * Register the ProvidedServiceInstance to cache, if not exits, add a new one,
-     * if it already exits, update it.
+     * Add/update the ProvidedServiceInstance in the cache. 
      *
      * It is thread safe.
      *
@@ -505,7 +504,7 @@ public class HeartbeatDirectoryRegistrationService extends
                 List<ServiceInstanceHeartbeat> serviceHBList = new ArrayList<ServiceInstanceHeartbeat>();
                 for (CachedProviderServiceInstance cachedInstance : getCacheServiceInstances().values()) {
                     if(LOGGER.isDebugEnabled()){
-                        LOGGER.debug("Search for, " + cachedInstance.toString()    );
+                        LOGGER.debug("Service instance: " + cachedInstance.toString()    );
                     }
                     if (cachedInstance.monitorEnabled && OperationalStatus.UP.equals(cachedInstance.status)
                             && cachedInstance.isHealth) {

@@ -313,6 +313,12 @@ public class DirectoryServiceClient{
         return service;
     }
 
+    /**
+     * Get all service instances.
+     *
+     * @return
+     *         the ModelServiceInstance list.
+     */
     public List<ModelServiceInstance> getAllInstances(){
         HttpResponse result = invoker.invoke("/service" , null, HttpMethod.GET);
 

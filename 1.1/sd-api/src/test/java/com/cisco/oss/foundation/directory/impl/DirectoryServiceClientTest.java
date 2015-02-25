@@ -282,7 +282,7 @@ public class DirectoryServiceClientTest {
                 date, metadata);
         instance.setHeartbeatTime(date);
         instances.add(instance);
-        final ModelService result = new ModelService("odrm", "odrm", date, date);
+        final ModelService result = new ModelService("odrm", "odrm", date);
         result.setServiceInstances(instances);
 
         HttpUtils utils = new HttpUtils(){
@@ -303,7 +303,6 @@ public class DirectoryServiceClientTest {
         Assert.assertEquals(service.getName(), "odrm");
         Assert.assertEquals(service.getId(), "odrm");
         Assert.assertEquals(service.getCreateTime().getTime(), date.getTime());
-        Assert.assertEquals(service.getModifiedTime().getTime(), date.getTime());
         Assert.assertEquals(service.getServiceInstances().size(), 1);
 
         compareModelServiceInstance(instance, service.getServiceInstances().get(0));
@@ -316,7 +315,7 @@ public class DirectoryServiceClientTest {
         final Date date = new Date();
 
         Map<String, ModelService> services = new HashMap<String, ModelService>();
-        services.put("odrm", new ModelService("odrm", "odrm", date, date));
+        services.put("odrm", new ModelService("odrm", "odrm", date));
 
         final String serviceName = "odrm";
 
@@ -331,7 +330,7 @@ public class DirectoryServiceClientTest {
                 date, metadata);
         instance.setHeartbeatTime(date);
         instances.add(instance);
-        ModelService changingservice = new ModelService("odrm", "odrm", date, date);
+        ModelService changingservice = new ModelService("odrm", "odrm", date);
         changingservice.setServiceInstances(instances);
 
         final Map<String, OperationResult<ModelService>> result = new HashMap<String, OperationResult<ModelService>>();
@@ -347,7 +346,6 @@ public class DirectoryServiceClientTest {
                 Map<String, ModelService> target = (Map<String, ModelService>) serializer.deserialize(body.getBytes(), new TypeReference<Map<String, ModelService>>(){});
                 Assert.assertEquals(target.size(), 1);
                 Assert.assertEquals(target.get("odrm").getCreateTime().getTime(), date.getTime());
-                Assert.assertEquals(target.get("odrm").getModifiedTime().getTime(), date.getTime());
                 Assert.assertEquals(target.get("odrm").getName(), "odrm");
 
                 return new HttpResponse(200, new String(serializer.serialize(result)));
@@ -368,7 +366,6 @@ public class DirectoryServiceClientTest {
         Assert.assertEquals(service.getName(), "odrm");
         Assert.assertEquals(service.getId(), "odrm");
         Assert.assertEquals(service.getCreateTime().getTime(), date.getTime());
-        Assert.assertEquals(service.getModifiedTime().getTime(), date.getTime());
         Assert.assertEquals(service.getServiceInstances().size(), 1);
 
         compareModelServiceInstance(instance, service.getServiceInstances().get(0));

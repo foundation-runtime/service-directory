@@ -22,6 +22,7 @@ package com.cisco.oss.foundation.directory.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -39,6 +40,7 @@ import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.OperationResult;
+import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.lifecycle.Closable;
 import com.cisco.oss.foundation.directory.utils.JsonSerializer;
@@ -167,7 +169,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     /**
      * Get the ModelService.
      *
-     * It will query the cache first, if the cache enabled.
+     * It will query the cache first, if the cache is enabled.
      *
      * @param serviceName
      *         the Service name.
@@ -189,7 +191,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     /**
      * Get the ModelMetadataKey
      *
-     * It will query the cache first, if the cache enabled.
+     * It will query the cache first, if the cache is enabled.
      *
      * @param keyName
      *         the metadata key name.
@@ -300,7 +302,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 
         List<ModelService> syncServices = new ArrayList<ModelService>();
         for(ModelService service : allServices){
-            ModelService syncService = new ModelService(service.getName(), service.getId(), service.getModifiedTime(), service.getCreateTime());
+            ModelService syncService = new ModelService(service.getName(), service.getId(), service.getCreateTime());
             syncServices.add(syncService);
         }
         return syncServices;
@@ -438,6 +440,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                     for(ModelService service : services){
                         serviceMap.put(service.getName(), service);
                     }
+                    
                     Map<String, OperationResult<ModelService>> deltaSvcs = cachedLookupService.getServiceChanging(serviceMap);
                     if(deltaSvcs != null){
                         cacheUpdated = true;
@@ -449,11 +452,11 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                                 ModelService oldService = cachedLookupService.getCache().getService(serviceName);
                                 if(newService != null){
                                     cachedLookupService.getCache().putService(serviceName, newService);
-                                    LOGGER.info("Update the ModeService in cache, serviceName=" + serviceName);
+                                    LOGGER.info("Update the ModelService in cache, serviceName=" + serviceName );
                                 }
                                 onServiceChanged(newService, oldService);
                             } else {
-                                LOGGER.info("Cache sync ModeService failed, serviceName=" + serviceName + " - " + result.getError().getErrorMessage());
+                                LOGGER.info("Cache sync ModelService failed, serviceName=" + serviceName + " - " + result.getError().getErrorMessage());
                             }
                         }
                     } else {
@@ -492,36 +495,62 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
             if(newInstances == null || newInstances.size() == 0){
                 if(oldInstances != null){
                     for(ModelServiceInstance model : oldInstances){
-                        cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
+                    	if (model.getStatus().equals(OperationalStatus.UP)) {
+                    		cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
+                    	}
                     }
                 }
             } else {
                 if(oldInstances == null || oldInstances.size() == 0){
                     for(ModelServiceInstance model : newInstances){
-                        cachedLookupService.onServiceInstanceAvailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
+                    	if (model.getStatus().equals(OperationalStatus.UP)) {
+                    		cachedLookupService.onServiceInstanceAvailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
+                    	}
                     }
                 } else {
-                    for(ModelServiceInstance model : newInstances){
-                        int index = -1;
-                        for(int i = 0 ; i < oldInstances.size(); i ++ ){
-                            ModelServiceInstance old = oldInstances.get(i);
-                            if(old.getServiceName().equals(model.getServiceName()) && old.getInstanceId().equals(model.getInstanceId())){
-                                index = i;
-                                break;
-                            }
-                        }
-                        if(index == -1){
-                            cachedLookupService.onServiceInstanceAvailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
-                        } else {
-                            cachedLookupService.onServiceInstanceChanged(ServiceInstanceUtils.transferFromModelServiceInstance(model));
-                            oldInstances.remove(index);
-                        }
-                    }
-
-					for (ModelServiceInstance model : oldInstances) {
-						cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
+                	// Loop through all instances (added, deleted, changed) and send the proper notifications
+                	// Can not operate directly on newInstances or oldIntances since it will remove the item from cache
+                	List<ModelServiceInstance> newTmp = new ArrayList<ModelServiceInstance>();
+					List<ModelServiceInstance> oldTmp = new ArrayList<ModelServiceInstance>();
+					
+                	for (ModelServiceInstance model : oldInstances) {
+                		oldTmp.add(model);
+                	}
+                	for (ModelServiceInstance model : newInstances) {
+                		newTmp.add(model);
+                	}
+                	
+					Iterator<ModelServiceInstance> itnew = newTmp.iterator();
+					Iterator<ModelServiceInstance> itold = oldTmp.iterator();
+					
+					while (itnew.hasNext()) {
+						while (itold.hasNext()) {
+							ModelServiceInstance curnew = itnew.next();
+							ModelServiceInstance curold = itold.next();
+					
+							if (curnew.getInstanceId().equals(curold.getInstanceId())) {
+								
+								if(!curnew.getStatus().equals(curold.getStatus())) { 
+									cachedLookupService.onServiceInstanceChanged(ServiceInstanceUtils.transferFromModelServiceInstance(curold));
+							    }
+								
+								itnew.remove();
+								itold.remove();
+							}
+						}
 					}
-
+					
+					for (ModelServiceInstance model : oldTmp) {
+						if (model.getStatus().equals(OperationalStatus.UP)) {
+							cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
+						}
+					}
+					
+					for (ModelServiceInstance model : newTmp) {
+						if (model.getStatus().equals(OperationalStatus.UP)) {
+							cachedLookupService.onServiceInstanceAvailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
+						}
+					}
                 }
             }
         }

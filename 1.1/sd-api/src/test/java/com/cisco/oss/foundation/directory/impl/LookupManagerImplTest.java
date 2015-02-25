@@ -61,7 +61,7 @@ public class LookupManagerImplTest {
                 date, metadata);
         instance.setHeartbeatTime(date);
         instances.add(instance);
-        final ModelService result = new ModelService("odrm", "odrm", date, date);
+        final ModelService result = new ModelService("odrm", "odrm", date);
         result.setServiceInstances(instances);
 
         final ModelMetadataKey keyResult = new ModelMetadataKey(keyName, keyName, date, date);
@@ -127,7 +127,7 @@ public class LookupManagerImplTest {
                                 date, metadata);
                         instance.setHeartbeatTime(date);
                         instances.add(instance);
-                        ModelService service = new ModelService("odrm", "odrm", date, date);
+                        ModelService service = new ModelService("odrm", "odrm", date);
                         service.setServiceInstances(instances);
                         rr.put("odrm", new OperationResult<ModelService>(true, service, null));
                         return rr;

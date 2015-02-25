@@ -317,7 +317,7 @@ public class DirectoryLookupService {
     }
 
     /**
-     * On a ServiceInstance Unavailable.
+     * On a ServiceInstance status change.
      *
      * It will invoke the serviceInstanceChange of the NotificationHandler.
      *
@@ -336,7 +336,7 @@ public class DirectoryLookupService {
     }
 
     /**
-     * On a ServiceInstance Unavailable.
+     * On a ServiceInstance Available.
      *
      * It will invoke the serviceInstanceAvailable of the NotificationHandler.
      *

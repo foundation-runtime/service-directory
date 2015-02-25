@@ -31,7 +31,6 @@ public interface NotificationHandler {
     /**
      * A service instance is available
      *
-     * When ServiceInstance registered, but it may be DOWN.
      *
      * @param service
      *          The ServiceInstance which the NotificationHandler triggered for.
@@ -42,7 +41,6 @@ public interface NotificationHandler {
     /**
      * A service instance is unavailable
      *
-     * When ServiceInstance unregistered.
      *
      * @param service
      *             The ServiceInstance which the NotificationHandler triggered for.
@@ -51,9 +49,8 @@ public interface NotificationHandler {
     public void serviceInstanceUnavailable(ServiceInstance service);
 
     /**
-     * A service instance change.
+     * A service instance status is changed
      *
-     * When ServiceInstance changed, it includes the status change.
      *
      * @param service
      *             The ServiceInstance which the NotificationHandler triggered for.

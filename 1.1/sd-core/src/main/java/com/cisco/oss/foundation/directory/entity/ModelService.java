@@ -71,16 +71,12 @@ public class ModelService {
      *            the name.
      * @param id
      *            the instanceId.
-     * @param modifiedTime
-     *            the last modified time stamp.
      * @param createTime
      *            the create time stamp.
      */
-    public ModelService(String name, String id, Date modifiedTime,
-            Date createTime) {
+    public ModelService(String name, String id, Date createTime) {
         this.name = name;
         this.id = id;
-        this.modifiedTime = modifiedTime;
         this.createTime = createTime;
     }
 
