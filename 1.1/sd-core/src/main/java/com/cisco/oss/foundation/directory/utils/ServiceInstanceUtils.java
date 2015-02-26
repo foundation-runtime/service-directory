@@ -211,7 +211,7 @@ public class ServiceInstanceUtils {
 		}
 
         Map<String, String> metadata = serviceInstance.getMetadata();
-        if (metadata != null && metadata.size() > 0) {
+        if (metadata != null && metadata.size() > 0 ) {
             Iterator<Entry<String, String>> itor = metadata.entrySet()
                     .iterator();
             while (itor.hasNext()) {

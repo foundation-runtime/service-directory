@@ -25,9 +25,9 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.type.TypeReference;
 
 /**
- * The JSON parser for serializing and deserializing.
+ * The JSON parser for serialization and deserialization.
  *
- * It wrap the Jackson ObjectMapper to handle the JSON parsing.
+ * It wraps the Jackson ObjectMapper to handle the JSON parsing.
  *
  * @author zuxiang
  *

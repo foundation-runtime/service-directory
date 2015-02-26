@@ -23,18 +23,41 @@ import com.cisco.oss.foundation.directory.impl.DirectoryLookupService;
 import com.cisco.oss.foundation.directory.impl.ServiceInstanceQueryHelper;
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
 
+/**
+ * The metadata query Round Robin loadbalancer implementation.
+ *
+ */
 public class MetadataQueryRRLoadBalancer extends RoundRobinLoadBalancer {
 
         private final ServiceInstanceQuery query;
+        
+        /**
+         * Constructor.
+         *
+         * @param lookupService
+         *         the DirectoryLookupService
+         *         
+         * @param query
+         *         the ServiceInstanceQuery
+         */
         public MetadataQueryRRLoadBalancer(DirectoryLookupService lookupService, ServiceInstanceQuery query) {
             super(lookupService);
             this.query = query;
         }
 
+        /**
+         * Get the ServiceInstanceQuery.
+         *
+         * @return
+         *         the ServiceInstanceQuery.
+         */
         public ServiceInstanceQuery getServiceInstanceQuery(){
             return query;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public List<ModelServiceInstance> getServiceInstanceList() {
             List<ModelServiceInstance> instances = null;

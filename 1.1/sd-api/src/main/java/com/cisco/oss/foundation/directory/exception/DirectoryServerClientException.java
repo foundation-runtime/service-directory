@@ -19,6 +19,10 @@
 
 package com.cisco.oss.foundation.directory.exception;
 
+/**
+ * It is the unchecked Exception used in DirectoryServiceClient
+ *
+ */
 public class DirectoryServerClientException extends ServiceRuntimeException{
     /**
      * serialVersionUID

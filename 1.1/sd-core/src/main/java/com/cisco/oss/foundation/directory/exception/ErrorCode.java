@@ -29,7 +29,7 @@ public enum ErrorCode {
 
     // Service Instance format validate error.
     /**
-     * Service Instance length too long when persistence to zookeeper. Message:
+     * Service Instance length too long when persisted to zookeeper. Message:
      * ServiceInstance length after serialization is too long, it should not
      * exceed {0}, current length is {1}.
      */
@@ -44,7 +44,7 @@ public enum ErrorCode {
 
     /**
      * Service Instance uri format error. Message: ServiceInstance uri format is
-     * wrong. It must be a validate URI.
+     * wrong. It must be a valid URI.
      */
     SERVICE_INSTANCE_URI_FORMAT_ERROR("400.3"),
 
@@ -77,9 +77,9 @@ public enum ErrorCode {
     SERVICE_INSTANCE_METAKEY_FORMAT_ERROR("400.7"),
 
     /**
-     * The ContainQueryCriterion and NotContainQueryCriterion doesn't support
-     * queryInstancesByKey. Message: ServiceInstanceQuery has illegal
-     * QueryCriteria. Query Instances by MetadataKey doesn't support
+     * The ContainQueryCriterion and NotContainQueryCriterion are not supported
+     * in queryInstancesByKey. Message: ServiceInstanceQuery has illegal
+     * QueryCriteria. Querying Instances by MetadataKey doesn't support
      * ContainQueryCriterion and NotContainQueryCriterion.
      */
     QUERY_CRITERION_ILLEGAL_IN_QUERY("400.8"),
@@ -91,7 +91,7 @@ public enum ErrorCode {
     SERVICE_INSTANCE_NOT_EXIST("404.1"),
 
     /**
-     * Service not exists. Message: The Service doesn't exits.
+     * Service not exists. Message: The Service doesn't exist.
      */
     SERVICE_NOT_EXIST("404.2"),
 
@@ -118,25 +118,25 @@ public enum ErrorCode {
     METADATA_KEY_ALREADY_EXIST("409.3"),
 
     /**
-     * General error that can not category. Message: General error: {0}
+     * General error that can not be categorized. Message: General error: {0}
      */
     GENERAL_ERROR("500.1"),
 
     /**
-     * Service is not empty when delete. Message: Cannot delete the Service is
+     * Service is not empty when being deleted. Message: Cannot delete the Service that is
      * not empty.
      */
     SERVICE_NOT_EMPTY_IN_DELETE("500.2"),
 
     /**
-     * Service Instance is not empty when delete. Message: Cannot delete the
-     * ServiceInstance is not empty.
+     * Service Instance is not empty when being deleted. Message: Cannot delete the
+     * ServiceInstance that is not empty.
      */
     SERVICE_INSTANCE_NOT_EMPTY_IN_DELETE("500.3"),
 
     /**
-     * Metadata key is not empty when delete. Message: Cannot delete the
-     * MetadatKey is not empty.
+     * Metadata key is not empty when being deleted. Message: Cannot delete the
+     * MetadatKey that is not empty.
      */
     METADATA_KEY_NOT_EMPTY_IN_DELETE("500.4"),
 
@@ -148,15 +148,15 @@ public enum ErrorCode {
     UPDATE_MONITOR_ENABLED_ERROR("500.7"),
 
     /**
-     * The Directory API doesn't own the updated moitorEnabled
-     * ProvidedServiceInstance. Message: The Directory API doesn't own the
-     * updated monitorEnabled ProvidedServiceInstance.
+     * The Directory API doesn't own the moitorEnabled
+     * ProvidedServiceInstance and can not update it. Message: The Directory API doesn't
+     * own the ProvidedServiceInstance.
      */
     ILLEGAL_SERVICE_INSTANCE_OWNER_ERROR("500.8"),
 
     /**
      * Invoke the ServiceDirectory while it shutdown. Message: The
-     * ServiceDirectory already shutdown.
+     * ServiceDirectory already shut down.
      */
     SERVICE_DIRECTORY_IS_SHUTDOWN("500.10"),
 

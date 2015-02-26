@@ -38,7 +38,7 @@ import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
 /**
  * It is the Directory LookupService to perform the lookup functionality.
  *
- * It looks up ServiceInstance from DirectoryServer.
+ * It looks up ServiceInstance from Directory Server.
  *
  * @author zuxiang
  *
@@ -66,7 +66,7 @@ public class DirectoryLookupService {
     }
 
     /**
-     * Get the ModelService.
+     * Get the ModelService by service name.
      *
      * @param serviceName
      *         the Service name.
@@ -79,7 +79,7 @@ public class DirectoryLookupService {
     }
 
     /**
-     * Get the ModelMetadataKey
+     * Get the ModelMetadataKey by key name
      *
      * @param keyName
      *         the metadata key name.
@@ -134,7 +134,6 @@ public class DirectoryLookupService {
     /**
      * Get the UP ModelServiceInstance list by the Metadata Key.
      *
-     * It only return the UP ServiceInstance.
      *
      * @param keyName
      *         the metadata key name.
@@ -183,7 +182,7 @@ public class DirectoryLookupService {
     }
 
     /**
-     * Get All ModelServiceInstance in the ServiceDirectory.
+     * Get All ModelServiceInstance on the Directory Server.
      *
      * @return
      *         the ModelServiceInstance List.
@@ -196,7 +195,6 @@ public class DirectoryLookupService {
     /**
      * Get the UP ModelServiceInstance list of the Service.
      *
-     * It only return the UP ServiceInstance of the Service.
      * @param serviceName
      *         the service name.
      * @return
@@ -229,8 +227,8 @@ public class DirectoryLookupService {
     /**
      * Add a NotificationHandler to the Service.
      *
-     * This method can check the duplicate NotificationHandler for the serviceName, if the NotificationHandler
-     * already exists in the serviceName, do nothing.
+     * This method will check the duplicate NotificationHandler for the serviceName, if the NotificationHandler
+     * already exists for the serviceName, do nothing.
      *
      * Throw IllegalArgumentException if serviceName or handler is null.
      *
@@ -295,9 +293,7 @@ public class DirectoryLookupService {
     }
 
     /**
-     * On a ServiceInstance Unavailable.
-     *
-     * It will invoke the serviceInstanceUnavailable of the NotificationHandler.
+     * Invoke the serviceInstanceUnavailable of the NotificationHandler.
      *
      * @param instance
      *         the ServiceInstance.
@@ -317,9 +313,7 @@ public class DirectoryLookupService {
     }
 
     /**
-     * On a ServiceInstance status change.
-     *
-     * It will invoke the serviceInstanceChange of the NotificationHandler.
+     * Invoke the serviceInstanceChange of the NotificationHandler.
      *
      * @param instance
      *         the ServiceInstance.
@@ -336,9 +330,7 @@ public class DirectoryLookupService {
     }
 
     /**
-     * On a ServiceInstance Available.
-     *
-     * It will invoke the serviceInstanceAvailable of the NotificationHandler.
+     * Invoke the serviceInstanceAvailable of the NotificationHandler.
      *
      * @param instance
      *         the ServiceInstance.

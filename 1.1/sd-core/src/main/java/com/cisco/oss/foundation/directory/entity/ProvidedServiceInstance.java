@@ -20,7 +20,7 @@ import java.util.Map;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 /**
- * ProvidedServiceInstance used by Service Provider to register a service
+ * ProvidedServiceInstance used by Service Provider to register/update a service
  * instance.
  *
  * In the ProvidedServiceInstance, the address and port are required attributes
@@ -29,8 +29,8 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
  *
  * The providerId is defined as "address-port".
  *
- * The address is the real IP address of the running instance, the port is the
- * port which the instance binds to.
+ * The address is the real IP address or hostname of the running instance, 
+ * the port is the port which the instance binds to.
  *
  * @author zuxiang
  *
@@ -64,7 +64,7 @@ public class ProvidedServiceInstance {
     private OperationalStatus status;
 
     /**
-     * Whether the instance enabled Monitor in Service Directory.
+     * Whether the instance is monitored or not in Service Directory.
      */
     private boolean monitorEnabled = true;
 
@@ -199,7 +199,7 @@ public class ProvidedServiceInstance {
     }
 
     /**
-     * check is monitor enable in Service Directory.
+     * check if it is monitored in Service Directory.
      *
      * @return true if monitor enabled.
      */
@@ -208,10 +208,10 @@ public class ProvidedServiceInstance {
     }
 
     /**
-     * Set the monitor.
+     * Set the service to be monitored or not.
      *
      * @param monitor
-     *            the monitor.
+     *            true if monitor enabled, false if monitor disabled.
      */
     public void setMonitorEnabled(boolean monitor) {
         this.monitorEnabled = monitor;
@@ -248,11 +248,11 @@ public class ProvidedServiceInstance {
     /**
      * Get the composed provider id.
      *
-     * Provider id is the unique id in service, it is compose of the address and
-     * port field of the ProvidedServiceInstance.
+     * Provider id is the unique id for service, it is composed of the address and
+     * port fields of the ProvidedServiceInstance.
      *
-     * The address always be the real ip address of the Service Provider
-     * machine.
+     * The address always be the real ip address or hostname of the machine that 
+     * provides the service.
      *
      * @return the provider id.
      */

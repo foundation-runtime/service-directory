@@ -51,7 +51,7 @@ public class ServiceDirectoryImpl implements DirectoryServiceClientManager{
     public static final String SD_API_SERVICE_DIRECTORY_MANAGER_FACTORY_PROVIDER_PROPERTY = "service.directory.manager.factory.provider";
 
     /**
-     * ServiceDirectory server node client, it is lazy initialized.
+     * ServiceDirectory client, it is lazy initialized.
      */
     private DirectoryServiceClient client ;
 
@@ -104,7 +104,7 @@ public class ServiceDirectoryImpl implements DirectoryServiceClientManager{
     }
 
     /**
-     * Get the ServiceDirectoryConfig in sd-api.
+     * Get the ServiceDirectoryConfig.
      *
      * @return
      *         the ServiceDirectory configuration.
@@ -114,7 +114,7 @@ public class ServiceDirectoryImpl implements DirectoryServiceClientManager{
     }
 
     /**
-     * Set the ServiceDirectoryManagerFactory in the sd-api.
+     * Set the ServiceDirectoryManagerFactory.
      *
      * @param factory
      *         the ServiceDirectoryManagerFactory.
@@ -172,7 +172,7 @@ public class ServiceDirectoryImpl implements DirectoryServiceClientManager{
     }
 
     /**
-     * Shutdown the ServiceDirectory and the ServiceDirectoryManagerFactory.
+     * Shut down the ServiceDirectory client and the ServiceDirectoryManagerFactory.
      */
     public void shutdown(){
         synchronized(this){
@@ -221,7 +221,7 @@ public class ServiceDirectoryImpl implements DirectoryServiceClientManager{
                                 directoryManagerFactory = (ServiceDirectoryManagerFactory) provider
                                         .newInstance();
                                 directoryManagerFactory.initialize(this);
-                                LOGGER.info("Instantialized the ServiceDirectoryManager with customer implementation " + custProvider + ".");
+                                LOGGER.info("Instantialize the ServiceDirectoryManager with customer implementation " + custProvider + ".");
                             }
                         } catch (Exception e) {
                             LOGGER.error(
@@ -231,7 +231,7 @@ public class ServiceDirectoryImpl implements DirectoryServiceClientManager{
                     }
 
                     if (directoryManagerFactory == null) {
-                        LOGGER.info("Instantialized the ServiceDirectoryManager with default implementation StandServiceDirectoryManager.");
+                        LOGGER.info("Instantialize the ServiceDirectoryManager with default implementation - StandServiceDirectoryManager.");
                         directoryManagerFactory = new DefaultServiceDirectoryManagerFactory();
                         directoryManagerFactory.initialize(this);
                     }

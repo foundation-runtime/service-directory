@@ -19,9 +19,9 @@ package com.cisco.oss.foundation.directory.exception;
  * It is the unchecked Exception used in Directory API.
  *
  * The LookupManager and RegistrationManager will capture this Exception and
- * convert it to the ServiceException to reminder high Application. So all
- * Exception that cannot handle in ServiceDirectory should extends this
- * exception, it will throw to the high Application.
+ * convert it to the ServiceException. Exceptions that cannot be handled in 
+ * ServiceDirectory should extends this exception, it will be thrown to the 
+ * higher layer Application.
  *
  * @author zuxiang
  *

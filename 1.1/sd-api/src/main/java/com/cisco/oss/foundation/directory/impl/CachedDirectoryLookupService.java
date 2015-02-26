@@ -47,10 +47,10 @@ import com.cisco.oss.foundation.directory.utils.JsonSerializer;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 
 /**
- * It is the DirectoryLookupService with Cache.
+ * It is the DirectoryLookupService with client-side Cache.
  *
  * It caches ServiceInstance for quick lookup and provides the cache sync function to
- * sync the latest change of the cached ServiceInstances.
+ * sync the latest changes of the cached ServiceInstances.
  *
  * @author zuxiang
  *
@@ -169,7 +169,8 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     /**
      * Get the ModelService.
      *
-     * It will query the cache first, if the cache is enabled.
+     * It will query the cache first. If not found in the cache, the service will be added to the cache.
+     * 
      *
      * @param serviceName
      *         the Service name.
@@ -191,7 +192,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     /**
      * Get the ModelMetadataKey
      *
-     * It will query the cache first, if the cache is enabled.
+     * It will query the cache first. If not found in the cache, the metadata key will be added to the cache.
      *
      * @param keyName
      *         the metadata key name.
@@ -211,7 +212,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     }
 
     /**
-     * Initialize the CacheSyncTask lazily.
+     * Lazy initialization of the CacheSyncTask
      *
      * It is thread safe.
      */
@@ -309,7 +310,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     }
 
     /**
-     * Get the ModelMetadataKey List for sync.
+     * Get the ModelMetadataKey List for cache sync.
      *
      * The ModelMetadataKey doesn't have the referenced ModelServiceInstances.
      *
@@ -330,7 +331,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     }
 
     /**
-     * Get the MetadataKey changing delta.
+     * Get the changed list for the MetadataKey from the server.
      *
      * @param keys
      *         the MetadataKey List.
@@ -342,7 +343,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     }
 
     /**
-     * Get the Service changing delta for Services list.
+     * Get the changed Services list from the server.
      *
      * @param services
      *         the Service list.
@@ -418,12 +419,12 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                                     LOGGER.info("Update the ModelMetadataKey in cache, keyName=" + keyName);
                                 }
                             } else {
-                                LOGGER.info("Cache sync ModelMetadataKey failed, keyName=" + keyName + " - " + result.getError().getErrorMessage());
+                                LOGGER.error("Cache sync ModelMetadataKey failed, keyName=" + keyName + " - " + result.getError().getErrorMessage());
                             }
 
                         }
                     } else {
-                        LOGGER.error("Get no MetadataKey changed response.");
+                        LOGGER.info("No MetadataKey is changed from server response.");
                     }
                 } else {
                     LOGGER.info("No MetadataKey in the cache, skip cache sync.");
@@ -456,11 +457,11 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                                 }
                                 onServiceChanged(newService, oldService);
                             } else {
-                                LOGGER.info("Cache sync ModelService failed, serviceName=" + serviceName + " - " + result.getError().getErrorMessage());
+                                LOGGER.error("Cache sync ModelService failed, serviceName=" + serviceName + " - " + result.getError().getErrorMessage());
                             }
                         }
                     } else {
-                        LOGGER.error("Get no Service changed response.");
+                        LOGGER.info("No Service is changed from server response.");
                     }
                 } else {
                     LOGGER.info("No service in the cache, skip cache sync.");
@@ -479,10 +480,8 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
             }catch(Exception e){
                 LOGGER.error("Sync ModelService cache from ServiceDirectory Server failed", e);
             }
-
-
-
         }
+        
 
         private void onServiceChanged(ModelService newService, ModelService oldService){
             if(newService == null || oldService == null || newService == oldService){

@@ -24,7 +24,7 @@ import org.apache.commons.configuration.Configuration;
 /**
  * The SD API Configuration class.
  *
- * It allows application to get the property value, set a new property value and add ConfigurationListener in runtime.
+ * It allows application to get a property value, set a new property value and add ConfigurationListener in runtime.
  *
  * @author zuxiang
  *

@@ -54,6 +54,8 @@ public class DirectoryInvoker {
      *
      * @param directoryAddresses
      *         The remote ServiceDirectory node address array, in the format of http://<host>:<port>
+     * @param serializer
+     *         The JsonSerializer  
      */
     public DirectoryInvoker(String directoryAddresses, JsonSerializer serializer) {
         this.directoryAddresses = directoryAddresses;
@@ -66,7 +68,7 @@ public class DirectoryInvoker {
      *
      * @param uri        The URI of the RESTful service.
      * @param payload    The HTTP body String.
-     * @param method    THe HTTP method.
+     * @param method     The HTTP method.
      * @return
      *         the HttpResponse.
      */
@@ -126,7 +128,7 @@ public class DirectoryInvoker {
      *
      * @param uri        The URI of the RESTful service.
      * @param payload    The HTTP body string.
-     * @param method    The HTTP method.
+     * @param method     The HTTP method.
      * @param headers    The HTTP headers.
      * @return
      *         the HttpResponse.
@@ -181,7 +183,7 @@ public class DirectoryInvoker {
     }
 
     /**
-     * Keep it default for unit test.
+     * HttpUtils setter, keep it default for unit test.
      *
      * @param httpUtils
      *         the customer HttpUtils.

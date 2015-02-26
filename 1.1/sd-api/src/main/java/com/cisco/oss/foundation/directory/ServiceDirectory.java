@@ -109,13 +109,10 @@ public class ServiceDirectory {
     }
 
     /**
-     * Shutdown the ServiceDirectory.
+     * Shut down the ServiceDirectory.
      *
-     * Be careful to invoke this method, it used to help gc
-     * in shutdown the jvm.
-     * The whole ServiceDirectory shutdown, it cannot be used unless restart the jvm
-     * and reload the ServiceDirectory class. The methods throw SERVICE_DIRECTORY_IS_SHUTDOWN error.
-     *
+     * Be careful to invoke this method. When shutdown() is called, ServiceDirectory cannot be used 
+     * unless restart the jvm and reload the ServiceDirectory class. 
      *
      */
     public static void shutdown(){

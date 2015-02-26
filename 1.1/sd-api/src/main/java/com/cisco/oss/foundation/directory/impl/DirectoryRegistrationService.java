@@ -32,7 +32,7 @@ import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
 /**
  * It is the Directory Registration Service to perform the ServiceInstance registration.
  *
- * It registers ServiceInstance to DirectoryServer.
+ * It registers ServiceInstance to Directory Server.
  *
  * @author zuxiang
  *
@@ -45,12 +45,12 @@ public class DirectoryRegistrationService {
     public static final String SD_API_REGISTRY_DISABLE_OWNER_ERROR_PROPERTY_NAME = "registry.disable.owner.error";
 
     /**
-     * Default to enable ILLEGAL_SERVICE_INSTANCE_OWNER_ERROR.
+     * Default to disable ILLEGAL_SERVICE_INSTANCE_OWNER_ERROR.
      */
     public static final boolean SD_API_REGISTRY_DISABLE_OWNER_ERROR_DEFAULT = false;
 
     /**
-     * The remote ServiceDirectory node client.
+     * The remote ServiceDirectory client.
      */
     private final DirectoryServiceClientManager directoryServiceClientManager;
 

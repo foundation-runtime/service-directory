@@ -49,8 +49,7 @@ import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery.NotContainQ
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 
 /**
- * The default LookupManager implementation to access the remote ServiceDirectory
- * node.
+ * The default LookupManager implementation to access the remote Directory Server.
  *
  * @author zuxiang
  *
@@ -100,7 +99,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
     /**
      * Start the LookupManagerImpl.
      *
-     * it is idempotent, it can be invoked multiple times while in same state and is not thread safe.
+     * It is idempotent, and can be invoked multiple times.
      */
     @Override
     public void start(){
@@ -116,7 +115,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
     /**
      * Stop the LookupManagerImpl
      *
-     * it is idempotent, it can be invoked multiple times while in same state and is not thread safe.
+     * It is thread safe.
      */
     @Override
     public void stop(){
@@ -508,10 +507,10 @@ public class LookupManagerImpl implements LookupManager, Closable {
     /**
      * Add a NotificationHandler to the Service.
      *
-     * This method can check the duplicate NotificationHandler for the serviceName, if the NotificationHandler
-     * already exists in the serviceName, do nothing.
+     * This method can check the duplicated NotificationHandler for the serviceName, if the NotificationHandler
+     * already exists for the serviceName, do nothing.
      *
-     * Throw IllegalArgumentException if serviceName or handler is null.
+     * Throws IllegalArgumentException if serviceName or handler is null.
      *
      * @param serviceName
      *         the service name.
@@ -572,7 +571,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
     /**
      * Get the DirectoryLookupService to do the lookup.
      *
-     * It is thread safe and lazy initialized.
+     * It is thread safe.
      *
      * @return
      *         the LookupService.
@@ -605,7 +604,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
      * For those methods, the ContainQueryCriterion and NotContainQueryCriterion are not supported.
      *
      * @param query
-     *         the ServiceInstanceQuery to validate.
+     *         the ServiceInstanceQuery to be validated.
      * @throws ServiceException
      *         when the ServiceInstanceQuery has ContainQueryCriterion or NotContainQueryCriterion.
      */

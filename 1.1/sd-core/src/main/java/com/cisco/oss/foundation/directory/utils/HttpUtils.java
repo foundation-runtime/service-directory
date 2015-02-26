@@ -31,7 +31,7 @@ import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
 
 /**
- * Convenient Http Client util methods to invoke remote REST Service.
+ * Convenient Http Client util methods to invoke remote RESTful Service.
  *
  * @author zuxiang
  *

@@ -24,7 +24,7 @@ package com.cisco.oss.foundation.directory.entity;
 public enum OperationalStatus {
 
     /**
-     * UP will be consumed in Service Consumer.
+     * UP service instance will be consumed in Service Consumer.
      */
     UP("UP"),
 

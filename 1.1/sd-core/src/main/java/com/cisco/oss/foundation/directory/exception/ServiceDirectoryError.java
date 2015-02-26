@@ -22,8 +22,8 @@ import org.codehaus.jackson.annotate.JsonIgnore;
 /**
  * The official ServiceDirectory ERROR.
  *
- * This error will throw to upper Application in Exception. Application can do
- * recovering according to the ExceptionCode if required.
+ * This error will be thrown to upper Application in Exception. Application can do
+ * recovery based on the ExceptionCode if desired.
  *
  * @author zuxiang
  *

@@ -18,8 +18,8 @@ package com.cisco.oss.foundation.directory.entity;
 /**
  * The heartbeat info of the ServiceInstance.
  *
- * It is the heartbeat info fo the ServiceInstance, sd-api send a list of the
- * ServiceInstanceHeartbeat to Service Directory server to update the heartbeat
+ * It is the heartbeat info of the ServiceInstance, API sends a list of the
+ * ServiceInstanceHeartbeat to ServiceDirectory server to update the heartbeat
  * of the ServiceInstance.
  *
  * @author zuxiang

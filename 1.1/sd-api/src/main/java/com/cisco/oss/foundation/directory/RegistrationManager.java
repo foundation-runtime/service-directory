@@ -61,7 +61,7 @@ public interface RegistrationManager {
      *
      * It is a convenient method to update the OperationalStatus of the ProvidedServiceInstance.
      *
-     * @param serviceName    The name of the service.
+     * @param serviceName   The name of the service.
      * @param providerId    The providerId of the ProvidedServiceInstance.
      * @param status        The OperationalStatus of the ProvidedServiceInstance.
      * @throws ServiceException
@@ -73,9 +73,9 @@ public interface RegistrationManager {
      *
      * It is a convenient method to update the URI of the ProvidedServiceInstance.
      *
-     * @param serviceName    The name of the service.
+     * @param serviceName   The name of the service.
      * @param providerId    The providerId of the ProvidedServiceInstance.
-     * @param uri        The URI of the ProvidedServiceInstance.
+     * @param uri           The URI of the ProvidedServiceInstance.
      * @throws ServiceException
      */
     public void updateServiceUri(String serviceName, String providerId, String uri) throws ServiceException;
@@ -98,7 +98,7 @@ public interface RegistrationManager {
      * Unregister the existing ProvidedServiceInstance in the directory server.
      *
      * @param serviceName    The name of the Service.
-     * @param providerId    The providerId of ProvidedServiceInstance.
+     * @param providerId     The providerId of ProvidedServiceInstance.
      * @throws ServiceException
      */
     public void unregisterService(String serviceName, String providerId) throws ServiceException;

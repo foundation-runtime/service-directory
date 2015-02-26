@@ -62,7 +62,7 @@ public class DefaultServiceDirectoryManagerFactory implements
     /**
      * Get RegistrationManager.
      *
-     * It is thread safe in lazy initializing.
+     * It is thread safe.
      *
      * @return
      *         the RegistrationManager implementation instance.
@@ -82,9 +82,9 @@ public class DefaultServiceDirectoryManagerFactory implements
     }
 
     /**
-     * get LookupManager
+     * Get LookupManager
      *
-     * It is thread safe in lazy initializing.
+     * It is thread safe.
      *
      * @return
      *         the LookupManager implementation instance.

@@ -21,8 +21,8 @@ import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
  * The class to describe the operation result.
  *
  * It has the result field to indicate the operation result, true for succeed,
- * false for fail. If result is false, see the ServiceDirectoryError to error
- * field. Now it used in the batch update operation, like send heartbeat for
+ * false for fail. If result is false, see the ServiceDirectoryError for error
+ * field. It is used in the batch update operation, like sending heartbeat for
  * bunches of ServiceInstance.
  *
  * @author zuxiang

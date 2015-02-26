@@ -21,6 +21,10 @@ import java.util.List;
 import com.cisco.oss.foundation.directory.impl.DirectoryLookupService;
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
 
+/**
+ * LoadBalancerManager interface for the service lookup.
+ *
+ */
 public class LoadBalancerManager {
 
     /**
@@ -34,6 +38,12 @@ public class LoadBalancerManager {
 
     private final DirectoryLookupService lookupService;
 
+    /**
+     * Constructor.
+     *
+     * @param lookupService
+     *         the DirectoryLookupService
+     */
     public LoadBalancerManager(DirectoryLookupService lookupService) {
         svcLBList = new ArrayList<ServiceRRLoadBalancer>();
         metaQueryLBList = new ArrayList<MetadataQueryRRLoadBalancer>();
@@ -41,6 +51,14 @@ public class LoadBalancerManager {
         this.lookupService = lookupService;
     }
 
+    /**
+     * Get the Round Robin loadbalancer for named service.
+     *
+     * @param serviceName
+     *         the service name.
+     * @return
+     *         the ServiceRRLoadBalancer.
+     */
     public ServiceRRLoadBalancer getServiceRRLoadBalancer(String serviceName) {
         ServiceRRLoadBalancer lb = null;
         synchronized(svcLBList){
@@ -58,6 +76,14 @@ public class LoadBalancerManager {
         return lb;
     }
 
+    /**
+     * Get the metadata query Round Robin loadbalancer for a ServiceInstanceQuery.
+     *
+     * @param query
+     *         the ServiceInstanceQuery.
+     * @return
+     *         the MetadataQueryRRLoadBalancer.
+     */
     public MetadataQueryRRLoadBalancer getMetadataQueryRRLoadBalancer(
             ServiceInstanceQuery query) {
         MetadataQueryRRLoadBalancer lb = null;
@@ -76,6 +102,16 @@ public class LoadBalancerManager {
         return lb;
     }
 
+    /**
+     * Get the service query Round Robin loadbalancer for a ServiceInstanceQuery.
+     *
+     * @param serviceName
+     *         the service name.
+     * @param query
+     *         the ServiceInstanceQuery.
+     * @return
+     *         the ServiceQueryRRLoadBalancer.
+     */
     public ServiceQueryRRLoadBalancer getServiceQueryRRLoadBalancer(
             String serviceName, ServiceInstanceQuery query) {
         ServiceQueryRRLoadBalancer lb = null;

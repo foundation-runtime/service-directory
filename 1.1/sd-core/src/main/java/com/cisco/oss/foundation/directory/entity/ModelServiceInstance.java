@@ -21,9 +21,9 @@ import java.util.Map;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
 /**
- * The Model ServiceInstance object in Service Directory.
+ * The ModelServiceInstance object in Service Directory.
  *
- * It is the Model ServiceInstance object that has all attributes.
+ * It has all service attributes.
  *
  * @author zuxiang
  *
@@ -52,12 +52,12 @@ public class ModelServiceInstance {
     private OperationalStatus status;
 
     /**
-     * Whether the instance enabled Monitor in Service Directory.
+     * Whether the instance is monitored or not in Service Directory.
      */
     private boolean monitorEnabled = true;
 
     /**
-     * The instance creating time.
+     * The instance creation time.
      */
     private Date createTime;
 

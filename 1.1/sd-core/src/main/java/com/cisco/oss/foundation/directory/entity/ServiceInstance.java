@@ -124,7 +124,7 @@ public class ServiceInstance {
     }
 
     /**
-     * check is monitor enable in Service Directory.
+     * check if service is monitored in Service Directory.
      *
      * @return true if monitor enabled.
      */

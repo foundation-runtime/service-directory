@@ -20,18 +20,40 @@ import java.util.List;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.impl.DirectoryLookupService;
 
+/**
+ * The service query Round Robin loadbalancer implementation.
+ *
+ */
 public class ServiceRRLoadBalancer extends RoundRobinLoadBalancer {
 
     private final String serviceName ;
+    /**
+     * Constructor.
+     *
+     * @param lookupService
+     *         the DirectoryLookupService
+     *         
+     * @param serviceName
+     *         the service name
+     */
     public ServiceRRLoadBalancer(DirectoryLookupService lookupService, String serviceName) {
         super(lookupService);
         this.serviceName = serviceName;
     }
 
+    /**
+     * Get the service name.
+     *
+     * @return
+     *         the service name.
+     */
     public String getServiceName(){
         return serviceName;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public List<ModelServiceInstance> getServiceInstanceList() {
         return getLookupService().getUPModelInstances(serviceName);

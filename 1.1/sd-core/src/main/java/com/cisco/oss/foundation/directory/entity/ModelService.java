@@ -23,8 +23,8 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 /**
  * The Service Model Object in Service Directory.
  *
- * It is the logic Service Object in Service Directory. The ServiceInstance of
- * same service name belong to one ModeService.
+ * It is the logic Service Object in Service Directory. ModelService consists of Service Instances with 
+ * same service name.
  *
  * @author zuxiang
  *

@@ -107,7 +107,7 @@ public class HeartbeatDirectoryRegistrationService extends
     public static final int SD_API_HEARTBEAT_INTERVAL_DEFAULT = 10;
 
     /**
-     * All ServiceInstanceHealth set collection.
+     * The CachedProviderServiceInstance Set
      */
     private volatile HashMap<ServiceInstanceId, CachedProviderServiceInstance> instanceCache;
 
@@ -157,8 +157,7 @@ public class HeartbeatDirectoryRegistrationService extends
     /**
      * Stop the Component.
      *
-     * it is idempotent, it can be invoked in multiple times while in same
-     * state. But not thread safe.
+     * it is idempotent, it can be invoked in multiple times.
      */
     @Override
     public void stop() {
@@ -171,7 +170,6 @@ public class HeartbeatDirectoryRegistrationService extends
                 healthJob.shutdown();
             }
         }
-
     }
 
     /**
@@ -308,9 +306,9 @@ public class HeartbeatDirectoryRegistrationService extends
     }
 
     /**
-     * Edit the Cached ProvidedServiceInstance when updateService.
+     * Edit the Cached ProvidedServiceInstance when updateService is called.
      *
-     * if it cached, update, if not, do nothing.
+     * It is thread safe. 
      *
      * @param instance
      *         the ProvidedServiceInstance.
@@ -360,9 +358,8 @@ public class HeartbeatDirectoryRegistrationService extends
     }
 
     /**
-     * Delete the Cache ProvidedServiceInstance by serviceName and providerId.
+     * Delete the Cached ProvidedServiceInstance by serviceName and providerId.
      *
-     * Delete the Cache ProvidedServiceInstance, if it not exits, do nothing.
      * It is thread safe.
      *
      * @param serviceName
@@ -406,8 +403,8 @@ public class HeartbeatDirectoryRegistrationService extends
     }
 
     /**
-     * initialize the Heartbeat task and Health Check task. It invoked in the
-     * getCacheServiceInstances method which is thread safe, no synchronized
+     * Initialize the Heartbeat task and Health Check task. It is invoked in the
+     * getCacheServiceInstances method which is thread safe, no synchronized block
      * needed.
      */
     private void initJobTasks() {
@@ -528,10 +525,10 @@ public class HeartbeatDirectoryRegistrationService extends
                     heartbeatMap.put(id, instance);
                 }
 
-                Map<String, OperationResult<String>> operateRsult = getServiceDirectoryClient()
+                Map<String, OperationResult<String>> operateResult = getServiceDirectoryClient()
                         .sendHeartBeat(heartbeatMap);
-                if (operateRsult != null) {
-                    for (Entry<String, OperationResult<String>> entry : operateRsult
+                if (operateResult != null) {
+                    for (Entry<String, OperationResult<String>> entry : operateResult
                             .entrySet()) {
                         boolean result = entry.getValue().getResult();
                         if (result == false) {
@@ -612,7 +609,7 @@ public class HeartbeatDirectoryRegistrationService extends
         }
 
         /**
-         * Get the ServiceInstanceHealth.
+         * Set the ServiceInstanceHealth.
          *
          * @param healthCallback
          *            the ServiceInstanceHealth.
@@ -626,7 +623,7 @@ public class HeartbeatDirectoryRegistrationService extends
         /**
          * Get the ServiceInstanceHealth.
          *
-         * @return the ServiceInstanceHealth callback instance.
+         * @return the ServiceInstanceHealth callback.
          */
         public ServiceInstanceHealth getServiceInstanceHealth() {
             return healthCallback;
@@ -670,7 +667,7 @@ public class HeartbeatDirectoryRegistrationService extends
         }
 
         /**
-         * check is monitor enable in Service Directory.
+         * check whether it is monitor-enabled service instance
          *
          * @return true if monitor enabled.
          */
@@ -679,10 +676,10 @@ public class HeartbeatDirectoryRegistrationService extends
         }
 
         /**
-         * Set the monitor.
+         * Set the service to be monitored.
          *
          * @param monitor
-         *            the monitor.
+         *            true or false.
          */
         public void setMonitorEnabled(boolean monitor) {
             this.monitorEnabled = monitor;

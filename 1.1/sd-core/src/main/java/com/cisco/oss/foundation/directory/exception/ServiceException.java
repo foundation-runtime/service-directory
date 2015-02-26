@@ -16,10 +16,10 @@
 package com.cisco.oss.foundation.directory.exception;
 
 /**
- * The sub RuntimeException to wrap ServiceDirectory fails and errors.
+ * The sub RuntimeException to wrap ServiceDirectory failure and errors.
  *
- * The ServiceException has the ExceptionCode to category the certain error
- * type.
+ * The ServiceException has the ExceptionCode to categorize certain error
+ * types.
  *
  * @author zuxiang
  *

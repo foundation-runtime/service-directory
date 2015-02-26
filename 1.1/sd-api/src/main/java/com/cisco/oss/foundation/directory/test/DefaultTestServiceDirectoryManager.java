@@ -50,7 +50,7 @@ import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 
 /**
- * The default Directory API RegistrationManager, LookupManager implementation for Test.
+ * The default Directory API RegistrationManager, LookupManager implementation for application testing purpose.
  *
  * It implements the RegistrationManager and LookupManager interfaces to operate the ServiceInstance
  * at client side and does not invoke a remote ServiceDirectory server node, all ServiceInstances
