@@ -49,7 +49,7 @@ public interface NotificationHandler {
     public void serviceInstanceUnavailable(ServiceInstance service);
 
     /**
-     * A service instance status is changed
+     * A service instance metadata is changed
      *
      *
      * @param service
