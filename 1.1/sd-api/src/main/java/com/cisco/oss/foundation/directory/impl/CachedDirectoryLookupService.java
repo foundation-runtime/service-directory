@@ -531,7 +531,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 							if (curnew.getInstanceId().equals(curold.getInstanceId())) {
 								
 								if(curnew.getStatus().equals(OperationalStatus.UP) && curold.getStatus().equals(OperationalStatus.DOWN)) { 
-									cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.transferFromModelServiceInstance(curold));
+									cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.transferFromModelServiceInstance(curnew));
 								} 
 								if (curnew.getStatus().equals(OperationalStatus.DOWN) && curold.getStatus().equals(OperationalStatus.UP)) {
 								    cachedLookupService.onServiceInstanceAvailable(ServiceInstanceUtils.transferFromModelServiceInstance(curnew));
