@@ -494,17 +494,17 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
             if(newInstances == null || newInstances.size() == 0){
                 if(oldInstances != null){
                     for(ModelServiceInstance model : oldInstances){
-						if (model.getStatus().equals(OperationalStatus.UP)) {
-							cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
-						}
+                        if (model.getStatus().equals(OperationalStatus.UP)) {
+                            cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
+                        }
                     }
                 }
             } else {
                 if(oldInstances == null || oldInstances.size() == 0){
                     for(ModelServiceInstance model : newInstances){
-						if (model.getStatus().equals(OperationalStatus.UP)) {
-							cachedLookupService.onServiceInstanceAvailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
-						}
+                        if (model.getStatus().equals(OperationalStatus.UP)) {
+                            cachedLookupService.onServiceInstanceAvailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
+                        }
                     }
                 } else {
 
@@ -512,52 +512,52 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                     // Can not operate directly on newInstances or oldIntances since it will remove the item from cache
                     List<ModelServiceInstance> newTmp = new ArrayList<ModelServiceInstance>();
                     List<ModelServiceInstance> oldTmp = new ArrayList<ModelServiceInstance>();
-					
+                    
                     for (ModelServiceInstance model : oldInstances) {
-						oldTmp.add(model);
+                        oldTmp.add(model);
                     }
-					for (ModelServiceInstance model : newInstances) {
-						newTmp.add(model);
-					}
-					
-					Iterator<ModelServiceInstance> itnew = newTmp.iterator();
-					Iterator<ModelServiceInstance> itold = oldTmp.iterator();
-					
-					while (itnew.hasNext()) {
-						while (itold.hasNext()) {
-							ModelServiceInstance curnew = itnew.next();
-							ModelServiceInstance curold = itold.next();
-					
-							if (curnew.getInstanceId().equals(curold.getInstanceId())) {
-								
-								if(curnew.getStatus().equals(OperationalStatus.UP) && curold.getStatus().equals(OperationalStatus.DOWN)) { 
-									cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.transferFromModelServiceInstance(curnew));
-								} 
-								if (curnew.getStatus().equals(OperationalStatus.DOWN) && curold.getStatus().equals(OperationalStatus.UP)) {
-								    cachedLookupService.onServiceInstanceAvailable(ServiceInstanceUtils.transferFromModelServiceInstance(curnew));
-								}
-								// Check if the service instance metadata has been changed
-								if (curnew.getMetadata() != null && curold.getMetadata() != null && !curnew.getMetadata().equals(curold.getMetadata())) {
-							        cachedLookupService.onServiceInstanceChanged(ServiceInstanceUtils.transferFromModelServiceInstance(curnew));
-								}
-								
-								itnew.remove();
-								itold.remove();
-							}
-						}
-					}
-					
-					for (ModelServiceInstance model : oldTmp) {
-						if (model.getStatus().equals(OperationalStatus.UP)) {
-							cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
-						}
-					}
-					
-					for (ModelServiceInstance model : newTmp) {
-						if (model.getStatus().equals(OperationalStatus.UP)) {
-							cachedLookupService.onServiceInstanceAvailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
-						}
-					}
+                    for (ModelServiceInstance model : newInstances) {
+                        newTmp.add(model);
+                    }
+                    
+                    Iterator<ModelServiceInstance> itnew = newTmp.iterator();
+                    Iterator<ModelServiceInstance> itold = oldTmp.iterator();
+                    
+                    while (itnew.hasNext()) {
+                        while (itold.hasNext()) {
+                            ModelServiceInstance curnew = itnew.next();
+                            ModelServiceInstance curold = itold.next();
+                    
+                            if (curnew.getInstanceId().equals(curold.getInstanceId())) {
+                                
+                                if(curnew.getStatus().equals(OperationalStatus.UP) && curold.getStatus().equals(OperationalStatus.DOWN)) { 
+                                    cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.transferFromModelServiceInstance(curnew));
+                                } 
+                                if (curnew.getStatus().equals(OperationalStatus.DOWN) && curold.getStatus().equals(OperationalStatus.UP)) {
+                                    cachedLookupService.onServiceInstanceAvailable(ServiceInstanceUtils.transferFromModelServiceInstance(curnew));
+                                }
+                                // Check if the service instance metadata has been changed
+                                if (curnew.getMetadata() != null && curold.getMetadata() != null && !curnew.getMetadata().equals(curold.getMetadata())) {
+                                    cachedLookupService.onServiceInstanceChanged(ServiceInstanceUtils.transferFromModelServiceInstance(curnew));
+                                }
+                                
+                                itnew.remove();
+                                itold.remove();
+                            }
+                        }
+                    }
+                    
+                    for (ModelServiceInstance model : oldTmp) {
+                        if (model.getStatus().equals(OperationalStatus.UP)) {
+                            cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
+                        }
+                    }
+                    
+                    for (ModelServiceInstance model : newTmp) {
+                        if (model.getStatus().equals(OperationalStatus.UP)) {
+                            cachedLookupService.onServiceInstanceAvailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
+                        }
+                    }
                 }
             }
         }
