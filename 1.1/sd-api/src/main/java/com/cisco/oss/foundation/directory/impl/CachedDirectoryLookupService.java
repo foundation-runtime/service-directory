@@ -495,6 +495,8 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                 if(oldInstances != null){
                     for(ModelServiceInstance model : oldInstances){
                         if (model.getStatus().equals(OperationalStatus.UP)) {
+                            //Change the status to DOWN before the notification when unregistering a running instance
+                            model.setStatus(OperationalStatus.DOWN);
                             cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
                         }
                     }
@@ -549,6 +551,8 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                     
                     for (ModelServiceInstance model : oldTmp) {
                         if (model.getStatus().equals(OperationalStatus.UP)) {
+                            //Change the status to DOWN before the notification when unregistering a running instance
+                            model.setStatus(OperationalStatus.DOWN);
                             cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
                         }
                     }
