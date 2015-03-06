@@ -14,6 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  -->
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <groupId>com.cisco.oss.foundation</groupId>
@@ -24,7 +25,7 @@
   <groupId>com.cisco.oss.foundation.directory</groupId>
   <artifactId>sd-core</artifactId>
   <name>Service Directory Core Classes</name>
-  <version>2.0.0-0-SNAPSHOT</version>
+  <version>1.2.0-1-SNAPSHOT</version>
   <description>Project for the common library shared by Cisco directory service and Cisco OSS service directory API.</description>
   <url>https://github.com/foundation-runtime/service-directory/sd-core</url>
   <packaging>jar</packaging>
@@ -82,8 +83,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>1.7</source>
-          <target>1.7</target>
+          <source>1.6</source>
+          <target>1.6</target>
           <showDeprecation>true</showDeprecation>
           <showWarnings>true</showWarnings>
           <executable>${env.JAVA_HOME}/bin/javac</executable>
@@ -143,7 +144,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>14.0.1</version>
+      <version>18.0</version>
     </dependency>
     <dependency>
       <groupId>org.codehaus.jackson</groupId>
