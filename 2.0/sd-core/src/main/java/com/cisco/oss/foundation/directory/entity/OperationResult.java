@@ -24,7 +24,6 @@ import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
  * If result is false, see the ServiceDirectoryError to error field.
  * Now it used in the batch update operation, like send heartbeat for bunches of ServiceInstance.
  *
- * @author zuxiang
  *
  */
 public class OperationResult<T> {

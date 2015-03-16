@@ -20,7 +20,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * The ServiceDirectory Thread util to name and create Thread.
  *
- * @author zuxiang
  *
  */
 public class ServiceDirectoryThread {

@@ -34,7 +34,6 @@ import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
  *
  * It registers ServiceInstance to Directory Server.
  *
- * @author zuxiang
  *
  */
 public class DirectoryRegistrationService {

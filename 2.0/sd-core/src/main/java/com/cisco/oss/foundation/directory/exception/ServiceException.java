@@ -20,7 +20,6 @@ package com.cisco.oss.foundation.directory.exception;
  *
  * The ServiceException has the ExceptionCode to category the certain error type.
  *
- * @author zuxiang
  *
  */
 public class ServiceException extends RuntimeException {

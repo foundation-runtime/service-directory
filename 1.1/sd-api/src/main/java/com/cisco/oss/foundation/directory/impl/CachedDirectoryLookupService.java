@@ -52,7 +52,6 @@ import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
  * It caches ServiceInstance for quick lookup and provides the cache sync function to
  * sync the latest changes of the cached ServiceInstances.
  *
- * @author zuxiang
  *
  */
 public class CachedDirectoryLookupService extends DirectoryLookupService implements Closable {
@@ -386,7 +385,6 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     /**
      * The Runnable for Cache Sync.
      *
-     * @author zuxiang
      *
      */
     private static class CacheSyncTask implements Runnable{

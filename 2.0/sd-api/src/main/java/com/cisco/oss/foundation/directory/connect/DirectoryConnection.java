@@ -74,7 +74,6 @@ import com.cisco.oss.foundation.directory.utils.ObfuscatUtil;
  *
  * It maintains the SD API connection to Directory Server.
  *
- * @author zuxiang
  *
  */
 public class DirectoryConnection {
@@ -1005,7 +1004,6 @@ public class DirectoryConnection {
     /**
      * The Packet of the Request.
      *
-     * @author zuxiang
      *
      */
     public static class Packet {
@@ -1139,7 +1137,6 @@ public class DirectoryConnection {
     /**
      * The Session of the DirectoryServer.
      *
-     * @author zuxiang
      *
      */
     class Session {
@@ -1168,7 +1165,6 @@ public class DirectoryConnection {
     /**
      * The EventThread to handle the event.
      *
-     * @author zuxiang
      *
      */
     class EventThread extends Thread {
@@ -1405,7 +1401,6 @@ public class DirectoryConnection {
     /**
      * The AuthData.
      *
-     * @author zuxiang
      *
      */
     static class AuthData {
@@ -1457,7 +1452,6 @@ public class DirectoryConnection {
     /**
      * The deamon connection thread task.
      *
-     * @author zuxiang
      *
      */
     class ConnectTask implements Runnable {

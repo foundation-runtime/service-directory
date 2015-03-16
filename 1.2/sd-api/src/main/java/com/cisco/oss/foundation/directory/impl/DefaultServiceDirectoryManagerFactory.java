@@ -32,7 +32,6 @@ import com.cisco.oss.foundation.directory.lifecycle.Closable;
  * When there is no other ServiceDirectoryManagerFactory provider assigned, SD API will instantialize
  * this class to provide ServiceDirectory services.
  *
- * @author zuxiang
  *
  */
 public class DefaultServiceDirectoryManagerFactory implements

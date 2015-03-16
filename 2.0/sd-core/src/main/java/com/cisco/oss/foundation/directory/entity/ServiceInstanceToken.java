@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.entity;
 /**
  * The ServiceInstanceToken identity of the ServiceInstance.
  *
- * @author zuxiang
  *
  */
 public class ServiceInstanceToken {

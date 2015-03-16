@@ -52,7 +52,6 @@ import com.cisco.oss.foundation.directory.lifecycle.Closable;
  * The HeartbeatDirectoryRegistrationService will cache the registered ProvidedServiceInstance at the startup,
  * and send heartbeats, and perform ServiceInstanceHealth callback for the monitorEnabled ProvidedServiceInstance.
  *
- * @author zuxiang
  *
  */
 public class HeartbeatDirectoryRegistrationService extends
@@ -452,7 +451,6 @@ public class HeartbeatDirectoryRegistrationService extends
     /**
      * The ServiceInstanceHealth checking task.
      *
-     * @author zuxiang
      *
      */
     private class HealthCheckTask implements Runnable {
@@ -486,7 +484,6 @@ public class HeartbeatDirectoryRegistrationService extends
     /**
      * The heartbeat task.
      *
-     * @author zuxiang
      *
      */
     private class HeartbeatTask implements Runnable {
@@ -559,7 +556,6 @@ public class HeartbeatDirectoryRegistrationService extends
      * The cached ProviderServiceInstance for the ServiceInstanceHealth and
      * heartbeat.
      *
-     * @author zuxiang
      *
      */
     private static class CachedProviderServiceInstance {

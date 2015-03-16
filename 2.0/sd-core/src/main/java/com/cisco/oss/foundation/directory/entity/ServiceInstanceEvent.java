@@ -20,7 +20,6 @@ import com.cisco.oss.foundation.directory.proto.ServiceInstanceOperate.OperateTy
 /**
  * The ServiceInstance modification event.
  *
- * @author zuxiang
  *
  */
 public class ServiceInstanceEvent {

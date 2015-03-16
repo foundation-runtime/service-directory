@@ -20,7 +20,6 @@ import java.io.Serializable;
 /**
  * The Protocol Response Object.
  *
- * @author zuxiang
  *
  */
 public class Response implements Serializable{

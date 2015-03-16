@@ -29,7 +29,6 @@ import org.codehaus.jackson.type.TypeReference;
  *
  * It wrap the Jackson ObjectMapper to handle the JSON parsing.
  *
- * @author zuxiang
  *
  */
 public class JsonSerializer {

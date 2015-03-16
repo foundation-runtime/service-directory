@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.event;
 /**
  * The enum for the DirectoryConnection connect status.
  *
- * @author zuxiang
  *
  */
 public enum ConnectionStatus {

@@ -20,7 +20,6 @@ import com.cisco.oss.foundation.directory.entity.AuthScheme;
 /**
  * Delete ACL Protocol.
  *
- * @author zuxiang
  *
  */
 public class DeleteACLProtocol extends Protocol {

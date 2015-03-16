@@ -20,7 +20,6 @@ import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 /**
  * Get ServiceIntance Response.
  *
- * @author zuxiang
  *
  */
 public class GetServiceInstanceResponse extends Response {

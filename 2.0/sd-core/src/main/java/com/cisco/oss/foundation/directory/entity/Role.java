@@ -22,7 +22,6 @@ import java.util.List;
 /**
  * The common Role used in ServiceDirectory.
  *
- * @author zuxiang
  *
  */
 public enum Role {

@@ -31,7 +31,6 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
  * The address is the real IP address of the running instance, the port is the port which the
  * instance binds to.
  *
- * @author zuxiang
  *
  */
 @JsonIgnoreProperties(ignoreUnknown=true)

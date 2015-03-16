@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.entity;
 /**
  * The Permission enum supported in ServiceDirectory.
  *
- * @author zuxiang
  *
  */
 public enum Permission {

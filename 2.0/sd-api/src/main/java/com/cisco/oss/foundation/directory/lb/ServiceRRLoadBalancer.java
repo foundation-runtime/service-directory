@@ -23,7 +23,6 @@ import com.cisco.oss.foundation.directory.impl.DirectoryLookupService;
 /**
  * The Service RondRonbin Loadbalancer when lookupInstance.
  *
- * @author zuxiang
  *
  */
 public class ServiceRRLoadBalancer extends RoundRobinLoadBalancer {

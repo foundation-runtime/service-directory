@@ -22,7 +22,6 @@ import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 /**
  * Get the ModelMetadataKey change by version Response.
  *
- * @author zuxiang
  *
  */
 public class GetMetadataChangingByVersionResponse extends Response {

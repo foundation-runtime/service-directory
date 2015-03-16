@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.proto;
 /**
  * The SD API client connect Response.
  *
- * @author zuxiang
  *
  */
 public class ConnectResponse extends Response {

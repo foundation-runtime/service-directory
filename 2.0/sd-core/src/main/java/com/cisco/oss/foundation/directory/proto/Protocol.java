@@ -20,7 +20,6 @@ import java.io.Serializable;
 /**
  * The Protocol Object
  *
- * @author zuxiang
  *
  */
 public class Protocol implements Serializable {

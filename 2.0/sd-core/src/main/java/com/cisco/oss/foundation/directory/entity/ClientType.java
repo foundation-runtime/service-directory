@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.entity;
 /**
  * The SD API client type.
  *
- * @author zuxiang
  *
  */
 public enum ClientType {

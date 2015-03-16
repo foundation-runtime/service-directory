@@ -44,7 +44,6 @@ import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
  * The default LookupManager implementation to access the remote ServiceDirectory
  * node.
  *
- * @author zuxiang
  *
  */
 public class LookupManagerImpl implements LookupManager, Closable {

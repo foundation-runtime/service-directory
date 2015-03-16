@@ -25,7 +25,6 @@ import java.util.Map.Entry;
  *
  * It is the Model ServiceInstance object that has all attributes.
  *
- * @author zuxiang
  *
  */
 public class ModelServiceInstance implements Serializable{

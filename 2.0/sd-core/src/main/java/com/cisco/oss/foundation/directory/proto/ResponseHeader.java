@@ -22,7 +22,6 @@ import com.cisco.oss.foundation.directory.exception.ErrorCode;
 /**
  * The Response Header Object.
  *
- * @author zuxiang
  *
  */
 public class ResponseHeader implements Serializable{

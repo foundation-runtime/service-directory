@@ -20,7 +20,6 @@ import com.cisco.oss.foundation.directory.entity.ClientType;
 /**
  * SD API connect Protocol.
  *
- * @author zuxiang
  *
  */
 public class ConnectProtocol extends Protocol {

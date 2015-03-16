@@ -24,7 +24,6 @@ import com.cisco.oss.foundation.directory.ServiceDirectory;
 
 /**
  * TestCases to cover load configures from the config.properties file.
- * @author zuxiang
  *
  */
 public class ServiceDirectoryConfigTest {

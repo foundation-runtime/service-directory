@@ -24,7 +24,6 @@ package com.cisco.oss.foundation.directory.entity;
  *
  * And the ACL support different AuthScheme, now we only support user name/password auth.
  *
- * @author zuxiang
  *
  */
 public class ACL {

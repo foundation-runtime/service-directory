@@ -21,7 +21,6 @@ import java.util.List;
 /**
  * The WatchedService for the ServiceInstanceEvent.
  *
- * @author zuxiang
  *
  */
 public class WatchedService{

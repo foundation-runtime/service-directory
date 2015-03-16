@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.proto;
 /**
  * Update ServiceInstance URI Protocol.
  *
- * @author zuxiang
  *
  */
 public class UpdateServiceInstanceUriProtocol extends Protocol{

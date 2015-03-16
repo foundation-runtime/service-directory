@@ -22,7 +22,6 @@ import com.cisco.oss.foundation.directory.entity.ModelService;
 /**
  * Get the ModelService change by time Response.
  *
- * @author zuxiang
  *
  */
 public class GetServiceChangingByTimeResponse extends Response {

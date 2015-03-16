@@ -29,7 +29,6 @@ import com.cisco.oss.foundation.directory.proto.Response;
  * For the asynchronized method in DirectoryServiceClient, it returns this Future object.
  * Then the upper application can use the Future.
  *
- * @author zuxiang
  *
  */
 public class ServiceDirectoryFuture implements Future<Response> {

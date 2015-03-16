@@ -20,7 +20,6 @@ import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 /**
  * The ServiceInstanceOperate.
  *
- * @author zuxiang
  *
  */
 public class ServiceInstanceOperate {
@@ -162,7 +161,6 @@ public class ServiceInstanceOperate {
     /**
      * The ServiceInstance OperateType.
      *
-     * @author zuxiang
      *
      */
     public static enum OperateType{

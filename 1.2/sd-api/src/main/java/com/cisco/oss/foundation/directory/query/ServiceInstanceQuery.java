@@ -31,7 +31,6 @@ import java.util.Map;
  * It provides a method for the application to add a QueryCriterion. The resulted QueryCriteia follows the logical "and" operation.
  * QueryCriterion only operates on the metadata of the ServiceInstance.
  *
- * @author zuxiang
  *
  */
 public class ServiceInstanceQuery {
@@ -206,7 +205,6 @@ public class ServiceInstanceQuery {
      *
      * Check whether the ServiceInstance has the same metadata value doesn't equal to the criterion.
      *
-     * @author zuxiang
      *
      */
     public static class NotEqualQueryCriterion implements QueryCriterion{
@@ -273,7 +271,6 @@ public class ServiceInstanceQuery {
      *
      * Check whether the ServiceInstance has the same metadata value as the criterion.
      *
-     * @author zuxiang
      *
      */
     public static class EqualQueryCriterion implements QueryCriterion{
@@ -334,7 +331,6 @@ public class ServiceInstanceQuery {
      *
      * Check whether the ServiceInstance has the metadata matching the pattern.
      *
-     * @author zuxiang
      *
      */
     public static class PatternQueryCriterion implements QueryCriterion{
@@ -395,7 +391,6 @@ public class ServiceInstanceQuery {
      *
      * Check whether the ServiceInstance contains the specified metadata.
      *
-     * @author zuxiang
      *
      */
     public static class ContainQueryCriterion implements QueryCriterion{
@@ -438,7 +433,6 @@ public class ServiceInstanceQuery {
      *
      * Check whether the ServiceInstance doesn't contains the specified metadata.
      *
-     * @author zuxiang
      *
      */
     public static class NotContainQueryCriterion implements QueryCriterion{
@@ -481,7 +475,6 @@ public class ServiceInstanceQuery {
      *
      * It check the value of the metatdata in a target String list.
      *
-     * @author zuxiang
      *
      */
     public static class InQueryCriterion implements QueryCriterion{
@@ -544,7 +537,6 @@ public class ServiceInstanceQuery {
      *
      * It check the value of the metatdata not in a target String list.
      *
-     * @author zuxiang
      *
      */
     public static class NotInQueryCriterion implements QueryCriterion{

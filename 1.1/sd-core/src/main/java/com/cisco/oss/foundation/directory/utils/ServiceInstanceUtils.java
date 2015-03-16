@@ -30,7 +30,6 @@ import com.cisco.oss.foundation.directory.exception.ErrorCode;
 /**
  * ServiceInstance util methods.
  *
- * @author zuxiang
  *
  */
 public class ServiceInstanceUtils {

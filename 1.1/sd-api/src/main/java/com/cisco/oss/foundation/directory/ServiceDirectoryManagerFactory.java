@@ -25,7 +25,6 @@ import com.cisco.oss.foundation.directory.exception.ServiceException;
  * DefaultServiceDirectoryManagerFactory for the production use.
  * TestServiceDirectoryManagerFactory for the integration test purpose.
  *
- * @author zuxiang
  *
  */
 public interface ServiceDirectoryManagerFactory{

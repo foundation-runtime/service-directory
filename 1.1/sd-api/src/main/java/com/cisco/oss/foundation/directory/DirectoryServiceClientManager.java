@@ -25,7 +25,6 @@ import com.cisco.oss.foundation.directory.impl.DirectoryServiceClient;
 /**
  * The Service Directory client manager.
  *
- * @author zuxiang
  *
  */
 public interface DirectoryServiceClientManager {

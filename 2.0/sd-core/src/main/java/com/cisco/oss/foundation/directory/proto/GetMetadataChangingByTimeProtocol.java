@@ -22,7 +22,6 @@ import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 /**
  * Get MetadataKey Changing by Time Protocol.
  *
- * @author zuxiang
  *
  */
 public class GetMetadataChangingByTimeProtocol extends Protocol {

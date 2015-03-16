@@ -34,7 +34,6 @@ import com.cisco.oss.foundation.directory.utils.JsonSerializer;
  *
  * It wraps the complicity of HttpClient and exposes a easy method to invoke RESTful services.
  *
- * @author zuxiang
  *
  */
 public class DirectoryInvoker {

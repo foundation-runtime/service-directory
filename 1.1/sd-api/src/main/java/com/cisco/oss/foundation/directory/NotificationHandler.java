@@ -24,7 +24,6 @@ import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 /**
  * The callback interface when the service instance status is changed.
  *
- * @author zuxiang
  *
  */
 public interface NotificationHandler {

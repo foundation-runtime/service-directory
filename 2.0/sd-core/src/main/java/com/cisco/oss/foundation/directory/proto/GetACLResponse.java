@@ -20,7 +20,6 @@ import com.cisco.oss.foundation.directory.entity.ACL;
 /**
  * Get ACL Response.
  *
- * @author zuxiang
  *
  */
 public class GetACLResponse extends Response {

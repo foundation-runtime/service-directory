@@ -19,7 +19,6 @@ import com.cisco.oss.foundation.directory.entity.ACL;
 
 /**
  * Set ACL protocol.
- * @author zuxiang
  *
  */
 public class SetACLProtocol extends Protocol {

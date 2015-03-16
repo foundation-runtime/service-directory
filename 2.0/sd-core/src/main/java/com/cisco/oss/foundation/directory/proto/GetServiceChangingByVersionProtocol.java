@@ -20,7 +20,6 @@ import java.util.Map;
 /**
  * Get Service Change by version Protocol.
  *
- * @author zuxiang
  *
  */
 public class GetServiceChangingByVersionProtocol extends Protocol {

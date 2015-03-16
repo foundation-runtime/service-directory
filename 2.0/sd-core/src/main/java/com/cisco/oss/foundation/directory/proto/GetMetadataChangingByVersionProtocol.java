@@ -20,7 +20,6 @@ import java.util.Map;
 /**
  * Get ModelMetadataKey change by version Protocol.
  *
- * @author zuxiang
  *
  */
 public class GetMetadataChangingByVersionProtocol extends Protocol {

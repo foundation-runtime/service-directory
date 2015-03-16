@@ -36,7 +36,6 @@ import com.cisco.oss.foundation.directory.query.StringCommand;
  *
  * It looks up ServiceInstance from DirectoryServer.
  *
- * @author zuxiang
  *
  */
 public class DirectoryLookupService {

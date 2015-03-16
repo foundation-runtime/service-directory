@@ -24,7 +24,6 @@ import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 /**
  * Register ServiceInstance Protocol.
  *
- * @author zuxiang
  *
  */
 public class RegisterServiceInstanceProtocol extends Protocol{

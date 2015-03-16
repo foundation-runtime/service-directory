@@ -48,7 +48,6 @@ import com.cisco.oss.foundation.directory.utils.PermissionUtil;
  *
  * It registers ServiceInstance to DirectoryServer.
  *
- * @author zuxiang
  *
  */
 public class DirectoryRegistrationService {
@@ -367,7 +366,6 @@ public class DirectoryRegistrationService {
     /**
      * The ServiceInstanceHealth checking task.
      *
-     * @author zuxiang
      *
      */
     private class HealthCheckTask implements Runnable {
@@ -422,7 +420,6 @@ public class DirectoryRegistrationService {
     /**
      * The SessionListener for Session Created and REOPEN.
      *
-     * @author zuxiang
      *
      */
     private class SessionListener implements ServiceDirectoryListener{
@@ -446,7 +443,6 @@ public class DirectoryRegistrationService {
     /**
      * The ServiceInstance to ServiceInstanceHealth paire.
      *
-     * @author zuxiang
      *
      */
     private static class InstanceHealthPair{

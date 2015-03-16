@@ -35,7 +35,6 @@ import com.cisco.oss.foundation.directory.utils.WebSocketSerializer.ResponseDese
 /**
  * The WebSocket implementation of the DirectorySocket.
  *
- * @author zuxiang
  *
  */
 public class WSDirectorySocket extends DirectorySocket implements WebSocketListener {
@@ -329,7 +328,6 @@ public class WSDirectorySocket extends DirectorySocket implements WebSocketListe
     /**
      * The Socket deamon task.
      *
-     * @author zuxiang
      *
      */
     class SocketDeamonTask implements Runnable{

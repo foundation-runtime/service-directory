@@ -20,7 +20,6 @@ import com.cisco.oss.foundation.directory.entity.AuthScheme;
 /**
  * IP Authentication Protocol.
  *
- * @author zuxiang
  *
  */
 public class IPAuthProtocol extends AuthProtocol {

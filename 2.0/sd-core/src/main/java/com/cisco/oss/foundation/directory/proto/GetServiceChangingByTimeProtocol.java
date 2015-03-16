@@ -22,7 +22,6 @@ import com.cisco.oss.foundation.directory.entity.ModelService;
 /**
  * Get the Service Change by time Protocol.
  *
- * @author zuxiang
  *
  */
 public class GetServiceChangingByTimeProtocol extends Protocol {

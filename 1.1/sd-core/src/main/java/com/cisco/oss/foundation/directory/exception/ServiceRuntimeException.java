@@ -23,7 +23,6 @@ package com.cisco.oss.foundation.directory.exception;
  * ServiceDirectory should extends this exception, it will be thrown to the 
  * higher layer Application.
  *
- * @author zuxiang
  *
  */
 public class ServiceRuntimeException extends RuntimeException {

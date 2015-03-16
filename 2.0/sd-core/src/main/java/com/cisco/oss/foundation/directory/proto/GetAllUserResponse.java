@@ -22,7 +22,6 @@ import com.cisco.oss.foundation.directory.entity.User;
 /**
  * Get All user Response.
  *
- * @author zuxiang
  *
  */
 public class GetAllUserResponse extends Response {

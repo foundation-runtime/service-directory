@@ -46,7 +46,6 @@ import com.cisco.oss.foundation.directory.utils.JsonSerializer;
 /**
  * Test Suite to test the Exception Handling in the Directory API.
  *
- * @author zuxiang
  *
  */
 public class ExceptionHandleTestCase  {

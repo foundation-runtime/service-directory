@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.event;
 /**
  * The ServiceDirectoryEvent in the SD API.
  *
- * @author zuxiang
  *
  */
 public class ServiceDirectoryEvent {
@@ -32,7 +31,6 @@ public class ServiceDirectoryEvent {
     /**
      * The SD API client ConnectionStatus event.
      *
-     * @author zuxiang
      *
      */
     public static class ClientStatusEvent extends ServiceDirectoryEvent{
@@ -105,7 +103,6 @@ public class ServiceDirectoryEvent {
     /**
      * The SD API client session event.
      *
-     * @author zuxiang
      *
      */
     public static class ClientSessionEvent extends ServiceDirectoryEvent{
@@ -156,7 +153,6 @@ public class ServiceDirectoryEvent {
         /**
          * The session event.
          *
-         * @author zuxiang
          *
          */
         public enum SessionEvent{

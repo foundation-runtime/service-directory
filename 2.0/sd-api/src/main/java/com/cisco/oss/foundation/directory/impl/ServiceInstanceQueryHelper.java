@@ -27,7 +27,6 @@ import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
 /**
  * The helper class to do the ServiceInstances filter against the QueryCriterion.
  *
- * @author zuxiang
  *
  */
 public class ServiceInstanceQueryHelper {

@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.proto;
 /**
  * Get Metadata Protocol.
  *
- * @author zuxiang
  *
  */
 public class GetMetadataProtocol extends Protocol {

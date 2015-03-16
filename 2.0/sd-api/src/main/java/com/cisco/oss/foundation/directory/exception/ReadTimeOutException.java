@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.exception;
 /**
  * The Read timeout exception in DirectorySocket.
  *
- * @author zuxiang
  *
  */
 public class ReadTimeOutException extends Exception {

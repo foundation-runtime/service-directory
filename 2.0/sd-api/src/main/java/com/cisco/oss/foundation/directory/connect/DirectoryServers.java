@@ -25,7 +25,6 @@ import java.util.List;
  * It used to save all Directory Server address in the remote cluster.
  * It supply getNextDirectoryServer() method to get next Directory Server.
  *
- * @author zuxiang
  *
  */
 public class DirectoryServers {

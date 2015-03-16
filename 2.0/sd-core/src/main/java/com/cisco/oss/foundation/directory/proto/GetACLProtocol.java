@@ -20,7 +20,6 @@ import com.cisco.oss.foundation.directory.entity.AuthScheme;
 /**
  * Get ACL Protocol.
  *
- * @author zuxiang
  *
  */
 public class GetACLProtocol extends Protocol {

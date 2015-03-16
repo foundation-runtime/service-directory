@@ -32,7 +32,6 @@ import com.cisco.oss.foundation.directory.proto.Response;
  * When submit a request in DirecotryServiceClient, we can register a Callback.
  * SD API will invoke the Callback for request finished.
  *
- * @author zuxiang
  *
  */
 public interface Callback {
@@ -40,7 +39,6 @@ public interface Callback {
     /**
      * The Register ServiceInstance request Callback.
      *
-     * @author zuxiang
      *
      */
     public interface RegistrationCallback extends Callback{
@@ -61,7 +59,6 @@ public interface Callback {
     /**
      * The Attach ServiceInstance to Session request Callback.
      *
-     * @author zuxiang
      *
      */
     public interface AttachSessionCallback extends Callback{
@@ -84,7 +81,6 @@ public interface Callback {
     /**
      * The Get Service request Callback.
      *
-     * @author zuxiang
      *
      */
     public interface GetServiceCallback extends Callback{
@@ -128,7 +124,6 @@ public interface Callback {
     /**
      * The general Protocol Callback.
      *
-     * @author zuxiang
      *
      */
     public interface ProtocolCallback extends Callback {
@@ -151,7 +146,6 @@ public interface Callback {
     /**
      * The query Service request Callback.
      *
-     * @author zuxiang
      *
      */
     public interface QueryServiceCallback extends Callback {

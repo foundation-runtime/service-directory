@@ -23,7 +23,6 @@ import com.cisco.oss.foundation.directory.entity.Permission;
 /**
  * The permission tranfer utils.
  *
- * @author zuxiang
  *
  */
 public class PermissionUtil {

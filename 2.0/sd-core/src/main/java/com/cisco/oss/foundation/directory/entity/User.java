@@ -20,7 +20,6 @@ import java.util.List;
 /**
  * The User Object.
  *
- * @author zuxiang
  *
  */
 public class User {

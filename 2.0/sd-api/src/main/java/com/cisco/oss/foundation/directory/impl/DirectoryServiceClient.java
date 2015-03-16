@@ -961,7 +961,6 @@ public class DirectoryServiceClient {
     /**
      * The WatcherRegistration for the Service.
      *
-     * @author zuxiang
      *
      */
     public static class WatcherRegistration {

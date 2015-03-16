@@ -28,7 +28,6 @@ import org.apache.commons.codec.binary.Base64;
 /**
  * ObfuscateUtil use to encrypt the password.
  *
- * @author zuxiang
  *
  */
 public class ObfuscatUtil {

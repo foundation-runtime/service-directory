@@ -21,7 +21,6 @@ import com.cisco.oss.foundation.directory.entity.ModelService;
 
 /**
  * Get the Service change by version Response.
- * @author zuxiang
  *
  */
 public class GetServiceChangingByVersionResponse extends Response {

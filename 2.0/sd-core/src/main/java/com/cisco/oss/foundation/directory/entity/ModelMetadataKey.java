@@ -25,7 +25,6 @@ import java.util.List;
  * It maps the metadata key to the ServiceInstance. Use it to get ServiceInstance
  * by metadata.
  *
- * @author zuxiang
  *
  */
 public class ModelMetadataKey implements Serializable{

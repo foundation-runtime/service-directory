@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.proto;
 /**
  * The ProtocolType enum.
  *
- * @author zuxiang
  *
  */
 public enum ProtocolType {

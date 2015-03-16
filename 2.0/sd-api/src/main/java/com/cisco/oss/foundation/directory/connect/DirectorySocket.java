@@ -28,7 +28,6 @@ import com.cisco.oss.foundation.directory.proto.ProtocolHeader;
  *
  * Now it has a NIO and WebSocket implementation.
  *
- * @author zuxiang
  *
  */
 public abstract class DirectorySocket {

@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.entity;
 /**
  * The ServiceDirectory EventType.
  *
- * @author zuxiang
  *
  */
 public enum EventType {

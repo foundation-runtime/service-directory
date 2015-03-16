@@ -81,6 +81,17 @@
     <finalName>cisco.sd.api-${version}</finalName>
     <plugins>
       <plugin>
+        <groupId>com.cisco.ipcentral</groupId>
+        <artifactId>maven-ipcentral-plugin</artifactId>
+        <version>5.0.6</version>
+        <configuration>
+          <username>xuzhong</username>
+          <businessUnit>SPVSS</businessUnit>
+          <componentEditorsGrouper>sd-dev</componentEditorsGrouper>
+          <assetEditorsGrouper>sd-dev</assetEditorsGrouper>
+        </configuration>
+      </plugin> 
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>

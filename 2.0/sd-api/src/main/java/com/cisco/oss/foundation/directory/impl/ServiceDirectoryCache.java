@@ -30,7 +30,6 @@ import com.google.common.collect.Lists;
  * It is also used to cache ModelServiceInstance in LookupManagerImpl and
  * ProvidedServiceInstance in the test framework.
  *
- * @author zuxiang
  *
  */
 public class ServiceDirectoryCache<K, V> {

@@ -20,7 +20,6 @@ import com.cisco.oss.foundation.directory.entity.EventType;
 /**
  * The Event Response that DirectoryServer push to SD API client.
  *
- * @author zuxiang
  *
  */
 public class Event extends Response{

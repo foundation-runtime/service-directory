@@ -20,7 +20,6 @@ import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 /**
  * Update ServiceInstance Protocol.
  *
- * @author zuxiang
  *
  */
 public class UpdateServiceInstanceProtocol extends Protocol {

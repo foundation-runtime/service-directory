@@ -30,7 +30,6 @@ import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
  *
  * The service consumer uses this interface to look up or query ServiceInstance stored on the directory server.
  *
- * @author zuxiang
  *
  */
 public interface LookupManager {

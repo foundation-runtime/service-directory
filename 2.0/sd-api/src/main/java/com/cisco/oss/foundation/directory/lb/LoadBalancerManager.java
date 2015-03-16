@@ -24,7 +24,6 @@ import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
 /**
  * The LoadBalance Manager for lookup Service.
  *
- * @author zuxiang
  *
  */
 public class LoadBalancerManager {

@@ -23,7 +23,6 @@ import com.cisco.oss.foundation.directory.connect.DirectoryConnection.Packet;
 /**
  * Use to collect the Packet latency statistics.
  *
- * @author zuxiang
  *
  */
 public class PacketLatency {

@@ -30,7 +30,6 @@ import com.cisco.oss.foundation.directory.lifecycle.Closable;
  * Set configuration "service.directory.manager.factory.provider" to
  * "test.TestServiceDirectoryManagerFactory" before invoking the ServiceDirectory.
  *
- * @author zuxiang
  *
  */
 public class TestServiceDirectoryManagerFactory implements

@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.proto;
 /**
  * Get User Protocol.
  *
- * @author zuxiang
  *
  */
 public class GetUserProtocol extends Protocol {

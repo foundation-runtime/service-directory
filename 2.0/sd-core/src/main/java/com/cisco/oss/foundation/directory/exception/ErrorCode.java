@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.exception;
 /**
  * The Error Code enum list.
  *
- * @author zuxiang
  *
  */
 public enum ErrorCode {

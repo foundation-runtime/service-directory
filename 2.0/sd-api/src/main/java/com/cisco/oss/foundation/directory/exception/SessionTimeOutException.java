@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.exception;
 /**
  * The Session timeout exception.
  *
- * @author zuxiang
  *
  */
 public class SessionTimeOutException extends Exception {

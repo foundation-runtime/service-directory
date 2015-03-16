@@ -27,7 +27,6 @@ import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
 /**
  * The Service Query RondRonbin Loadbalancer when lookupInstance.
  *
- * @author zuxiang
  *
  */
 public class ServiceQueryRRLoadBalancer extends RoundRobinLoadBalancer {

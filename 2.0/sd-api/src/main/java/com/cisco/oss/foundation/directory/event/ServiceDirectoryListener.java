@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.event;
 /**
  * The ServiceDirectoryEvent listener.
  *
- * @author zuxiang
  *
  */
 public interface ServiceDirectoryListener {

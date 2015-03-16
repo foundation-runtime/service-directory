@@ -48,7 +48,6 @@ import com.cisco.oss.foundation.directory.proto.ResponseHeader;
 /**
  * Test Suite to test the Exception Handling in the Directory API.
  *
- * @author zuxiang
  *
  */
 public class ExceptionHandleTestCase  {

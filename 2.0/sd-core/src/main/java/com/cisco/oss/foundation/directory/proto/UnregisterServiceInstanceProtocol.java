@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.proto;
 /**
  * Unregister ServiceInstance Protocol.
  *
- * @author zuxiang
  *
  */
 public class UnregisterServiceInstanceProtocol extends Protocol {

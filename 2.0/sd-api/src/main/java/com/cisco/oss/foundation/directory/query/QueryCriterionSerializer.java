@@ -29,7 +29,6 @@ import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery.PatternQuer
 /**
  * It is a serializer tool to serialze/deserialize QueryCriterion.
  *
- * @author zuxiang
  *
  */
 public class QueryCriterionSerializer {

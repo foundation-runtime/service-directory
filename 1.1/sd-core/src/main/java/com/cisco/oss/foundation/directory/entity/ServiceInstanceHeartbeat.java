@@ -22,7 +22,6 @@ package com.cisco.oss.foundation.directory.entity;
  * ServiceInstanceHeartbeat to ServiceDirectory server to update the heartbeat
  * of the ServiceInstance.
  *
- * @author zuxiang
  *
  */
 public class ServiceInstanceHeartbeat {

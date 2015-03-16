@@ -32,7 +32,6 @@ import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
  *
  *
  *
- * @author zuxiang
  *
  */
 public abstract class RoundRobinLoadBalancer implements ServiceInstanceLoadBalancer{

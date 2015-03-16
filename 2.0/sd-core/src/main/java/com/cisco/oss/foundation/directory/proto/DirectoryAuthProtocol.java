@@ -20,7 +20,6 @@ import com.cisco.oss.foundation.directory.entity.AuthScheme;
 /**
  * Directory Authenticate Protocol.
  *
- * @author zuxiang
  *
  */
 public class DirectoryAuthProtocol extends AuthProtocol {

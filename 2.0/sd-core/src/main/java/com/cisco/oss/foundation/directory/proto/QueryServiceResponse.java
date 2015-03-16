@@ -22,7 +22,6 @@ import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 /**
  * The Query Service response.
  *
- * @author zuxiang
  *
  */
 public class QueryServiceResponse extends Response {

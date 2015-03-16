@@ -24,7 +24,6 @@ import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 /**
  * Load Balancer interface for ServiceInstance.
  *
- * @author zuxiang
  *
  */
 public interface ServiceInstanceLoadBalancer {

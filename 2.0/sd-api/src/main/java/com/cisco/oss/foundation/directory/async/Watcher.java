@@ -23,7 +23,6 @@ import com.cisco.oss.foundation.directory.proto.ServiceInstanceOperate;
  * We can register the watcher for a Service. Then SD API can invoke the
  * Watcher for the Service update.
  *
- * @author zuxiang
  *
  */
 public interface Watcher {

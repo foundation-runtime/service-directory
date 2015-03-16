@@ -20,7 +20,6 @@ import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 /**
  * Update ServiceInstance internal Status protocol.
  *
- * @author zuxiang
  *
  */
 public class UpdateServiceInstanceInternalStatusProtocol extends Protocol {

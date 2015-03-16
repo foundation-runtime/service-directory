@@ -24,7 +24,6 @@ import com.cisco.oss.foundation.directory.entity.WatchedService;
 /**
  * The WatcherEvent that directory server push to SD API.
  *
- * @author zuxiang
  *
  */
 public class WatcherEvent extends Event {

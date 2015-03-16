@@ -22,7 +22,6 @@ import java.io.IOException;
 /**
  * Convenient Directory util methods.
  *
- * @author zuxiang
  *
  */
 public class DirectoryUtils {

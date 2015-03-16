@@ -38,7 +38,6 @@ import com.cisco.oss.foundation.directory.lifecycle.Closable;
  *
  * This class initializes RegistrationManager, LookupManager, and ServiceDirectoryService with the getter methods.
  *
- * @author zuxiang
  *
  */
 public class ServiceDirectoryImpl implements DirectoryServiceClientManager{

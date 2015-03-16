@@ -25,7 +25,6 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
  *
  * It has all service attributes.
  *
- * @author zuxiang
  *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)

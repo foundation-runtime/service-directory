@@ -22,7 +22,6 @@ import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 /**
  * Get All ServiceInstance Response.
  *
- * @author zuxiang
  *
  */
 public class GetAllServicesResponse extends Response {

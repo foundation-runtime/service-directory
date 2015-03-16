@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.proto;
 /**
  * Get ServiceInstance Protocol.
  *
- * @author zuxiang
  *
  */
 public class GetServiceInstanceProtocol extends Protocol {

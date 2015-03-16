@@ -57,7 +57,6 @@ import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
  * are stored in the local memory.
  *
  *
- * @author zuxiang
  *
  */
 public class DefaultTestServiceDirectoryManager implements
@@ -938,7 +937,6 @@ public class DefaultTestServiceDirectoryManager implements
      * name belong to one ProvidedService.
      * It is only used in the test framework.
      *
-     * @author zuxiang
      *
      */
     public static class ProvidedService {

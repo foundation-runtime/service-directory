@@ -20,7 +20,6 @@ import com.cisco.oss.foundation.directory.entity.User;
 /**
  * The Update user protocol.
  *
- * @author zuxiang
  *
  */
 public class UpdateUserProtocol extends Protocol {

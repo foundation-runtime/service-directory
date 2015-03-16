@@ -41,7 +41,6 @@ import com.cisco.oss.foundation.directory.proto.ResponseHeader;
 /**
  * The java nio implementation of the DirectorySocket.
  *
- * @author zuxiang
  *
  */
 public class NIODirectorySocket extends DirectorySocket {
@@ -426,7 +425,6 @@ public class NIODirectorySocket extends DirectorySocket {
     /**
      * The deamon NIO thread.
      *
-     * @author zuxiang
      *
      */
     class NIOThread extends Thread {

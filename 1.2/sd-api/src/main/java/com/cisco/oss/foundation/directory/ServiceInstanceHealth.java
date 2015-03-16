@@ -26,7 +26,6 @@ package com.cisco.oss.foundation.directory;
  * It attaches the ServiceInstanceHealth object when registering the ServiceInstance. ServiceDirectory will invoke
  * this ServiceInstanceHealth to update the OperationalStatus on behalf of Service Provider.
  *
- * @author zuxiang
  *
  */
 public interface ServiceInstanceHealth {

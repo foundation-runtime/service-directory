@@ -26,7 +26,6 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
  * It maps the metadata key to the ServiceInstance. Use it to get
  * ServiceInstance by metadata.
  *
- * @author zuxiang
  *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)

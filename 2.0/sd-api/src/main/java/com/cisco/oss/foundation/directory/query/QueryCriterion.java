@@ -22,7 +22,6 @@ import java.util.Map;
  *
  * The QueryCriterion provides a method to check whether a ModelServiceInstance satisfies the criterion or not.
  *
- * @author zuxiang
  *
  */
 public interface QueryCriterion {

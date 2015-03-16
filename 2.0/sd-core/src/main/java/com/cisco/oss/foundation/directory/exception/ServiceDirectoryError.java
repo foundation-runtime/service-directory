@@ -23,7 +23,6 @@ import org.codehaus.jackson.annotate.JsonIgnore;
  * This error will throw to upper Application in Exception. Application can do recovering
  * according to the ExceptionCode if required.
  *
- * @author zuxiang
  *
  */
 public class ServiceDirectoryError {

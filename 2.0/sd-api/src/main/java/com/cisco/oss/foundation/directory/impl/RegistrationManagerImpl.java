@@ -36,7 +36,6 @@ import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 /**
  * The RegistrationManager implementation.
  *
- * @author zuxiang
  *
  */
 public class RegistrationManagerImpl implements RegistrationManager, Closable{

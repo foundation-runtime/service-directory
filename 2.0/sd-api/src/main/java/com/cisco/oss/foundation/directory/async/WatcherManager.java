@@ -32,7 +32,6 @@ import com.cisco.oss.foundation.directory.impl.DirectoryServiceClient.WatcherReg
  *
  * It manages the Watcher of the Service in the SD API.
  *
- * @author zuxiang
  *
  */
 public class WatcherManager {

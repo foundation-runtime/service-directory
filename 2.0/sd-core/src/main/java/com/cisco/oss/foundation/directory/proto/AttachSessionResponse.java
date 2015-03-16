@@ -23,7 +23,6 @@ import com.cisco.oss.foundation.directory.exception.ErrorCode;
 /**
  * Attach ServiceInstance to Session Response.
  *
- * @author zuxiang
  *
  */
 public class AttachSessionResponse extends Response {
@@ -56,7 +55,6 @@ public class AttachSessionResponse extends Response {
     /**
      * The ServiceInstance attach result.
      *
-     * @author zuxiang
      *
      */
     public static class ItemResult {

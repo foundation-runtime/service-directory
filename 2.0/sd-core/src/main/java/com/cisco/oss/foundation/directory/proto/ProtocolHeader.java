@@ -20,7 +20,6 @@ import java.io.Serializable;
 /**
  * The ProtocolHeader Object.
  *
- * @author zuxiang
  *
  */
 public class ProtocolHeader implements Serializable {

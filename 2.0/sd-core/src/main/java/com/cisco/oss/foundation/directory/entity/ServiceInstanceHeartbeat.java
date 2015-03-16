@@ -23,7 +23,6 @@ import java.io.Serializable;
  * It is the heartbeat info fo the ServiceInstance, sd-api send a list of the ServiceInstanceHeartbeat to Service Directory
  * server to update the heartbeat of the ServiceInstance.
  *
- * @author zuxiang
  *
  */
 public class ServiceInstanceHeartbeat implements Serializable{

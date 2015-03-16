@@ -26,7 +26,6 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
  * It is the logic Service Object in Service Directory. ModelService consists of Service Instances with 
  * same service name.
  *
- * @author zuxiang
  *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)

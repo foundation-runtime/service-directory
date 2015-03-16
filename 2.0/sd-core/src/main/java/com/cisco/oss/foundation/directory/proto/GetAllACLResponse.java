@@ -22,7 +22,6 @@ import com.cisco.oss.foundation.directory.entity.ACL;
 /**
  * Get all ACL by AuthScheme Response.
  *
- * @author zuxiang
  *
  */
 public class GetAllACLResponse extends Response {

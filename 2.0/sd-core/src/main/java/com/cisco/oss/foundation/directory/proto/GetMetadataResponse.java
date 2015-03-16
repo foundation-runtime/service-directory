@@ -20,7 +20,6 @@ import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 /**
  * Get ModelMetadataKey Response.
  *
- * @author zuxiang
  *
  */
 public class GetMetadataResponse extends Response {

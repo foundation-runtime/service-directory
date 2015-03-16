@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.exception;
 /**
  * The Connect timeout exception.
  *
- * @author zuxiang
  *
  */
 public class ConnectTimeOutException extends Exception {

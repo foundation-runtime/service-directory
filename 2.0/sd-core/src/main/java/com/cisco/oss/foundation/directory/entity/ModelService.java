@@ -25,7 +25,6 @@ import java.util.List;
  * It is the logic Service Object in Service Directory. The ServiceInstance of same service name belong to
  * one ModeService.
  *
- * @author zuxiang
  *
  */
 public class ModelService implements Serializable{

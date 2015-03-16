@@ -40,7 +40,6 @@ import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
  *
  * It looks up ServiceInstance from Directory Server.
  *
- * @author zuxiang
  *
  */
 public class DirectoryLookupService {

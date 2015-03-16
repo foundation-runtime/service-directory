@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.proto;
 /**
  * Delete User protocol.
  *
- * @author zuxiang
  *
  */
 public class DeleteUserProtocol extends Protocol {

@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.lifecycle;
 /**
  * Interface to manage the Closable component.
  *
- * @author zuxiang
  *
  */
 public interface Closable {

@@ -23,7 +23,6 @@ import com.cisco.oss.foundation.directory.impl.ServiceDirectoryImpl;
  *
  * Applications obtain the instance of LookupManager/RegistrationManager/ServiceDirectoryConfig from this class.
  *
- * @author zuxiang
  *
  */
 public class ServiceDirectory {

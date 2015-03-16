@@ -23,7 +23,6 @@ import org.slf4j.LoggerFactory;
 /**
  * The locale-specific ResourceBundle of the error message for the error code.
  *
- * @author zuxiang
  *
  */
 public class ErrorCodeConfig {

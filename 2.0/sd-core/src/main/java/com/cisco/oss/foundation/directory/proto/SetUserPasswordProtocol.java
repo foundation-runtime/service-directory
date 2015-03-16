@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.proto;
 /**
  * Set User password Protocol.
  *
- * @author zuxiang
  *
  */
 public class SetUserPasswordProtocol extends Protocol{

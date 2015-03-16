@@ -21,7 +21,6 @@ import java.util.Map;
 /**
  * Query Service Protocol.
  *
- * @author zuxiang
  *
  */
 public class QueryServiceProtocol extends Protocol {

@@ -54,7 +54,6 @@ import com.cisco.oss.foundation.directory.utils.JsonSerializer;
  *  It implements the HTTP transportation for ServiceDirectoryService,
  *  and hides the HTTPClient details from the upper application layer.
  *
- * @author zuxiang
  *
  */
 public class DirectoryServiceClient{

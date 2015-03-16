@@ -25,7 +25,6 @@ import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
  * field. It is used in the batch update operation, like sending heartbeat for
  * bunches of ServiceInstance.
  *
- * @author zuxiang
  *
  */
 public class OperationResult<T> {

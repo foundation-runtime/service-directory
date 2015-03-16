@@ -21,7 +21,6 @@ import com.cisco.oss.foundation.directory.entity.ServerStatus;
 /**
  * The Directory Server Event push to SD API.
  *
- * @author zuxiang
  *
  */
 public class ServerEvent extends Event{
@@ -41,7 +40,6 @@ public class ServerEvent extends Event{
     /**
      * The ServerStatus change event.
      *
-     * @author zuxiang
      *
      */
     public static class ServerStatusEvent extends ServerEvent{
@@ -98,7 +96,6 @@ public class ServerEvent extends Event{
     /**
      * Sever ask SD API Close Session event.
      *
-     * @author zuxiang
      *
      */
     public static class CloseSessionEvent extends ServerEvent {

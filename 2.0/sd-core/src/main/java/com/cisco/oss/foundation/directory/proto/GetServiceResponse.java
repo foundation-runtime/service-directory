@@ -20,7 +20,6 @@ import com.cisco.oss.foundation.directory.entity.ModelService;
 /**
  * Get Service Response.
  *
- * @author zuxiang
  *
  */
 public class GetServiceResponse extends Response {

@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.proto;
 /**
  * Get Service Protocol.
  *
- * @author zuxiang
  *
  */
 public class GetServiceProtocol extends Protocol {

@@ -22,7 +22,6 @@ import com.cisco.oss.foundation.directory.entity.ServiceInstanceToken;
 /**
  * Attach ServiceInstance to Session Protocol.
  *
- * @author zuxiang
  *
  */
 public class AttachSessionProtocol extends Protocol {

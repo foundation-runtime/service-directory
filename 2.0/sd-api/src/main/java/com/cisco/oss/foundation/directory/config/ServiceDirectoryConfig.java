@@ -22,7 +22,6 @@ import org.apache.commons.configuration.Configuration;
  *
  * It allows application to get the property value, set a new property value and add ConfigurationListener in runtime.
  *
- * @author zuxiang
  *
  */
 public class ServiceDirectoryConfig {

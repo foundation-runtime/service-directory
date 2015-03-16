@@ -20,7 +20,6 @@ import com.cisco.oss.foundation.directory.entity.User;
 /**
  * The Create User Protocol.
  *
- * @author zuxiang
  *
  */
 public class CreateUserProtocol extends Protocol {

@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.entity;
 /**
  * OperationalStatus of the ServiceInstance.
  *
- * @author zuxiang
  *
  */
 public enum OperationalStatus {

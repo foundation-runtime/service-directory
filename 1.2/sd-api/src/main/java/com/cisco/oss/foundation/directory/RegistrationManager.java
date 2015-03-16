@@ -28,7 +28,6 @@ import com.cisco.oss.foundation.directory.exception.ServiceException;
  *
  * This interface is intended for the service provider to register/update/unregister a ProvidedServiceInstance.
  *
- * @author zuxiang
  *
  */
 public interface RegistrationManager {

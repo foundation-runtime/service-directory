@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.entity;
 /**
  * The immutable Object of Info to distribute.
  *
- * @author zuxiang
  *
  */
 public class BaseInfo {

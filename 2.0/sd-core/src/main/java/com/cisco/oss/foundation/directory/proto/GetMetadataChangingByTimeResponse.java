@@ -21,7 +21,6 @@ import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 
 /**
  * Get the MetadataKey changing by Time Response.
- * @author zuxiang
  *
  */
 public class GetMetadataChangingByTimeResponse extends Response {

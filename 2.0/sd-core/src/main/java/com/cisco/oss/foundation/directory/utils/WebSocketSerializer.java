@@ -30,7 +30,6 @@ import com.cisco.oss.foundation.directory.proto.ResponseHeader;
 /**
  * Serialize and deserialize utils for the Websocket JSON message.
  *
- * @author zuxiang
  *
  */
 public class WebSocketSerializer {
@@ -226,7 +225,6 @@ public class WebSocketSerializer {
     /**
      * The Response Serializer.
      *
-     * @author zuxiang
      *
      */
     public interface ResponseSerializer{
@@ -242,7 +240,6 @@ public class WebSocketSerializer {
     /**
      * The Response Deserializer.
      *
-     * @author zuxiang
      *
      */
     public interface ResponseDeserializer{
@@ -265,7 +262,6 @@ public class WebSocketSerializer {
 
     /**
      * The Protocol Serializer.
-     * @author zuxiang
      *
      */
     public interface ProtocolSerializer{
@@ -282,7 +278,6 @@ public class WebSocketSerializer {
     /**
      * The Protocol deserializer.
      *
-     * @author zuxiang
      *
      */
     public interface ProtocolDeserializer{
@@ -306,7 +301,6 @@ public class WebSocketSerializer {
     /**
      * The Response Pair to store Response.
      *
-     * @author zuxiang
      *
      */
     static class ResponsePair{
@@ -354,7 +348,6 @@ public class WebSocketSerializer {
     /**
      * The Protocol Pair to store Protocol.
      *
-     * @author zuxiang
      *
      */
     static class ProtocolPair{

@@ -30,7 +30,6 @@ import com.cisco.oss.foundation.configuration.ConfigurationFactory;
  *
  * It loads the common configuration and gets the configuration properties.
  *
- * @author zuxiang
  *
  */
 public class Configurations {

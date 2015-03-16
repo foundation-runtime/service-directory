@@ -20,7 +20,6 @@ import com.cisco.oss.foundation.directory.proto.QueryServiceProtocol.QueryComman
 /**
  * The interface to get the QueryCommand from the QueryCritrion.
  *
- * @author zuxiang
  *
  */
 public interface StringCommand {

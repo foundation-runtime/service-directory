@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.utils;
 /**
  * HttpResponse wrapper class
  *
- * @author zuxiang
  *
  */
 public class HttpResponse {

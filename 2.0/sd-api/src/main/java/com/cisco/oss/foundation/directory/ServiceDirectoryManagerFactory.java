@@ -24,7 +24,6 @@ import com.cisco.oss.foundation.directory.config.ServiceDirectoryConfig;
  * DefaultServiceDirectoryManagerFactory for the production use.
  * TestServiceDirectoryManagerFactory for the integration test purpose.
  *
- * @author zuxiang
  *
  */
 public interface ServiceDirectoryManagerFactory{

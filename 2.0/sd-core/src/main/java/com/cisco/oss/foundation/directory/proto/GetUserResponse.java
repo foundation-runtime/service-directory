@@ -20,7 +20,6 @@ import com.cisco.oss.foundation.directory.entity.User;
 /**
  * Get User Response.
  *
- * @author zuxiang
  *
  */
 public class GetUserResponse extends Response {

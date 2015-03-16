@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.entity;
 /**
  * The ServerStatus of the DirectoryServer.
  *
- * @author zuxiang
  *
  */
 public enum ServerStatus {

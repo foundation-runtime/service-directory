@@ -33,7 +33,6 @@ import com.google.common.io.CharStreams;
 /**
  * Convenient Http Client util methods to invoke remote RESTful Service.
  *
- * @author zuxiang
  *
  */
 public class HttpUtils {
