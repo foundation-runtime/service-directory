@@ -31,19 +31,16 @@ import com.fasterxml.jackson.core.type.TypeReference;
  *
  *
  */
-public class JsonSerializer {
+public final class JsonSerializer {
     /**
      * The ObjectMapper object.
      */
-    private final ObjectMapper mapper;
+    private final static ObjectMapper mapper = new ObjectMapper();
 
     /**
      * Constructor.
      */
-    public JsonSerializer() {
-        super();
-        mapper = new ObjectMapper();
-    }
+    private JsonSerializer() { }
 
     /**
      * Deserialize from byte array.
@@ -57,7 +54,7 @@ public class JsonSerializer {
      * @throws JsonMappingException
      * @throws IOException
      */
-    public Object deserialize(byte[] input, Class<?> classType)
+    public static <T> T deserialize(byte[] input, Class<T> classType)
             throws JsonParseException, JsonMappingException, IOException {
         return mapper.readValue(input, classType);
     }
@@ -74,7 +71,7 @@ public class JsonSerializer {
      * @throws JsonMappingException
      * @throws IOException
      */
-    public Object deserialize(byte[] input, TypeReference<?> typeRef)
+    public static <T> T deserialize(byte[] input, TypeReference<T> typeRef)
             throws JsonParseException, JsonMappingException, IOException {
         return mapper.readValue(input, typeRef);
     }
@@ -89,7 +86,7 @@ public class JsonSerializer {
      * @throws JsonMappingException
      * @throws IOException
      */
-    public byte[] serialize(Object instance) throws JsonGenerationException,
+    public static byte[] serialize(Object instance) throws JsonGenerationException,
             JsonMappingException, IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         mapper.writeValue(out, instance);

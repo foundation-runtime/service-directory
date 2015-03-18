@@ -34,7 +34,7 @@ import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.utils.HttpResponse;
 import com.cisco.oss.foundation.directory.utils.HttpUtils;
 import com.cisco.oss.foundation.directory.utils.HttpUtils.HttpMethod;
-import com.cisco.oss.foundation.directory.utils.JsonSerializer;
+import static com.cisco.oss.foundation.directory.utils.JsonSerializer.*;
 
 /**
  * It is the HTTP invoker to the ServiceDirectory ServerNode.
@@ -47,7 +47,7 @@ public class DirectoryInvoker {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(DirectoryInvoker.class);
 
-    private final JsonSerializer serializer ;
+    //private final JsonSerializer serializer ;
     private String directoryAddresses;
     private HttpUtils httpUtils = null;
 
@@ -56,12 +56,9 @@ public class DirectoryInvoker {
      *
      * @param directoryAddresses
      *         The remote ServiceDirectory node address array, in the format of http://<host>:<port>
-     * @param serializer
-     *         The JsonSerializer  
      */
-    public DirectoryInvoker(String directoryAddresses, JsonSerializer serializer) {
+    public DirectoryInvoker(String directoryAddresses) {
         this.directoryAddresses = directoryAddresses;
-        this.serializer = serializer;
         this.httpUtils = HttpUtils.getInstance();
     }
 
@@ -107,8 +104,8 @@ public class DirectoryInvoker {
             }
             ServiceDirectoryError sde = null;
             try {
-                sde = (ServiceDirectoryError) serializer
-                        .deserialize(errorBody.getBytes(),
+                sde = (ServiceDirectoryError)
+                        deserialize(errorBody.getBytes(),
                                 ServiceDirectoryError.class);
             } catch (IOException  e) {
                 String errMsg = "Deserialize error body message failed";
@@ -163,8 +160,8 @@ public class DirectoryInvoker {
             }
             ServiceDirectoryError sde = null;
             try {
-                sde = (ServiceDirectoryError) serializer
-                        .deserialize(errorBody.getBytes(),
+                sde = (ServiceDirectoryError)
+                        deserialize(errorBody.getBytes(),
                                 ServiceDirectoryError.class);
             } catch (IOException  e) {
                 String errMsg = "Deserialize error body message failed";

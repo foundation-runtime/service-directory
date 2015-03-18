@@ -41,7 +41,7 @@ import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.utils.HttpResponse;
 import com.cisco.oss.foundation.directory.utils.HttpUtils;
-import com.cisco.oss.foundation.directory.utils.JsonSerializer;
+import static com.cisco.oss.foundation.directory.utils.JsonSerializer.*;
 
 /**
  * Test Suite to test the Exception Handling in the Directory API.
@@ -64,8 +64,6 @@ public class ExceptionHandleTestCase  {
 
     }
 
-    private JsonSerializer serializer = new JsonSerializer();
-
     /**
      * Test the exception handling in register, update, unregister and lookup ServiceInstance.
      * @throws ServiceException
@@ -87,14 +85,14 @@ public class ExceptionHandleTestCase  {
 
                 Assert.assertEquals("http://vcsdirsvc:2013/service/mock-test01/" + instance.getProviderId(), urlStr);
 
-                return new HttpResponse(500, new String(serializer.serialize(error.get())));
+                return new HttpResponse(500, new String(serialize(error.get())));
 
             }
 
             @Override
             public HttpResponse putJson(String urlStr, String body)
                     throws IOException {
-                return new HttpResponse(500, new String(serializer.serialize(error.get())));
+                return new HttpResponse(500, new String(serialize(error.get())));
             }
         };
         client.getDirectoryInvoker().setHttpUtils(utils);

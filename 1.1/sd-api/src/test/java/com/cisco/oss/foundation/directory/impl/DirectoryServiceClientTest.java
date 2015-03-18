@@ -43,11 +43,9 @@ import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.utils.HttpResponse;
 import com.cisco.oss.foundation.directory.utils.HttpUtils;
-import com.cisco.oss.foundation.directory.utils.JsonSerializer;
+import static com.cisco.oss.foundation.directory.utils.JsonSerializer.*;
 
 public class DirectoryServiceClientTest {
-
-    private JsonSerializer serializer = new JsonSerializer();
 
     @BeforeClass
     public static void setup(){
@@ -72,7 +70,7 @@ public class DirectoryServiceClientTest {
             public HttpResponse postJson(String urlStr, String body)
                     throws IOException {
                 Assert.assertEquals("http://vcsdirsvc:2013/service/odrm/192.168.7.4-8901", urlStr);
-                ProvidedServiceInstance instance2 = (ProvidedServiceInstance) serializer.deserialize(body.getBytes(), ProvidedServiceInstance.class);
+                ProvidedServiceInstance instance2 = (ProvidedServiceInstance)deserialize(body.getBytes(), ProvidedServiceInstance.class);
                 compareProvidedServiceInstance(instance, instance2);
                 return new HttpResponse(201, null);
 
@@ -101,7 +99,7 @@ public class DirectoryServiceClientTest {
             public HttpResponse putJson(String urlStr, String body)
                     throws IOException {
                 Assert.assertEquals("http://vcsdirsvc:2013/service/odrm/192.168.7.4-8901", urlStr);
-                ProvidedServiceInstance instance2 = (ProvidedServiceInstance) serializer.deserialize(body.getBytes(), ProvidedServiceInstance.class);
+                ProvidedServiceInstance instance2 = deserialize(body.getBytes(), ProvidedServiceInstance.class);
                 compareProvidedServiceInstance(instance, instance2);
                 return new HttpResponse(201, null);
 
@@ -203,12 +201,12 @@ public class DirectoryServiceClientTest {
                     throws IOException {
 
                 Assert.assertEquals("http://vcsdirsvc:2013/service/heartbeat", urlStr);
-                Map<String, ServiceInstanceHeartbeat> hbs = (Map<String, ServiceInstanceHeartbeat>) serializer.deserialize(body.getBytes(), new TypeReference<Map<String, ServiceInstanceHeartbeat>>(){});
+                Map<String, ServiceInstanceHeartbeat> hbs = deserialize(body.getBytes(), new TypeReference<Map<String, ServiceInstanceHeartbeat>>(){});
                 Assert.assertEquals(hbs.size(), 1);
                 Assert.assertEquals(hbs.get("odrm/192.168.2.3-8901").getServiceName(), "odrm");
                 Assert.assertEquals(hbs.get("odrm/192.168.2.3-8901").getProviderId(), "192.168.2.3-8901");
 
-                return new HttpResponse(200, new String(serializer.serialize(result)));
+                return new HttpResponse(200, new String(serialize(result)));
 
             }
         };
@@ -248,7 +246,7 @@ public class DirectoryServiceClientTest {
 
                 Assert.assertEquals("http://vcsdirsvc:2013/metadatakey/" + keyName, urlStr);
 
-                return new HttpResponse(200, new String(serializer.serialize(result)));
+                return new HttpResponse(200, new String(serialize(result)));
 
             }
         };
@@ -292,7 +290,7 @@ public class DirectoryServiceClientTest {
 
                 Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName, urlStr);
 
-                return new HttpResponse(200, new String(serializer.serialize(result)));
+                return new HttpResponse(200, new String(serialize(result)));
 
             }
         };
@@ -343,12 +341,12 @@ public class DirectoryServiceClientTest {
 
                 Assert.assertEquals("http://vcsdirsvc:2013/service/changing", urlStr);
 
-                Map<String, ModelService> target = (Map<String, ModelService>) serializer.deserialize(body.getBytes(), new TypeReference<Map<String, ModelService>>(){});
+                Map<String, ModelService> target = deserialize(body.getBytes(), new TypeReference<Map<String, ModelService>>(){});
                 Assert.assertEquals(target.size(), 1);
                 Assert.assertEquals(target.get("odrm").getCreateTime().getTime(), date.getTime());
                 Assert.assertEquals(target.get("odrm").getName(), "odrm");
 
-                return new HttpResponse(200, new String(serializer.serialize(result)));
+                return new HttpResponse(200, new String(serialize(result)));
 
             }
         };

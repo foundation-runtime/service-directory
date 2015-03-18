@@ -47,7 +47,7 @@ import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.utils.HttpResponse;
 import com.cisco.oss.foundation.directory.utils.HttpUtils.HttpMethod;
-import com.cisco.oss.foundation.directory.utils.JsonSerializer;
+import static com.cisco.oss.foundation.directory.utils.JsonSerializer.*;
 
 /**
  * This is the client object to invoke the remote service in ServiceDirectory Server Node.
@@ -92,19 +92,16 @@ public class DirectoryServiceClient{
     /**
      * The HTTP invoker to access remote ServiceDirectory node.
      */
-    private final DirectoryInvoker invoker;
-
-    private final JsonSerializer serializer;
+    private DirectoryInvoker invoker;
 
     /**
      * Constructor.
      */
     public DirectoryServiceClient() {
-        serializer = new JsonSerializer();
         String sdFQDN = Configurations.getString(SD_API_SD_SERVER_FQDN_PROPERTY, SD_API_SD_SERVER_FQDN_DEFAULT);
         int port = Configurations.getInt(SD_API_SD_SERVER_PORT_PROPERTY, SD_API_SD_SERVER_PORT_DEFAULT);
         String directoryAddresses = "http://" + sdFQDN + ":" + port;
-        this.invoker = new DirectoryInvoker(directoryAddresses, serializer);
+        this.invoker = new DirectoryInvoker(directoryAddresses);
     }
 
     /**
@@ -115,7 +112,7 @@ public class DirectoryServiceClient{
      * @throws ServiceException
      */
     public void registerInstance(ProvidedServiceInstance instance){
-        String body = serialize(instance);
+        String body = _serialize(instance);
         HttpResponse result = invoker.invoke(toInstanceUri(instance.getServiceName(), instance.getProviderId()), body,
                 HttpMethod.POST);
 
@@ -138,7 +135,7 @@ public class DirectoryServiceClient{
      *         the ProvidedServiceInstance.
      */
     public void updateInstance(ProvidedServiceInstance instance){
-        String body = serialize(instance);
+        String body = _serialize(instance);
         HttpResponse result = invoker.invoke(toInstanceUri(instance.getServiceName(),instance.getProviderId()), body,
                 HttpMethod.PUT);
 
@@ -252,7 +249,7 @@ public class DirectoryServiceClient{
      *         the ServiceInstances heartbeat Map.
      */
     public Map<String, OperationResult<String>> sendHeartBeat(Map<String, ServiceInstanceHeartbeat> heartbeatMap){
-        String body = serialize(heartbeatMap);
+        String body = _serialize(heartbeatMap);
         HttpResponse result = invoker.invoke("/service/heartbeat", body,
                 HttpMethod.PUT);
 
@@ -262,7 +259,7 @@ public class DirectoryServiceClient{
             throw new DirectoryServerClientException(sde);
         }
 
-        Map<String, OperationResult<String>> operateResult = deserialize(
+        Map<String, OperationResult<String>> operateResult = _deserialize(
                 result.getRetBody(), new TypeReference<Map<String, OperationResult<String>>>(){});
         return operateResult;
 
@@ -285,7 +282,7 @@ public class DirectoryServiceClient{
             throw new DirectoryServerClientException(sde);
         }
 
-        ModelService service = deserialize(result.getRetBody(), ModelService.class);
+        ModelService service = _deserialize(result.getRetBody(), ModelService.class);
         return service;
     }
 
@@ -304,7 +301,7 @@ public class DirectoryServiceClient{
             throw new DirectoryServerClientException(sde);
         }
 
-        List<ModelServiceInstance> allInstances = deserialize(result.getRetBody(), new TypeReference<List<ModelServiceInstance>>(){});
+        List<ModelServiceInstance> allInstances = _deserialize(result.getRetBody(), new TypeReference<List<ModelServiceInstance>>(){});
         return allInstances;
     }
 
@@ -325,7 +322,7 @@ public class DirectoryServiceClient{
             throw new DirectoryServerClientException(sde);
         }
 
-        ModelMetadataKey key = deserialize(
+        ModelMetadataKey key = _deserialize(
                     result.getRetBody(), ModelMetadataKey.class);
 
         return key;
@@ -341,7 +338,7 @@ public class DirectoryServiceClient{
      * @throws ServiceException
      */
     public Map<String, OperationResult<ModelService>> getServiceChanging(Map<String, ModelService> services){
-        String body = serialize(services);
+        String body = _serialize(services);
         HttpResponse result = invoker.invoke("/service/changing" , body, HttpMethod.POST);
 
         if (result.getHttpCode() != HTTP_OK) {
@@ -350,7 +347,7 @@ public class DirectoryServiceClient{
             throw new DirectoryServerClientException(sde);
         }
 
-        Map<String, OperationResult<ModelService>> changedServices = deserialize(
+        Map<String, OperationResult<ModelService>> changedServices = _deserialize(
                     result.getRetBody(), new TypeReference<Map<String, OperationResult<ModelService>>>(){});
 
         return changedServices;
@@ -365,7 +362,7 @@ public class DirectoryServiceClient{
      *         the ModelMetadataKey that has been changed.
      */
     public Map<String, OperationResult<ModelMetadataKey>> getMetadataKeyChanging(Map<String, ModelMetadataKey> keys) {
-        String body = serialize(keys);
+        String body = _serialize(keys);
         HttpResponse result = invoker.invoke("/metadatakey/changing" , body, HttpMethod.POST);
 
         if (result.getHttpCode() != HTTP_OK) {
@@ -375,7 +372,7 @@ public class DirectoryServiceClient{
         }
 
 
-        Map<String, OperationResult<ModelMetadataKey>> changedKeys = deserialize(
+        Map<String, OperationResult<ModelMetadataKey>> changedKeys = _deserialize(
                     result.getRetBody(), new TypeReference<Map<String, OperationResult<ModelMetadataKey>>>(){});
 
         return changedKeys;
@@ -394,8 +391,7 @@ public class DirectoryServiceClient{
      * @throws JsonMappingException
      * @throws JsonParseException
      */
-    @SuppressWarnings("unchecked")
-    private <T> T deserialize(String body, Class<T> clazz) {
+    private <T> T _deserialize(String body, Class<T> clazz) {
         if(body == null || body.isEmpty()){
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "the message body is empty");
@@ -403,7 +399,7 @@ public class DirectoryServiceClient{
         }
 
         try {
-            return (T) serializer.deserialize(body.getBytes(), clazz);
+            return deserialize(body.getBytes(), clazz);
         } catch (IOException e) {
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "unrecognized message, deserialize failed.");
@@ -426,8 +422,7 @@ public class DirectoryServiceClient{
      * @throws JsonMappingException
      * @throws JsonParseException
      */
-    @SuppressWarnings("unchecked")
-    private <T> T deserialize(String body, TypeReference<T> typeRef){
+    private <T> T _deserialize(String body, TypeReference<T> typeRef){
         if(body == null || body.isEmpty()){
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "the message body is empty");
@@ -435,7 +430,7 @@ public class DirectoryServiceClient{
         }
 
         try {
-            return (T) serializer.deserialize(body.getBytes(), typeRef);
+            return deserialize(body.getBytes(), typeRef);
         } catch (IOException e) {
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "unrecognized message, deserialize failed.");
@@ -451,10 +446,10 @@ public class DirectoryServiceClient{
      * @return
      *         the JSON String.
      */
-    private String serialize(Object o) {
+    private String _serialize(Object o) {
         String body = null;
             try {
-                body = new String(serializer.serialize(o));
+                body = new String(serialize(o));
             } catch (IOException e) {
                 ServiceDirectoryError sde = new ServiceDirectoryError(
                         ErrorCode.HTTP_CLIENT_ERROR, "serialize failed.");

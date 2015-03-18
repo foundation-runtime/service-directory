@@ -43,7 +43,7 @@ import com.cisco.oss.foundation.directory.entity.OperationResult;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.lifecycle.Closable;
-import com.cisco.oss.foundation.directory.utils.JsonSerializer;
+import static com.cisco.oss.foundation.directory.utils.JsonSerializer.*;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 
 /**
@@ -114,11 +114,6 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
      * Mark whether component is started.
      */
     private volatile boolean isStarted = false;
-
-    /**
-     * The JsonSerializer used in dump cache to serialize the ModelService.
-     */
-    private JsonSerializer dumper = null;
 
     /**
      * Constructor.
@@ -366,14 +361,10 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
         if(CacheDumpLogger.isDebugEnabled()){
 
             List<ModelService> services = getCache().getAllServicesWithInstance();
-             if(dumper == null){
-                 dumper = new JsonSerializer();
-             }
-
             StringBuilder sb = new StringBuilder();
             sb.append("LookupManager dump Service Cache at: ").append(System.currentTimeMillis()).append("\n");
             for(ModelService service : services){
-                sb.append(new String(dumper.serialize(service))).append("\n");
+                sb.append(new String(serialize(service))).append("\n");
             }
             CacheDumpLogger.debug(sb.toString());
             return true;
