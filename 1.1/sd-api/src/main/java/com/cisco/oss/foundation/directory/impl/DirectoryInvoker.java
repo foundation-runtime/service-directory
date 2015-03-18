@@ -22,6 +22,9 @@ package com.cisco.oss.foundation.directory.impl;
 import java.io.IOException;
 import java.util.Map;
 
+import static java.net.HttpURLConnection.HTTP_OK;
+import static java.net.HttpURLConnection.HTTP_MULT_CHOICE;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,8 +94,8 @@ public class DirectoryInvoker {
             ServiceDirectoryError sde = new ServiceDirectoryError(ErrorCode.HTTP_CLIENT_ERROR, errMsg);
             throw new DirectoryServerClientException(sde, e);
         }
-
-        if (result.getHttpCode() < 200 || result.getHttpCode() >= 300) {
+        // HTTP_OK 200, HTTP_MULT_CHOICE 300
+        if (result.getHttpCode() < HTTP_OK || result.getHttpCode() >= HTTP_MULT_CHOICE) {
             String errorBody = result.getRetBody();
 
             if(errorBody == null || errorBody.isEmpty()){
@@ -147,7 +150,8 @@ public class DirectoryInvoker {
             throw new DirectoryServerClientException(sde, e);
         }
 
-        if (result.getHttpCode() < 200 || result.getHttpCode() >= 300) {
+        // HTTP_OK 200, HTTP_MULT_CHOICE 300
+        if (result.getHttpCode() < HTTP_OK || result.getHttpCode() >= 300) {
             String errorBody = result.getRetBody();
 
             if(errorBody == null || errorBody.isEmpty()){
