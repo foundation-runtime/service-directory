@@ -32,8 +32,6 @@ import static java.net.HttpURLConnection.HTTP_CREATED;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.cisco.oss.foundation.directory.Configurations;
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
@@ -60,8 +58,6 @@ import com.cisco.oss.foundation.directory.utils.JsonSerializer;
  *
  */
 public class DirectoryServiceClient{
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DirectoryServiceClient.class);
 
     /**
      * The http client read timeout property.
@@ -139,8 +135,6 @@ public class DirectoryServiceClient{
                 HttpMethod.POST);
 
         if (result.getHttpCode() != HTTP_CREATED) {
-            LOGGER.error("Register Service failed, httpCode="
-                    + result.getHttpCode());
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
                     "HTTP Code is not OK, code=" + result.getHttpCode());
@@ -160,8 +154,6 @@ public class DirectoryServiceClient{
                 HttpMethod.PUT);
 
         if (result.getHttpCode() != HTTP_CREATED) {
-            LOGGER.error("Update Service failed, httpCode="
-                    + result.getHttpCode());
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
                     "HTTP Code is not OK, code=" + result.getHttpCode());
@@ -188,8 +180,9 @@ public class DirectoryServiceClient{
         try {
             body = "status=" + URLEncoder.encode(status.toString(), "UTF-8") + "&isOwned=" + isOwned;
         } catch (UnsupportedEncodingException e) {
-            LOGGER.error("URLEncoder can not encode the status - " + status);
-            LOGGER.debug("URLEncoder can not encode the status.", e);
+            ServiceDirectoryError sde = new ServiceDirectoryError(
+                    ErrorCode.SERVICE_INSTANCE_URI_FORMAT_ERROR);
+            throw new DirectoryServerClientException(sde);
         }
 
         Map<String, String> headers = new HashMap<String, String>();
@@ -198,7 +191,6 @@ public class DirectoryServiceClient{
                 HttpMethod.PUT, headers);
 
         if (result.getHttpCode() != HTTP_OK) {
-            LOGGER.error("Update Service OperationalStatus failed, httpCode=" + result.getHttpCode());
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
             throw new DirectoryServerClientException(sde);
@@ -223,8 +215,6 @@ public class DirectoryServiceClient{
         try {
             body = "uri=" + URLEncoder.encode(uri, "UTF-8") + "&isOwned=" + isOwned;
         } catch (UnsupportedEncodingException e) {
-            LOGGER.error("URLEncoder can not encode the URI - " + uri);
-            LOGGER.debug("URLEncoder can not encode the URI.", e);
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.SERVICE_INSTANCE_URI_FORMAT_ERROR);
             throw new DirectoryServerClientException(sde);
@@ -236,7 +226,6 @@ public class DirectoryServiceClient{
                 HttpMethod.PUT, headers);
 
         if (result.getHttpCode() != HTTP_OK) {
-            LOGGER.error("Update Service URI failed, httpCode=" + result.getHttpCode());
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
             throw new DirectoryServerClientException(sde);
@@ -259,7 +248,6 @@ public class DirectoryServiceClient{
                 HttpMethod.DELETE);
 
         if (result.getHttpCode() != HTTP_OK) {
-            LOGGER.error("UnregisterService failed, httpCode=" + result.getHttpCode());
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
             throw new DirectoryServerClientException(sde);
@@ -278,7 +266,6 @@ public class DirectoryServiceClient{
                 HttpMethod.PUT);
 
         if (result.getHttpCode() != HTTP_OK) {
-            LOGGER.error("Send Heartbeat failed, httpCode=" + result.getHttpCode());
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
             throw new DirectoryServerClientException(sde);
@@ -302,7 +289,6 @@ public class DirectoryServiceClient{
         HttpResponse result = invoker.invoke("/service/" + serviceName , null, HttpMethod.GET);
 
         if (result.getHttpCode() != HTTP_OK) {
-            LOGGER.error("LookupService failed, httpCode=" + result.getHttpCode());
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
             throw new DirectoryServerClientException(sde);
@@ -322,7 +308,6 @@ public class DirectoryServiceClient{
         HttpResponse result = invoker.invoke("/service" , null, HttpMethod.GET);
 
         if (result.getHttpCode() != HTTP_OK) {
-            LOGGER.error("getAllInstances failed, httpCode=" + result.getHttpCode());
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
             throw new DirectoryServerClientException(sde);
@@ -344,7 +329,6 @@ public class DirectoryServiceClient{
         HttpResponse result = invoker.invoke("/metadatakey/" + keyName , null, HttpMethod.GET);
 
         if (result.getHttpCode() != HTTP_OK) {
-            LOGGER.error("Get MetadataKey failed, httpCode=" + result.getHttpCode());
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
             throw new DirectoryServerClientException(sde);
@@ -370,7 +354,6 @@ public class DirectoryServiceClient{
         HttpResponse result = invoker.invoke("/service/changing" , body, HttpMethod.POST);
 
         if (result.getHttpCode() != HTTP_OK) {
-            LOGGER.error("Get Service Changed List failed, httpCode=" + result.getHttpCode());
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
             throw new DirectoryServerClientException(sde);
@@ -395,7 +378,6 @@ public class DirectoryServiceClient{
         HttpResponse result = invoker.invoke("/metadatakey/changing" , body, HttpMethod.POST);
 
         if (result.getHttpCode() != HTTP_OK) {
-            LOGGER.error("Get metadatakey changed list failed, httpCode=" + result.getHttpCode());
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
             throw new DirectoryServerClientException(sde);
@@ -424,7 +406,6 @@ public class DirectoryServiceClient{
     @SuppressWarnings("unchecked")
     private <T> T deserialize(String body, Class<T> clazz) {
         if(body == null || body.isEmpty()){
-            LOGGER.error("the message body is empty");
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "the message body is empty");
             throw new DirectoryServerClientException(sde);
@@ -433,10 +414,8 @@ public class DirectoryServiceClient{
         try {
             return (T) serializer.deserialize(body.getBytes(), clazz);
         } catch (IOException e) {
-            LOGGER.error("deserialize failed - " + e.getMessage());
-            LOGGER.debug("deserialize failed", e);
             ServiceDirectoryError sde = new ServiceDirectoryError(
-                    ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "unrecognized message, deserialized failed.");
+                    ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "unrecognized message, deserialize failed.");
             throw new DirectoryServerClientException(sde, e);
         }
     }
@@ -459,7 +438,6 @@ public class DirectoryServiceClient{
     @SuppressWarnings("unchecked")
     private <T> T deserialize(String body, TypeReference<T> typeRef){
         if(body == null || body.isEmpty()){
-            LOGGER.error("the message body is empty");
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "the message body is empty");
             throw new DirectoryServerClientException(sde);
@@ -468,10 +446,8 @@ public class DirectoryServiceClient{
         try {
             return (T) serializer.deserialize(body.getBytes(), typeRef);
         } catch (IOException e) {
-            LOGGER.error("deserialize failed - " + e.getMessage());
-            LOGGER.debug("deserialize failed", e);
             ServiceDirectoryError sde = new ServiceDirectoryError(
-                    ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "unrecognized message, deserialized failed.");
+                    ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "unrecognized message, deserialize failed.");
             throw new DirectoryServerClientException(sde, e);
         }
     }
@@ -489,10 +465,8 @@ public class DirectoryServiceClient{
             try {
                 body = new String(serializer.serialize(o));
             } catch (IOException e) {
-                LOGGER.error("serialize failed - " + e.getMessage());
-                LOGGER.debug("serialize failed", e);
                 ServiceDirectoryError sde = new ServiceDirectoryError(
-                        ErrorCode.HTTP_CLIENT_ERROR, "serialized failed.");
+                        ErrorCode.HTTP_CLIENT_ERROR, "serialize failed.");
                 throw new DirectoryServerClientException(sde, e);
             }
         return body;
