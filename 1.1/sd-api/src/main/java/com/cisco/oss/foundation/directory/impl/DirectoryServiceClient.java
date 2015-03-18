@@ -70,26 +70,6 @@ public class DirectoryServiceClient{
     public static final int SD_API_HTTPCLIENT_READ_TIMEOUT_DEFAULT = 5;
 
     /**
-     * The Service Directory server FQDN property name.
-     */
-    public static final String SD_API_SD_SERVER_FQDN_PROPERTY = "server.fqdn";
-
-    /**
-     * The default Service Directory server FQDN name.
-     */
-    public static final String SD_API_SD_SERVER_FQDN_DEFAULT = "vcsdirsvc";
-
-    /**
-     * The Service Directory server port property name.
-     */
-    public static final String SD_API_SD_SERVER_PORT_PROPERTY = "server.port";
-
-    /**
-     * The default Service Directory server port.
-     */
-    public static final int SD_API_SD_SERVER_PORT_DEFAULT = 2013;
-
-    /**
      * The HTTP invoker to access remote ServiceDirectory node.
      */
     private DirectoryInvoker invoker;
@@ -98,10 +78,7 @@ public class DirectoryServiceClient{
      * Constructor.
      */
     public DirectoryServiceClient() {
-        String sdFQDN = Configurations.getString(SD_API_SD_SERVER_FQDN_PROPERTY, SD_API_SD_SERVER_FQDN_DEFAULT);
-        int port = Configurations.getInt(SD_API_SD_SERVER_PORT_PROPERTY, SD_API_SD_SERVER_PORT_DEFAULT);
-        String directoryAddresses = "http://" + sdFQDN + ":" + port;
-        this.invoker = new DirectoryInvoker(directoryAddresses);
+        this.invoker = new DirectoryInvoker();
     }
 
     /**

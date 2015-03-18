@@ -25,6 +25,7 @@ import java.util.Map;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.net.HttpURLConnection.HTTP_MULT_CHOICE;
 
+import com.cisco.oss.foundation.directory.Configurations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,18 +48,40 @@ public class DirectoryInvoker {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(DirectoryInvoker.class);
 
-    //private final JsonSerializer serializer ;
-    private String directoryAddresses;
+
+    /* The remote ServiceDirectory node address array, in the format of http://<host>:<port> */
+    public String directoryAddresses;
+
     private HttpUtils httpUtils = null;
+
+    /**
+     * The Service Directory server FQDN property name.
+     */
+    public static final String SD_API_SD_SERVER_FQDN_PROPERTY = "server.fqdn";
+
+    /**
+     * The default Service Directory server FQDN name.
+     */
+    public static final String SD_API_SD_SERVER_FQDN_DEFAULT = "vcsdirsvc";
+
+    /**
+     * The Service Directory server port property name.
+     */
+    public static final String SD_API_SD_SERVER_PORT_PROPERTY = "server.port";
+
+    /**
+     * The default Service Directory server port.
+     */
+    public static final int SD_API_SD_SERVER_PORT_DEFAULT = 2013;
 
     /**
      * Constructor.
      *
-     * @param directoryAddresses
-     *         The remote ServiceDirectory node address array, in the format of http://<host>:<port>
-     */
-    public DirectoryInvoker(String directoryAddresses) {
-        this.directoryAddresses = directoryAddresses;
+    */
+    public DirectoryInvoker() {
+        String sdFQDN = Configurations.getString(SD_API_SD_SERVER_FQDN_PROPERTY, SD_API_SD_SERVER_FQDN_DEFAULT);
+        int port = Configurations.getInt(SD_API_SD_SERVER_PORT_PROPERTY, SD_API_SD_SERVER_PORT_DEFAULT);
+        this.directoryAddresses = "http://" + sdFQDN + ":" + port;
         this.httpUtils = HttpUtils.getInstance();
     }
 

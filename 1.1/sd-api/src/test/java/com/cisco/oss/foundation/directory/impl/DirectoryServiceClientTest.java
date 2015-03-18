@@ -70,10 +70,9 @@ public class DirectoryServiceClientTest {
             public HttpResponse postJson(String urlStr, String body)
                     throws IOException {
                 Assert.assertEquals("http://vcsdirsvc:2013/service/odrm/192.168.7.4-8901", urlStr);
-                ProvidedServiceInstance instance2 = (ProvidedServiceInstance)deserialize(body.getBytes(), ProvidedServiceInstance.class);
+                ProvidedServiceInstance instance2 = deserialize(body.getBytes(), ProvidedServiceInstance.class);
                 compareProvidedServiceInstance(instance, instance2);
                 return new HttpResponse(201, null);
-
             }
         };
         client.getDirectoryInvoker().setHttpUtils(utils);
