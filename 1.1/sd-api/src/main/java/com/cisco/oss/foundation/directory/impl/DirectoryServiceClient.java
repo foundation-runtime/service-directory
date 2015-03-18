@@ -26,6 +26,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.net.HttpURLConnection.HTTP_OK;
+import static java.net.HttpURLConnection.HTTP_CREATED;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -135,7 +138,7 @@ public class DirectoryServiceClient{
         HttpResponse result = invoker.invoke("/service/" + instance.getServiceName() + "/" + instance.getProviderId(), body,
                 HttpMethod.POST);
 
-        if (result.getHttpCode() != 201) {
+        if (result.getHttpCode() != HTTP_CREATED) {
             LOGGER.error("Register Service failed, httpCode="
                     + result.getHttpCode());
             ServiceDirectoryError sde = new ServiceDirectoryError(
@@ -156,7 +159,7 @@ public class DirectoryServiceClient{
         HttpResponse result = invoker.invoke("/service/" + instance.getServiceName() + "/" + instance.getProviderId(), body,
                 HttpMethod.PUT);
 
-        if (result.getHttpCode() != 201) {
+        if (result.getHttpCode() != HTTP_CREATED) {
             LOGGER.error("Update Service failed, httpCode="
                     + result.getHttpCode());
             ServiceDirectoryError sde = new ServiceDirectoryError(
@@ -194,7 +197,7 @@ public class DirectoryServiceClient{
         HttpResponse result = invoker.invoke(uri, body,
                 HttpMethod.PUT, headers);
 
-        if (result.getHttpCode() != 200) {
+        if (result.getHttpCode() != HTTP_OK) {
             LOGGER.error("Update Service OperationalStatus failed, httpCode=" + result.getHttpCode());
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
@@ -232,7 +235,7 @@ public class DirectoryServiceClient{
         HttpResponse result = invoker.invoke(serviceUri, body,
                 HttpMethod.PUT, headers);
 
-        if (result.getHttpCode() != 200) {
+        if (result.getHttpCode() != HTTP_OK) {
             LOGGER.error("Update Service URI failed, httpCode=" + result.getHttpCode());
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
@@ -255,7 +258,7 @@ public class DirectoryServiceClient{
         HttpResponse result = invoker.invoke(uri, null,
                 HttpMethod.DELETE);
 
-        if (result.getHttpCode() != 200) {
+        if (result.getHttpCode() != HTTP_OK) {
             LOGGER.error("UnregisterService failed, httpCode=" + result.getHttpCode());
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
@@ -274,7 +277,7 @@ public class DirectoryServiceClient{
         HttpResponse result = invoker.invoke("/service/heartbeat", body,
                 HttpMethod.PUT);
 
-        if (result.getHttpCode() != 200) {
+        if (result.getHttpCode() != HTTP_OK) {
             LOGGER.error("Send Heartbeat failed, httpCode=" + result.getHttpCode());
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
@@ -298,7 +301,7 @@ public class DirectoryServiceClient{
     public ModelService lookupService(String serviceName){
         HttpResponse result = invoker.invoke("/service/" + serviceName , null, HttpMethod.GET);
 
-        if (result.getHttpCode() != 200) {
+        if (result.getHttpCode() != HTTP_OK) {
             LOGGER.error("LookupService failed, httpCode=" + result.getHttpCode());
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
@@ -318,7 +321,7 @@ public class DirectoryServiceClient{
     public List<ModelServiceInstance> getAllInstances(){
         HttpResponse result = invoker.invoke("/service" , null, HttpMethod.GET);
 
-        if (result.getHttpCode() != 200) {
+        if (result.getHttpCode() != HTTP_OK) {
             LOGGER.error("getAllInstances failed, httpCode=" + result.getHttpCode());
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
@@ -340,7 +343,7 @@ public class DirectoryServiceClient{
     public ModelMetadataKey getMetadataKey(String keyName){
         HttpResponse result = invoker.invoke("/metadatakey/" + keyName , null, HttpMethod.GET);
 
-        if (result.getHttpCode() != 200) {
+        if (result.getHttpCode() != HTTP_OK) {
             LOGGER.error("Get MetadataKey failed, httpCode=" + result.getHttpCode());
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
@@ -366,7 +369,7 @@ public class DirectoryServiceClient{
         String body = serialize(services);
         HttpResponse result = invoker.invoke("/service/changing" , body, HttpMethod.POST);
 
-        if (result.getHttpCode() != 200) {
+        if (result.getHttpCode() != HTTP_OK) {
             LOGGER.error("Get Service Changed List failed, httpCode=" + result.getHttpCode());
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
@@ -391,7 +394,7 @@ public class DirectoryServiceClient{
         String body = serialize(keys);
         HttpResponse result = invoker.invoke("/metadatakey/changing" , body, HttpMethod.POST);
 
-        if (result.getHttpCode() != 200) {
+        if (result.getHttpCode() != HTTP_OK) {
             LOGGER.error("Get metadatakey changed list failed, httpCode=" + result.getHttpCode());
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
