@@ -18,7 +18,7 @@ package com.cisco.oss.foundation.directory.entity;
 import java.util.Date;
 import java.util.Map;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * The ModelServiceInstance object in Service Directory.

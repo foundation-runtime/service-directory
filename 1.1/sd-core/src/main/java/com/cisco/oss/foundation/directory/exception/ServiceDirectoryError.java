@@ -17,7 +17,7 @@ package com.cisco.oss.foundation.directory.exception;
 
 import java.text.MessageFormat;
 
-import org.codehaus.jackson.annotate.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * The official ServiceDirectory ERROR.

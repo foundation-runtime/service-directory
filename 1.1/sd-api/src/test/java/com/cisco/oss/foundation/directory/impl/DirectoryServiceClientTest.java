@@ -26,7 +26,7 @@ import java.util.Map.Entry;
 
 import junit.framework.Assert;
 
-import org.codehaus.jackson.type.TypeReference;
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
