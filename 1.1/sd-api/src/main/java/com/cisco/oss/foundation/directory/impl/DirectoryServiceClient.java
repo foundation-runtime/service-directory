@@ -92,9 +92,9 @@ public class DirectoryServiceClient{
     /**
      * The HTTP invoker to access remote ServiceDirectory node.
      */
-    private DirectoryInvoker invoker;
+    private final DirectoryInvoker invoker;
 
-    private JsonSerializer serializer;
+    private final JsonSerializer serializer;
 
     /**
      * Constructor.
