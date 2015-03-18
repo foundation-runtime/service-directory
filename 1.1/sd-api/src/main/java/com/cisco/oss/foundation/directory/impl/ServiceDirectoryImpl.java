@@ -182,10 +182,7 @@ public class ServiceDirectoryImpl implements DirectoryServiceClientManager{
                     }
                     directoryManagerFactory = null;
                 }
-                if (client != null) {
-                    client.close();
-                    client = null;
-                }
+                client = null;
                 this.isShutdown = true;
             }
         }

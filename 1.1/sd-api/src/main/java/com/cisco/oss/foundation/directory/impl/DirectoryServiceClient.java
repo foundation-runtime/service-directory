@@ -101,25 +101,10 @@ public class DirectoryServiceClient{
      */
     public DirectoryServiceClient() {
         serializer = new JsonSerializer();
-        reinit();
-    }
-
-    /**
-     * Reinitialize the Client.
-     */
-    public void reinit(){
         String sdFQDN = Configurations.getString(SD_API_SD_SERVER_FQDN_PROPERTY, SD_API_SD_SERVER_FQDN_DEFAULT);
         int port = Configurations.getInt(SD_API_SD_SERVER_PORT_PROPERTY, SD_API_SD_SERVER_PORT_DEFAULT);
         String directoryAddresses = "http://" + sdFQDN + ":" + port;
         this.invoker = new DirectoryInvoker(directoryAddresses, serializer);
-    }
-
-    /**
-     * Close the DirectoryServiceClient.
-     */
-    public void close(){
-        this.invoker = null;
-        this.serializer = null;
     }
 
     /**
