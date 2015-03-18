@@ -15,6 +15,8 @@
  */
 package com.cisco.oss.foundation.directory.utils;
 
+import static java.net.HttpURLConnection.*;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -120,7 +122,7 @@ public class HttpUtils {
      * @return the HttpResponse.
      * @throws IOException
      */
-    private HttpResponse put(String urlStr, String body,
+    public HttpResponse put(String urlStr, String body,
             Map<String, String> headers) throws IOException {
         URL url = new URL(urlStr);
         HttpURLConnection urlConnection = (HttpURLConnection) url
@@ -190,7 +192,8 @@ public class HttpUtils {
         BufferedReader in = null;
         try {
             int errorCode = urlConnection.getResponseCode();
-            if ((errorCode <= 202) && (errorCode >= 200)) {
+            // HTTP_OK (200), HTTP_CREATED (201), HTTP_ACCEPTED (202)
+            if (((errorCode == HTTP_OK) || (errorCode == HTTP_CREATED) || errorCode == HTTP_ACCEPTED) ) {
                 in = new BufferedReader(new InputStreamReader(
                         urlConnection.getInputStream()));
             } else {
