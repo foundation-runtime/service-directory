@@ -87,29 +87,7 @@ public class HttpUtils {
         OutputStream out = urlConnection.getOutputStream();
         out.write(body.getBytes());
         ByteStreams.copy(new ByteArrayInputStream(body.getBytes()), out);
-        BufferedReader in = null;
-        try {
-            int errorCode = urlConnection.getResponseCode();
-            if ((errorCode <= 202) && (errorCode >= 200)) {
-                in = new BufferedReader(new InputStreamReader(
-                        urlConnection.getInputStream()));
-            } else {
-                InputStream error = urlConnection.getErrorStream();
-                if (error != null) {
-                    in = new BufferedReader(new InputStreamReader(error));
-                }
-            }
-
-            String json = null;
-            if (in != null) {
-                json = CharStreams.toString(in);
-            }
-            return new HttpResponse(errorCode, json);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-        }
+        return getHttpResponse(urlConnection);
     }
 
     /**
@@ -142,7 +120,7 @@ public class HttpUtils {
      * @return the HttpResponse.
      * @throws IOException
      */
-    public HttpResponse put(String urlStr, String body,
+    private HttpResponse put(String urlStr, String body,
             Map<String, String> headers) throws IOException {
         URL url = new URL(urlStr);
         HttpURLConnection urlConnection = (HttpURLConnection) url
@@ -168,29 +146,7 @@ public class HttpUtils {
         if (body != null && body.length() > 0)
             ByteStreams.copy(new ByteArrayInputStream(body.getBytes()), out);
 
-        BufferedReader in = null;
-        try {
-            int errorCode = urlConnection.getResponseCode();
-            if ((errorCode <= 202) && (errorCode >= 200)) {
-                in = new BufferedReader(new InputStreamReader(
-                        urlConnection.getInputStream()));
-            } else {
-                InputStream error = urlConnection.getErrorStream();
-                if (error != null) {
-                    in = new BufferedReader(new InputStreamReader(error));
-                }
-            }
-
-            String json = null;
-            if (in != null) {
-                json = CharStreams.toString(in);
-            }
-            return new HttpResponse(errorCode, json);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-        }
+        return getHttpResponse(urlConnection);
 
     }
 
@@ -208,29 +164,7 @@ public class HttpUtils {
                 .openConnection();
         urlConnection.addRequestProperty("Accept", "application/json");
 
-        BufferedReader in = null;
-        try {
-            int errorCode = urlConnection.getResponseCode();
-            if ((errorCode <= 202) && (errorCode >= 200)) {
-                in = new BufferedReader(new InputStreamReader(
-                        urlConnection.getInputStream()));
-            } else {
-                InputStream error = urlConnection.getErrorStream();
-                if (error != null) {
-                    in = new BufferedReader(new InputStreamReader(error));
-                }
-            }
-
-            String json = null;
-            if (in != null) {
-                json = CharStreams.toString(in);
-            }
-            return new HttpResponse(errorCode, json);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-        }
+        return getHttpResponse(urlConnection);
     }
 
     /**
@@ -249,6 +183,10 @@ public class HttpUtils {
 
         urlConnection.setRequestMethod("DELETE");
 
+        return getHttpResponse(urlConnection);
+    }
+
+    private HttpResponse getHttpResponse(HttpURLConnection urlConnection) throws IOException {
         BufferedReader in = null;
         try {
             int errorCode = urlConnection.getResponseCode();
