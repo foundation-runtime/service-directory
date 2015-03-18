@@ -256,9 +256,9 @@ public class DirectoryServiceClient{
             throw new DirectoryServerClientException(sde);
         }
 
-        Map<String, OperationResult<String>> operateRsult = deserialize(
+        Map<String, OperationResult<String>> operateResult = deserialize(
                 result.getRetBody(), new TypeReference<Map<String, OperationResult<String>>>(){});
-        return operateRsult;
+        return operateResult;
 
     }
 
@@ -344,10 +344,10 @@ public class DirectoryServiceClient{
             throw new DirectoryServerClientException(sde);
         }
 
-        Map<String, OperationResult<ModelService>> newservices = deserialize(
+        Map<String, OperationResult<ModelService>> changedServices = deserialize(
                     result.getRetBody(), new TypeReference<Map<String, OperationResult<ModelService>>>(){});
 
-        return newservices;
+        return changedServices;
     }
 
     /**
@@ -369,10 +369,10 @@ public class DirectoryServiceClient{
         }
 
 
-        Map<String, OperationResult<ModelMetadataKey>> newkeys = deserialize(
+        Map<String, OperationResult<ModelMetadataKey>> changedKeys = deserialize(
                     result.getRetBody(), new TypeReference<Map<String, OperationResult<ModelMetadataKey>>>(){});
 
-        return newkeys;
+        return changedKeys;
     }
 
     /**
