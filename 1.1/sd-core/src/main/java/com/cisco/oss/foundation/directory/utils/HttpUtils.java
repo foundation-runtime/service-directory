@@ -40,7 +40,7 @@ public class HttpUtils {
         GET, PUT, POST, DELETE
     }
 
-    private volatile static HttpUtils instance = null;
+    private static HttpUtils instance = new HttpUtils();
 
     /**
      * protect the singleton.
@@ -55,13 +55,6 @@ public class HttpUtils {
      * @return HttpUtils instance.
      */
     public static HttpUtils getInstance() {
-        if (instance == null) {
-            synchronized (HttpUtils.class) {
-                if (instance == null) {
-                    instance = new HttpUtils();
-                }
-            }
-        }
         return instance;
     }
 
