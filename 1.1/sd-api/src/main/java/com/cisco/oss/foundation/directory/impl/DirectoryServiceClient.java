@@ -116,7 +116,7 @@ public class DirectoryServiceClient{
      */
     public void registerInstance(ProvidedServiceInstance instance){
         String body = serialize(instance);
-        HttpResponse result = invoker.invoke("/service/" + instance.getServiceName() + "/" + instance.getProviderId(), body,
+        HttpResponse result = invoker.invoke(toInstanceUri(instance.getServiceName(), instance.getProviderId()), body,
                 HttpMethod.POST);
 
         if (result.getHttpCode() != HTTP_CREATED) {
@@ -127,6 +127,10 @@ public class DirectoryServiceClient{
         }
     }
 
+    private String toInstanceUri(String serviceName, String providerId) {
+        return "/service/" + serviceName + "/" + providerId;
+    }
+
     /**
      * Update a ServiceInstance.
      *
@@ -135,7 +139,7 @@ public class DirectoryServiceClient{
      */
     public void updateInstance(ProvidedServiceInstance instance){
         String body = serialize(instance);
-        HttpResponse result = invoker.invoke("/service/" + instance.getServiceName() + "/" + instance.getProviderId(), body,
+        HttpResponse result = invoker.invoke(toInstanceUri(instance.getServiceName(),instance.getProviderId()), body,
                 HttpMethod.PUT);
 
         if (result.getHttpCode() != HTTP_CREATED) {
@@ -159,7 +163,7 @@ public class DirectoryServiceClient{
      *         whether the DirectoryAPI owns this ServiceProvider.
      */
     public void updateInstanceStatus(String serviceName, String instanceId, OperationalStatus status, boolean isOwned){
-        String uri = "/service/" + serviceName + "/" + instanceId + "/status";
+        String uri = toInstanceUri(serviceName, instanceId)+"/status";
 
         String body = null;
         try {
@@ -182,6 +186,8 @@ public class DirectoryServiceClient{
         }
     }
 
+
+
     /**
      * Update the ServiceInstance URI by serviceName and instanceId.
      *
@@ -195,7 +201,7 @@ public class DirectoryServiceClient{
      *         whether the DirectoryAPI owns this ServiceProvider.
      */
     public void updateInstanceUri(String serviceName, String instanceId, String uri, boolean isOwned){
-        String serviceUri = "/service/" + serviceName + "/" + instanceId + "/uri" ;
+        String serviceUri = toInstanceUri(serviceName, instanceId) + "/uri" ;
         String body = null;
         try {
             body = "uri=" + URLEncoder.encode(uri, "UTF-8") + "&isOwned=" + isOwned;
@@ -228,7 +234,7 @@ public class DirectoryServiceClient{
      *         whether the DirectoryAPI owns this ServiceProvider.
      */
     public void unregisterInstance(String serviceName, String instanceId, boolean isOwned){
-        String uri = "/service/" + serviceName + "/" + instanceId + "/" + isOwned;
+        String uri = toInstanceUri(serviceName, instanceId) + "/" + isOwned;
         HttpResponse result = invoker.invoke(uri, null,
                 HttpMethod.DELETE);
 
