@@ -368,7 +368,7 @@ public class DirectoryServiceClient{
      * @throws JsonMappingException
      * @throws JsonParseException
      */
-    private <T> T _deserialize(String body, Class<T> clazz) {
+    <T> T _deserialize(String body, Class<T> clazz) {
         if(body == null || body.isEmpty()){
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "the message body is empty");
@@ -399,7 +399,7 @@ public class DirectoryServiceClient{
      * @throws JsonMappingException
      * @throws JsonParseException
      */
-    private <T> T _deserialize(String body, TypeReference<T> typeRef){
+     <T> T _deserialize(String body, TypeReference<T> typeRef){
         if(body == null || body.isEmpty()){
             ServiceDirectoryError sde = new ServiceDirectoryError(
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "the message body is empty");
@@ -423,7 +423,7 @@ public class DirectoryServiceClient{
      * @return
      *         the JSON String.
      */
-    private String _serialize(Object o) {
+    String _serialize(Object o) {
         String body = null;
             try {
                 body = new String(serialize(o));
@@ -443,4 +443,9 @@ public class DirectoryServiceClient{
     DirectoryInvoker getDirectoryInvoker(){
         return invoker;
     }
+
+    public void setInvoker(DirectoryInvoker invoker) {
+        this.invoker = invoker;
+    }
 }
+

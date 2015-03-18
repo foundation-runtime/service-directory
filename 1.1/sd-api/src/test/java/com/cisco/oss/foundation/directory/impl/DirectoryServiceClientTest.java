@@ -16,6 +16,7 @@
 package com.cisco.oss.foundation.directory.impl;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
@@ -53,8 +54,8 @@ public class DirectoryServiceClientTest {
     }
 
     @Test
-    public void testRegisterInstance() throws ServiceException{
-        DirectoryServiceClient client = ((DirectoryServiceClientManager)ServiceDirectoryImpl.getInstance()).getDirectoryServiceClient();
+    public void testRegisterInstance() throws Exception{
+        final DirectoryServiceClient client = new DirectoryServiceClient();
 
         final ProvidedServiceInstance instance = new ProvidedServiceInstance("odrm", "192.168.7.4", 8901);
         instance.setMonitorEnabled(true);
@@ -65,6 +66,7 @@ public class DirectoryServiceClientTest {
         metadata.put("solution", "core");
         instance.setMetadata(metadata);
 
+        /*
         HttpUtils utils = new HttpUtils(){
             @Override
             public HttpResponse postJson(String urlStr, String body)
@@ -76,13 +78,24 @@ public class DirectoryServiceClientTest {
             }
         };
         client.getDirectoryInvoker().setHttpUtils(utils);
-
+        */
+        final DirectoryInvoker mockInvoker = new DirectoryInvoker(){
+            @Override
+            public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method) {
+                Assert.assertEquals("http://vcsdirsvc:2013/service/odrm/192.168.7.4-8901",directoryAddresses+
+                        uri);
+                ProvidedServiceInstance instance2 = client._deserialize(payload, ProvidedServiceInstance.class);
+                compareProvidedServiceInstance(instance, instance2);
+                return new HttpResponse(201, null);
+            }
+        };
+        client.setInvoker(mockInvoker);
         client.registerInstance(instance);
     }
 
     @Test
-    public void testupdateInstance() throws ServiceException{
-        DirectoryServiceClient client = ((DirectoryServiceClientManager)ServiceDirectoryImpl.getInstance()).getDirectoryServiceClient();
+    public void testUpdateInstance() throws ServiceException{
+        final DirectoryServiceClient client = new DirectoryServiceClient();
 
         final ProvidedServiceInstance instance = new ProvidedServiceInstance("odrm", "192.168.7.4", 8901);
         instance.setMonitorEnabled(true);
@@ -93,6 +106,7 @@ public class DirectoryServiceClientTest {
         metadata.put("solution", "core");
         instance.setMetadata(metadata);
 
+        /*
         HttpUtils utils = new HttpUtils(){
             @Override
             public HttpResponse putJson(String urlStr, String body)
@@ -104,20 +118,30 @@ public class DirectoryServiceClientTest {
 
             }
         };
-        client.getDirectoryInvoker().setHttpUtils(utils);
-
+        */
+        final DirectoryInvoker mockInvoker = new DirectoryInvoker(){
+            @Override
+            public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method) {
+                Assert.assertEquals("http://vcsdirsvc:2013/service/odrm/192.168.7.4-8901", directoryAddresses+uri);
+                ProvidedServiceInstance instance2 = client._deserialize(payload, ProvidedServiceInstance.class);
+                compareProvidedServiceInstance(instance, instance2);
+                return new HttpResponse(201, null);
+            }
+        };
+        client.setInvoker(mockInvoker);
         client.updateInstance(instance);
     }
 
     @Test
-    public void testupdateInstanceStatus() throws ServiceException{
-        DirectoryServiceClient client = ((DirectoryServiceClientManager)ServiceDirectoryImpl.getInstance()).getDirectoryServiceClient();
+    public void testUpdateInstanceStatus() throws ServiceException{
+        final DirectoryServiceClient client = new DirectoryServiceClient();
 
 
         final String serviceName = "odrm";
         final String instanceId = "192.168.7.4-8901";
         final OperationalStatus status = OperationalStatus.DOWN;
 
+        /*
         HttpUtils utils = new HttpUtils(){
             @Override
             public HttpResponse put(String urlStr, String body, Map<String, String> headers)
@@ -129,21 +153,30 @@ public class DirectoryServiceClientTest {
 
             }
         };
-        client.getDirectoryInvoker().setHttpUtils(utils);
-
+        */
+        final DirectoryInvoker mockInvoker = new DirectoryInvoker() {
+            @Override
+            public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
+                Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName + "/" + instanceId + "/status", directoryAddresses+uri);
+                Assert.assertEquals(payload, "status=" + status + "&isOwned=true");
+                return new HttpResponse(200, null);
+            }
+        };
+        client.setInvoker(mockInvoker);
         client.updateInstanceStatus(serviceName, instanceId, status, true);
     }
 
 
     @Test
-    public void testupdateInstanceUri() throws ServiceException{
-        DirectoryServiceClient client = ((DirectoryServiceClientManager)ServiceDirectoryImpl.getInstance()).getDirectoryServiceClient();
+    public void testUpdateInstanceUri() throws ServiceException,UnsupportedEncodingException{
+        final DirectoryServiceClient client = new DirectoryServiceClient();
 
 
         final String serviceName = "odrm";
         final String instanceId = "192.168.7.4-8901";
         final String uri = "http://cisco.com/vbo/odrm/setupsession";
 
+        /*
         HttpUtils utils = new HttpUtils(){
             @Override
             public HttpResponse put(String urlStr, String body, Map<String, String> headers)
@@ -155,19 +188,29 @@ public class DirectoryServiceClientTest {
 
             }
         };
-        client.getDirectoryInvoker().setHttpUtils(utils);
+        */
+        final String encodedUri = URLEncoder.encode(uri, "UTF-8");
+        final DirectoryInvoker mockInvoker = new DirectoryInvoker() {
+            @Override
+            public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
+                Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName + "/" + instanceId + "/uri", directoryAddresses+uri);
+                Assert.assertEquals(payload, "uri=" + encodedUri + "&isOwned=false");
+                return new HttpResponse(200, null);
+            }
+        };
+        client.setInvoker(mockInvoker);
 
         client.updateInstanceUri(serviceName, instanceId, uri, false);
     }
 
     @Test
-    public void testunregisterInstance() throws ServiceException{
-        DirectoryServiceClient client = ((DirectoryServiceClientManager)ServiceDirectoryImpl.getInstance()).getDirectoryServiceClient();
+    public void testUnregisterInstance() throws ServiceException{
+        final DirectoryServiceClient client = new DirectoryServiceClient();
 
 
         final String serviceName = "odrm";
         final String instanceId = "192.168.7.4-8901";
-
+        /*
         HttpUtils utils = new HttpUtils(){
             @Override
             public HttpResponse deleteJson(String urlStr)
@@ -178,14 +221,22 @@ public class DirectoryServiceClientTest {
 
             }
         };
-        client.getDirectoryInvoker().setHttpUtils(utils);
+        */
+        final DirectoryInvoker mockInvoker = new DirectoryInvoker() {
+            @Override
+            public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method) {
+                Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName + "/" + instanceId + "/true" , directoryAddresses+uri);
+                return new HttpResponse(200, null);
+            }
+        };
+        client.setInvoker(mockInvoker);
 
         client.unregisterInstance(serviceName, instanceId, true);
     }
 
     @Test
-    public void testsendHeartBeat() throws ServiceException{
-        DirectoryServiceClient client = ((DirectoryServiceClientManager)ServiceDirectoryImpl.getInstance()).getDirectoryServiceClient();
+    public void testSendHeartBeat() throws ServiceException{
+        final DirectoryServiceClient client = new DirectoryServiceClient();
 
         final Map<String, ServiceInstanceHeartbeat> heartbeatMap = new HashMap<String, ServiceInstanceHeartbeat>();
 
@@ -193,7 +244,7 @@ public class DirectoryServiceClientTest {
 
         final Map<String, OperationResult<String>> result = new HashMap<String, OperationResult<String>>();
         result.put("odrm/192.168.2.3-8901", new OperationResult<String>(true, "it is OK", null));
-
+        /*
         HttpUtils utils = new HttpUtils(){
             @Override
             public HttpResponse putJson(String urlStr, String body)
@@ -209,15 +260,28 @@ public class DirectoryServiceClientTest {
 
             }
         };
-        client.getDirectoryInvoker().setHttpUtils(utils);
+        */
+        final DirectoryInvoker mockInvoker = new DirectoryInvoker() {
+            @Override
+            public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method) {
+                Assert.assertEquals("http://vcsdirsvc:2013/service/heartbeat", directoryAddresses+uri);
+                Map<String, ServiceInstanceHeartbeat> hbs = client._deserialize(payload, new TypeReference<Map<String, ServiceInstanceHeartbeat>>() {
+                });
+                Assert.assertEquals(hbs.size(), 1);
+                Assert.assertEquals(hbs.get("odrm/192.168.2.3-8901").getServiceName(), "odrm");
+                Assert.assertEquals(hbs.get("odrm/192.168.2.3-8901").getProviderId(), "192.168.2.3-8901");
+                return new HttpResponse(200, new String(client._serialize(result)));
+            }
+        };
 
+        client.setInvoker(mockInvoker);
         client.sendHeartBeat(heartbeatMap);
     }
 
 
     @Test
-    public void testgetMetadataKey() throws ServiceException{
-        DirectoryServiceClient client = ((DirectoryServiceClientManager)ServiceDirectoryImpl.getInstance()).getDirectoryServiceClient();
+    public void testGetMetadataKey() throws ServiceException{
+        final DirectoryServiceClient client = new DirectoryServiceClient();
 
         final String keyName = "datacenter";
 
@@ -238,6 +302,7 @@ public class DirectoryServiceClientTest {
         result.setId("datacenter");
         result.setServiceInstances(instances);
 
+        /*
         HttpUtils utils = new HttpUtils(){
             @Override
             public HttpResponse getJson(String urlStr)
@@ -249,7 +314,16 @@ public class DirectoryServiceClientTest {
 
             }
         };
-        client.getDirectoryInvoker().setHttpUtils(utils);
+        */
+        final DirectoryInvoker mockInvoker = new DirectoryInvoker() {
+            @Override
+            public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method) {
+                Assert.assertEquals("http://vcsdirsvc:2013/metadatakey/" + keyName, directoryAddresses+uri);
+                return new HttpResponse(200, new String(client._serialize(result)));
+            }
+        };
+
+        client.setInvoker(mockInvoker);
 
         ModelMetadataKey metadatakey = client.getMetadataKey(keyName);
 
@@ -263,8 +337,8 @@ public class DirectoryServiceClientTest {
     }
 
     @Test
-    public void testlookupService() throws ServiceException{
-        DirectoryServiceClient client = ((DirectoryServiceClientManager)ServiceDirectoryImpl.getInstance()).getDirectoryServiceClient();
+    public void testLookupService() throws ServiceException{
+        final DirectoryServiceClient client = new DirectoryServiceClient();
 
         final String serviceName = "odrm";
 
@@ -282,6 +356,7 @@ public class DirectoryServiceClientTest {
         final ModelService result = new ModelService("odrm", "odrm", date);
         result.setServiceInstances(instances);
 
+        /*
         HttpUtils utils = new HttpUtils(){
             @Override
             public HttpResponse getJson(String urlStr)
@@ -293,7 +368,16 @@ public class DirectoryServiceClientTest {
 
             }
         };
-        client.getDirectoryInvoker().setHttpUtils(utils);
+        */
+
+        final DirectoryInvoker mockInvoker = new DirectoryInvoker() {
+            @Override
+            public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method) {
+                Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName, directoryAddresses+uri);
+                return new HttpResponse(200, new String(client._serialize(result)));
+            }
+        };
+        client.setInvoker(mockInvoker);
 
         ModelService service = client.lookupService(serviceName);
 
@@ -306,8 +390,8 @@ public class DirectoryServiceClientTest {
     }
 
     @Test
-    public void testgetServiceChanging() throws ServiceException{
-        DirectoryServiceClient client = ((DirectoryServiceClientManager)ServiceDirectoryImpl.getInstance()).getDirectoryServiceClient();
+    public void testGetServiceChanging() throws ServiceException{
+        final DirectoryServiceClient client = new DirectoryServiceClient();
 
         final Date date = new Date();
 
@@ -333,6 +417,7 @@ public class DirectoryServiceClientTest {
         final Map<String, OperationResult<ModelService>> result = new HashMap<String, OperationResult<ModelService>>();
         result.put("odrm", new OperationResult<ModelService>(true, changingservice, new ServiceDirectoryError(ErrorCode.OK)));
 
+        /*
         HttpUtils utils = new HttpUtils(){
             @Override
             public HttpResponse postJson(String urlStr, String body)
@@ -349,7 +434,22 @@ public class DirectoryServiceClientTest {
 
             }
         };
-        client.getDirectoryInvoker().setHttpUtils(utils);
+        */
+        final DirectoryInvoker mockInvoker = new DirectoryInvoker() {
+            @Override
+            public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method) {
+                Assert.assertEquals("http://vcsdirsvc:2013/service/changing", directoryAddresses+uri);
+
+                Map<String, ModelService> target = client._deserialize(payload, new TypeReference<Map<String, ModelService>>(){});
+                Assert.assertEquals(target.size(), 1);
+                Assert.assertEquals(target.get("odrm").getCreateTime().getTime(), date.getTime());
+                Assert.assertEquals(target.get("odrm").getName(), "odrm");
+
+                return new HttpResponse(200, new String(client._serialize(result)));
+
+            }
+        };
+        client.setInvoker(mockInvoker);
 
         Map<String, OperationResult<ModelService>> changed = client.getServiceChanging(services);
 

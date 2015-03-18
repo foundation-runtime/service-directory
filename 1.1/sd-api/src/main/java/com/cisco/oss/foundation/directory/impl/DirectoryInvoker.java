@@ -52,8 +52,6 @@ public class DirectoryInvoker {
     /* The remote ServiceDirectory node address array, in the format of http://<host>:<port> */
     public String directoryAddresses;
 
-    private HttpUtils httpUtils = null;
-
     /**
      * The Service Directory server FQDN property name.
      */
@@ -82,7 +80,6 @@ public class DirectoryInvoker {
         String sdFQDN = Configurations.getString(SD_API_SD_SERVER_FQDN_PROPERTY, SD_API_SD_SERVER_FQDN_DEFAULT);
         int port = Configurations.getInt(SD_API_SD_SERVER_PORT_PROPERTY, SD_API_SD_SERVER_PORT_DEFAULT);
         this.directoryAddresses = "http://" + sdFQDN + ":" + port;
-        this.httpUtils = HttpUtils.getInstance();
     }
 
     /**
@@ -99,13 +96,13 @@ public class DirectoryInvoker {
         String url = directoryAddresses + uri;
         try {
             if (method == null || method == HttpMethod.GET) {
-                result = getHttpUtils().getJson(url);
+                result = HttpUtils.getJson(url);
             } else if (method == HttpMethod.POST) {
-                result = getHttpUtils().postJson(url, payload);
+                result = HttpUtils.postJson(url, payload);
             } else if (method == HttpMethod.PUT) {
-                result = getHttpUtils().putJson(url, payload);
+                result = HttpUtils.putJson(url, payload);
             } else if (method == HttpMethod.DELETE) {
-                result = getHttpUtils().deleteJson(url);
+                result = HttpUtils.deleteJson(url);
             }
         } catch (IOException e) {
             String errMsg = "Send HTTP Request to remote Directory Server failed";
@@ -160,7 +157,7 @@ public class DirectoryInvoker {
         String url = directoryAddresses + uri;
         try {
             if (method == HttpMethod.PUT) {
-                result = getHttpUtils().put(url, payload, headers);
+                result = HttpUtils.put(url, payload, headers);
             }
         } catch (IOException e) {
             String errMsg = "Send HTTP Request to remote Directory Server failed";
@@ -199,19 +196,5 @@ public class DirectoryInvoker {
             }
         }
         return result;
-    }
-
-    private HttpUtils getHttpUtils(){
-        return this.httpUtils;
-    }
-
-    /**
-     * HttpUtils setter, keep it default for unit test.
-     *
-     * @param httpUtils
-     *         the customer HttpUtils.
-     */
-    void setHttpUtils(HttpUtils httpUtils){
-        this.httpUtils = httpUtils;
     }
 }

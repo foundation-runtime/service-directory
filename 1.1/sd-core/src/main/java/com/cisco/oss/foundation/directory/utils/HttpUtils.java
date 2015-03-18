@@ -37,28 +37,16 @@ import com.google.common.io.CharStreams;
  *
  *
  */
-public class HttpUtils {
+public final class HttpUtils {
     public static enum HttpMethod {
         GET, PUT, POST, DELETE
     }
 
-    private static HttpUtils instance = new HttpUtils();
-
     /**
-     * protect the singleton.
+     * prevent to create instance
      */
-    protected HttpUtils() {
+    private HttpUtils() { }
 
-    }
-
-    /**
-     * Get the HttpUtils singleton instance.
-     *
-     * @return HttpUtils instance.
-     */
-    public static HttpUtils getInstance() {
-        return instance;
-    }
 
     /**
      * Invoke REST Service using POST method.
@@ -70,7 +58,7 @@ public class HttpUtils {
      * @return the HttpResponse.
      * @throws IOException
      */
-    public HttpResponse postJson(String urlStr, String body) throws IOException {
+    public static HttpResponse postJson(String urlStr, String body) throws IOException {
 
         URL url = new URL(urlStr);
         HttpURLConnection urlConnection = (HttpURLConnection) url
@@ -102,7 +90,7 @@ public class HttpUtils {
      * @return the HttpResponse.
      * @throws IOException
      */
-    public HttpResponse putJson(String urlStr, String body) throws IOException {
+    public static HttpResponse putJson(String urlStr, String body) throws IOException {
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-Type", "application/json");
         return put(urlStr, body, headers);
@@ -122,7 +110,7 @@ public class HttpUtils {
      * @return the HttpResponse.
      * @throws IOException
      */
-    public HttpResponse put(String urlStr, String body,
+    public static HttpResponse put(String urlStr, String body,
             Map<String, String> headers) throws IOException {
         URL url = new URL(urlStr);
         HttpURLConnection urlConnection = (HttpURLConnection) url
@@ -160,7 +148,7 @@ public class HttpUtils {
      * @return the HttpResponse.
      * @throws IOException
      */
-    public HttpResponse getJson(String urlStr) throws IOException {
+    public static HttpResponse getJson(String urlStr) throws IOException {
         URL url = new URL(urlStr);
         HttpURLConnection urlConnection = (HttpURLConnection) url
                 .openConnection();
@@ -177,7 +165,7 @@ public class HttpUtils {
      * @return the HttpResponse.
      * @throws IOException
      */
-    public HttpResponse deleteJson(String urlStr) throws IOException {
+    public static HttpResponse deleteJson(String urlStr) throws IOException {
         URL url = new URL(urlStr);
         HttpURLConnection urlConnection = (HttpURLConnection) url
                 .openConnection();
@@ -188,7 +176,7 @@ public class HttpUtils {
         return getHttpResponse(urlConnection);
     }
 
-    private HttpResponse getHttpResponse(HttpURLConnection urlConnection) throws IOException {
+    private static HttpResponse getHttpResponse(HttpURLConnection urlConnection) throws IOException {
         BufferedReader in = null;
         try {
             int errorCode = urlConnection.getResponseCode();

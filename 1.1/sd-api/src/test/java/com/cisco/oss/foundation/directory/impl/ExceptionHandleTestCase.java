@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.cisco.oss.foundation.directory.exception.DirectoryServerClientException;
 import junit.framework.Assert;
 
 import org.junit.BeforeClass;
@@ -71,13 +72,14 @@ public class ExceptionHandleTestCase  {
      */
     @Test
     public void testRegistrationManager() throws ServiceException {
-        DirectoryServiceClient client = ((DirectoryServiceClientManager)ServiceDirectoryImpl.getInstance()).getDirectoryServiceClient();
+        final DirectoryServiceClient client = ((DirectoryServiceClientManager)ServiceDirectoryImpl.getInstance()).getDirectoryServiceClient();
         String serviceName = "mock-test01";
         final ProvidedServiceInstance instance = createInstance(serviceName);
 
         ServiceDirectoryError sde1 = new ServiceDirectoryError(ErrorCode.SERVICE_INSTANCE_NOT_EXIST);
         final AtomicReference<ServiceDirectoryError> error = new AtomicReference<ServiceDirectoryError>();
         error.set(sde1);
+        /*
         HttpUtils utils = new HttpUtils(){
             @Override
             public HttpResponse postJson(String urlStr, String body)
@@ -95,7 +97,17 @@ public class ExceptionHandleTestCase  {
                 return new HttpResponse(500, new String(serialize(error.get())));
             }
         };
-        client.getDirectoryInvoker().setHttpUtils(utils);
+        */
+
+        final DirectoryInvoker mockInvoker = new DirectoryInvoker() {
+            @Override
+            public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method) {
+
+                Assert.assertEquals("http://vcsdirsvc:2013/service/mock-test01/" + instance.getProviderId(), directoryAddresses+uri);
+                throw new DirectoryServerClientException(error.get());
+            }
+        };
+        client.setInvoker(mockInvoker);
 
 
         RegistrationManager registration = null;
