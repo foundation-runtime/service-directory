@@ -215,7 +215,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                 SD_API_CACHE_SYNC_INTERVAL_PROPERTY,
                 SD_API_CACHE_SYNC_INTERVAL_DEFAULT);
 
-        syncService.scheduleWithFixedDelay(new CacheSyncTask(this),
+        syncService.scheduleWithFixedDelay(new CacheSyncTask(),
                 delay, interval, TimeUnit.SECONDS);
     }
 
@@ -342,12 +342,11 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
      *
      *
      */
-    private static class CacheSyncTask implements Runnable{
+    private class CacheSyncTask implements Runnable{
 
         private boolean lastCacheDump = false;
-        private CachedDirectoryLookupService cachedLookupService;
-        public CacheSyncTask(CachedDirectoryLookupService cachedLookupService){
-            this.cachedLookupService = cachedLookupService;
+        private final CachedDirectoryLookupService cachedLookupService = CachedDirectoryLookupService.this;
+        public CacheSyncTask(){
         }
         @Override
         public void run() {
