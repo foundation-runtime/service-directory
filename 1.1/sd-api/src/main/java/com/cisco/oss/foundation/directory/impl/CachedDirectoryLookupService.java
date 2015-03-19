@@ -26,10 +26,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,22 +90,23 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     /**
      * ScheduledExecutorService to sync cache.
      */
-    private volatile ScheduledExecutorService syncService;
+    private final ScheduledExecutorService syncService;
 
     /**
      * Internal map cache for Service.
      */
-    private volatile ServiceDirectoryCache<String, ModelService> cache;
+    private final ConcurrentHashMap<String, ModelService> cache = new ConcurrentHashMap<String,ModelService>();
 
     /**
      * Internal map cache for the MetadataKey.
      */
-    private volatile ServiceDirectoryCache<String, ModelMetadataKey> metaKeyCache;
+    private final ConcurrentHashMap<String, ModelMetadataKey> metaKeyCache
+            = new ConcurrentHashMap<String, ModelMetadataKey>();
 
     /**
      * Mark whether component is started.
      */
-    private volatile boolean isStarted = false;
+    private final AtomicBoolean isStarted = new AtomicBoolean(false);
 
     /**
      * Constructor.
@@ -113,6 +116,19 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
      */
     public CachedDirectoryLookupService(DirectoryServiceClientManager directoryServiceClientManager) {
         super(directoryServiceClientManager);
+        syncService = Executors
+                .newSingleThreadScheduledExecutor(new ThreadFactory() {
+
+                    @Override
+                    public Thread newThread(Runnable r) {
+                        Thread t = new Thread(r);
+                        t.setName("SD_Cache_Sync_Task");
+                        t.setDaemon(true);
+                        return t;
+                    }
+
+                });
+
     }
 
     /**
@@ -123,9 +139,9 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
      */
     @Override
     public void start(){
-        if(this.isStarted == true)
-            return ;
-        this.isStarted = true;
+        if (isStarted.compareAndSet(false,true)){
+            initCacheSyncTask();
+        }
     }
 
     /**
@@ -136,17 +152,10 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
      */
     @Override
     public void stop(){
-        if (this.isStarted == false)
-            return;
-        synchronized (this) {
-            if (this.isStarted == true) {
-                if(this.syncService != null){
-                    this.syncService.shutdown();
-                }
-                getCache().refresh();
-                getMetadataKeyCache().refresh();
-                this.isStarted = false;
-            }
+        if (isStarted.compareAndSet(true,false)) {
+            this.syncService.shutdown();
+            getCache().clear();
+            getMetadataKeyCache().clear();
         }
     }
 
@@ -164,11 +173,11 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     @Override
     protected ModelService getModelService(String serviceName){
         ModelService service = null;
-        if (getCache().isCached(serviceName)) {
-            service = getCache().getService(serviceName);
+        if (getCache().containsKey(serviceName)) {
+            service = getCache().get(serviceName);
         } else {
             service = super.getModelService(serviceName);
-            getCache().putService(serviceName, service);
+            getCache().put(serviceName, service);
         }
         return service;
     }
@@ -186,49 +195,28 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     @Override
     protected ModelMetadataKey getModelMetadataKey(String keyName){
         ModelMetadataKey key = null;
-        if(this.getMetadataKeyCache().isCached(keyName)){
-            key = getMetadataKeyCache().getService(keyName);
+        if(this.getMetadataKeyCache().containsKey(keyName)){
+            key = getMetadataKeyCache().get(keyName);
         } else {
             key = super.getModelMetadataKey(keyName);
-            getMetadataKeyCache().putService(keyName, key);
+            getMetadataKeyCache().put(keyName, key);
         }
         return key;
     }
 
     /**
-     * Lazy initialization of the CacheSyncTask
-     *
-     * It is thread safe.
+     * initialization of the CacheSyncTask
      */
     private void initCacheSyncTask(){
-        if(syncService == null){
-            synchronized(this){
-                if(syncService == null){
-                    int delay = Configurations.getInt(
-                            SD_API_CACHE_SYNC_DELAY_PROPERTY,
-                            SD_API_CACHE_SYNC_DELAY_DEFAULT);
-                    int interval = Configurations.getInt(
-                            SD_API_CACHE_SYNC_INTERVAL_PROPERTY,
-                            SD_API_CACHE_SYNC_INTERVAL_DEFAULT);
+        int delay = Configurations.getInt(
+                SD_API_CACHE_SYNC_DELAY_PROPERTY,
+                SD_API_CACHE_SYNC_DELAY_DEFAULT);
+        int interval = Configurations.getInt(
+                SD_API_CACHE_SYNC_INTERVAL_PROPERTY,
+                SD_API_CACHE_SYNC_INTERVAL_DEFAULT);
 
-                    syncService = Executors
-                            .newSingleThreadScheduledExecutor(new ThreadFactory() {
-
-                                @Override
-                                public Thread newThread(Runnable r) {
-                                    Thread t = new Thread(r);
-                                    t.setName("SD_Cache_Sync_Task");
-                                    t.setDaemon(true);
-                                    return t;
-                                }
-
-                            });
-
-                    syncService.scheduleWithFixedDelay(new CacheSyncTask(this),
-                            delay, interval, TimeUnit.SECONDS);
-                }
-            }
-        }
+        syncService.scheduleWithFixedDelay(new CacheSyncTask(this),
+                delay, interval, TimeUnit.SECONDS);
     }
 
     /**
@@ -239,15 +227,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
      * @return
      *         the ServiceDirectoryCache.
      */
-    private ServiceDirectoryCache<String, ModelMetadataKey> getMetadataKeyCache(){
-        if(metaKeyCache == null){
-            synchronized(this){
-                if(metaKeyCache == null){
-                    metaKeyCache = new ServiceDirectoryCache<String, ModelMetadataKey>();
-                    initCacheSyncTask();
-                }
-            }
-        }
+    private Map<String, ModelMetadataKey> getMetadataKeyCache(){
         return metaKeyCache;
     }
 
@@ -259,15 +239,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
      * @return
      *         the ServiceDirectoryCache.
      */
-    private ServiceDirectoryCache<String, ModelService> getCache(){
-        if(cache == null){
-            synchronized (this) {
-                if (this.cache == null) {
-                    this.cache = new ServiceDirectoryCache<String, ModelService>();
-                    initCacheSyncTask();
-                }
-            }
-        }
+    private Map<String, ModelService> getCache(){
         return this.cache;
     }
 
@@ -280,7 +252,8 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
      *         the ModelService List.
      */
     private List<ModelService> getAllServicesForSync(){
-        List<ModelService> allServices = getCache().getAllServices();
+        List<ModelService> allServices = new ArrayList<ModelService>();
+        allServices.addAll(this.cache.values());
         if(allServices.size() == 0){
             return Collections.emptyList();
         }
@@ -302,10 +275,8 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
      *         the ModelMetadataKey List.
      */
     private List<ModelMetadataKey> getAllMetadataKeysForSync(){
-        List<ModelMetadataKey> allKeys = getMetadataKeyCache().getAllServices();
-        if(allKeys.size() == 0){
-            return Collections.emptyList();
-        }
+        List<ModelMetadataKey> allKeys = new ArrayList<ModelMetadataKey>();
+        allKeys.addAll(this.metaKeyCache.values());
         List<ModelMetadataKey> syncKeys = new ArrayList<ModelMetadataKey>();
         for(ModelMetadataKey service : allKeys){
             ModelMetadataKey syncKey = new ModelMetadataKey(service.getName(), service.getId(), service.getModifiedTime(), service.getCreateTime());
@@ -350,7 +321,8 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 
         if(CacheDumpLogger.isDebugEnabled()){
 
-            List<ModelService> services = getCache().getAllServicesWithInstance();
+            List<ModelService> services = new ArrayList<ModelService>();
+            services.addAll(getCache().values());
             StringBuilder sb = new StringBuilder();
             sb.append("LookupManager dump Service Cache at: ").append(System.currentTimeMillis()).append("\n");
             for(ModelService service : services){
@@ -394,7 +366,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                             if(result.getResult()){
                                 ModelMetadataKey newKey = result.getobject();
                                 if(newKey != null){
-                                    cachedLookupService.getMetadataKeyCache().putService(keyName, newKey);
+                                    cachedLookupService.getMetadataKeyCache().put(keyName, newKey);
                                     LOGGER.info("Update the ModelMetadataKey in cache, keyName=" + keyName);
                                 }
                             } else {
@@ -429,9 +401,9 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                             OperationResult<ModelService> result = deltaService.getValue();
                             if(result.getResult()){
                                 ModelService newService = result.getobject();
-                                ModelService oldService = cachedLookupService.getCache().getService(serviceName);
+                                ModelService oldService = cachedLookupService.getCache().get(serviceName);
                                 if(newService != null){
-                                    cachedLookupService.getCache().putService(serviceName, newService);
+                                    cachedLookupService.getCache().put(serviceName, newService);
                                     LOGGER.info("Update the ModelService in cache, serviceName=" + serviceName );
                                 }
                                 onServiceChanged(newService, oldService);

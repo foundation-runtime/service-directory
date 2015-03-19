@@ -25,6 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
@@ -42,7 +44,6 @@ import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
-import com.cisco.oss.foundation.directory.impl.ServiceDirectoryCache;
 import com.cisco.oss.foundation.directory.impl.ServiceInstanceQueryHelper;
 import com.cisco.oss.foundation.directory.lifecycle.Closable;
 import com.cisco.oss.foundation.directory.query.QueryCriterion;
@@ -72,17 +73,17 @@ public class DefaultTestServiceDirectoryManager implements
     /**
      * The internal Cache for ProvidedService.
      */
-    private ServiceDirectoryCache<String, ProvidedService> cache;
+    private ConcurrentHashMap<String, ProvidedService> cache;
 
     /**
      * The internal Cache for MetadataKey.
      */
-    private ServiceDirectoryCache<String, List<ProvidedServiceInstance>> metadataKeyCache;
+    private ConcurrentHashMap<String, List<ProvidedServiceInstance>> metadataKeyCache;
 
     /**
      * Mark whether component is started or not.
      */
-    protected boolean isStarted = false;
+    protected AtomicBoolean isStarted = new AtomicBoolean(false);
 
     /**
      * The Service NotificationHandler Map.
@@ -94,8 +95,8 @@ public class DefaultTestServiceDirectoryManager implements
      * Constructor
      */
     public DefaultTestServiceDirectoryManager(){
-        cache = new ServiceDirectoryCache<String, ProvidedService>();
-        metadataKeyCache = new ServiceDirectoryCache<String, List<ProvidedServiceInstance>>();
+        cache = new ConcurrentHashMap<String, ProvidedService>();
+        metadataKeyCache = new ConcurrentHashMap<String, List<ProvidedServiceInstance>>();
         this.queryInstanceIdx = new HashMap<String, AtomicInteger>();
     }
 
@@ -104,9 +105,7 @@ public class DefaultTestServiceDirectoryManager implements
      */
     @Override
     public void start() {
-        if(! isStarted){
-            isStarted = true;
-        }
+        isStarted.compareAndSet(false,true);
     }
 
     /**
@@ -114,9 +113,9 @@ public class DefaultTestServiceDirectoryManager implements
      */
     @Override
     public void stop() {
-        if(isStarted){
-            cache.refresh();
-            isStarted = false;
+        if(isStarted.compareAndSet(true,false)){
+            cache.clear();
+            metadataKeyCache.clear();
         }
     }
 
@@ -154,8 +153,9 @@ public class DefaultTestServiceDirectoryManager implements
             throws ServiceException {
 
         ProvidedService service = null;
-        if(cache.isCached(serviceName)){
-            service = cache.getService(serviceName);
+
+        if(cache.containsKey(serviceName)){
+            service = cache.get(serviceName);
         }
 
         if(service == null || service.getServiceInstances().size() == 0){
@@ -448,9 +448,9 @@ public class DefaultTestServiceDirectoryManager implements
         if (criteria != null && criteria.size() > 0) {
 
             String key = criteria.get(0).getMetadataKey();
-            if (metadataKeyCache.isCached(key)) {
+            if (metadataKeyCache.containsKey(key)) {
                 List<ProvidedServiceInstance> instances = metadataKeyCache
-                        .getService(key);
+                        .get(key);
                 List<ServiceInstance> list = new ArrayList<ServiceInstance>();
                 for (ProvidedServiceInstance model : instances) {
                     if (model.getStatus() == OperationalStatus.UP) {
@@ -487,8 +487,8 @@ public class DefaultTestServiceDirectoryManager implements
     public List<ServiceInstance> getAllInstances(String serviceName)
             throws ServiceException {
         ProvidedService service = null;
-        if(cache.isCached(serviceName)){
-            service = cache.getService(serviceName);
+        if(cache.containsKey(serviceName)){
+            service = cache.get(serviceName);
         }
 
         if(service == null || service.getServiceInstances().size() == 0){
@@ -520,7 +520,7 @@ public class DefaultTestServiceDirectoryManager implements
     public List<ServiceInstance> getAllInstances() throws ServiceException {
 
         List<ServiceInstance> instances = null;
-        for(ProvidedService service : cache.getAllServices()){
+        for(ProvidedService service : cache.values()){
             if(instances == null){
                 instances = new ArrayList<ServiceInstance>();
             }
@@ -546,9 +546,9 @@ public class DefaultTestServiceDirectoryManager implements
         if (criteria != null && criteria.size() > 0) {
 
             String key = criteria.get(0).getMetadataKey();
-            if (metadataKeyCache.isCached(key)) {
+            if (metadataKeyCache.containsKey(key)) {
                 List<ProvidedServiceInstance> instances = metadataKeyCache
-                        .getService(key);
+                        .get(key);
                 List<ServiceInstance> list = new ArrayList<ServiceInstance>();
                 for (ProvidedServiceInstance model : instances) {
                     list.add(new ServiceInstance(model.getServiceName(),
@@ -612,7 +612,7 @@ public class DefaultTestServiceDirectoryManager implements
      * @return
      *         the ServiceDirectoryCache.
      */
-    protected ServiceDirectoryCache<String, ProvidedService> getServiceDirectoryCache(){
+    protected ConcurrentHashMap<String, ProvidedService> getServiceDirectoryCache(){
         return this.cache;
     }
 
@@ -687,8 +687,8 @@ public class DefaultTestServiceDirectoryManager implements
      *         the ProvidedServiceInstance.
      */
     private ProvidedServiceInstance getProvidedServiceInstance(String serviceName, String instanceId){
-        if(this.cache.isCached(serviceName)){
-            List<ProvidedServiceInstance> instances = cache.getService(serviceName).getServiceInstances();
+        if(this.cache.containsKey(serviceName)){
+            List<ProvidedServiceInstance> instances = cache.get(serviceName).getServiceInstances();
             for(ProvidedServiceInstance ist : instances){
                 if(ist.getProviderId().equals(instanceId)){
                     return ist;
@@ -722,13 +722,13 @@ public class DefaultTestServiceDirectoryManager implements
      *         the ProvidedService.
      */
     private ProvidedService createServiceIfNotExists(String serviceName){
-        if(cache.isCached(serviceName)){
-            return cache.getService(serviceName);
+        if(cache.containsKey(serviceName)){
+            return cache.get(serviceName);
         }else{
             ProvidedService service = new ProvidedService(serviceName);
             List<ProvidedServiceInstance> ins = new ArrayList<ProvidedServiceInstance>();
             service.setServiceInstances(ins);
-            cache.putService(serviceName, service);
+            cache.put(serviceName, service);
             return service;
         }
     }
@@ -742,8 +742,8 @@ public class DefaultTestServiceDirectoryManager implements
      *         the ProvidedService.
      */
     private ProvidedService getService(String serviceName){
-        if(cache.isCached(serviceName)){
-            return cache.getService(serviceName);
+        if(cache.containsKey(serviceName)){
+            return cache.get(serviceName);
         }
         return null;
     }
@@ -834,11 +834,11 @@ public class DefaultTestServiceDirectoryManager implements
 
         for(Entry<String, String> en : serviceInstance.getMetadata().entrySet()){
             String key = en.getKey();
-            if(! this.metadataKeyCache.isCached(key)){
+            if(! this.metadataKeyCache.containsKey(key)){
                 List<ProvidedServiceInstance> instances = new ArrayList<ProvidedServiceInstance>();
-                this.metadataKeyCache.putService(key, instances);
+                this.metadataKeyCache.put(key, instances);
             }
-            this.metadataKeyCache.getService(key).add(cachedInstance);
+            this.metadataKeyCache.get(key).add(cachedInstance);
         }
     }
 
@@ -873,11 +873,11 @@ public class DefaultTestServiceDirectoryManager implements
         }
         for(Entry<String, String> en : cachedInstance.getMetadata().entrySet()){
             String key = en.getKey();
-            if(! this.metadataKeyCache.isCached(key)){
+            if(! this.metadataKeyCache.containsKey(key)){
                 List<ProvidedServiceInstance> instances = new ArrayList<ProvidedServiceInstance>();
-                this.metadataKeyCache.putService(key, instances);
+                this.metadataKeyCache.put(key, instances);
             }
-            this.metadataKeyCache.getService(key).remove(cachedInstance);
+            this.metadataKeyCache.get(key).remove(cachedInstance);
         }
     }
 
