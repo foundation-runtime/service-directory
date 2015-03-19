@@ -67,7 +67,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     /**
      * The LookupManager cache sync executor kick off delay time property name in seconds.
      */
-    public static final String SD_API_CACHE_SYNC_DELAY_PROPERTY = "cache.sync.delay";
+    public static final String SD_API_CACHE_SYNC_DELAY_PROPERTY = "com.cisco.oss.foundation.directory.cache.sync.delay";
 
     /**
      * The default delay time of LookupManager cache sync executor kick off.
@@ -77,22 +77,12 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     /**
      * The LookupManager cache sync interval property name in seconds.
      */
-    public static final String SD_API_CACHE_SYNC_INTERVAL_PROPERTY = "cache.sync.interval";
+    public static final String SD_API_CACHE_SYNC_INTERVAL_PROPERTY = "com.cisco.oss.foundation.directory.cache.sync.interval";
 
     /**
      * The default LookupManager cache sync interval value.
      */
     public static final int SD_API_CACHE_SYNC_INTERVAL_DEFAULT = 10;
-
-    /**
-     * The LookupManager cache enabled property.
-     */
-    public static final String SD_API_CACHE_ENABLED_PROPERTY = "cache.enabled";
-
-    /**
-     * The default cache enabled property value.
-     */
-    public static final boolean SD_API_CACHE_ENABLED_DEFAULT = true;
 
 
     /**
@@ -327,7 +317,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     /**
      * Get the changed list for the MetadataKey from the server.
      *
-     * @param keys
+     * @param keyMap
      *         the MetadataKey List.
      * @return
      *         the ModelMetadataKey that has changed.
@@ -339,7 +329,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     /**
      * Get the changed Services list from the server.
      *
-     * @param services
+     * @param serviceMap
      *         the Service list.
      * @return
      *         the Service list that has modification.

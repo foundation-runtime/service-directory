@@ -60,7 +60,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
     /**
      * The LookupManager cache enabled property.
      */
-    public static final String SD_API_CACHE_ENABLED_PROPERTY = "cache.enabled";
+    public static final String SD_API_CACHE_ENABLED_PROPERTY = "com.cisco.oss.foundation.directory.cache.enabled";
 
     /**
      * The default cache enabled property value.
