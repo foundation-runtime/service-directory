@@ -15,6 +15,8 @@
  */
 package com.cisco.oss.foundation.directory.impl;
 
+import static org.junit.Assert.fail;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -310,13 +312,13 @@ public class RegistrationManagerImplTest {
             impl.unregisterService(instance.getServiceName(), instance.getProviderId());
         } catch (ServiceException e) {
             e.printStackTrace();
-            Assert.assertTrue("unregisterService failed.", false);
+            fail("unregisterService failed.");
         }
 
         try {
             impl.updateService(instance);
+            fail(); //should not go there
         } catch (ServiceException e) {
-            e.printStackTrace();
             Assert.assertEquals(ErrorCode.ILLEGAL_SERVICE_INSTANCE_OWNER_ERROR, e.getServiceDirectoryError().getExceptionCode());
         }
 

@@ -15,6 +15,8 @@
  */
 package com.cisco.oss.foundation.directory.impl;
 
+import static org.junit.Assert.fail;
+
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -117,17 +119,17 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory,
         // When the ServiceDirectory shutdown, getRegistrationManager and getLookupManager should get SERVICE_DIRECTORY_IS_SHUTDOWN error.
         try {
             ServiceDirectory.getRegistrationManager();
+            fail();
         } catch (ServiceException e) {
             Assert.assertEquals(ErrorCode.SERVICE_DIRECTORY_IS_SHUTDOWN, e.getServiceDirectoryError().getExceptionCode());
-            LOGGER.error("Shutdown error", e);
         }
 
         // When the DefaultServiceDirectoryManagerFactory, close lookupManager and registrationManager should get SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED.
         try {
             lookupMgr.getAllInstances();
+            fail();
         } catch (ServiceException e1) {
             Assert.assertEquals(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED, e1.getServiceDirectoryError().getExceptionCode());
-            LOGGER.error("Shutdown error", e1);
         }
 
         ServiceDirectoryImpl.getInstance().revertForUnitTest();
