@@ -254,9 +254,6 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     private List<ModelService> getAllServicesForSync(){
         List<ModelService> allServices = new ArrayList<ModelService>();
         allServices.addAll(this.cache.values());
-        if(allServices.size() == 0){
-            return Collections.emptyList();
-        }
 
         List<ModelService> syncServices = new ArrayList<ModelService>();
         for(ModelService service : allServices){
@@ -315,24 +312,29 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
      *
      * @return
      *         true if dump complete.
-     * @throws Exception
      */
-    private boolean dumpCache() throws Exception{
-
-        if(CacheDumpLogger.isDebugEnabled()){
-
-            List<ModelService> services = new ArrayList<ModelService>();
-            services.addAll(getCache().values());
-            StringBuilder sb = new StringBuilder();
-            sb.append("LookupManager dump Service Cache at: ").append(System.currentTimeMillis()).append("\n");
-            for(ModelService service : services){
-                sb.append(new String(serialize(service))).append("\n");
+    private boolean dumpCache(){
+        if (CacheDumpLogger.isDebugEnabled()) {
+            try {
+                List<ModelService> services = new ArrayList<ModelService>();
+                services.addAll(getCache().values());
+                StringBuilder sb = new StringBuilder();
+                sb.append("LookupManager dump Service Cache at: ").append(System.currentTimeMillis()).append("\n");
+                for (ModelService service : services) {
+                    sb.append(new String(serialize(service))).append("\n");
+                }
+                CacheDumpLogger.debug(sb.toString());
+            } catch (Exception e) {
+                LOGGER.warn("Dump Service Cache failed. Set Logger " + CacheDumpLogger.getName() + " to INFO to close this message.");
+                if (LOGGER.isTraceEnabled()) {
+                    LOGGER.trace("Dump Service Cache failed.", e);
+                }
+                return false;
             }
-            CacheDumpLogger.debug(sb.toString());
             return true;
-        } else {
-            return false;
         }
+        return false;
+
     }
 
     /**
@@ -418,16 +420,10 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                     LOGGER.info("No service in the cache, skip cache sync.");
                 }
 
-                try{
-                    if (cacheUpdated || lastCacheDump == false) {
-                        lastCacheDump = cachedLookupService.dumpCache();
-                    }
-                } catch(Exception e){
-                    LOGGER.warn("Dump Service Cache failed. Set Logger " + CacheDumpLogger.getName() + " to INFO to close this message.");
-                    if(LOGGER.isTraceEnabled()){
-                        LOGGER.trace("Dump Service Cache failed.", e);
-                    }
+                if (cacheUpdated || lastCacheDump == false) {
+                    lastCacheDump = cachedLookupService.dumpCache();
                 }
+
             }catch(Exception e){
                 LOGGER.error("Sync ModelService cache from ServiceDirectory Server failed", e);
             }
