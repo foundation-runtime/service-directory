@@ -177,7 +177,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
             service = getCache().get(serviceName);
         } else {
             service = super.getModelService(serviceName);
-            getCache().put(serviceName, service);
+            getCache().putIfAbsent(serviceName, service);
         }
         return service;
     }
@@ -199,7 +199,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
             key = getMetadataKeyCache().get(keyName);
         } else {
             key = super.getModelMetadataKey(keyName);
-            getMetadataKeyCache().put(keyName, key);
+            getMetadataKeyCache().putIfAbsent(keyName, key);
         }
         return key;
     }
@@ -227,7 +227,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
      * @return
      *         the ServiceDirectoryCache.
      */
-    private Map<String, ModelMetadataKey> getMetadataKeyCache(){
+    private ConcurrentHashMap<String, ModelMetadataKey> getMetadataKeyCache(){
         return metaKeyCache;
     }
 
@@ -239,7 +239,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
      * @return
      *         the ServiceDirectoryCache.
      */
-    private Map<String, ModelService> getCache(){
+    private ConcurrentHashMap<String, ModelService> getCache(){
         return this.cache;
     }
 
