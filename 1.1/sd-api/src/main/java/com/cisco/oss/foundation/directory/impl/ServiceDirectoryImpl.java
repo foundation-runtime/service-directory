@@ -201,6 +201,17 @@ public class ServiceDirectoryImpl {
     }
 
     /**
+     * not properly implemented, just works as an opposite part with shutdown() method
+     * since the shutdown() is not implemented properly also
+     */
+    public synchronized void restart(){
+        if (directoryManagerFactory != null) {
+            ((Closable) directoryManagerFactory).start();
+        }
+        isShutdown = false;
+    }
+
+    /**
      * Get the ServiceDirectoryManagerFactory.
      *
      * It is lazy initialized and thread safe.

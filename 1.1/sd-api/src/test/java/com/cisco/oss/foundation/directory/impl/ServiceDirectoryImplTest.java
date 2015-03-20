@@ -139,6 +139,10 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory,
             Assert.assertEquals(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED, e1.getServiceDirectoryError().getExceptionCode());
         }
 
+        // need to call the method to set the isStarted to true
+        // otherwise other unit-test will be failure
+        // TODO: re-implement the shutdown()/start() method properly so that unit-test not depends on each other.
+        ServiceDirectoryImpl.getInstance().restart();
     }
 
     @Override
