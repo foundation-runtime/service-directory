@@ -62,7 +62,7 @@ public class ServiceDirectoryImpl implements DirectoryServiceClientManager{
     /**
      * The singleton instance.
      */
-    private static ServiceDirectoryImpl instance = new ServiceDirectoryImpl();
+    private final static ServiceDirectoryImpl instance = new ServiceDirectoryImpl();
 
     private boolean isShutdown = false;
 
