@@ -132,15 +132,6 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory,
             Assert.assertEquals(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED, e1.getServiceDirectoryError().getExceptionCode());
         }
 
-        ServiceDirectoryImpl.getInstance().revertForUnitTest();
-
-        try {
-            Assert.assertNull(ServiceDirectory.getRegistrationManager());
-
-        } catch (ServiceException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
     }
 
     @Override

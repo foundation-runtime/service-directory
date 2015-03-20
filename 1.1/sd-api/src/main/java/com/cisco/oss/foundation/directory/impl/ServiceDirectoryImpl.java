@@ -50,12 +50,12 @@ public class ServiceDirectoryImpl implements DirectoryServiceClientManager{
     public static final String SD_API_SERVICE_DIRECTORY_MANAGER_FACTORY_PROVIDER_PROPERTY = "service.directory.manager.factory.provider";
 
     /**
-     * ServiceDirectory client, it is lazy initialized.
+     * ServiceDirectory client.
      */
-    private DirectoryServiceClient client ;
+    private final DirectoryServiceClient client ;
 
     /**
-     * ServiceDirectoryManagerFactory, it is lazy initialized.
+     * ServiceDirectoryManagerFactory.
      */
     private ServiceDirectoryManagerFactory directoryManagerFactory;
 
@@ -68,6 +68,33 @@ public class ServiceDirectoryImpl implements DirectoryServiceClientManager{
 
     // Singleton, private the constructor.
     private ServiceDirectoryImpl() {
+        String custProvider = Configurations
+                .getString(SD_API_SERVICE_DIRECTORY_MANAGER_FACTORY_PROVIDER_PROPERTY);
+
+        if (custProvider != null && !custProvider.isEmpty()) {
+            try {
+                Class<?> provider = Class.forName(custProvider);
+                if (ServiceDirectoryManagerFactory.class
+                        .isAssignableFrom(provider)) {
+                    directoryManagerFactory = (ServiceDirectoryManagerFactory) provider
+                            .newInstance();
+                    directoryManagerFactory.initialize(this);
+                    LOGGER.info("Initialize the ServiceDirectoryManager with customer implementation " + custProvider + ".");
+                }
+            } catch (Exception e) {
+                LOGGER.error(
+                        "Initialize ServiceDirectoryManagerFactory from "
+                                + custProvider + " failed.", e);
+            }
+        }
+
+        if (directoryManagerFactory == null) {
+            LOGGER.info("Initialize the ServiceDirectoryManager with default implementation - StandServiceDirectoryManager.");
+            directoryManagerFactory = new DefaultServiceDirectoryManagerFactory();
+            directoryManagerFactory.initialize(this);
+        }
+
+        client = new DirectoryServiceClient();
     }
 
     /**
@@ -156,16 +183,9 @@ public class ServiceDirectoryImpl implements DirectoryServiceClientManager{
      */
     @Override
     public DirectoryServiceClient getDirectoryServiceClient() throws ServiceException{
-        if(client == null){
-            synchronized(this){
-                if(isShutdown){
-                    ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_IS_SHUTDOWN);
-                    throw new ServiceException(error);
-                }
-                if(client == null){
-                    client = new DirectoryServiceClient();
-                }
-            }
+        if (isShutdown) {
+            ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_IS_SHUTDOWN);
+            throw new ServiceException(error);
         }
         return client;
     }
@@ -182,7 +202,6 @@ public class ServiceDirectoryImpl implements DirectoryServiceClientManager{
                     }
                     directoryManagerFactory = null;
                 }
-                client = null;
                 this.isShutdown = true;
             }
         }
@@ -200,49 +219,17 @@ public class ServiceDirectoryImpl implements DirectoryServiceClientManager{
      */
     private ServiceDirectoryManagerFactory getServiceDirectoryManagerFactory() throws ServiceException{
         if(directoryManagerFactory == null){
-            synchronized(this){
-                if(isShutdown){
-                    ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_IS_SHUTDOWN);
-                    throw new ServiceException(error);
-                }
-                if(directoryManagerFactory == null){
-                    String custProvider = Configurations
-                            .getString(SD_API_SERVICE_DIRECTORY_MANAGER_FACTORY_PROVIDER_PROPERTY);
-
-                    if (custProvider != null && !custProvider.isEmpty()) {
-                        try {
-                            Class<?> provider = Class.forName(custProvider);
-                            if (ServiceDirectoryManagerFactory.class
-                                    .isAssignableFrom(provider)) {
-                                directoryManagerFactory = (ServiceDirectoryManagerFactory) provider
-                                        .newInstance();
-                                directoryManagerFactory.initialize(this);
-                                LOGGER.info("Instantialize the ServiceDirectoryManager with customer implementation " + custProvider + ".");
-                            }
-                        } catch (Exception e) {
-                            LOGGER.error(
-                                    "Instantialize ServiceDirectoryManagerFactory from "
-                                            + custProvider + " failed.", e);
-                        }
-                    }
-
-                    if (directoryManagerFactory == null) {
-                        LOGGER.info("Instantialize the ServiceDirectoryManager with default implementation - StandServiceDirectoryManager.");
-                        directoryManagerFactory = new DefaultServiceDirectoryManagerFactory();
-                        directoryManagerFactory.initialize(this);
-                    }
-                }
+            if(isShutdown){
+                ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_IS_SHUTDOWN);
+                throw new ServiceException(error);
+            }else{
+                // should not allow to return a null, use the error code SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED for now
+                // TODO, make directoryManagerFactory is immutable.
+                // TODO. remove the initialize and reinit method in ServiceDirectoryManagerFactory and ServiceDirectory
+                throw new ServiceException(new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED));
             }
         }
         return directoryManagerFactory;
-    }
-
-    /**
-     * Keep it default for Unit test.
-     * Revert the ServiceDirectory from shutdown.
-     */
-    void revertForUnitTest(){
-        isShutdown= false;
     }
 
 }
