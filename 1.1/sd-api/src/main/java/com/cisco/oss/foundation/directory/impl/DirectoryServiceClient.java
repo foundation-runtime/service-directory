@@ -314,7 +314,7 @@ public class DirectoryServiceClient{
      *         the Service list that has modification.
      * @throws ServiceException
      */
-    public Map<String, OperationResult<ModelService>> getServiceChanging(Map<String, ModelService> services){
+    public Map<String, OperationResult<ModelService>> getChangedServices(Map<String, ModelService> services){
         String body = _serialize(services);
         HttpResponse result = invoker.invoke("/service/changing" , body, HttpMethod.POST);
 

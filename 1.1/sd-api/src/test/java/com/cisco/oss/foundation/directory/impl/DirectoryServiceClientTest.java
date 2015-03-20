@@ -15,7 +15,6 @@
  */
 package com.cisco.oss.foundation.directory.impl;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -31,7 +30,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
@@ -44,7 +42,6 @@ import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.utils.HttpResponse;
 import com.cisco.oss.foundation.directory.utils.HttpUtils;
-import static com.cisco.oss.foundation.directory.utils.JsonSerializer.*;
 
 public class DirectoryServiceClientTest {
 
@@ -451,7 +448,7 @@ public class DirectoryServiceClientTest {
         };
         client.setInvoker(mockInvoker);
 
-        Map<String, OperationResult<ModelService>> changed = client.getServiceChanging(services);
+        Map<String, OperationResult<ModelService>> changed = client.getChangedServices(services);
 
         Assert.assertEquals(changed.size(), 1);
         Assert.assertNotNull(changed.get("odrm"));

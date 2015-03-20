@@ -107,7 +107,7 @@ public class LookupManagerImplTest {
                     }
 
                     @Override
-                    public Map<String, OperationResult<ModelService>> getServiceChanging(Map<String, ModelService> services){
+                    public Map<String, OperationResult<ModelService>> getChangedServices(Map<String, ModelService> services){
                         serviceChangingInvoked.incrementAndGet();
                         Assert.assertTrue(services.containsKey("odrm"));
                         Map<String, OperationResult<ModelService>> rr = new HashMap<String, OperationResult<ModelService>>();

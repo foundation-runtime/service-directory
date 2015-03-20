@@ -20,7 +20,6 @@
 package com.cisco.oss.foundation.directory.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -304,7 +303,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
      * @throws ServiceException
      */
     private Map<String, OperationResult<ModelService>> getServiceChanging(Map<String, ModelService> serviceMap){
-        return this.getDirectoryServiceClient().getServiceChanging(serviceMap);
+        return this.getDirectoryServiceClient().getChangedServices(serviceMap);
     }
 
     /**
