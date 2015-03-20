@@ -140,7 +140,7 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory,
         }
 
         // need to call the method to set the isStarted to true
-        // otherwise other unit-test will be failure
+        // otherwise other unit-test will be failed
         // TODO: re-implement the shutdown()/start() method properly so that unit-test not depends on each other.
         ServiceDirectoryImpl.getInstance().restart();
     }
