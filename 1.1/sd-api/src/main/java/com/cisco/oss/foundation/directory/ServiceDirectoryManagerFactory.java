@@ -49,10 +49,13 @@ public interface ServiceDirectoryManagerFactory{
 
     /**
      * Initialize the factory with the DirectoryServiceClientManager.
+     * The method is considered to be removed in the future. if reinit() method in ServiceDirectory has been removed.
+     * {@link ServiceDirectory#reinitServiceDirectoryManagerFactory(ServiceDirectoryManagerFactory)}
      *
      * @param manager
      *         The DirectoryServiceClientManager.
      */
+    @Deprecated
     public void initialize(DirectoryServiceClientManager manager);
 
     /**
@@ -62,4 +65,10 @@ public interface ServiceDirectoryManagerFactory{
      *         the ServiceDirectory Configuration.
      */
     public void setServiceDirectoryConfig(ServiceDirectoryConfig config);
+
+    /**
+     * Get the DirectoryServiceClientManager
+     * @return
+     */
+    public DirectoryServiceClientManager getDirectoryServiceClientManager();
 }

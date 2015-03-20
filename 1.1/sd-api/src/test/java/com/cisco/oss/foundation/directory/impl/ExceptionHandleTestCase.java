@@ -43,6 +43,7 @@ import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.utils.HttpResponse;
 import com.cisco.oss.foundation.directory.utils.HttpUtils;
 import static com.cisco.oss.foundation.directory.utils.JsonSerializer.*;
+import static org.junit.Assert.assertEquals;
 
 /**
  * Test Suite to test the Exception Handling in the Directory API.
@@ -72,7 +73,7 @@ public class ExceptionHandleTestCase  {
      */
     @Test
     public void testRegistrationManager() throws ServiceException {
-        final DirectoryServiceClient client = ((DirectoryServiceClientManager)ServiceDirectoryImpl.getInstance()).getDirectoryServiceClient();
+        final DirectoryServiceClient client = ServiceDirectoryImpl.getInstance().getDirectoryServiceClient();
         String serviceName = "mock-test01";
         final ProvidedServiceInstance instance = createInstance(serviceName);
 

@@ -24,12 +24,13 @@ import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
 import com.cisco.oss.foundation.directory.config.ServiceDirectoryConfig;
+import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.lifecycle.Closable;
 
 /**
  * It is the default ServiceDirectoryManagerFactory to access remote ServiceDirectory server node.
  *
- * When there is no other ServiceDirectoryManagerFactory provider assigned, SD API will instantialize
+ * When there is no other ServiceDirectoryManagerFactory provider assigned, SD API will initialize
  * this class to provide ServiceDirectory services.
  *
  *
@@ -40,22 +41,37 @@ public class DefaultServiceDirectoryManagerFactory implements
     /**
      * RegistrationManager, it is lazy initialized.
      */
-    private volatile RegistrationManagerImpl registrationManager;
+    private final RegistrationManagerImpl registrationManager;
 
     /**
      * The LookupManager, it is lazy initialized.
      */
-    private volatile LookupManagerImpl lookupManager;
+    private final LookupManagerImpl lookupManager;
 
     /**
      * The DirectoryServiceClientManager.
+     * TODO: should be final
+     * the field is not declared final because the reinit() method try to change the reference.
      */
     private DirectoryServiceClientManager dirSvcClientMgr;
+
+    private static class DefaultDirectoryServiceClientManager implements DirectoryServiceClientManager{
+        private final static DirectoryServiceClient _client = new DirectoryServiceClient();
+        @Override
+        public DirectoryServiceClient getDirectoryServiceClient() throws ServiceException {
+            return _client;
+        }
+    }
 
     /**
      * Default constructor.
      */
     public DefaultServiceDirectoryManagerFactory(){
+        dirSvcClientMgr = new DefaultDirectoryServiceClientManager();
+        lookupManager= new LookupManagerImpl(dirSvcClientMgr);
+        lookupManager.start();
+        registrationManager = new RegistrationManagerImpl(dirSvcClientMgr);
+        registrationManager.start();
     }
 
     /**
@@ -68,15 +84,6 @@ public class DefaultServiceDirectoryManagerFactory implements
      */
     @Override
     public RegistrationManager getRegistrationManager(){
-        if(registrationManager == null){
-            synchronized(this){
-                if(registrationManager == null){
-                    RegistrationManagerImpl registration = new RegistrationManagerImpl(getDirectoryServiceClientManager());
-                    registration.start();
-                    registrationManager = registration;
-                }
-            }
-        }
         return registrationManager;
     }
 
@@ -90,22 +97,15 @@ public class DefaultServiceDirectoryManagerFactory implements
      */
     @Override
     public LookupManager getLookupManager(){
-        if(lookupManager == null){
-            synchronized(this){
-                if(lookupManager == null){
-                    LookupManagerImpl lookup = new LookupManagerImpl(getDirectoryServiceClientManager());
-                    lookup.start();
-                    lookupManager = lookup;
-                }
-            }
-        }
         return lookupManager;
     }
 
     /**
      * {@inheritDoc}
+     * The method will be removed, don't use it
      */
     @Override
+    @Deprecated
     public void initialize(DirectoryServiceClientManager manager) {
         this.dirSvcClientMgr = manager;
     }
@@ -116,6 +116,7 @@ public class DefaultServiceDirectoryManagerFactory implements
      * @return
      *         the DirectoryServiceClientManager.
      */
+    @Override
     public DirectoryServiceClientManager getDirectoryServiceClientManager(){
         return dirSvcClientMgr;
     }
@@ -136,13 +137,8 @@ public class DefaultServiceDirectoryManagerFactory implements
 
     @Override
     public void stop() {
-        if(registrationManager != null){
-            ((RegistrationManagerImpl) registrationManager).stop();
-        }
-
-        if(lookupManager != null){
-            ((LookupManagerImpl) lookupManager).stop();
-        }
+       registrationManager.stop();
+       lookupManager.stop();
     }
 
 }

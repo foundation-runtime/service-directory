@@ -88,6 +88,11 @@ public class TestServiceDirectoryManagerFactory implements
         // Do nothing.
     }
 
+    @Override
+    public DirectoryServiceClientManager getDirectoryServiceClientManager() {
+        return null;
+    }
+
     /**
      * Get the DefaultTestServiceDirectoryManager, it is lazy initialized.
      *

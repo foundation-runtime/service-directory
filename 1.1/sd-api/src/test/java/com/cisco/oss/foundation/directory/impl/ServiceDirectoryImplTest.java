@@ -91,12 +91,19 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory,
             @Override
             public void setServiceDirectoryConfig(ServiceDirectoryConfig config) {
                 setInvoked.incrementAndGet();
-            }};
+            }
+
+            @Override
+            public DirectoryServiceClientManager getDirectoryServiceClientManager() {
+                return null;
+            }
+        };
 
         try {
             ServiceDirectory.reinitServiceDirectoryManagerFactory(factory);
             Assert.assertEquals(setInvoked.get(), 0);
-            Assert.assertEquals(initializeInvoked.get(), 1);
+            //The initialize() method will not be called by default, so that we change expect to 0
+            Assert.assertEquals(0,initializeInvoked.get());
 
             Assert.assertTrue(ServiceDirectory.getLookupManager() == lookup);
             Assert.assertTrue(ServiceDirectory.getRegistrationManager() == registration);
@@ -156,6 +163,11 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory,
     public void setServiceDirectoryConfig(ServiceDirectoryConfig config) {
         // TODO Auto-generated method stub
 
+    }
+
+    @Override
+    public DirectoryServiceClientManager getDirectoryServiceClientManager() {
+        return null;
     }
 
     @Override
