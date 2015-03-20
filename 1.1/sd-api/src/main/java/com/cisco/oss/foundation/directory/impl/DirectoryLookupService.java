@@ -47,7 +47,7 @@ public class DirectoryLookupService {
     /**
      * The DirectoryServiceClientManager to get the DirectoryServiceClient.
      */
-    private DirectoryServiceClientManager directoryServiceClientManager = null;
+    private final DirectoryServiceClientManager directoryServiceClientManager;
 
     /**
      * The Service NotificationHandler Map.
