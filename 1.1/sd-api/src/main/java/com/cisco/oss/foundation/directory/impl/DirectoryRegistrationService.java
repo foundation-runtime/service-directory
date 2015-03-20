@@ -41,7 +41,7 @@ public class DirectoryRegistrationService {
     /**
      * The property to disable the ILLEGAL_SERVICE_INSTANCE_OWNER_ERROR error in the Directory tool.
      */
-    public static final String SD_API_REGISTRY_DISABLE_OWNER_ERROR_PROPERTY_NAME = "registry.disable.owner.error";
+    public static final String SD_API_REGISTRY_DISABLE_OWNER_ERROR_PROPERTY_NAME = "com.cisco.oss.foundation.directory.registry.disable.owner.error";
 
     /**
      * Default to disable ILLEGAL_SERVICE_INSTANCE_OWNER_ERROR.

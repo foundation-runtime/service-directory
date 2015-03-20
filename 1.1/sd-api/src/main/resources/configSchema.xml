@@ -17,7 +17,7 @@
 			</DefaultValue>
 		</Parameter>
 		
-		<Parameter name="registry.disable.owner.error" type="BOOLEAN" description="">
+		<Parameter name="com.cisco.oss.foundation.directory.registry.disable.owner.error" type="BOOLEAN" description="">
 			<DefaultValue>
 				<PrimitiveValue value="false" />
 			</DefaultValue>
