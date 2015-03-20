@@ -11,7 +11,7 @@
 			</DefaultValue>
 		</Parameter>
 		
-		<Parameter name="heartbeat.enabled" type="BOOLEAN" description="">
+		<Parameter name="com.cisco.oss.foundation.directory.heartbeat.enabled" type="BOOLEAN" description="">
 			<DefaultValue>
 				<PrimitiveValue value="true" />
 			</DefaultValue>
@@ -29,25 +29,25 @@
 			</DefaultValue>
 		</Parameter>
 		
-		<Parameter name="heartbeat.interval" type="INTEGER" description="">
+		<Parameter name="com.cisco.oss.foundation.directory.heartbeat.interval" type="INTEGER" description="">
 			<DefaultValue>
 				<PrimitiveValue value="10" />
 			</DefaultValue>
 		</Parameter>
 		
-		<Parameter name="registry.health.check.interval" type="INTEGER" description="">
+		<Parameter name="com.cisco.oss.foundation.directory.registry.health.check.interval" type="INTEGER" description="">
 			<DefaultValue>
 				<PrimitiveValue value="5" />
 			</DefaultValue>
 		</Parameter>
 		
-		<Parameter name="heartbeat.delay" type="INTEGER" description="">
+		<Parameter name="com.cisco.oss.foundation.directory.heartbeat.delay" type="INTEGER" description="">
 			<DefaultValue>
 				<PrimitiveValue value="1" />
 			</DefaultValue>
 		</Parameter>
 		
-		<Parameter name="registry.health.check.delay" type="INTEGER" description="">
+		<Parameter name="com.cisco.oss.foundation.directory.registry.health.check.delay" type="INTEGER" description="">
 			<DefaultValue>
 				<PrimitiveValue value="1" />
 			</DefaultValue>

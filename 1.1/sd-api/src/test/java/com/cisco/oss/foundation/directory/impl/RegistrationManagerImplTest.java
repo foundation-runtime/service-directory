@@ -40,8 +40,8 @@ public class RegistrationManagerImplTest {
     @Test
     public void testRegisterService(){
 
-        ServiceDirectory.getServiceDirectoryConfig().setProperty("heartbeat.interval", 1);
-        ServiceDirectory.getServiceDirectoryConfig().setProperty("registry.health.check.interval", 1);
+        ServiceDirectory.getServiceDirectoryConfig().setProperty(HeartbeatDirectoryRegistrationService.SD_API_HEARTBEAT_INTERVAL_PROPERTY, 1);
+        ServiceDirectory.getServiceDirectoryConfig().setProperty(HeartbeatDirectoryRegistrationService.SD_API_REGISTRY_HEALTH_CHECK_INTERVAL_PROPERTY, 1);
 
         final ProvidedServiceInstance instance = new ProvidedServiceInstance("odrm", "192.168.7.4", 8901);
         instance.setMonitorEnabled(true);
@@ -197,8 +197,8 @@ public class RegistrationManagerImplTest {
 
     @Test
     public void testUpdateService(){
-        ServiceDirectory.getServiceDirectoryConfig().setProperty("heartbeat.interval", 1);
-        ServiceDirectory.getServiceDirectoryConfig().setProperty("registry.health.check.interval", 1);
+        ServiceDirectory.getServiceDirectoryConfig().setProperty(HeartbeatDirectoryRegistrationService.SD_API_HEARTBEAT_INTERVAL_PROPERTY, 1);
+        ServiceDirectory.getServiceDirectoryConfig().setProperty(HeartbeatDirectoryRegistrationService.SD_API_REGISTRY_HEALTH_CHECK_INTERVAL_PROPERTY, 1);
 
         final ProvidedServiceInstance instance = new ProvidedServiceInstance("odrm", "192.168.7.4", 8901);
         instance.setMonitorEnabled(true);

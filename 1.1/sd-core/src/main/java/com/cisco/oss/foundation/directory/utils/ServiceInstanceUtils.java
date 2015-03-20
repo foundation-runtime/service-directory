@@ -20,6 +20,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
@@ -223,13 +224,13 @@ public class ServiceInstanceUtils {
      * Validate if the registration/Lookup manager is started.
      *
      * @param isStarted
-     *            Boolean flag to indicate the registration/lookup manager is started or not
+     *            AtomicBoolean to indicate the registration/lookup manager is started or not
      * @throws ServiceException SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED 
      *         if the registration/lookup manager is not started.
      */
     
-    public static void validateRegistryManagerIsStarted(Boolean isStarted) throws ServiceException {
-        if (!isStarted) {
+    public static void validateManagerIsStarted(AtomicBoolean isStarted) throws ServiceException {
+        if (!isStarted.get()) {
             throw new ServiceException(new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED));
         }
     }

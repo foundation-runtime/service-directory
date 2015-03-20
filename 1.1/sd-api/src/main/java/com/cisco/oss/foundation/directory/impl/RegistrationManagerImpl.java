@@ -19,6 +19,8 @@
 
 package com.cisco.oss.foundation.directory.impl;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,8 +30,6 @@ import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
-import com.cisco.oss.foundation.directory.exception.ErrorCode;
-import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
 import com.cisco.oss.foundation.directory.lifecycle.Closable;
@@ -48,7 +48,7 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
     /**
      * The Registration heartbeat and health check enabled property name.
      */
-    public static final String SD_API_HEARTBEAT_ENABLED_PROPERTY = "heartbeat.enabled";
+    public static final String SD_API_HEARTBEAT_ENABLED_PROPERTY = "com.cisco.oss.foundation.directory.heartbeat.enabled";
 
     /**
      * the default value of hearbeat enabled property value.
@@ -63,7 +63,7 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
     /**
      * Mark component started or not
      */
-    private volatile boolean isStarted = false;
+    private final AtomicBoolean isStarted = new AtomicBoolean(false);
 
     /**
      * The DirectoryRegistrationService to do Service Registration.
@@ -85,7 +85,7 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
      */
     @Override
     public void start(){
-        isStarted = true;
+        isStarted.set(true);
     }
 
     /**
@@ -95,17 +95,11 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
      */
     @Override
     public void stop(){
-        if (isStarted) {
-            synchronized (this) {
-                if (isStarted) {
-                    if (getRegistrationService() instanceof Closable) {
-                        ((Closable) getRegistrationService()).stop();
-                    }
-                    isStarted = false;
-                }
+        if (isStarted.compareAndSet(true,false)) {
+            if (getRegistrationService() instanceof Closable) {
+                ((Closable) getRegistrationService()).stop();
             }
         }
-
     }
 
     /**
@@ -115,7 +109,7 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
     public void registerService(ProvidedServiceInstance serviceInstance)
             throws ServiceException {
 
-        ServiceInstanceUtils.validateRegistryManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
         ServiceInstanceUtils.validateProvidedServiceInstance(serviceInstance);
 
         try {
@@ -132,7 +126,7 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
     public void registerService(ProvidedServiceInstance serviceInstance,
             ServiceInstanceHealth registryHealth) throws ServiceException {
 
-        ServiceInstanceUtils.validateRegistryManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
         ServiceInstanceUtils.validateProvidedServiceInstance(serviceInstance);
 
         try{
@@ -149,7 +143,7 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
     public void updateServiceUri(String serviceName,
             String providerId, String uri) throws ServiceException {
 
-        ServiceInstanceUtils.validateRegistryManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
         ServiceInstanceUtils.validateServiceName(serviceName);
         ServiceInstanceUtils.validateServiceInstanceID(providerId);
         ServiceInstanceUtils.validateURI(uri);
@@ -168,7 +162,7 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
     public void updateServiceOperationalStatus(String serviceName,
             String providerId, OperationalStatus status) throws ServiceException {
 
-        ServiceInstanceUtils.validateRegistryManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
         ServiceInstanceUtils.validateServiceName(serviceName);
         ServiceInstanceUtils.validateServiceInstanceID(providerId);
 
@@ -186,7 +180,7 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
     public void updateService(ProvidedServiceInstance serviceInstance)
             throws ServiceException {
      
-        ServiceInstanceUtils.validateRegistryManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
         ServiceInstanceUtils.validateProvidedServiceInstance(serviceInstance);
      
         try{
@@ -203,7 +197,7 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
     public void unregisterService(String serviceName, String providerId)
             throws ServiceException {
        
-        ServiceInstanceUtils.validateRegistryManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
         ServiceInstanceUtils.validateServiceName(serviceName);
         ServiceInstanceUtils.validateServiceInstanceID(providerId);
         

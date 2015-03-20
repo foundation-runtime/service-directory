@@ -43,7 +43,7 @@ public class LookupManagerImplTest {
 
     @Test
     public void test01(){
-        ServiceDirectory.getServiceDirectoryConfig().setProperty("heartbeat.interval", 1);
+        ServiceDirectory.getServiceDirectoryConfig().setProperty(HeartbeatDirectoryRegistrationService.SD_API_HEARTBEAT_INTERVAL_PROPERTY, 1);
         ServiceDirectory.getServiceDirectoryConfig().setProperty(CachedDirectoryLookupService.SD_API_CACHE_SYNC_INTERVAL_PROPERTY, 1);
 
         final String serviceName = "odrm";

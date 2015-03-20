@@ -64,7 +64,7 @@ public class HeartbeatDirectoryRegistrationService extends
      * The RegistrationManager health check executor kick off delay time
      * property name in seconds.
      */
-    public static final String SD_API_REGISTRY_HEALTH_CHECK_DELAY_PROPERTY = "registry.health.check.delay";
+    public static final String SD_API_REGISTRY_HEALTH_CHECK_DELAY_PROPERTY = "com.cisco.oss.foundation.directory.registry.health.check.delay";
 
     /**
      * The default delay time of health check executor kick off.
@@ -74,7 +74,7 @@ public class HeartbeatDirectoryRegistrationService extends
     /**
      * The RegistrationManager health check interval property name in seconds.
      */
-    public static final String SD_API_REGISTRY_HEALTH_CHECK_INTERVAL_PROPERTY = "registry.health.check.interval";
+    public static final String SD_API_REGISTRY_HEALTH_CHECK_INTERVAL_PROPERTY = "com.cisco.oss.foundation.directory.registry.health.check.interval";
 
     /**
      * The default health check interval value of RegistrationManager.
@@ -85,7 +85,7 @@ public class HeartbeatDirectoryRegistrationService extends
      * The RegistrationManager heart beat executor kick off delay time property
      * name in seconds.
      */
-    public static final String SD_API_HEARTBEAT_DELAY_PROPERTY = "heartbeat.delay";
+    public static final String SD_API_HEARTBEAT_DELAY_PROPERTY = "com.cisco.oss.foundation.directory.heartbeat.delay";
 
     /**
      * The default delay time of RegistrationManager heart beat executor kick
@@ -97,7 +97,7 @@ public class HeartbeatDirectoryRegistrationService extends
      * The RegistrationManager send ServiceInstance heart beat interval property
      * name.
      */
-    public static final String SD_API_HEARTBEAT_INTERVAL_PROPERTY = "heartbeat.interval";
+    public static final String SD_API_HEARTBEAT_INTERVAL_PROPERTY = "com.cisco.oss.foundation.directory.heartbeat.interval";
 
     /**
      * The default interval value of RegistrationManager send ServiceInstance
@@ -145,12 +145,7 @@ public class HeartbeatDirectoryRegistrationService extends
      */
     @Override
     public void start() {
-
-        if (isStarted) {
-            return;
-        }
         isStarted = true;
-
     }
 
     /**
