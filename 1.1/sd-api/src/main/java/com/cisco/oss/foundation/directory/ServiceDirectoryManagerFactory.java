@@ -19,7 +19,7 @@ import com.cisco.oss.foundation.directory.config.ServiceDirectoryConfig;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 
 /**
- * The ServiceDirectoryManagerFactory to instantialize LookupManager and RegistrationManager.
+ * The ServiceDirectoryManagerFactory to initialize LookupManager and RegistrationManager.
  *
  * Two default ServiceDirectoryManagerFactory implementations are supplied:
  * DefaultServiceDirectoryManagerFactory for the production use.
