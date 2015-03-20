@@ -443,7 +443,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                         if (model.getStatus().equals(OperationalStatus.UP)) {
                             //Change the status to DOWN before the notification when unregistering a running instance
                             model.setStatus(OperationalStatus.DOWN);
-                            cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
+                            cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.toServiceInstance(model));
                         }
                     }
                 }
@@ -451,7 +451,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                 if(oldInstances == null || oldInstances.size() == 0){
                     for(ModelServiceInstance model : newInstances){
                         if (model.getStatus().equals(OperationalStatus.UP)) {
-                            cachedLookupService.onServiceInstanceAvailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
+                            cachedLookupService.onServiceInstanceAvailable(ServiceInstanceUtils.toServiceInstance(model));
                         }
                     }
                 } else {
@@ -479,14 +479,14 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                             if (curnew.getInstanceId().equals(curold.getInstanceId())) {
                                 
                                 if(curnew.getStatus().equals(OperationalStatus.UP) && curold.getStatus().equals(OperationalStatus.DOWN)) { 
-                                    cachedLookupService.onServiceInstanceAvailable(ServiceInstanceUtils.transferFromModelServiceInstance(curnew));
+                                    cachedLookupService.onServiceInstanceAvailable(ServiceInstanceUtils.toServiceInstance(curnew));
                                 } 
                                 if (curnew.getStatus().equals(OperationalStatus.DOWN) && curold.getStatus().equals(OperationalStatus.UP)) {
-                                    cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.transferFromModelServiceInstance(curnew));
+                                    cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.toServiceInstance(curnew));
                                 }
                                 // Check if the service instance metadata has been changed
                                 if (curnew.getMetadata() != null && curold.getMetadata() != null && !curnew.getMetadata().equals(curold.getMetadata())) {
-                                    cachedLookupService.onServiceInstanceChanged(ServiceInstanceUtils.transferFromModelServiceInstance(curnew));
+                                    cachedLookupService.onServiceInstanceChanged(ServiceInstanceUtils.toServiceInstance(curnew));
                                 }
                                 
                                 itnew.remove();
@@ -499,13 +499,13 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                         if (model.getStatus().equals(OperationalStatus.UP)) {
                             //Change the status to DOWN before the notification when unregistering a running instance
                             model.setStatus(OperationalStatus.DOWN);
-                            cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
+                            cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.toServiceInstance(model));
                         }
                     }
                     
                     for (ModelServiceInstance model : newTmp) {
                         if (model.getStatus().equals(OperationalStatus.UP)) {
-                            cachedLookupService.onServiceInstanceAvailable(ServiceInstanceUtils.transferFromModelServiceInstance(model));
+                            cachedLookupService.onServiceInstanceAvailable(ServiceInstanceUtils.toServiceInstance(model));
                         }
                     }
                 }

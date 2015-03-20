@@ -102,13 +102,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
      */
     @Override
     public void start(){
-        if(!isStarted){
-            synchronized (this) {
-                if (!isStarted) {
-                    isStarted = true;
-                }
-            }
-        }
+        isStarted = true;
     }
 
     /**
@@ -137,10 +131,8 @@ public class LookupManagerImpl implements LookupManager, Closable {
     public ServiceInstance lookupInstance(String serviceName)
             throws ServiceException {
 
-        if(! isStarted){
-            ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
-            throw new ServiceException(error);
-        }
+        ServiceInstanceUtils.validateRegistryManagerIsStarted(isStarted);
+        
         if(serviceName == null || serviceName.isEmpty()){
             throw new IllegalArgumentException("The serviceName argument is null or empty.");
         }
@@ -159,10 +151,8 @@ public class LookupManagerImpl implements LookupManager, Closable {
     @Override
     public List<ServiceInstance> lookupInstances(String serviceName)
             throws ServiceException {
-        if(! isStarted){
-            ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
-            throw new ServiceException(error);
-        }
+        
+        ServiceInstanceUtils.validateRegistryManagerIsStarted(isStarted);
 
         if(serviceName == null || serviceName.isEmpty()){
             throw new IllegalArgumentException("The serviceName argument is null or empty.");
@@ -175,7 +165,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
             }else{
                 List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
                 for(ModelServiceInstance modelInstance : modelSvc){
-                    instances.add(ServiceInstanceUtils.transferFromModelServiceInstance(modelInstance));
+                    instances.add(ServiceInstanceUtils.toServiceInstance(modelInstance));
                 }
                 return instances;
             }
@@ -190,10 +180,8 @@ public class LookupManagerImpl implements LookupManager, Closable {
     @Override
     public ServiceInstance queryInstanceByName(String serviceName, ServiceInstanceQuery query)
             throws ServiceException {
-        if(! isStarted){
-            ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
-            throw new ServiceException(error);
-        }
+        
+        ServiceInstanceUtils.validateRegistryManagerIsStarted(isStarted);
 
         if(serviceName == null || serviceName.isEmpty()){
             throw new IllegalArgumentException("The serviceName argument is null or empty.");
@@ -217,10 +205,9 @@ public class LookupManagerImpl implements LookupManager, Closable {
     @Override
     public List<ServiceInstance> queryInstancesByName(String serviceName, ServiceInstanceQuery query)
             throws ServiceException {
-        if(! isStarted){
-            ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
-            throw new ServiceException(error);
-        }
+        
+        ServiceInstanceUtils.validateRegistryManagerIsStarted(isStarted);
+        
         if(serviceName == null || serviceName.isEmpty()){
             throw new IllegalArgumentException("The serviceName argument is null or empty.");
         }
@@ -236,7 +223,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
                 if(filteredInstances.size() > 0){
                     List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
                     for(ModelServiceInstance model : filteredInstances){
-                        instances.add(ServiceInstanceUtils.transferFromModelServiceInstance(model));
+                        instances.add(ServiceInstanceUtils.toServiceInstance(model));
                     }
                     return instances;
                 }
@@ -253,15 +240,9 @@ public class LookupManagerImpl implements LookupManager, Closable {
     @Override
     public ServiceInstance queryInstanceByKey(ServiceInstanceQuery query)
             throws ServiceException {
-        if(! isStarted){
-            ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
-            throw new ServiceException(error);
-        }
-        if(query == null){
-            throw new IllegalArgumentException("The ServiceInstanceQuery is null.");
-        }
-
-        validateServiceInstanceQuery(query);
+        
+        ServiceInstanceUtils.validateRegistryManagerIsStarted(isStarted);
+        validateServiceInstanceMetadataQuery(query);
 
         try{
             MetadataQueryRRLoadBalancer lb = lbManager.getMetadataQueryRRLoadBalancer(query);
@@ -277,14 +258,10 @@ public class LookupManagerImpl implements LookupManager, Closable {
     @Override
     public List<ServiceInstance> queryInstancesByKey(ServiceInstanceQuery query)
             throws ServiceException {
-        if(! isStarted){
-            ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
-            throw new ServiceException(error);
-        }
-        if(query == null){
-            throw new IllegalArgumentException("The ServiceInstanceQuery is null.");
-        }
-        validateServiceInstanceQuery(query);
+        
+        ServiceInstanceUtils.validateRegistryManagerIsStarted(isStarted);
+        validateServiceInstanceMetadataQuery(query);
+        
         try{
             List<ServiceInstance> instances = null;
             String keyName = null;
@@ -302,7 +279,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
                     }
                     for (ModelServiceInstance model : filteredInstances) {
                         instances.add(ServiceInstanceUtils
-                                .transferFromModelServiceInstance(model));
+                                .toServiceInstance(model));
                     }
                 }
             }
@@ -324,11 +301,8 @@ public class LookupManagerImpl implements LookupManager, Closable {
     public ServiceInstance getInstance(String serviceName, String instanceId)
             throws ServiceException {
 
-        if(! isStarted){
-            ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
-            throw new ServiceException(error);
-        }
-
+        ServiceInstanceUtils.validateRegistryManagerIsStarted(isStarted);
+        
         if(instanceId == null || instanceId.isEmpty()){
             throw new IllegalArgumentException("The instanceId argument is null or empty.");
         }
@@ -340,7 +314,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
         try{
             ModelServiceInstance instance = getLookupService().getModelServiceInstance(serviceName, instanceId);
             if(instance != null){
-                return ServiceInstanceUtils.transferFromModelServiceInstance(instance);
+                return ServiceInstanceUtils.toServiceInstance(instance);
             }
         } catch(ServiceRuntimeException e){
             ServiceDirectoryError reason = e.getServiceDirectoryError();
@@ -363,10 +337,8 @@ public class LookupManagerImpl implements LookupManager, Closable {
     public List<ServiceInstance> getAllInstances(String serviceName)
             throws ServiceException {
 
-        if(! isStarted){
-            ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
-            throw new ServiceException(error);
-        }
+        ServiceInstanceUtils.validateRegistryManagerIsStarted(isStarted);
+        
         if(serviceName == null || serviceName.isEmpty()){
             throw new IllegalArgumentException("The serviceName argument is null or empty.");
         }
@@ -378,7 +350,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
             }else{
                 List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
                 for(ModelServiceInstance modelInstance : modelSvc){
-                    instances.add(ServiceInstanceUtils.transferFromModelServiceInstance(modelInstance));
+                    instances.add(ServiceInstanceUtils.toServiceInstance(modelInstance));
                 }
                 return instances;
             }
@@ -394,10 +366,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
     public List<ServiceInstance> getAllInstances(String serviceName,
             ServiceInstanceQuery query) throws ServiceException {
 
-        if(! isStarted){
-            ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
-            throw new ServiceException(error);
-        }
+        ServiceInstanceUtils.validateRegistryManagerIsStarted(isStarted);
 
         if(query == null){
             throw new IllegalArgumentException("The ServiceInstanceQuery argument is null.");
@@ -414,7 +383,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
                 if(filteredInstances.size() > 0){
                     List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
                     for(ModelServiceInstance model : filteredInstances){
-                        instances.add(ServiceInstanceUtils.transferFromModelServiceInstance(model));
+                        instances.add(ServiceInstanceUtils.toServiceInstance(model));
                     }
                     return instances;
                 }
@@ -431,15 +400,10 @@ public class LookupManagerImpl implements LookupManager, Closable {
     @Override
     public List<ServiceInstance> getAllInstancesByKey(ServiceInstanceQuery query)
             throws ServiceException {
-        if(! isStarted){
-            ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
-            throw new ServiceException(error);
-        }
-
-        if(query == null){
-            throw new IllegalArgumentException("The ServiceInstanceQuery argument is null.");
-        }
-        validateServiceInstanceQuery(query);
+        
+        ServiceInstanceUtils.validateRegistryManagerIsStarted(isStarted);
+        validateServiceInstanceMetadataQuery(query);
+        
         try{
             List<ServiceInstance> instances = null;
             String keyName = null;
@@ -457,7 +421,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
                     }
                     for (ModelServiceInstance model : filteredInstances) {
                         instances.add(ServiceInstanceUtils
-                                .transferFromModelServiceInstance(model));
+                                .toServiceInstance(model));
                     }
                 }
             }
@@ -477,10 +441,8 @@ public class LookupManagerImpl implements LookupManager, Closable {
      */
     @Override
     public List<ServiceInstance> getAllInstances() throws ServiceException {
-        if(! isStarted){
-            ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
-            throw new ServiceException(error);
-        }
+        
+        ServiceInstanceUtils.validateRegistryManagerIsStarted(isStarted);
 
         List<ServiceInstance> instances = null;
         try{
@@ -489,7 +451,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
                 if(instances == null){
                     instances = new ArrayList<ServiceInstance>();
                 }
-                instances.add(ServiceInstanceUtils.transferFromModelServiceInstance(serviceInstance));
+                instances.add(ServiceInstanceUtils.toServiceInstance(serviceInstance));
             }
         } catch(ServiceRuntimeException e){
             throw new ServiceException(e);
@@ -519,10 +481,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
     @Override
     public void addNotificationHandler(String serviceName, NotificationHandler handler) throws ServiceException {
 
-        if(! isStarted){
-            ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
-            throw new ServiceException(error);
-        }
+        ServiceInstanceUtils.validateRegistryManagerIsStarted(isStarted);
 
         if(handler == null || serviceName == null || serviceName.isEmpty()){
             throw new IllegalArgumentException();
@@ -551,11 +510,8 @@ public class LookupManagerImpl implements LookupManager, Closable {
     @Override
     public void removeNotificationHandler(String serviceName, NotificationHandler handler) throws ServiceException {
 
-        if(! isStarted){
-            ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
-            throw new ServiceException(error);
-        }
-
+        ServiceInstanceUtils.validateRegistryManagerIsStarted(isStarted);
+        
         if(handler == null || serviceName == null || serviceName.isEmpty()){
             throw new IllegalArgumentException();
         }
@@ -607,7 +563,14 @@ public class LookupManagerImpl implements LookupManager, Closable {
      * @throws ServiceException
      *         when the ServiceInstanceQuery has ContainQueryCriterion or NotContainQueryCriterion.
      */
-    private void validateServiceInstanceQuery(ServiceInstanceQuery query) throws ServiceException{
+    private void validateServiceInstanceMetadataQuery(ServiceInstanceQuery query) throws ServiceException{
+
+        if (query == null) {
+            throw new ServiceException(new ServiceDirectoryError(
+                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
+                    "service instance query"));
+        }
+        
         for(QueryCriterion criterion : query.getCriteria()){
             if(criterion instanceof ContainQueryCriterion || criterion instanceof NotContainQueryCriterion){
                 ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.QUERY_CRITERION_ILLEGAL_IN_QUERY);

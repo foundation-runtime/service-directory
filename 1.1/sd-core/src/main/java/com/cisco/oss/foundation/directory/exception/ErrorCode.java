@@ -82,6 +82,12 @@ public enum ErrorCode {
      * ContainQueryCriterion and NotContainQueryCriterion.
      */
     QUERY_CRITERION_ILLEGAL_IN_QUERY("400.8"),
+    
+    /**
+     * Service Directory argument {0} is null.
+     */
+    SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR("400.9"),
+
 
     // Service Instance operation error.
     /**

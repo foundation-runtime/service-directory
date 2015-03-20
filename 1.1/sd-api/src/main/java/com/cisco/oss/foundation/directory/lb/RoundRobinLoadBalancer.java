@@ -69,7 +69,7 @@ public abstract class RoundRobinLoadBalancer implements ServiceInstanceLoadBalan
         int i = index.getAndIncrement();
         int pos = i % instances.size();
         ModelServiceInstance instance = instances.get(pos);
-        return ServiceInstanceUtils.transferFromModelServiceInstance(instance);
+        return ServiceInstanceUtils.toServiceInstance(instance);
     }
 
     /**

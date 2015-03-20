@@ -85,14 +85,7 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
      */
     @Override
     public void start(){
-        if(!isStarted){
-            synchronized (this) {
-                if (!isStarted) {
-                    isStarted = true;
-                }
-            }
-        }
-
+        isStarted = true;
     }
 
     /**
@@ -121,23 +114,13 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
     @Override
     public void registerService(ProvidedServiceInstance serviceInstance)
             throws ServiceException {
-        if(! isStarted){
-            ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
-            throw new ServiceException(error);
-        }
 
-        if(serviceInstance == null){
-            throw new IllegalArgumentException("The ServiceInstance argument is null.");
-        }
+        ServiceInstanceUtils.validateRegistryManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateProvidedServiceInstance(serviceInstance);
 
-        ErrorCode code = ServiceInstanceUtils.validateProvidedServiceInstance(serviceInstance);
-        if(! code.equals(ErrorCode.OK)){
-            ServiceDirectoryError error = new ServiceDirectoryError(code, serviceInstance.getServiceName());
-            throw new ServiceException(error);
-        }
-        try{
-            getRegistrationService().registerService(serviceInstance);
-        } catch(ServiceRuntimeException e){
+        try {
+           getRegistrationService().registerService(serviceInstance);
+        } catch (ServiceRuntimeException e) {
             throw new ServiceException(e);
         }
     }
@@ -148,19 +131,9 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
     @Override
     public void registerService(ProvidedServiceInstance serviceInstance,
             ServiceInstanceHealth registryHealth) throws ServiceException {
-        if(! isStarted){
-            ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
-            throw new ServiceException(error);
-        }
-        if(serviceInstance == null){
-            throw new IllegalArgumentException("The ServiceInstance argument is null.");
-        }
 
-        ErrorCode code = ServiceInstanceUtils.validateProvidedServiceInstance(serviceInstance);
-        if(! code.equals(ErrorCode.OK)){
-            ServiceDirectoryError error = new ServiceDirectoryError(code, serviceInstance.getServiceName());
-            throw new ServiceException(error);
-        }
+        ServiceInstanceUtils.validateRegistryManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateProvidedServiceInstance(serviceInstance);
 
         try{
             getRegistrationService().registerService(serviceInstance, registryHealth);
@@ -175,28 +148,11 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
     @Override
     public void updateServiceUri(String serviceName,
             String providerId, String uri) throws ServiceException {
-        if(! isStarted){
-            ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
-            throw new ServiceException(error);
-        }
 
-        ErrorCode code = ServiceInstanceUtils.isNameValid(serviceName);
-        if(! code.equals(ErrorCode.OK)){
-            ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
-            throw new ServiceException(error);
-        }
-
-        code = ServiceInstanceUtils.isIdValid(providerId);
-        if(! code.equals(ErrorCode.OK)){
-            ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
-            throw new ServiceException(error);
-        }
-
-        code = ServiceInstanceUtils.isUriValid(uri);
-        if(! code.equals(ErrorCode.OK)){
-            ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
-            throw new ServiceException(error);
-        }
+        ServiceInstanceUtils.validateRegistryManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateServiceName(serviceName);
+        ServiceInstanceUtils.validateServiceInstanceID(providerId);
+        ServiceInstanceUtils.validateURI(uri);
 
         try{
             getRegistrationService().updateServiceUri(serviceName, providerId, uri);
@@ -211,21 +167,10 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
     @Override
     public void updateServiceOperationalStatus(String serviceName,
             String providerId, OperationalStatus status) throws ServiceException {
-        if(! isStarted){
-            ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
-            throw new ServiceException(error);
-        }
-        ErrorCode code = ServiceInstanceUtils.isNameValid(serviceName);
-        if(! code.equals(ErrorCode.OK)){
-            ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
-            throw new ServiceException(error);
-        }
 
-        code = ServiceInstanceUtils.isIdValid(providerId);
-        if(! code.equals(ErrorCode.OK)){
-            ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
-            throw new ServiceException(error);
-        }
+        ServiceInstanceUtils.validateRegistryManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateServiceName(serviceName);
+        ServiceInstanceUtils.validateServiceInstanceID(providerId);
 
         try{
             getRegistrationService().updateServiceOperationalStatus(serviceName, providerId, status);
@@ -240,27 +185,15 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
     @Override
     public void updateService(ProvidedServiceInstance serviceInstance)
             throws ServiceException {
-        if(! isStarted){
-            ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
-            throw new ServiceException(error);
-        }
-        if(serviceInstance == null){
-            throw new IllegalArgumentException("The ServiceInstance argument is null.");
-        }
-
-        ErrorCode code = ServiceInstanceUtils.validateProvidedServiceInstance(serviceInstance);
-        if(! code.equals(ErrorCode.OK)){
-            ServiceDirectoryError error = new ServiceDirectoryError(code, serviceInstance.getServiceName());
-            throw new ServiceException(error);
-        }
-
+     
+        ServiceInstanceUtils.validateRegistryManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateProvidedServiceInstance(serviceInstance);
+     
         try{
             getRegistrationService().updateService(serviceInstance);
-
         } catch(ServiceRuntimeException e){
             throw new ServiceException(e);
         }
-
     }
 
     /**
@@ -269,22 +202,11 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
     @Override
     public void unregisterService(String serviceName, String providerId)
             throws ServiceException {
-        if(! isStarted){
-            ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
-            throw new ServiceException(error);
-        }
-        ErrorCode code = ServiceInstanceUtils.isNameValid(serviceName);
-        if(! code.equals(ErrorCode.OK)){
-            ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
-            throw new ServiceException(error);
-        }
-
-        code = ServiceInstanceUtils.isIdValid(providerId);
-        if(! code.equals(ErrorCode.OK)){
-            ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
-            throw new ServiceException(error);
-        }
-
+       
+        ServiceInstanceUtils.validateRegistryManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateServiceName(serviceName);
+        ServiceInstanceUtils.validateServiceInstanceID(providerId);
+        
         try{
             getRegistrationService().unregisterService(serviceName, providerId);
         } catch(ServiceRuntimeException e){

@@ -222,15 +222,8 @@ public class DefaultTestServiceDirectoryManager implements
     @Override
     public void registerService(ProvidedServiceInstance serviceInstance)
             throws ServiceException {
-        if(serviceInstance == null){
-            throw new IllegalArgumentException("The ServiceInstance can not be null.");
-        }
 
-        ErrorCode code = ServiceInstanceUtils.validateProvidedServiceInstance(serviceInstance);
-        if(! code.equals(ErrorCode.OK)){
-            ServiceDirectoryError error = new ServiceDirectoryError(code, serviceInstance.getServiceName());
-            throw new ServiceException(error);
-        }
+        ServiceInstanceUtils.validateProvidedServiceInstance(serviceInstance);
 
         ProvidedServiceInstance cachedInstance = this.getProvidedServiceInstance(serviceInstance.getServiceName(), serviceInstance.getProviderId());
         if(cachedInstance != null){
@@ -281,18 +274,8 @@ public class DefaultTestServiceDirectoryManager implements
             String providerId, OperationalStatus status)
             throws ServiceException {
 
-        ErrorCode code = ServiceInstanceUtils.isNameValid(serviceName);
-        if(! code.equals(ErrorCode.OK)){
-            ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
-            throw new ServiceException(error);
-        }
-
-        code = ServiceInstanceUtils.isIdValid(providerId);
-        if(! code.equals(ErrorCode.OK)){
-            ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
-            throw new ServiceException(error);
-        }
-
+        ServiceInstanceUtils.validateServiceName(serviceName);
+        ServiceInstanceUtils.validateServiceInstanceID(providerId);
 
         ProvidedServiceInstance model = getProvidedServiceInstance(serviceName, providerId);
         if(model == null){
@@ -315,24 +298,10 @@ public class DefaultTestServiceDirectoryManager implements
     @Override
     public void updateServiceUri(String serviceName,
             String providerId, String uri) throws ServiceException {
-        ErrorCode code = ServiceInstanceUtils.isNameValid(serviceName);
-        if(! code.equals(ErrorCode.OK)){
-            ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
-            throw new ServiceException(error);
-        }
 
-        code = ServiceInstanceUtils.isIdValid(providerId);
-        if(! code.equals(ErrorCode.OK)){
-            ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
-            throw new ServiceException(error);
-        }
-
-        code = ServiceInstanceUtils.isUriValid(uri);
-        if(! code.equals(ErrorCode.OK)){
-            ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
-            throw new ServiceException(error);
-        }
-
+        ServiceInstanceUtils.validateServiceName(serviceName);
+        ServiceInstanceUtils.validateServiceInstanceID(providerId);
+        ServiceInstanceUtils.validateURI(uri);
 
         ProvidedServiceInstance model = getProvidedServiceInstance(serviceName, providerId);
         if(model == null){
@@ -358,15 +327,8 @@ public class DefaultTestServiceDirectoryManager implements
     @Override
     public void updateService(ProvidedServiceInstance serviceInstance)
             throws ServiceException {
-        if(serviceInstance == null){
-            throw new IllegalArgumentException("The ServiceInstance can not be null.");
-        }
 
-        ErrorCode code = ServiceInstanceUtils.validateProvidedServiceInstance(serviceInstance);
-        if(! code.equals(ErrorCode.OK)){
-            ServiceDirectoryError error = new ServiceDirectoryError(code, serviceInstance.getServiceName());
-            throw new ServiceException(error);
-        }
+        ServiceInstanceUtils.validateProvidedServiceInstance(serviceInstance);
 
         updateMetadataKeyMap(serviceInstance);
         try{
@@ -389,18 +351,9 @@ public class DefaultTestServiceDirectoryManager implements
     @Override
     public void unregisterService(String serviceName, String providerId)
             throws ServiceException {
-        ErrorCode code = ServiceInstanceUtils.isNameValid(serviceName);
-        if(! code.equals(ErrorCode.OK)){
-            ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
-            throw new ServiceException(error);
-        }
-
-        code = ServiceInstanceUtils.isIdValid(providerId);
-        if(! code.equals(ErrorCode.OK)){
-            ServiceDirectoryError error = new ServiceDirectoryError(code, serviceName);
-            throw new ServiceException(error);
-        }
-
+        ServiceInstanceUtils.validateServiceName(serviceName);
+        ServiceInstanceUtils.validateServiceInstanceID(providerId);
+        
         deleteMetadataKeyMap(serviceName, providerId);
         ProvidedServiceInstance model = getProvidedServiceInstance(serviceName, providerId);
         if(model == null){
@@ -491,16 +444,14 @@ public class DefaultTestServiceDirectoryManager implements
             service = cache.get(serviceName);
         }
 
-        if(service == null || service.getServiceInstances().size() == 0){
-            return Collections.emptyList();
-        }else{
-            List<ServiceInstance> list = new ArrayList<ServiceInstance>();
-            for(ProvidedServiceInstance model : service.getServiceInstances()){
-                list.add(new ServiceInstance(serviceName, model.getProviderId(), model.getUri(),
-                        model.isMonitorEnabled(), model.getStatus(), model.getAddress(), model.getPort(), model.getMetadata()));
-            }
-            return list;
+        List<ServiceInstance> list = new ArrayList<ServiceInstance>();
+        for (ProvidedServiceInstance model : service.getServiceInstances()) {
+            list.add(new ServiceInstance(serviceName, model.getProviderId(),
+                    model.getUri(), model.isMonitorEnabled(),
+                    model.getStatus(), model.getAddress(), model.getPort(),
+                    model.getMetadata()));
         }
+        return list;
     }
 
     /**
