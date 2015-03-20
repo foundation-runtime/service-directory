@@ -134,7 +134,7 @@ public class LookupManagerImplTest {
                     }
 
                     @Override
-                    public Map<String, OperationResult<ModelMetadataKey>> getMetadataKeyChanging(Map<String, ModelMetadataKey> keys) {
+                    public Map<String, OperationResult<ModelMetadataKey>> getChangedMetadataKeys(Map<String, ModelMetadataKey> keys) {
                         keyChangingInvoked.incrementAndGet();
                         Assert.assertTrue(keys.containsKey("solution"));
                         Map<String, OperationResult<ModelMetadataKey>> rr = new HashMap<String, OperationResult<ModelMetadataKey>>();

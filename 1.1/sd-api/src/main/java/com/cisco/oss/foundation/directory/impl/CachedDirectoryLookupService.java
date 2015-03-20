@@ -290,7 +290,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
      *         the ModelMetadataKey that has changed.
      */
     private Map<String, OperationResult<ModelMetadataKey>> getMetadataKeyChanging(Map<String, ModelMetadataKey> keyMap){
-        return this.getDirectoryServiceClient().getMetadataKeyChanging(keyMap);
+        return this.getDirectoryServiceClient().getChangedMetadataKeys(keyMap);
     }
 
     /**

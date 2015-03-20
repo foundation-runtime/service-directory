@@ -338,7 +338,7 @@ public class DirectoryServiceClient{
      * @return
      *         the ModelMetadataKey that has been changed.
      */
-    public Map<String, OperationResult<ModelMetadataKey>> getMetadataKeyChanging(Map<String, ModelMetadataKey> keys) {
+    public Map<String, OperationResult<ModelMetadataKey>> getChangedMetadataKeys(Map<String, ModelMetadataKey> keys) {
         String body = _serialize(keys);
         HttpResponse result = invoker.invoke("/metadatakey/changing" , body, HttpMethod.POST);
 
