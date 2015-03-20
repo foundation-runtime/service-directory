@@ -73,8 +73,7 @@ public class DirectoryLookupService {
      *         the ModelService.
      */
     protected ModelService getModelService(String serviceName){
-        ModelService service = getDirectoryServiceClient().lookupService(serviceName);
-        return service;
+        return getDirectoryServiceClient().lookupService(serviceName);
     }
 
     /**
@@ -86,8 +85,7 @@ public class DirectoryLookupService {
      *         the ModelMetadataKey.
      */
     protected ModelMetadataKey getModelMetadataKey(String keyName){
-        ModelMetadataKey key = getDirectoryServiceClient().getMetadataKey(keyName);
-        return key;
+        return getDirectoryServiceClient().getMetadataKey(keyName);
     }
 
     /**
@@ -103,12 +101,11 @@ public class DirectoryLookupService {
     public ModelServiceInstance getModelServiceInstance(String serviceName, String instanceId){
         ModelService service = getModelService(serviceName);
         if(service != null && service.getServiceInstances() != null ){
-            for(ModelServiceInstance instance : new ArrayList<ModelServiceInstance>(service.getServiceInstances())){
+            for(ModelServiceInstance instance : service.getServiceInstances()){
                 if(instance.getInstanceId().equals(instanceId)){
                     return instance;
                 }
             }
-
         }
         return null;
     }
@@ -123,8 +120,8 @@ public class DirectoryLookupService {
      */
     public List<ModelServiceInstance> getModelInstancesByKey(String keyName){
         ModelMetadataKey key = getModelMetadataKey(keyName);
-        if(key == null || key.getServiceInstances().size() == 0){
-            return Collections.emptyList();
+        if(key == null || key.getServiceInstances().isEmpty()){
+            return Collections.<ModelServiceInstance>emptyList();
         }else{
             return new ArrayList<ModelServiceInstance>(key.getServiceInstances());
         }
@@ -140,27 +137,13 @@ public class DirectoryLookupService {
      *         the ModelServiceInstances that has the metadata key.
      */
     public List<ModelServiceInstance> getUPModelInstancesByKey(String keyName){
-        ModelMetadataKey key = getModelMetadataKey(keyName);
-
-        List<ModelServiceInstance> list = null;
-        if(key != null && key.getServiceInstances().size() > 0){
-
-            for(ModelServiceInstance instance : new ArrayList<ModelServiceInstance>(key.getServiceInstances())){
-                if(instance.getStatus().equals(OperationalStatus.UP)){
-                    if(list == null){
-                        list = new ArrayList<ModelServiceInstance>();
-                    }
-                    list.add(instance);
-                }
+        List<ModelServiceInstance> list = new ArrayList<ModelServiceInstance>();
+        for (ModelServiceInstance instance : getModelInstancesByKey(keyName)){
+            if(instance.getStatus().equals(OperationalStatus.UP)){
+                list.add(instance);
             }
-
         }
-
-        if(list == null){
-            return Collections.emptyList();
-        }else{
-            return list;
-        }
+        return list;
     }
 
     /**
@@ -173,8 +156,8 @@ public class DirectoryLookupService {
      */
     public List<ModelServiceInstance> getModelInstances(String serviceName){
         ModelService service = getModelService(serviceName);
-        if(service == null || service.getServiceInstances().size() == 0){
-            return Collections.emptyList();
+        if(service == null || service.getServiceInstances().isEmpty()){
+            return Collections.<ModelServiceInstance>emptyList();
         }else{
             return new ArrayList<ModelServiceInstance>(service.getServiceInstances());
         }
@@ -187,8 +170,7 @@ public class DirectoryLookupService {
      *         the ModelServiceInstance List.
      */
     public List<ModelServiceInstance> getAllInstances(){
-        List<ModelServiceInstance> allInstances = getDirectoryServiceClient().getAllInstances();
-        return allInstances;
+        return getDirectoryServiceClient().getAllInstances();
     }
 
     /**
@@ -200,27 +182,13 @@ public class DirectoryLookupService {
      *         the ModelServiceInstance list of the Service.
      */
     public List<ModelServiceInstance> getUPModelInstances(String serviceName){
-        ModelService service = getModelService(serviceName);
-
-        List<ModelServiceInstance> list = null;
-        if(service != null && service.getServiceInstances().size() > 0){
-
-            for(ModelServiceInstance instance : new ArrayList<ModelServiceInstance>(service.getServiceInstances())){
-                if(instance.getStatus().equals(OperationalStatus.UP)){
-                    if(list == null){
-                        list = new ArrayList<ModelServiceInstance>();
-                    }
-                    list.add(instance);
-                }
+        List<ModelServiceInstance> list = new ArrayList<ModelServiceInstance>();
+        for(ModelServiceInstance instance : getModelInstances(serviceName)){
+            if(instance.getStatus().equals(OperationalStatus.UP)) {
+                list.add(instance);
             }
-
         }
-
-        if(list == null){
-            return Collections.emptyList();
-        }else{
-            return list;
-        }
+        return list;
     }
 
     /**
@@ -238,15 +206,17 @@ public class DirectoryLookupService {
      */
     public void addNotificationHandler(String serviceName, NotificationHandler handler){
 
-        if(handler == null || serviceName == null || serviceName.isEmpty()){
-            throw new IllegalArgumentException();
+        if(handler == null){
+            throw new IllegalArgumentException("handler should not be null");
+        }
+        if(serviceName == null || serviceName.isEmpty()){
+            throw new IllegalArgumentException("serviceName should not be null or empty");
         }
 
         synchronized(notificationHandlers){
             if(! notificationHandlers.containsKey(serviceName)){
                 notificationHandlers.put(serviceName, new ArrayList<NotificationHandler>());
             }
-
             notificationHandlers.get(serviceName).add(handler);
         }
     }
@@ -260,8 +230,12 @@ public class DirectoryLookupService {
      *         the NotificationHandler for the service.
      */
     public void removeNotificationHandler(String serviceName, NotificationHandler handler){
-        if(handler == null || serviceName == null || serviceName.isEmpty()){
-            throw new IllegalArgumentException();
+
+        if(handler == null){
+            throw new IllegalArgumentException("handler should not be null");
+        }
+        if(serviceName == null || serviceName.isEmpty()){
+            throw new IllegalArgumentException("serviceName should not be null or empty");
         }
 
         synchronized(notificationHandlers){
@@ -302,12 +276,14 @@ public class DirectoryLookupService {
             return ;
         }
         String serviceName = instance.getServiceName();
-        synchronized(notificationHandlers){
-            if(notificationHandlers.containsKey(serviceName)){
-                for(NotificationHandler h : notificationHandlers.get(serviceName)){
-                    h.serviceInstanceUnavailable(instance);
-                }
+        List<NotificationHandler> handlerList = new ArrayList<NotificationHandler>();
+        synchronized (notificationHandlers) {
+            if (notificationHandlers.containsKey(serviceName)) {
+                handlerList.addAll(notificationHandlers.get(serviceName));
             }
+        }
+        for(NotificationHandler h : handlerList) {
+            h.serviceInstanceUnavailable(instance);
         }
     }
 
@@ -319,12 +295,14 @@ public class DirectoryLookupService {
      */
     protected void onServiceInstanceChanged(ServiceInstance instance){
         String serviceName = instance.getServiceName();
-        synchronized(notificationHandlers){
-            if(notificationHandlers.containsKey(serviceName)){
-                for(NotificationHandler h : notificationHandlers.get(serviceName)){
-                    h.serviceInstanceChange(instance);
-                }
+        List<NotificationHandler> handlerList = new ArrayList<NotificationHandler>();
+        synchronized (notificationHandlers) {
+            if (notificationHandlers.containsKey(serviceName)) {
+                handlerList.addAll(notificationHandlers.get(serviceName));
             }
+        }
+        for (NotificationHandler h : handlerList) {
+            h.serviceInstanceChange(instance);
         }
     }
 
@@ -336,12 +314,14 @@ public class DirectoryLookupService {
      */
     protected void onServiceInstanceAvailable(ServiceInstance instance){
         String serviceName = instance.getServiceName();
-        synchronized(notificationHandlers){
-            if(notificationHandlers.containsKey(serviceName)){
-                for(NotificationHandler h : notificationHandlers.get(serviceName)){
-                    h.serviceInstanceAvailable(instance);
-                }
+        List<NotificationHandler> handlerList = new ArrayList<NotificationHandler>();
+        synchronized (notificationHandlers) {
+            if (notificationHandlers.containsKey(serviceName)) {
+                handlerList.addAll(notificationHandlers.get(serviceName));
             }
+        }
+        for (NotificationHandler h : handlerList) {
+            h.serviceInstanceAvailable(instance);
         }
     }
 }
