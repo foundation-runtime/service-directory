@@ -149,8 +149,7 @@ public class ServiceDirectoryImpl {
 
         synchronized(this){
             if(isShutdown){
-                ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_IS_SHUTDOWN);
-                throw new ServiceException(error);
+                throw new ServiceException(new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_IS_SHUTDOWN));
             }
 
             if (this.directoryManagerFactory != null) {
