@@ -27,22 +27,23 @@ import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
  * The metadata query Round Robin loadbalancer implementation.
  *
  */
+@Deprecated
 public class MetadataQueryRRLoadBalancer extends RoundRobinLoadBalancer {
 
         private final ServiceInstanceQuery query;
-        
+        private final DirectoryLookupService lookupService;
         /**
          * Constructor.
          *
          * @param lookupService
          *         the DirectoryLookupService
-         *         
+         *
          * @param query
          *         the ServiceInstanceQuery
          */
         public MetadataQueryRRLoadBalancer(DirectoryLookupService lookupService, ServiceInstanceQuery query) {
-            super(lookupService);
             this.query = query;
+            this.lookupService = lookupService;
         }
 
         /**
@@ -58,7 +59,6 @@ public class MetadataQueryRRLoadBalancer extends RoundRobinLoadBalancer {
         /**
          * {@inheritDoc}
          */
-        @Override
         public List<ModelServiceInstance> getServiceInstanceList() {
             List<ModelServiceInstance> instances = null;
             String keyName = null;
@@ -66,7 +66,7 @@ public class MetadataQueryRRLoadBalancer extends RoundRobinLoadBalancer {
                 keyName = query.getCriteria().get(0).getMetadataKey();
             }
             if (keyName != null && !keyName.isEmpty()) {
-                List<ModelServiceInstance> modelInstances = getLookupService()
+                List<ModelServiceInstance> modelInstances = this.lookupService
                         .getUPModelInstancesByKey(keyName);
                 instances = ServiceInstanceQueryHelper
                         .filter(query, modelInstances);

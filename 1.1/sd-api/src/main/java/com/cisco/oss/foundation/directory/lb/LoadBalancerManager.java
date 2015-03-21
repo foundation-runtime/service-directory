@@ -30,13 +30,19 @@ public class LoadBalancerManager {
     /**
      * The loadbalancer map for Services.
      */
+    @Deprecated
     private final List<ServiceRRLoadBalancer> svcLBList;
 
+    @Deprecated
     private final List<MetadataQueryRRLoadBalancer> metaQueryLBList;
 
+    @Deprecated
     private final List<ServiceQueryRRLoadBalancer> svcQueryLBList;
 
+    @Deprecated
     private final DirectoryLookupService lookupService;
+
+    private final RoundRobinLoadBalancer roundRobinLoadBalancer;
 
     /**
      * Constructor.
@@ -44,21 +50,53 @@ public class LoadBalancerManager {
      * @param lookupService
      *         the DirectoryLookupService
      */
+    @Deprecated
     public LoadBalancerManager(DirectoryLookupService lookupService) {
+        //TODO remove the constructor
         svcLBList = new ArrayList<ServiceRRLoadBalancer>();
         metaQueryLBList = new ArrayList<MetadataQueryRRLoadBalancer>();
         svcQueryLBList = new ArrayList<ServiceQueryRRLoadBalancer>();
         this.lookupService = lookupService;
+        this.roundRobinLoadBalancer = new RoundRobinLoadBalancer();
     }
 
     /**
-     * Get the Round Robin loadbalancer for named service.
+     * Default Constructor
+     */
+    public LoadBalancerManager() {
+        //TODO remove those deprecated fields
+        svcLBList = new ArrayList<ServiceRRLoadBalancer>();
+        metaQueryLBList = new ArrayList<MetadataQueryRRLoadBalancer>();
+        svcQueryLBList = new ArrayList<ServiceQueryRRLoadBalancer>();
+        lookupService = null;
+        roundRobinLoadBalancer = new RoundRobinLoadBalancer();
+    }
+
+    /**
+     * Get the Round Robin load balancer
+     * @return
+     */
+    public RoundRobinLoadBalancer getRoundRobinLoadBalancer(){
+        return this.roundRobinLoadBalancer;
+    }
+
+    /**
+     * The default load Balancer which is used by {@link com.cisco.oss.foundation.directory.impl.LookupManagerImpl}
+     * @return
+     */
+    public ServiceInstanceLoadBalancer getDefaultLoadBalancer(){
+        return getRoundRobinLoadBalancer();
+    }
+
+    /**
+     * Get the Round Robin load balancer for named service.
      *
      * @param serviceName
      *         the service name.
      * @return
      *         the ServiceRRLoadBalancer.
      */
+    @Deprecated
     public ServiceRRLoadBalancer getServiceRRLoadBalancer(String serviceName) {
         ServiceRRLoadBalancer lb = null;
         synchronized(svcLBList){
@@ -77,13 +115,14 @@ public class LoadBalancerManager {
     }
 
     /**
-     * Get the metadata query Round Robin loadbalancer for a ServiceInstanceQuery.
+     * Get the metadata query Round Robin load balancer for a ServiceInstanceQuery.
      *
      * @param query
      *         the ServiceInstanceQuery.
      * @return
      *         the MetadataQueryRRLoadBalancer.
      */
+    @Deprecated
     public MetadataQueryRRLoadBalancer getMetadataQueryRRLoadBalancer(
             ServiceInstanceQuery query) {
         MetadataQueryRRLoadBalancer lb = null;
@@ -103,7 +142,7 @@ public class LoadBalancerManager {
     }
 
     /**
-     * Get the service query Round Robin loadbalancer for a ServiceInstanceQuery.
+     * Get the service query Round Robin load balancer for a ServiceInstanceQuery.
      *
      * @param serviceName
      *         the service name.
@@ -112,6 +151,7 @@ public class LoadBalancerManager {
      * @return
      *         the ServiceQueryRRLoadBalancer.
      */
+    @Deprecated
     public ServiceQueryRRLoadBalancer getServiceQueryRRLoadBalancer(
             String serviceName, ServiceInstanceQuery query) {
         ServiceQueryRRLoadBalancer lb = null;
