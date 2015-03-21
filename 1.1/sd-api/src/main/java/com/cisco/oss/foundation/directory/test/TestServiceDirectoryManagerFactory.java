@@ -42,16 +42,13 @@ public class TestServiceDirectoryManagerFactory implements
     /**
      * The DefaultTestServiceDirectoryManager.
      */
-    private volatile DefaultTestServiceDirectoryManager testManager;
+    private final DefaultTestServiceDirectoryManager testManager;
 
     /**
      * Constructor.
      */
     public TestServiceDirectoryManagerFactory(){
-    }
-
-    public TestServiceDirectoryManagerFactory(DefaultTestServiceDirectoryManager testManager){
-        this.testManager = testManager;
+        testManager = new DefaultTestServiceDirectoryManager();
         testManager.start();
     }
 
@@ -100,14 +97,6 @@ public class TestServiceDirectoryManagerFactory implements
      *         the DefaultTestServiceDirectoryManager.
      */
     public DefaultTestServiceDirectoryManager getDefaultTestServiceDirectoryManager(){
-        if(testManager == null){
-            synchronized(this){
-                if(testManager == null){
-                    testManager = new DefaultTestServiceDirectoryManager();
-                    testManager.start();
-                }
-            }
-        }
         return testManager;
     }
 
@@ -118,11 +107,7 @@ public class TestServiceDirectoryManagerFactory implements
 
     @Override
     public void stop() {
-        if(testManager != null){
-            if(testManager instanceof Closable){
-                ((Closable) testManager).stop();
-            }
-        }
+        ((Closable) testManager).stop();
     }
 
 
