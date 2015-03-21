@@ -128,11 +128,8 @@ public class LookupManagerImpl implements LookupManager, Closable {
             throws ServiceException {
 
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateServiceName(serviceName);
         
-        if(serviceName == null || serviceName.isEmpty()){
-            throw new IllegalArgumentException("The serviceName argument is null or empty.");
-        }
-
         try{
             ServiceRRLoadBalancer lb = lbManager.getServiceRRLoadBalancer(serviceName);
             return lb.vote();
@@ -149,15 +146,12 @@ public class LookupManagerImpl implements LookupManager, Closable {
             throws ServiceException {
         
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
-
-        if(serviceName == null || serviceName.isEmpty()){
-            throw new IllegalArgumentException("The serviceName argument is null or empty.");
-        }
-
+        ServiceInstanceUtils.validateServiceName(serviceName);
+        
         try{
             List<ModelServiceInstance> modelSvc = getLookupService().getUPModelInstances(serviceName);
             if(modelSvc == null || modelSvc.isEmpty()){
-                return Collections.emptyList();
+                return Collections.<ServiceInstance>emptyList();
             }else{
                 List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
                 for(ModelServiceInstance modelInstance : modelSvc){
@@ -178,15 +172,13 @@ public class LookupManagerImpl implements LookupManager, Closable {
             throws ServiceException {
         
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
-
-        if(serviceName == null || serviceName.isEmpty()){
-            throw new IllegalArgumentException("The serviceName argument is null or empty.");
+        ServiceInstanceUtils.validateServiceName(serviceName);
+        if (query == null) {
+            throw new ServiceException(new ServiceDirectoryError(
+                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
+                    "ServiceInstanceQuery"));
         }
-
-        if(query == null){
-            throw new IllegalArgumentException("The ServiceInstanceQuery is null.");
-        }
-
+        
         try{
             ServiceQueryRRLoadBalancer lb = lbManager.getServiceQueryRRLoadBalancer(serviceName, query);
             return lb.vote();
@@ -203,13 +195,11 @@ public class LookupManagerImpl implements LookupManager, Closable {
             throws ServiceException {
         
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
-        
-        if(serviceName == null || serviceName.isEmpty()){
-            throw new IllegalArgumentException("The serviceName argument is null or empty.");
-        }
-
-        if(query == null){
-            throw new IllegalArgumentException("The ServiceInstanceQuery is null.");
+        ServiceInstanceUtils.validateServiceName(serviceName);
+        if (query == null) {
+            throw new ServiceException(new ServiceDirectoryError(
+                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
+                    "ServiceInstanceQuery"));
         }
 
         try{
@@ -222,7 +212,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
                 }
                 return instances;
             }
-            return Collections.emptyList();
+            return Collections.<ServiceInstance>emptyList();
         } catch(ServiceRuntimeException e){
             throw new ServiceException(e);
         }
@@ -274,7 +264,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
                 }
                 return instances;
             }
-            return Collections.emptyList();
+            return Collections.<ServiceInstance>emptyList();
         } catch(ServiceRuntimeException e){
             throw new ServiceException(e);
         }
@@ -288,14 +278,8 @@ public class LookupManagerImpl implements LookupManager, Closable {
             throws ServiceException {
 
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
-        
-        if(instanceId == null || instanceId.isEmpty()){
-            throw new IllegalArgumentException("The instanceId argument is null or empty.");
-        }
-
-        if(serviceName == null || serviceName.isEmpty()){
-            throw new IllegalArgumentException("The serviceName argument is null or empty.");
-        }
+        ServiceInstanceUtils.validateServiceName(serviceName);
+        ServiceInstanceUtils.validateServiceInstanceID(instanceId);
 
         try{
             ModelServiceInstance instance = getLookupService().getModelServiceInstance(serviceName, instanceId);
@@ -324,15 +308,12 @@ public class LookupManagerImpl implements LookupManager, Closable {
             throws ServiceException {
 
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
-        
-        if(serviceName == null || serviceName.isEmpty()){
-            throw new IllegalArgumentException("The serviceName argument is null or empty.");
-        }
+        ServiceInstanceUtils.validateServiceName(serviceName);
 
         try{
             List<ModelServiceInstance> modelSvc = getLookupService().getModelInstances(serviceName);
             if(modelSvc == null || modelSvc.isEmpty()){
-                return Collections.emptyList();
+                return Collections.<ServiceInstance>emptyList();
             }else{
                 List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
                 for(ModelServiceInstance modelInstance : modelSvc){
@@ -353,13 +334,11 @@ public class LookupManagerImpl implements LookupManager, Closable {
             ServiceInstanceQuery query) throws ServiceException {
 
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
-
-        if(query == null){
-            throw new IllegalArgumentException("The ServiceInstanceQuery argument is null.");
-        }
-
-        if(serviceName == null || serviceName.isEmpty()){
-            throw new IllegalArgumentException("The serviceName argument is null or empty.");
+        ServiceInstanceUtils.validateServiceName(serviceName);
+        if (query == null) {
+            throw new ServiceException(new ServiceDirectoryError(
+                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
+                    "ServiceInstanceQuery"));
         }
 
         try{
@@ -373,7 +352,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
                 }
                 return instances;
             }
-            return Collections.emptyList();
+            return Collections.<ServiceInstance>emptyList();
         } catch(ServiceRuntimeException e){
             throw new ServiceException(e);
         }
@@ -406,7 +385,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
                 }
                 return instances;
             }
-            return Collections.emptyList();
+            return Collections.<ServiceInstance>emptyList();
         } catch(ServiceRuntimeException e){
             throw new ServiceException(e);
         }
@@ -434,7 +413,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
         }
 
         if (instances == null) {
-            return Collections.emptyList();
+            return Collections.<ServiceInstance>emptyList();
         }
 
         return instances;
@@ -458,9 +437,11 @@ public class LookupManagerImpl implements LookupManager, Closable {
     public void addNotificationHandler(String serviceName, NotificationHandler handler) throws ServiceException {
 
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
-
-        if(handler == null || serviceName == null || serviceName.isEmpty()){
-            throw new IllegalArgumentException();
+        ServiceInstanceUtils.validateServiceName(serviceName);
+        if (handler == null) {
+            throw new ServiceException(new ServiceDirectoryError(
+                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
+                    "NotificationHandler"));
         }
 
         try{
@@ -487,9 +468,11 @@ public class LookupManagerImpl implements LookupManager, Closable {
     public void removeNotificationHandler(String serviceName, NotificationHandler handler) throws ServiceException {
 
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
-        
-        if(handler == null || serviceName == null || serviceName.isEmpty()){
-            throw new IllegalArgumentException();
+        ServiceInstanceUtils.validateServiceName(serviceName);
+        if (handler == null) {
+            throw new ServiceException(new ServiceDirectoryError(
+                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
+                    "NotificationHandler"));
         }
 
         try{

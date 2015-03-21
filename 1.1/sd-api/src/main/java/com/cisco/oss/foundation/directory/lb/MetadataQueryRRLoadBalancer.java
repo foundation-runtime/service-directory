@@ -75,7 +75,7 @@ public class MetadataQueryRRLoadBalancer extends RoundRobinLoadBalancer {
             if (instances != null) {
                 return instances;
             } else {
-                return Collections.emptyList();
+                return Collections.<ModelServiceInstance>emptyList();
             }
         }
 }

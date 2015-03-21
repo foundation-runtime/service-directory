@@ -80,15 +80,13 @@ public class ServiceQueryRRLoadBalancer extends RoundRobinLoadBalancer {
         List<ModelServiceInstance> modelSvc = getLookupService().getUPModelInstances(serviceName);
         if(modelSvc != null && ! modelSvc.isEmpty()){
             List<ModelServiceInstance> filteredInstances = ServiceInstanceQueryHelper.filter(query, modelSvc);
-            if(filteredInstances.size() > 0){
-                List<ModelServiceInstance> instances = new ArrayList<ModelServiceInstance>();
-                for(ModelServiceInstance model : filteredInstances){
-                    instances.add(model);
-                }
-                return instances;
+            List<ModelServiceInstance> instances = new ArrayList<ModelServiceInstance>();
+            for (ModelServiceInstance model : filteredInstances) {
+                instances.add(model);
             }
+            return instances;
         }
-        return Collections.emptyList();
+        return Collections.<ModelServiceInstance>emptyList();
     }
 
 }

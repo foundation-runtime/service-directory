@@ -47,13 +47,13 @@ public class ServiceInstanceQueryHelper {
      */
     public static List<ModelServiceInstance> filter(ServiceInstanceQuery query, List<ModelServiceInstance> list) {
 
-        if (list == null || list.size() == 0) {
-            return Collections.emptyList();
+        if (list == null || list.isEmpty()) {
+            return Collections.<ModelServiceInstance>emptyList();
         }
 
         List<QueryCriterion> criteria = query.getCriteria();
 
-        if (criteria == null || criteria.size() == 0) {
+        if (criteria == null || criteria.isEmpty()) {
             return list;
         }
 
@@ -87,13 +87,13 @@ public class ServiceInstanceQueryHelper {
      */
     public static List<ServiceInstance> filterServiceInstance(ServiceInstanceQuery query, List<ServiceInstance> list) {
 
-        if (list == null || list.size() == 0) {
-            return Collections.emptyList();
+        if (list == null || list.isEmpty()) {
+            return Collections.<ServiceInstance>emptyList();
         }
 
         List<QueryCriterion> criteria = query.getCriteria();
 
-        if (criteria == null || criteria.size() == 0) {
+        if (criteria == null || criteria.isEmpty()) {
             return list;
         }
 

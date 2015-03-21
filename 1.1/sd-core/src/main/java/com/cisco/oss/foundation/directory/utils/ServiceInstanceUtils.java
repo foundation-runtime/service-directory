@@ -78,7 +78,7 @@ public class ServiceInstanceUtils {
      * @return true if matched.
      */
     public static boolean validateRequiredField(String field, String reg) {
-        if (field == null || field.length() == 0) {
+        if (field == null || field.isEmpty()) {
             return false;
         }
         return Pattern.matches(reg, field);
@@ -94,7 +94,7 @@ public class ServiceInstanceUtils {
      * @return true if field is empty of matched the pattern.
      */
     public static boolean validateOptionalField(String field, String reg) {
-        if (field == null || field.length() == 0) {
+        if (field == null || field.isEmpty()) {
             return true;
         }
         return Pattern.matches(reg, field);
@@ -124,7 +124,7 @@ public class ServiceInstanceUtils {
      * @throws ServiceException 
      */
     public static void validateAddress(String address) throws ServiceException {
-        if (address == null || address.length() == 0) {
+        if (address == null || address.isEmpty()) {
             throw new ServiceException(new ServiceDirectoryError(
                     ErrorCode.SERVICE_INSTANCE_ADDRESS_FORMAT_ERROR));
         }
