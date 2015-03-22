@@ -34,23 +34,17 @@ import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
  *
  *
  */
-public abstract class RoundRobinLoadBalancer implements ServiceInstanceLoadBalancer{
+public class RoundRobinLoadBalancer implements ServiceInstanceLoadBalancer{
 
-    /**
-     * The DirectoryLookupService to get the ServiceInstance List.
-     */
-    private final DirectoryLookupService lookupService ;
-
-    /**
+   /**
      * The Round Robin position index.
      */
-    private AtomicInteger index;
+    private final AtomicInteger index;
 
     /**
      * Constructor.
      */
-    public RoundRobinLoadBalancer(DirectoryLookupService lookupService){
-        this.lookupService = lookupService;
+    public RoundRobinLoadBalancer(){
         this.index = new AtomicInteger(0);
     }
 
@@ -61,35 +55,11 @@ public abstract class RoundRobinLoadBalancer implements ServiceInstanceLoadBalan
      *         the voted ServiceInstance.
      */
     @Override
-    public ServiceInstance vote() {
-        List<ModelServiceInstance> instances = getServiceInstanceList();
-        if(instances == null || instances.isEmpty()){
-            return null;
-        }
+    public ServiceInstance vote(List<ServiceInstance> instances) {
         int i = index.getAndIncrement();
         int pos = i % instances.size();
-        ModelServiceInstance instance = instances.get(pos);
-        return ServiceInstanceUtils.toServiceInstance(instance);
+        ServiceInstance instance = instances.get(pos);
+        return instance;
     }
-
-    /**
-     * Get the LookupService.
-     *
-     * @return
-     *         the LookupService.
-     */
-    public DirectoryLookupService getLookupService(){
-        return lookupService;
-    }
-
-    /**
-     * Get the ServiceInstance list for the Round Robin.
-     *
-     * @return
-     *         the ServiceInstance list.
-     */
-    public abstract List<ModelServiceInstance> getServiceInstanceList();
-
-
 
 }

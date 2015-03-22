@@ -31,23 +31,21 @@ import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery.NotInQueryC
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery.PatternQueryCriterion;
 
 /**
- * It is a serializer tool to serialze/deserialize QueryCriterion.
+ * It is a Parser to convert QueryCriterion from/to commandline expression string
  *
  *
  */
-public class QueryCriterionSerializer {
+public class QueryCriterionParser {
 
     /**
-     * serialize the QueryCriterion to a String expression.
-     *
-     * This String expression can be deserialized by the deserialze method back.
+     * convert the QueryCriterion to a String expression.
      *
      * @param queryCriterion
      *         the QueryCriterion.
      * @return
      *         the String expression.
      */
-    public static String serialize(QueryCriterion queryCriterion){
+    private static String criterionToExpressionStr(QueryCriterion queryCriterion){
         if(queryCriterion instanceof EqualQueryCriterion){
             EqualQueryCriterion criterion = (EqualQueryCriterion) queryCriterion;
             return criterion.getMetadataKey() + " equals " + escapeString(criterion.getCriterion());
@@ -86,17 +84,17 @@ public class QueryCriterionSerializer {
     }
 
     /**
-     * Deserialize a QueryCriterion statement String expression to QueryCriterion.
+     * Parse from statement String expression to QueryCriterion.
      *
      * @param statement
      *         the statement String expression.
      * @return
      *         the QueryCriterion.
      */
-    public static QueryCriterion deserialize(String statement){
-        char [] delimeter = {' ', '\t', ',', '[', ']'};
-        List<String> cmdList = splitStringByDelimeters(statement, delimeter, true);
-        List<String> tokenList = filterDelimeterElement(cmdList, delimeter);
+    public static QueryCriterion toQueryCriterion(String statement){
+        char [] delimiter = {' ', '\t', ',', '[', ']'};
+        List<String> cmdList = splitStringByDelimiters(statement, delimiter, true);
+        List<String> tokenList = filterDelimiterElement(cmdList, delimiter);
         if(tokenList.size() == 1){
             String key = cmdList.get(0);
             if(! key.isEmpty()){
@@ -177,7 +175,7 @@ public class QueryCriterionSerializer {
     }
 
     /**
-     * Deserialize the ServiceInstanceQuery command line String expression.
+     * Parse the ServiceInstanceQuery from command line String expression.
      *
      * Deserialize the ServiceInstanceQuery command line to the ServiceInstanceQuery.
      *
@@ -186,11 +184,11 @@ public class QueryCriterionSerializer {
      * @return
      *         the QueryCriterion statement String list.
      */
-    public static ServiceInstanceQuery deserializeServiceInstanceQuery(String cli){
-        char [] delimeter = {';'};
+    public static ServiceInstanceQuery toServiceInstanceQuery(String cli){
+        char [] delimiters = {';'};
         ServiceInstanceQuery query = new ServiceInstanceQuery();
-        for(String statement : splitStringByDelimeters(cli, delimeter, false)){
-            QueryCriterion criterion = deserialize(statement);
+        for(String statement : splitStringByDelimiters(cli, delimiters, false)){
+            QueryCriterion criterion = toQueryCriterion(statement);
             if(criterion != null){
                 query.addQueryCriterion(criterion);
             }
@@ -199,18 +197,18 @@ public class QueryCriterionSerializer {
     }
 
     /**
-     * Serialze the ServiceInstanceQuery to the command line string expression.
+     * Convert the ServiceInstanceQuery to the command line string expression.
      *
      * @param query
      *         the ServiceInstanceQuery.
      * @return
      *         the string expression.
      */
-    public static String serializeServiceInstanceQuery(ServiceInstanceQuery query){
+    public static String queryToExpressionStr(ServiceInstanceQuery query){
         List<QueryCriterion> criteria = query.getCriteria();
         StringBuilder sb = new StringBuilder();
         for(QueryCriterion criterion : criteria){
-            String statement = serialize(criterion);
+            String statement = criterionToExpressionStr(criterion);
             if(statement != null && ! statement.isEmpty()){
                 sb.append(statement).append(";");
             }
@@ -251,18 +249,18 @@ public class QueryCriterionSerializer {
     }
 
     /**
-     * Filter the delimeter from the String array.
+     * Filter the delimiter from the String array.
      *
-     * remove the String element in the delimeter.
+     * remove the String element in the delimiter.
      *
      * @param arr
      *         the target array.
-     * @param delimeter
-     *         the delimeter array need to remove.
+     * @param delimiters
+     *         the delimiter array need to remove.
      * @return
      *         the array List.
      */
-    private static List<String> filterDelimeterElement(List<String> arr, char[] delimeter){
+    private static List<String> filterDelimiterElement(List<String> arr, char[] delimiters){
         List<String> list = new ArrayList<String>();
         for(String s : arr){
             if(s == null || s.isEmpty()){
@@ -274,7 +272,7 @@ public class QueryCriterionSerializer {
             }
             char strChar = s.charAt(0);
             boolean find = false;
-            for(char c : delimeter){
+            for(char c : delimiters){
                 if(c == strChar){
                     find = true;
                     break;
@@ -295,14 +293,14 @@ public class QueryCriterionSerializer {
      *
      * @param str
      *         the complete string.
-     * @param delimeter
-     *         the delimeter array.
+     * @param delimiters
+     *         the delimiter array.
      * @param includeDeli
-     *         if true, include the delimeter in the return array.
+     *         if true, include the delimiter in the return array.
      * @return
-     *         the splited String array.
+     *         the split String array.
      */
-    private static List<String> splitStringByDelimeters(String str, char[] delimeter, boolean includeDeli){
+    private static List<String> splitStringByDelimiters(String str, char[] delimiters, boolean includeDeli){
         List<String> arr = new ArrayList<String>();
         int i = 0, start = 0, quota = 0;
         char pre = 0;
@@ -311,7 +309,7 @@ public class QueryCriterionSerializer {
                 quota ++;
             }
             if(quota % 2 == 0){
-                for(char deli : delimeter){
+                for(char deli : delimiters){
                     if( c == deli){
                         if(includeDeli){
                             arr.add(str.substring(start, i).trim());
@@ -338,20 +336,4 @@ public class QueryCriterionSerializer {
 
         return arr;
     }
-
-//    public static void main(String[] args){
-//    String a = "a equals \"c\\\",[] c\"; solution in [ \"s\\\"1\", \"s2\"]; datacenter; not local;";
-//    System.out.println(escapeString("ddad\"dd"));
-//    String s = "\"ddad\\\"dd\"";
-//    System.out.println("---->" + s);
-//    System.out.println(unescapeString(s));
-//
-//    List<String> stats = deserializeCommandLine(a);
-//    for(String stat : stats){
-//        QueryCriterion c = deserialize(stat);
-//        System.out.println("--------------------");
-//        System.out.println(c.toString());
-//        System.out.println(serialize(c));
-//    }
-//}
 }

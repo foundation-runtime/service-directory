@@ -24,9 +24,12 @@ import com.cisco.oss.foundation.directory.impl.DirectoryLookupService;
  * The service query Round Robin loadbalancer implementation.
  *
  */
+@Deprecated
 public class ServiceRRLoadBalancer extends RoundRobinLoadBalancer {
 
     private final String serviceName ;
+    private final DirectoryLookupService lookupService;
+
     /**
      * Constructor.
      *
@@ -37,7 +40,7 @@ public class ServiceRRLoadBalancer extends RoundRobinLoadBalancer {
      *         the service name
      */
     public ServiceRRLoadBalancer(DirectoryLookupService lookupService, String serviceName) {
-        super(lookupService);
+        this.lookupService=lookupService;
         this.serviceName = serviceName;
     }
 
@@ -54,9 +57,8 @@ public class ServiceRRLoadBalancer extends RoundRobinLoadBalancer {
     /**
      * {@inheritDoc}
      */
-    @Override
     public List<ModelServiceInstance> getServiceInstanceList() {
-        return getLookupService().getUPModelInstances(serviceName);
+        return this.lookupService.getUPModelInstances(serviceName);
     }
 
 }

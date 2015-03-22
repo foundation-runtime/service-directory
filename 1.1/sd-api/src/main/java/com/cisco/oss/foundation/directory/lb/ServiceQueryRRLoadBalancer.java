@@ -29,11 +29,13 @@ import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
  * The service query Round Robin loadbalancer implementation.
  *
  */
+@Deprecated
 public class ServiceQueryRRLoadBalancer extends RoundRobinLoadBalancer {
 
     private final String serviceName ;
     private final ServiceInstanceQuery query;
-    
+    private final DirectoryLookupService lookupService;
+
     /**
      * Constructor.
      *
@@ -47,7 +49,7 @@ public class ServiceQueryRRLoadBalancer extends RoundRobinLoadBalancer {
      *         the ServiceInstanceQuery
      */
     public ServiceQueryRRLoadBalancer(DirectoryLookupService lookupService, String serviceName, ServiceInstanceQuery query) {
-        super(lookupService);
+        this.lookupService=lookupService;
         this.serviceName = serviceName;
         this.query = query;
     }
@@ -75,9 +77,8 @@ public class ServiceQueryRRLoadBalancer extends RoundRobinLoadBalancer {
     /**
      * {@inheritDoc}
      */
-    @Override
     public List<ModelServiceInstance> getServiceInstanceList() {
-        List<ModelServiceInstance> modelSvc = getLookupService().getUPModelInstances(serviceName);
+        List<ModelServiceInstance> modelSvc = lookupService.getUPModelInstances(serviceName);
         if(modelSvc != null && ! modelSvc.isEmpty()){
             List<ModelServiceInstance> filteredInstances = ServiceInstanceQueryHelper.filter(query, modelSvc);
             List<ModelServiceInstance> instances = new ArrayList<ModelServiceInstance>();

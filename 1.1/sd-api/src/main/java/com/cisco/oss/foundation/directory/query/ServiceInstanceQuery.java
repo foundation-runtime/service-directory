@@ -38,13 +38,13 @@ public class ServiceInstanceQuery {
     /**
      * The criteria.
      */
-    List<QueryCriterion> criteria ;
+    final List<QueryCriterion> criteria;
 
     /**
      * Constructor.
      */
     public ServiceInstanceQuery(){
-
+        this.criteria = new ArrayList<QueryCriterion>() ;
     }
 
     /**
@@ -183,9 +183,6 @@ public class ServiceInstanceQuery {
      *         the QueryCriterion.
      */
     public void addQueryCriterion(QueryCriterion criterion){
-        if( criteria == null){
-            criteria = new ArrayList<QueryCriterion>();
-        }
         criteria.add(criterion);
     }
 

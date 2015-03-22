@@ -39,9 +39,7 @@ import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
 import com.cisco.oss.foundation.directory.lb.LoadBalancerManager;
-import com.cisco.oss.foundation.directory.lb.MetadataQueryRRLoadBalancer;
-import com.cisco.oss.foundation.directory.lb.ServiceQueryRRLoadBalancer;
-import com.cisco.oss.foundation.directory.lb.ServiceRRLoadBalancer;
+import com.cisco.oss.foundation.directory.lb.ServiceInstanceLoadBalancer;
 import com.cisco.oss.foundation.directory.lifecycle.Closable;
 import com.cisco.oss.foundation.directory.query.QueryCriterion;
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
@@ -131,8 +129,8 @@ public class LookupManagerImpl implements LookupManager, Closable {
         ServiceInstanceUtils.validateServiceName(serviceName);
         
         try{
-            ServiceRRLoadBalancer lb = lbManager.getServiceRRLoadBalancer(serviceName);
-            return lb.vote();
+            ServiceInstanceLoadBalancer lb = lbManager.getDefaultLoadBalancer();
+            return lb.vote(lookupInstances(serviceName));
         } catch(ServiceRuntimeException e){
             throw new ServiceException(e);
         }
@@ -180,8 +178,8 @@ public class LookupManagerImpl implements LookupManager, Closable {
         }
         
         try{
-            ServiceQueryRRLoadBalancer lb = lbManager.getServiceQueryRRLoadBalancer(serviceName, query);
-            return lb.vote();
+            ServiceInstanceLoadBalancer lb = lbManager.getDefaultLoadBalancer();
+            return lb.vote(queryInstancesByName(serviceName,query));
         } catch(ServiceRuntimeException e){
             throw new ServiceException(e);
         }
@@ -229,8 +227,8 @@ public class LookupManagerImpl implements LookupManager, Closable {
         validateServiceInstanceMetadataQuery(query);
 
         try{
-            MetadataQueryRRLoadBalancer lb = lbManager.getMetadataQueryRRLoadBalancer(query);
-            return lb.vote();
+            ServiceInstanceLoadBalancer lb = lbManager.getDefaultLoadBalancer();
+            return lb.vote(queryInstancesByKey(query));
         } catch(ServiceRuntimeException e){
             throw new ServiceException(e);
         }
