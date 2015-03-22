@@ -19,6 +19,9 @@
 
 package com.cisco.oss.foundation.directory.impl;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,6 +136,29 @@ public class ServiceDirectoryImpl {
      */
     public ServiceDirectoryConfig getServiceDirectoryConfig(){
         return new ServiceDirectoryConfig(Configurations.getConfiguration());
+    }
+    
+    /**
+     * Get the SD API version
+     * 
+     * @return
+     *        the SD API version 
+     */
+    public String getVersion() {
+        
+        try {
+            InputStream input = ServiceDirectoryImpl.class.getClassLoader()
+                    .getResourceAsStream("version.txt");
+            if (input == null) {
+                return "Unknown";
+            }
+            Properties prop = new Properties();
+            prop.load(input);
+            input.close();
+            return prop.getProperty("version", "Unknown");
+        } catch (IOException e) {
+            return "Unknown";
+        }
     }
 
     /**
