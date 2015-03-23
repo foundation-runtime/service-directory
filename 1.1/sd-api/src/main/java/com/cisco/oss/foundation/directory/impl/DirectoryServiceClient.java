@@ -315,7 +315,7 @@ public class DirectoryServiceClient{
      * @return
      *         the ModelMetadataKey.
      */
-    public ModelMetadataKey getMetadataKeyValue(String keyName){
+    public ModelMetadataKey getMetadataKey(String keyName){
         HttpResponse result = invoker.invoke("/metadatakey/" + keyName , null, HttpMethod.GET);
 
         if (result.getHttpCode() != HTTP_OK) {

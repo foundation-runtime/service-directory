@@ -323,7 +323,7 @@ public class DirectoryServiceClientTest {
 
         client.setInvoker(mockInvoker);
 
-        ModelMetadataKey metadatakey = client.getMetadataKeyValue(keyName);
+        ModelMetadataKey metadatakey = client.getMetadataKey(keyName);
 
         Assert.assertEquals(metadatakey.getName(), "datacenter");
         Assert.assertEquals(metadatakey.getId(), "datacenter");

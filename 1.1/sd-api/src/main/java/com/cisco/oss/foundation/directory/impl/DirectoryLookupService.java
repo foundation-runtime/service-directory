@@ -85,7 +85,7 @@ public class DirectoryLookupService {
      *         the ModelMetadataKey.
      */
     protected ModelMetadataKey getModelMetadataKeyValue(String keyName){
-        return getDirectoryServiceClient().getMetadataKeyValue(keyName);
+        return getDirectoryServiceClient().getMetadataKey(keyName);
     }
 
     /**

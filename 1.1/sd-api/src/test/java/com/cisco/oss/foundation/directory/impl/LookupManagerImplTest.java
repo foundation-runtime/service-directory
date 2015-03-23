@@ -100,7 +100,7 @@ public class LookupManagerImplTest {
                     }
 
                     @Override
-                    public ModelMetadataKey getMetadataKeyValue(String keyName){
+                    public ModelMetadataKey getMetadataKey(String keyName){
                         Assert.assertTrue(keyName.equals("solution"));
                         keyInvoked.incrementAndGet();
                         return keyResult;
