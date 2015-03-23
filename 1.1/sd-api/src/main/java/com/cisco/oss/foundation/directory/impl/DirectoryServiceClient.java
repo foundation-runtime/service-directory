@@ -481,7 +481,7 @@ public class DirectoryServiceClient{
      *
      *
      */
-    static class DirectoryInvoker {
+    public static class DirectoryInvoker {
         private static final Logger LOGGER = LoggerFactory
                 .getLogger(DirectoryInvoker.class);
 
