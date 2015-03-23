@@ -44,7 +44,7 @@ import com.cisco.oss.foundation.directory.utils.HttpResponse;
 import com.cisco.oss.foundation.directory.utils.HttpUtils;
 import static com.cisco.oss.foundation.directory.utils.JsonSerializer.*;
 import static org.junit.Assert.assertEquals;
-
+import com.cisco.oss.foundation.directory.impl.DirectoryServiceClient.DirectoryInvoker;
 /**
  * Test Suite to test the Exception Handling in the Directory API.
  *

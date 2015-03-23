@@ -42,6 +42,7 @@ import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.utils.HttpResponse;
 import com.cisco.oss.foundation.directory.utils.HttpUtils;
+import com.cisco.oss.foundation.directory.impl.DirectoryServiceClient.DirectoryInvoker;
 
 public class DirectoryServiceClientTest {
 

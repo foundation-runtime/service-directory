@@ -29,6 +29,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static java.net.HttpURLConnection.HTTP_MULT_CHOICE;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.net.HttpURLConnection.HTTP_CREATED;
 
@@ -50,6 +51,7 @@ import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.utils.HttpResponse;
 import com.cisco.oss.foundation.directory.utils.HttpUtils.HttpMethod;
+import com.cisco.oss.foundation.directory.utils.HttpUtils;
 import static com.cisco.oss.foundation.directory.utils.JsonSerializer.*;
 
 /**
@@ -76,18 +78,23 @@ public class DirectoryServiceClient{
 
     /**
      * The Service Directory server FQDN property name.
-     * @deprecated use DirectoryInvoker.SD_API_SD_SERVER_FQDN_PROPERTY instead
      */
-    @Deprecated
-    public static final String SD_API_SD_SERVER_FQDN_PROPERTY = DirectoryInvoker.SD_API_SD_SERVER_FQDN_PROPERTY;
+    public static final String SD_API_SD_SERVER_FQDN_PROPERTY = "com.cisco.oss.foundation.directory.server.fqdn";
 
     /**
      * The default Service Directory server FQDN name.
-     * @deprecated use DirectoryInvoker.SD_API_SD_SERVER_FQDN_DEFAULT
      */
-    @Deprecated
-    public static final String SD_API_SD_SERVER_FQDN_DEFAULT = DirectoryInvoker.SD_API_SD_SERVER_FQDN_DEFAULT;
+    public static final String SD_API_SD_SERVER_FQDN_DEFAULT = "vcsdirsvc";
 
+    /**
+     * The Service Directory server port property name.
+     */
+    public static final String SD_API_SD_SERVER_PORT_PROPERTY = "com.cisco.oss.foundation.directory.server.port";
+
+    /**
+     * The default Service Directory server port.
+     */
+    public static final int SD_API_SD_SERVER_PORT_DEFAULT = 2013;
 
     /**
      * The HTTP invoker to access remote ServiceDirectory node.
@@ -463,7 +470,152 @@ public class DirectoryServiceClient{
     }
 
     public void setInvoker(DirectoryInvoker invoker) {
+
         this.invoker = invoker;
+    }
+
+    /**
+     * It is the HTTP invoker to the ServiceDirectory ServerNode.
+     *
+     * It wraps the complexity of HttpClient and exposes a easy method to invoke RESTful services.
+     *
+     *
+     */
+    static class DirectoryInvoker {
+        private static final Logger LOGGER = LoggerFactory
+                .getLogger(DirectoryInvoker.class);
+
+
+        /* The remote ServiceDirectory node address array, in the format of http://<host>:<port> */
+        public String directoryAddresses;
+
+
+
+        /**
+         * Constructor.
+         *
+         */
+        public DirectoryInvoker() {
+            String sdFQDN = Configurations.getString(SD_API_SD_SERVER_FQDN_PROPERTY, SD_API_SD_SERVER_FQDN_DEFAULT);
+            int port = Configurations.getInt(SD_API_SD_SERVER_PORT_PROPERTY, SD_API_SD_SERVER_PORT_DEFAULT);
+            this.directoryAddresses = "http://" + sdFQDN + ":" + port;
+        }
+
+        /**
+         * Invoke the HTTP RESTful Service.
+         *
+         * @param uri        The URI of the RESTful service.
+         * @param payload    The HTTP body String.
+         * @param method     The HTTP method.
+         * @return
+         *         the HttpResponse.
+         */
+        public HttpResponse invoke(String uri, String payload, HttpMethod method) {
+            HttpResponse result = null;
+            String url = directoryAddresses + uri;
+            try {
+                if (method == null || method == HttpMethod.GET) {
+                    result = HttpUtils.getJson(url);
+                } else if (method == HttpMethod.POST) {
+                    result = HttpUtils.postJson(url, payload);
+                } else if (method == HttpMethod.PUT) {
+                    result = HttpUtils.putJson(url, payload);
+                } else if (method == HttpMethod.DELETE) {
+                    result = HttpUtils.deleteJson(url);
+                }
+            } catch (IOException e) {
+                String errMsg = "Send HTTP Request to remote Directory Server failed";
+                LOGGER.error(errMsg);
+                LOGGER.debug(errMsg, e);
+                ServiceDirectoryError sde = new ServiceDirectoryError(ErrorCode.HTTP_CLIENT_ERROR, errMsg);
+                throw new DirectoryServerClientException(sde, e);
+            }
+            // HTTP_OK 200, HTTP_MULT_CHOICE 300
+            if (result.getHttpCode() < HTTP_OK || result.getHttpCode() >= HTTP_MULT_CHOICE) {
+                String errorBody = result.getRetBody();
+
+                if(errorBody == null || errorBody.isEmpty()){
+                    LOGGER.error("Invoke remote directory server failed, status=" + result.getHttpCode()
+                            + ", Error Message body is empty.");
+                    ServiceDirectoryError sde = new ServiceDirectoryError(
+                            ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "Error Message body is empty.");
+                    throw new DirectoryServerClientException(sde);
+                }
+                ServiceDirectoryError sde = null;
+                try {
+                    sde = (ServiceDirectoryError)
+                            deserialize(errorBody.getBytes(),
+                                    ServiceDirectoryError.class);
+                } catch (IOException  e) {
+                    String errMsg = "Deserialize error body message failed";
+                    LOGGER.error(errMsg);
+                    LOGGER.debug(errMsg + ", messageBody=" + errorBody, e);
+                    ServiceDirectoryError sde1 = new ServiceDirectoryError(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, errMsg);
+                    throw new DirectoryServerClientException(sde1, e);
+                }
+
+                if (sde != null) {
+                    throw new DirectoryServerClientException(sde);
+                }
+            }
+            return result;
+        }
+
+        /**
+         * Invoke the HTTP RESTful Service.
+         *
+         * @param uri        The URI of the RESTful service.
+         * @param payload    The HTTP body string.
+         * @param method     The HTTP method.
+         * @param headers    The HTTP headers.
+         * @return
+         *         the HttpResponse.
+         */
+        public HttpResponse invoke(String uri, String payload, HttpMethod method, Map<String, String> headers) {
+            HttpResponse result = null;
+            String url = directoryAddresses + uri;
+            try {
+                if (method == HttpMethod.PUT) {
+                    result = HttpUtils.put(url, payload, headers);
+                }
+            } catch (IOException e) {
+                String errMsg = "Send HTTP Request to remote Directory Server failed";
+                LOGGER.error(errMsg);
+                LOGGER.debug(errMsg, e);
+                ServiceDirectoryError sde = new ServiceDirectoryError(ErrorCode.HTTP_CLIENT_ERROR, errMsg);
+                throw new DirectoryServerClientException(sde, e);
+            }
+
+            // HTTP_OK 200, HTTP_MULT_CHOICE 300
+            if (result.getHttpCode() < HTTP_OK || result.getHttpCode() >= 300) {
+                String errorBody = result.getRetBody();
+
+                if(errorBody == null || errorBody.isEmpty()){
+                    LOGGER.error("Invoke remote directory server failed, status=" + result.getHttpCode()
+                            + ", Error Message body is empty.");
+                    ServiceDirectoryError sde = new ServiceDirectoryError(
+                            ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "Error Message body is empty.");
+                    throw new DirectoryServerClientException(sde);
+                }
+                ServiceDirectoryError sde = null;
+                try {
+                    sde = (ServiceDirectoryError)
+                            deserialize(errorBody.getBytes(),
+                                    ServiceDirectoryError.class);
+                } catch (IOException  e) {
+                    String errMsg = "Deserialize error body message failed";
+                    LOGGER.error(errMsg);
+                    LOGGER.debug(errMsg + ", messageBody=" + errorBody, e);
+                    ServiceDirectoryError sde1 = new ServiceDirectoryError(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, errMsg);
+                    throw new DirectoryServerClientException(sde1, e);
+                }
+
+                if (sde != null) {
+                    throw new DirectoryServerClientException(sde);
+                }
+            }
+            return result;
+        }
     }
 }
 
