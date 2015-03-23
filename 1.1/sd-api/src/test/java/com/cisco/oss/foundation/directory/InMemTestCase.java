@@ -173,7 +173,7 @@ public class InMemTestCase {
     }
 
     @Test
-    public void testQueryServiceByKey() throws ServiceException{
+    public void testQueryServiceByMetadataKey() throws ServiceException{
         String serviceName1 = "InMemTest-01";
         String serviceName2 = "InMemTest-02";
 
@@ -206,11 +206,11 @@ public class InMemTestCase {
         register.registerService(ist4);
 
         ServiceInstanceQuery query = new ServiceInstanceQuery().getEqualQueryCriterion("meta1", "value1");
-        List<ServiceInstance> list1 = lookup.queryInstancesByKey(query);
+        List<ServiceInstance> list1 = lookup.queryInstancesByMetadataKey(query);
         Assert.assertEquals(list1.size(), 4);
 
         query.getEqualQueryCriterion("datacenter", "dc01");
-        List<ServiceInstance> list2 = lookup.queryInstancesByKey(query);
+        List<ServiceInstance> list2 = lookup.queryInstancesByMetadataKey(query);
         Assert.assertEquals(list2.size(), 2);
 
 
@@ -219,19 +219,19 @@ public class InMemTestCase {
         countMap.put(ist4.getProviderId(), 0);
         ServiceInstanceQuery query1 = new ServiceInstanceQuery().getEqualQueryCriterion("datacenter", "dc02");
 
-        ServiceInstance queryInstance = lookup.queryInstanceByKey(query1);
+        ServiceInstance queryInstance = lookup.queryInstanceByMetadataKey(query1);
         Integer count = countMap.get(queryInstance.getInstanceId());
         countMap.put(queryInstance.getInstanceId(), count + 1);
 
-        queryInstance = lookup.queryInstanceByKey(query1);
+        queryInstance = lookup.queryInstanceByMetadataKey(query1);
         count = countMap.get(queryInstance.getInstanceId());
         countMap.put(queryInstance.getInstanceId(), count + 1);
 
-        queryInstance = lookup.queryInstanceByKey(query1);
+        queryInstance = lookup.queryInstanceByMetadataKey(query1);
         count = countMap.get(queryInstance.getInstanceId());
         countMap.put(queryInstance.getInstanceId(), count + 1);
 
-        queryInstance = lookup.queryInstanceByKey(query1);
+        queryInstance = lookup.queryInstanceByMetadataKey(query1);
         count = countMap.get(queryInstance.getInstanceId());
         countMap.put(queryInstance.getInstanceId(), count + 1);
         Assert.assertEquals(countMap.size(), 2);
@@ -303,7 +303,7 @@ public class InMemTestCase {
         instances = lookup.getAllInstances(serviceName, query);
         Assert.assertEquals(instances.size(), 1);
 
-        instances = lookup.getAllInstancesByKey(query);
+        instances = lookup.getAllInstancesByMetadataKey(query);
         Assert.assertEquals(instances.size(), 2);
 
         // cleanup.

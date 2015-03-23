@@ -67,7 +67,7 @@ public class MetadataQueryRRLoadBalancer extends RoundRobinLoadBalancer {
             }
             if (keyName != null && !keyName.isEmpty()) {
                 List<ModelServiceInstance> modelInstances = this.lookupService
-                        .getUPModelInstancesByKey(keyName);
+                        .getUPModelInstancesByMetadataKey(keyName);
                 instances = ServiceInstanceQueryHelper
                         .filter(query, modelInstances);
             }

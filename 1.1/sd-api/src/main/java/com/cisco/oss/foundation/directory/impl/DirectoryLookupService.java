@@ -77,15 +77,15 @@ public class DirectoryLookupService {
     }
 
     /**
-     * Get the ModelMetadataKey by key name
+     * Get the ModelMetadataKey Value by key name
      *
      * @param keyName
      *         the metadata key name.
      * @return
      *         the ModelMetadataKey.
      */
-    protected ModelMetadataKey getModelMetadataKey(String keyName){
-        return getDirectoryServiceClient().getMetadataKey(keyName);
+    protected ModelMetadataKey getModelMetadataKeyValue(String keyName){
+        return getDirectoryServiceClient().getMetadataKeyValue(keyName);
     }
 
     /**
@@ -118,8 +118,8 @@ public class DirectoryLookupService {
      * @return
      *         the UP ModelServiceInstances that has the metadata key.
      */
-    public List<ModelServiceInstance> getModelInstancesByKey(String keyName){
-        ModelMetadataKey key = getModelMetadataKey(keyName);
+    public List<ModelServiceInstance> getModelInstancesByMetadataKey(String keyName){
+        ModelMetadataKey key = getModelMetadataKeyValue(keyName);
         if(key == null || key.getServiceInstances().isEmpty()){
             return Collections.<ModelServiceInstance>emptyList();
         }else{
@@ -136,9 +136,9 @@ public class DirectoryLookupService {
      * @return
      *         the ModelServiceInstances that has the metadata key.
      */
-    public List<ModelServiceInstance> getUPModelInstancesByKey(String keyName){
+    public List<ModelServiceInstance> getUPModelInstancesByMetadataKey(String keyName){
         List<ModelServiceInstance> list = new ArrayList<ModelServiceInstance>();
-        for (ModelServiceInstance instance : getModelInstancesByKey(keyName)){
+        for (ModelServiceInstance instance : getModelInstancesByMetadataKey(keyName)){
             if(instance.getStatus().equals(OperationalStatus.UP)){
                 list.add(instance);
             }

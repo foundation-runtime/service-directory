@@ -220,7 +220,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
      * {@inheritDoc}
      */
     @Override
-    public ServiceInstance queryInstanceByKey(ServiceInstanceQuery query)
+    public ServiceInstance queryInstanceByMetadataKey(ServiceInstanceQuery query)
             throws ServiceException {
         
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
@@ -228,7 +228,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
 
         try{
             ServiceInstanceLoadBalancer lb = lbManager.getDefaultLoadBalancer();
-            return lb.vote(queryInstancesByKey(query));
+            return lb.vote(queryInstancesByMetadataKey(query));
         } catch(ServiceRuntimeException e){
             throw new ServiceException(e);
         }
@@ -238,7 +238,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
      * {@inheritDoc}
      */
     @Override
-    public List<ServiceInstance> queryInstancesByKey(ServiceInstanceQuery query)
+    public List<ServiceInstance> queryInstancesByMetadataKey(ServiceInstanceQuery query)
             throws ServiceException {
         
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
@@ -252,7 +252,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
             }
             if (keyName != null && !keyName.isEmpty()) {
                 List<ModelServiceInstance> modelInstances = getLookupService()
-                        .getUPModelInstancesByKey(keyName);
+                        .getUPModelInstancesByMetadataKey(keyName);
                 List<ModelServiceInstance> filteredInstances = ServiceInstanceQueryHelper
                         .filter(query, modelInstances);
 
@@ -360,7 +360,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
      * {@inheritDoc}
      */
     @Override
-    public List<ServiceInstance> getAllInstancesByKey(ServiceInstanceQuery query)
+    public List<ServiceInstance> getAllInstancesByMetadataKey(ServiceInstanceQuery query)
             throws ServiceException {
         
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
@@ -374,7 +374,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
             }
             if (keyName != null && !keyName.isEmpty()) {
                 List<ModelServiceInstance> modelInstances = getLookupService()
-                        .getModelInstancesByKey(keyName);
+                        .getModelInstancesByMetadataKey(keyName);
                 List<ModelServiceInstance> filteredInstances = ServiceInstanceQueryHelper
                         .filter(query, modelInstances);
                 instances = new ArrayList<ServiceInstance>();
@@ -510,8 +510,8 @@ public class LookupManagerImpl implements LookupManager, Closable {
     }
 
     /**
-     * Validate the ServiceInstanceQuery for the queryInstanceByKey, queryInstancesByKey
-     * and getAllInstancesByKey method.
+     * Validate the ServiceInstanceQuery for the queryInstanceByMetadataKey, queryInstancesByMetadataKey
+     * and getAllInstancesByMetadataKey method.
      *
      * For those methods, the ContainQueryCriterion and NotContainQueryCriterion are not supported.
      *

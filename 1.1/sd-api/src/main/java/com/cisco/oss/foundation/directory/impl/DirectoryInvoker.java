@@ -40,7 +40,7 @@ import static com.cisco.oss.foundation.directory.utils.JsonSerializer.*;
 /**
  * It is the HTTP invoker to the ServiceDirectory ServerNode.
  *
- * It wraps the complicity of HttpClient and exposes a easy method to invoke RESTful services.
+ * It wraps the complexity of HttpClient and exposes a easy method to invoke RESTful services.
  *
  *
  */

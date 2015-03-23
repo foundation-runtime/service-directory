@@ -77,7 +77,7 @@ public enum ErrorCode {
 
     /**
      * The ContainQueryCriterion and NotContainQueryCriterion are not supported
-     * in queryInstancesByKey. Message: ServiceInstanceQuery has illegal
+     * in queryInstancesByMetadataKey. Message: ServiceInstanceQuery has illegal
      * QueryCriteria. Querying Instances by MetadataKey doesn't support
      * ContainQueryCriterion and NotContainQueryCriterion.
      */

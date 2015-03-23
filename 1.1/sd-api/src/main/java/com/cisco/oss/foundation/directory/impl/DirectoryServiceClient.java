@@ -26,6 +26,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.net.HttpURLConnection.HTTP_CREATED;
 
@@ -58,6 +61,8 @@ import static com.cisco.oss.foundation.directory.utils.JsonSerializer.*;
  *
  */
 public class DirectoryServiceClient{
+    
+    private static final Logger LOGGER = LoggerFactory.getLogger(DirectoryServiceClient.class);
 
     /**
      * The http client read timeout property.
@@ -195,9 +200,7 @@ public class DirectoryServiceClient{
         try {
             body = "uri=" + URLEncoder.encode(uri, "UTF-8") + "&isOwned=" + isOwned;
         } catch (UnsupportedEncodingException e) {
-            ServiceDirectoryError sde = new ServiceDirectoryError(
-                    ErrorCode.SERVICE_INSTANCE_URI_FORMAT_ERROR);
-            throw new DirectoryServerClientException(sde);
+            LOGGER.error("UTF-8 not supported. {}", e.getMessage());
         }
 
         Map<String, String> headers = new HashMap<String, String>();
@@ -298,14 +301,14 @@ public class DirectoryServiceClient{
     }
 
     /**
-     * Get the MetadataKey by key name.
+     * Get the MetadataKey value by key name.
      *
      * @param keyName
      *         the key name.
      * @return
      *         the ModelMetadataKey.
      */
-    public ModelMetadataKey getMetadataKey(String keyName){
+    public ModelMetadataKey getMetadataKeyValue(String keyName){
         HttpResponse result = invoker.invoke("/metadatakey/" + keyName , null, HttpMethod.GET);
 
         if (result.getHttpCode() != HTTP_OK) {

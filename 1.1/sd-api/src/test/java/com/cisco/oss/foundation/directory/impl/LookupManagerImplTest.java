@@ -100,7 +100,7 @@ public class LookupManagerImplTest {
                     }
 
                     @Override
-                    public ModelMetadataKey getMetadataKey(String keyName){
+                    public ModelMetadataKey getMetadataKeyValue(String keyName){
                         Assert.assertTrue(keyName.equals("solution"));
                         keyInvoked.incrementAndGet();
                         return keyResult;
@@ -170,7 +170,7 @@ public class LookupManagerImplTest {
         try {
             Assert.assertEquals(impl.getAllInstances(serviceName).get(0).getInstanceId(), instanceId);
             Assert.assertTrue(impl.getAllInstances(serviceName, query).get(0).getInstanceId().equals(instanceId));
-            Assert.assertTrue(impl.getAllInstancesByKey(query).get(0).getInstanceId().equals(instanceId));
+            Assert.assertTrue(impl.getAllInstancesByMetadataKey(query).get(0).getInstanceId().equals(instanceId));
             Assert.assertTrue(impl.getInstance(serviceName, instanceId).getInstanceId().equals(instanceId));
         } catch (ServiceException e) {
             // TODO Auto-generated catch block
@@ -197,8 +197,8 @@ public class LookupManagerImplTest {
         try {
             Assert.assertEquals(impl.getAllInstances(serviceName).get(0).getInstanceId(), instanceId);
             Assert.assertTrue(impl.getAllInstances(serviceName, query).get(0).getUri().equals("http://cisco.com/vbo/odrm/setupsession/v02"));
-            Assert.assertTrue(impl.getAllInstancesByKey(query).get(0).getInstanceId().equals(instanceId));
-            Assert.assertTrue(impl.getAllInstancesByKey(query).get(0).getUri().equals("http://cisco.com/vbo/odrm/setupsession/v03"));
+            Assert.assertTrue(impl.getAllInstancesByMetadataKey(query).get(0).getInstanceId().equals(instanceId));
+            Assert.assertTrue(impl.getAllInstancesByMetadataKey(query).get(0).getUri().equals("http://cisco.com/vbo/odrm/setupsession/v03"));
             Assert.assertTrue(impl.getInstance(serviceName, instanceId).getInstanceId().equals(instanceId));
             Assert.assertTrue(impl.getInstance(serviceName, instanceId).getMetadata().get("solution").equals("core02"));
         } catch (ServiceException e) {

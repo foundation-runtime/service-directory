@@ -182,7 +182,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     }
 
     /**
-     * Get the ModelMetadataKey
+     * Get the ModelMetadataKey value
      *
      * It will query the cache first. If not found in the cache, the metadata key will be added to the cache.
      *
@@ -192,12 +192,12 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
      *         the ModelMetadataKey.
      */
     @Override
-    protected ModelMetadataKey getModelMetadataKey(String keyName){
+    protected ModelMetadataKey getModelMetadataKeyValue(String keyName){
         ModelMetadataKey key = null;
         if(this.getMetadataKeyCache().containsKey(keyName)){
             key = getMetadataKeyCache().get(keyName);
         } else {
-            key = super.getModelMetadataKey(keyName);
+            key = super.getModelMetadataKeyValue(keyName);
             getMetadataKeyCache().putIfAbsent(keyName, key);
         }
         return key;
@@ -350,8 +350,6 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
         @Override
         public void run() {
             try{
-
-
                 List<ModelMetadataKey> keys = cachedLookupService.getAllMetadataKeysForSync();
                 if(keys.size() > 0){
                     Map<String, ModelMetadataKey> keyMap = new HashMap<String, ModelMetadataKey>();

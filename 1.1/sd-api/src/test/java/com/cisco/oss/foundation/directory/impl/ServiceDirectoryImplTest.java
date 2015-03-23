@@ -251,13 +251,13 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory,
         }
 
         @Override
-        public ServiceInstance queryInstanceByKey(ServiceInstanceQuery query)
+        public ServiceInstance queryInstanceByMetadataKey(ServiceInstanceQuery query)
                 throws ServiceException {
             return null;
         }
 
         @Override
-        public List<ServiceInstance> queryInstancesByKey(
+        public List<ServiceInstance> queryInstancesByMetadataKey(
                 ServiceInstanceQuery query) throws ServiceException {
             return null;
         }
@@ -287,7 +287,7 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory,
         }
 
         @Override
-        public List<ServiceInstance> getAllInstancesByKey(
+        public List<ServiceInstance> getAllInstancesByMetadataKey(
                 ServiceInstanceQuery query) throws ServiceException {
             return null;
         }

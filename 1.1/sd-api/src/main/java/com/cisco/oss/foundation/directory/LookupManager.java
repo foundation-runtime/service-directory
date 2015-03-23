@@ -92,7 +92,7 @@ public interface LookupManager {
      * @return                The ServiceInstance list.
      * @throws ServiceException
      */
-    public ServiceInstance queryInstanceByKey(ServiceInstanceQuery query) throws ServiceException;
+    public ServiceInstance queryInstanceByMetadataKey(ServiceInstanceQuery query) throws ServiceException;
 
     /**
      * Query for all the ServiceInstances which satisfy the query criteria on the service metadata.
@@ -103,7 +103,7 @@ public interface LookupManager {
      * @return                The ServiceInstance list.
      * @throws ServiceException
      */
-    public List<ServiceInstance> queryInstancesByKey(ServiceInstanceQuery query) throws ServiceException;
+    public List<ServiceInstance> queryInstancesByMetadataKey(ServiceInstanceQuery query) throws ServiceException;
 
     /**
      * Get a ServiceInstance.
@@ -162,7 +162,7 @@ public interface LookupManager {
      *         the ServiceInstance List.
      * @throws ServiceException
      */
-    public List<ServiceInstance> getAllInstancesByKey(ServiceInstanceQuery query) throws ServiceException;
+    public List<ServiceInstance> getAllInstancesByMetadataKey(ServiceInstanceQuery query) throws ServiceException;
 
     /**
      * Get the all ServiceInstances in the ServiceDirectory including the DOWN ServiceInstance.

@@ -375,13 +375,13 @@ public class DefaultTestServiceDirectoryManager implements
      * {@inheritDoc}
      */
     @Override
-    public ServiceInstance queryInstanceByKey(ServiceInstanceQuery query)
+    public ServiceInstance queryInstanceByMetadataKey(ServiceInstanceQuery query)
             throws ServiceException {
         List<QueryCriterion> criteria = query.getCriteria();
         if (criteria != null && criteria.size() > 0) {
 
             String key = criteria.get(0).getMetadataKey();
-            List<ServiceInstance> list = this.queryInstancesByKey(query);
+            List<ServiceInstance> list = this.queryInstancesByMetadataKey(query);
             if(list == null || list.size() == 0){
                 return null;
             }
@@ -395,7 +395,7 @@ public class DefaultTestServiceDirectoryManager implements
      * {@inheritDoc}
      */
     @Override
-    public List<ServiceInstance> queryInstancesByKey(
+    public List<ServiceInstance> queryInstancesByMetadataKey(
             ServiceInstanceQuery query) throws ServiceException {
         List<QueryCriterion> criteria = query.getCriteria();
         if (criteria != null && criteria.size() > 0) {
@@ -491,7 +491,7 @@ public class DefaultTestServiceDirectoryManager implements
      * {@inheritDoc}
      */
     @Override
-    public List<ServiceInstance> getAllInstancesByKey(ServiceInstanceQuery query)
+    public List<ServiceInstance> getAllInstancesByMetadataKey(ServiceInstanceQuery query)
             throws ServiceException {
         List<QueryCriterion> criteria = query.getCriteria();
         if (criteria != null && criteria.size() > 0) {
