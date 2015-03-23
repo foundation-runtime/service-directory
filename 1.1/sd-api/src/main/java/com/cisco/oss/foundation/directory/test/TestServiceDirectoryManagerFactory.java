@@ -31,7 +31,7 @@ import com.cisco.oss.foundation.directory.lifecycle.Closable;
  * The default ServiceDirectoryManagerFactory for integration test on top of SD API.
  *
  * It is an in-memory service directory provider which stores and looks up services in local.
- * Set configuration "service.directory.manager.factory.provider" to
+ * Set configuration "com.cisco.oss.foundation.directory.manager.factory.provider" to
  * "test.TestServiceDirectoryManagerFactory" before invoking the ServiceDirectory.
  *
  *

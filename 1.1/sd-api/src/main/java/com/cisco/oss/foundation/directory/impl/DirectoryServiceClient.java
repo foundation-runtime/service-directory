@@ -67,7 +67,7 @@ public class DirectoryServiceClient{
     /**
      * The http client read timeout property.
      */
-    public static final String SD_API_HTTPCLIENT_READ_TIMEOUT_PROPERTY = "httpclient.read.timeout";
+    public static final String SD_API_HTTPCLIENT_READ_TIMEOUT_PROPERTY = "com.cisco.oss.foundation.directory.httpclient.read.timeout";
 
     /**
      * The http client default read timeout value.

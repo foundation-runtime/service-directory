@@ -49,7 +49,7 @@ public class ServiceDirectoryImpl {
     /**
      * The customer ServiceDirectoryManagerFactory implementation class name property name.
      */
-    public static final String SD_API_SERVICE_DIRECTORY_MANAGER_FACTORY_PROVIDER_PROPERTY = "service.directory.manager.factory.provider";
+    public static final String SD_API_SERVICE_DIRECTORY_MANAGER_FACTORY_PROVIDER_PROPERTY = "com.cisco.oss.foundation.directory.manager.factory.provider";
 
     /**
      * ServiceDirectory client.
@@ -240,7 +240,7 @@ public class ServiceDirectoryImpl {
      * Get the ServiceDirectoryManagerFactory.
      *
      * It is lazy initialized and thread safe.
-     * It looks up the configuration "service.directory.manager.factory.provider".
+     * It looks up the configuration "com.cisco.oss.foundation.directory.manager.factory.provider".
      * If the configuration is null or the provider instantialization fails, it will instantialize the DefaultServiceDirectoryManagerFactory.
      *
      * @return

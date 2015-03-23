@@ -55,7 +55,7 @@ public class DirectoryInvoker {
     /**
      * The Service Directory server FQDN property name.
      */
-    public static final String SD_API_SD_SERVER_FQDN_PROPERTY = "server.fqdn";
+    public static final String SD_API_SD_SERVER_FQDN_PROPERTY = "com.cisco.oss.foundation.directory.server.fqdn";
 
     /**
      * The default Service Directory server FQDN name.
@@ -65,7 +65,7 @@ public class DirectoryInvoker {
     /**
      * The Service Directory server port property name.
      */
-    public static final String SD_API_SD_SERVER_PORT_PROPERTY = "server.port";
+    public static final String SD_API_SD_SERVER_PORT_PROPERTY = "com.cisco.oss.foundation.directory.server.port";
 
     /**
      * The default Service Directory server port.

@@ -35,7 +35,7 @@ public class ServiceDirectory {
     /**
      * The ServiceDirectory enable property name, indicating whether ServiceDirectory enabled for directory service.
      */
-    public static final String SD_API_SERVICE_DIRECTORY_ENABLED_PROPERTY = "service.directory.enabled";
+    public static final String SD_API_SERVICE_DIRECTORY_ENABLED_PROPERTY = "com.cisco.oss.foundation.directory.enabled";
 
     /**
      * Default value to enable ServiceDirectory for directory service.
@@ -95,7 +95,7 @@ public class ServiceDirectory {
     /**
      * Check whether ServiceDirectory is enabled for the directory service.
      *
-     * The value comes from the SD API configuration property "service.directory.enabled".
+     * The value comes from the SD API configuration property "scom.cisco.oss.foundation.directory.enabled".
      *
      * By default the ServiceDirectory is enabled.
      *

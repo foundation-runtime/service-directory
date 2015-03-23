@@ -23,7 +23,7 @@
 			</DefaultValue>
 		</Parameter>
 		
-		<Parameter name="httpclient.read.timeout" type="INTEGER" description="">
+		<Parameter name="com.cisco.oss.foundation.directory.httpclient.read.timeout" type="INTEGER" description="">
 			<DefaultValue>
 				<PrimitiveValue value="5" />
 			</DefaultValue>
@@ -53,13 +53,13 @@
 			</DefaultValue>
 		</Parameter>
 		
-		<Parameter name="server.fqdn" type="STRING" description="">
+		<Parameter name="com.cisco.oss.foundation.directory.server.fqdn" type="STRING" description="">
 			<DefaultValue>
 				<PrimitiveValue value="vcsdirsvc" />
 			</DefaultValue>
 		</Parameter>
 		
-		<Parameter name="server.port" type="INTEGER" description="">
+		<Parameter name="com.cisco.oss.foundation.directory.server.port" type="INTEGER" description="">
 			<DefaultValue>
 				<PrimitiveValue value="2013" />
 			</DefaultValue>
@@ -77,13 +77,13 @@
 			</DefaultValue>
 		</Parameter>
 		
-		<Parameter name="service.directory.manager.factory.provider" type="STRING" description="">
+		<Parameter name="com.cisco.oss.foundation.directory.manager.factory.provider" type="STRING" description="">
 			<DefaultValue>
 				<PrimitiveValue value="" />
 			</DefaultValue>
 		</Parameter>
 		
-		<Parameter name="service.directory.enabled" type="BOOLEAN" description="">
+		<Parameter name="com.cisco.oss.foundation.directory.enabled" type="BOOLEAN" description="">
 			<DefaultValue>
 				<PrimitiveValue value="true" />
 			</DefaultValue>
