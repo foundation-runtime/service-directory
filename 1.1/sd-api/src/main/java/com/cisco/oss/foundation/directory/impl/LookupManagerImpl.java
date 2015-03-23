@@ -91,7 +91,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
      */
     public LookupManagerImpl(DirectoryServiceClientManager directoryServiceClientManager){
         this.directoryServiceClientManager = directoryServiceClientManager;
-        this.lbManager = new LoadBalancerManager(getLookupService());
+        this.lbManager = new LoadBalancerManager();
     }
 
     /**

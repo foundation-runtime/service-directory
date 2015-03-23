@@ -68,7 +68,7 @@ public interface ServiceDirectoryManagerFactory{
 
     /**
      * Get the DirectoryServiceClientManager
-     * @return
+     * @return DirectoryServiceClientManager
      */
     public DirectoryServiceClientManager getDirectoryServiceClientManager();
 }
