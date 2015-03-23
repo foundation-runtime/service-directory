@@ -170,9 +170,7 @@ public class DirectoryServiceClient{
         try {
             body = "status=" + URLEncoder.encode(status.toString(), "UTF-8") + "&isOwned=" + isOwned;
         } catch (UnsupportedEncodingException e) {
-            ServiceDirectoryError sde = new ServiceDirectoryError(
-                    ErrorCode.SERVICE_INSTANCE_URI_FORMAT_ERROR);
-            throw new DirectoryServerClientException(sde);
+            LOGGER.error("UTF-8 not supported. ", e);
         }
 
         Map<String, String> headers = new HashMap<String, String>();
@@ -207,7 +205,7 @@ public class DirectoryServiceClient{
         try {
             body = "uri=" + URLEncoder.encode(uri, "UTF-8") + "&isOwned=" + isOwned;
         } catch (UnsupportedEncodingException e) {
-            LOGGER.error("UTF-8 not supported. {}", e.getMessage());
+            LOGGER.error("UTF-8 not supported. ", e);
         }
 
         Map<String, String> headers = new HashMap<String, String>();
@@ -535,8 +533,9 @@ public class DirectoryServiceClient{
                 String errorBody = result.getRetBody();
 
                 if(errorBody == null || errorBody.isEmpty()){
-                    LOGGER.error("Invoke remote directory server failed, status=" + result.getHttpCode()
-                            + ", Error Message body is empty.");
+                    LOGGER.error(
+                            "Invoke remote directory server failed, status={}, Error Message body is empty.",
+                            result.getHttpCode());
                     ServiceDirectoryError sde = new ServiceDirectoryError(
                             ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "Error Message body is empty.");
                     throw new DirectoryServerClientException(sde);
@@ -591,8 +590,9 @@ public class DirectoryServiceClient{
                 String errorBody = result.getRetBody();
 
                 if(errorBody == null || errorBody.isEmpty()){
-                    LOGGER.error("Invoke remote directory server failed, status=" + result.getHttpCode()
-                            + ", Error Message body is empty.");
+                    LOGGER.error(
+                            "Invoke remote directory server failed, status={}, Error Message body is empty.",
+                            result.getHttpCode());
                     ServiceDirectoryError sde = new ServiceDirectoryError(
                             ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "Error Message body is empty.");
                     throw new DirectoryServerClientException(sde);

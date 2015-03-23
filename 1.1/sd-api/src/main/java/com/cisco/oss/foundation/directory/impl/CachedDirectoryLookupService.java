@@ -324,9 +324,10 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                 }
                 CacheDumpLogger.debug(sb.toString());
             } catch (Exception e) {
-                LOGGER.warn("Dump Service Cache failed. Set Logger " + CacheDumpLogger.getName() + " to INFO to close this message.");
+                LOGGER.warn("Dump Service Cache failed. Set Logger {} to INFO to close this message.",
+                            CacheDumpLogger.getName());
                 if (LOGGER.isTraceEnabled()) {
-                    LOGGER.trace("Dump Service Cache failed.", e);
+                    LOGGER.trace("Dump Service Cache failed. ", e);
                 }
                 return false;
             }
@@ -365,11 +366,12 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                                 ModelMetadataKey newKey = result.getobject();
                                 if(newKey != null){
                                     cachedLookupService.getMetadataKeyCache().put(keyName, newKey);
-                                    LOGGER.info("Update the ModelMetadataKey in cache, keyName=" + keyName);
+                                    LOGGER.info("Update the ModelMetadataKey in cache, keyName={}.", keyName);
                                 }
                             } else {
-                                LOGGER.error("Cache sync ModelMetadataKey failed, keyName=" + keyName + " - " + result.getError().getErrorMessage());
-                            }
+                                LOGGER.error("Cache sync ModelMetadataKey failed, keyName={}. {}.",
+                                            keyName, result.getError().getErrorMessage());
+                      }
 
                         }
                     } else {
@@ -379,7 +381,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                     LOGGER.info("No MetadataKey in the cache, skip cache sync.");
                 }
             }catch(Exception e){
-                LOGGER.error("Sync ModelMetadataKey cache from ServiceDirectory Server failed", e);
+                LOGGER.error("Sync ModelMetadataKey cache from ServiceDirectory Server failed. ", e);
             }
 
             try{
@@ -402,11 +404,12 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                                 ModelService oldService = cachedLookupService.getCache().get(serviceName);
                                 if(newService != null){
                                     cachedLookupService.getCache().put(serviceName, newService);
-                                    LOGGER.info("Update the ModelService in cache, serviceName=" + serviceName );
+                                    LOGGER.info("Update the ModelService in cache, serviceName={}.", serviceName );
                                 }
                                 onServiceChanged(newService, oldService);
                             } else {
-                                LOGGER.error("Cache sync ModelService failed, serviceName=" + serviceName + " - " + result.getError().getErrorMessage());
+                                LOGGER.error("Cache sync ModelService failed, serviceName={}. {}.",
+                                            serviceName, result.getError().getErrorMessage());
                             }
                         }
                     } else {
@@ -421,7 +424,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                 }
 
             }catch(Exception e){
-                LOGGER.error("Sync ModelService cache from ServiceDirectory Server failed", e);
+                LOGGER.error("Sync ModelService cache from ServiceDirectory Server failed. ", e);
             }
         }
         

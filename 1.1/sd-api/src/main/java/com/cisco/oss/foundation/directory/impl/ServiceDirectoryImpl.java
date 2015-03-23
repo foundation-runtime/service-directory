@@ -81,12 +81,12 @@ public class ServiceDirectoryImpl {
                         .isAssignableFrom(provider)) {
                     directoryManagerFactory = (ServiceDirectoryManagerFactory) provider
                             .newInstance();
-                    LOGGER.info("Initialize the ServiceDirectoryManager with customer implementation " + custProvider + ".");
+                    LOGGER.info("Initialize the ServiceDirectoryManager with customer implementation {}.", custProvider);
                 }
             } catch (Exception e) {
                 LOGGER.error(
-                        "Initialize ServiceDirectoryManagerFactory from "
-                                + custProvider + " failed.", e);
+                        "Initialize ServiceDirectoryManagerFactory from {} failed.",
+                        custProvider, e);
             }
         }
 
@@ -173,17 +173,16 @@ public class ServiceDirectoryImpl {
             if (this.directoryManagerFactory != null) {
 
                 ((Stoppable) directoryManagerFactory).stop();
-
-
-                LOGGER.info("Resetting ServiceDirectoryManagerFactory, old="
-                        + this.directoryManagerFactory.getClass().getName()
-                        + ", new=" + factory.getClass().getName() + ".");
+                LOGGER.info(
+                        "Resetting ServiceDirectoryManagerFactory, old={}, new={}.",
+                        this.directoryManagerFactory.getClass().getName(),
+                        factory.getClass().getName());
 
                 this.directoryManagerFactory = factory;
             } else {
                 this.directoryManagerFactory = factory;
-                LOGGER.info("Setting ServiceDirectoryManagerFactory,  factory="
-                        + factory.getClass().getName() + ".");
+                LOGGER.info("Setting ServiceDirectoryManagerFactory, factory={}.",
+                        factory.getClass().getName());
             }
         }
     }
@@ -230,7 +229,7 @@ public class ServiceDirectoryImpl {
      *
      * It is lazy initialized and thread safe.
      * It looks up the configuration "com.cisco.oss.foundation.directory.manager.factory.provider".
-     * If the configuration is null or the provider instantialization fails, it will instantialize the DefaultServiceDirectoryManagerFactory.
+     * If the configuration is null or the provider instantialization fails, it will instantiate the DefaultServiceDirectoryManagerFactory.
      *
      * @return
      *         the ServiceDirectoryManagerFactory instance.

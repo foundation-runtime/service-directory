@@ -289,9 +289,7 @@ public class HeartbeatDirectoryRegistrationService extends
 
             }
             if(LOGGER.isDebugEnabled()){
-                LOGGER.debug("add cached ProvidedServiceInstance, serviceName=" + instance.getServiceName()
-                    + ", providerId=" + instance.getProviderId() + ", monitor=" + instance.isMonitorEnabled()
-                    + ", status=" + instance.getStatus() + ", instance=" + cachedInstance.toString());
+                LOGGER.debug("add cached ProvidedServiceInstance: {}.", cachedInstance.toString());
             }
             cachedInstance.setServiceInstanceHealth(registryHealth);
         } finally {
@@ -318,9 +316,7 @@ public class HeartbeatDirectoryRegistrationService extends
                 cachedInstance.setStatus(instance.getStatus());
             }
             if(LOGGER.isDebugEnabled()){
-                LOGGER.debug("update cached ProvidedServiceInstance, serviceName=" + instance.getServiceName()
-                    + ", providerId=" + instance.getProviderId() + ", monitor=" + instance.isMonitorEnabled()
-                    + ", status=" + instance.getStatus());
+                LOGGER.debug("update cached ProvidedServiceInstance: {}.", cachedInstance.toString());
             }
 
         } finally {
@@ -367,9 +363,10 @@ public class HeartbeatDirectoryRegistrationService extends
             write.lock();
             ServiceInstanceId id = new ServiceInstanceId(serviceName, providerId);
             getCacheServiceInstances().remove(id);
-            if(LOGGER.isDebugEnabled()){
-                LOGGER.debug("delete cached ProvidedServiceInstance, serviceName=" + serviceName
-                    + ", providerId=" + providerId);
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug(
+                        "delete cached ProvidedServiceInstance, serviceName={}, providerId={}.",
+                        serviceName, providerId);
             }
         } finally {
             write.unlock();
@@ -427,8 +424,9 @@ public class HeartbeatDirectoryRegistrationService extends
         int rhInterval = getServiceDirectoryConfig().getInt(
                 SD_API_REGISTRY_HEALTH_CHECK_INTERVAL_PROPERTY,
                 SD_API_REGISTRY_HEALTH_CHECK_INTERVAL_DEFAULT);
-        LOGGER.info("Start the SD API RegistryHealth Task scheduler, delay="
-                + rhDelay + ", interval=" + rhInterval);
+        LOGGER.info(
+                "Start the SD API RegistryHealth Task scheduler, delay={}, interval={}.",
+                rhDelay, rhInterval);
         healthJob.scheduleAtFixedRate(new HealthCheckTask(), rhDelay,
                 rhInterval, TimeUnit.SECONDS);
 
@@ -437,8 +435,9 @@ public class HeartbeatDirectoryRegistrationService extends
         int hbInterval = getServiceDirectoryConfig().getInt(
                 SD_API_HEARTBEAT_INTERVAL_PROPERTY,
                 SD_API_HEARTBEAT_INTERVAL_DEFAULT);
-        LOGGER.info("Start the SD API Heartbeat Task scheduler, delay="
-                + hbDelay + ", interval=" + hbInterval);
+        LOGGER.info(
+                "Start the SD API Heartbeat Task scheduler, delay={}, interval={}.",
+                hbDelay, hbInterval);
         heartbeatJob.scheduleAtFixedRate(new HeartbeatTask(), hbDelay,
                 hbInterval, TimeUnit.SECONDS);
     }
@@ -463,8 +462,10 @@ public class HeartbeatDirectoryRegistrationService extends
                         continue;
                     }
                     if(LOGGER.isDebugEnabled()){
-                        LOGGER.debug("Check the Health for service=" + ist.getServiceName() + ", providerId=" + ist.getProviderId());
-                    }
+                        LOGGER.debug(
+                                "Check the Health for service={}, providerId={}.",
+                                ist.getServiceName(), ist.getProviderId());
+      }
                     ist.isHealth = ist.getServiceInstanceHealth().isHealthy();
                 }
             } catch (Exception e) {
@@ -493,7 +494,7 @@ public class HeartbeatDirectoryRegistrationService extends
                 List<ServiceInstanceHeartbeat> serviceHBList = new ArrayList<ServiceInstanceHeartbeat>();
                 for (CachedProviderServiceInstance cachedInstance : getCacheServiceInstances().values()) {
                     if(LOGGER.isDebugEnabled()){
-                        LOGGER.debug("Service instance: " + cachedInstance.toString()    );
+                        LOGGER.debug("Service instance: {}.", cachedInstance.toString());
                     }
                     if (cachedInstance.monitorEnabled && OperationalStatus.UP.equals(cachedInstance.status)
                             && cachedInstance.isHealth) {
@@ -504,8 +505,9 @@ public class HeartbeatDirectoryRegistrationService extends
                     }
                 }
 
-                LOGGER.debug("Send heartbeat for ServiceInstances, ServiceInstanceNumber="
-                        + serviceHBList.size());
+                LOGGER.debug(
+                        "Send heartbeat for ServiceInstances, ServiceInstanceNumber={}.",
+                        serviceHBList.size());
                 if (serviceHBList.isEmpty()) {
                     return;
                 }
@@ -526,17 +528,16 @@ public class HeartbeatDirectoryRegistrationService extends
                         if (result == false) {
                             ServiceInstanceHeartbeat instance = heartbeatMap
                                     .get(entry.getKey());
-                            LOGGER.error("Send heartbeat failed, serviceName="
-                                    + instance.getServiceName()
-                                    + ", providerId="
-                                    + instance.getProviderId()
-                                    + " - "
-                                    + entry.getValue().getError()
-                                            .getErrorMessage());
-                        }
+                            LOGGER.error(
+                                    "Send heartbeat failed, serviceName={}, providerId={}. {}.",
+                                    new Object[] {
+                                            instance.getServiceName(),
+                                            instance.getProviderId(),
+                                            entry.getValue().getError().getErrorMessage() });
+                  }
                     }
                 } else {
-                    LOGGER.error("Get no heartbeat responce from Directory Server");
+                    LOGGER.error("Get no heartbeat responce from Directory Server.");
                 }
             } catch (Exception e) {
                 LOGGER.error("Send heartbeat failed.", e);

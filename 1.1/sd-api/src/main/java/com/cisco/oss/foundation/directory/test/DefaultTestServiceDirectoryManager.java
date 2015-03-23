@@ -240,7 +240,7 @@ public class DefaultTestServiceDirectoryManager implements
 
         onServiceInstanceAvailable(new ServiceInstance(cacheServiceInstance.getServiceName(), cacheServiceInstance.getProviderId(), cacheServiceInstance.getUri(),
                         cacheServiceInstance.isMonitorEnabled(), cacheServiceInstance.getStatus(), cacheServiceInstance.getAddress(), cacheServiceInstance.getPort(), cacheServiceInstance.getMetadata()));
-        LOGGER.info("Registered Service, name=" + serviceInstance.getServiceName());
+        LOGGER.info("Registered Service, name={}.", serviceInstance.getServiceName());
     }
 
     /**
