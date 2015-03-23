@@ -108,6 +108,16 @@ public class ServiceDirectory {
     }
 
     /**
+     * Get the SD API version
+     * 
+     * @return
+     *        the SD API version 
+     */
+    public static String getAPIVersion() {
+        return getImpl().getVersion();
+    }
+    
+    /**
      * Shut down the ServiceDirectory.
      *
      * Be careful to invoke this method. When shutdown() is called, ServiceDirectory cannot be used 
