@@ -25,7 +25,7 @@ import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
 import com.cisco.oss.foundation.directory.config.ServiceDirectoryConfig;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
-import com.cisco.oss.foundation.directory.lifecycle.Closable;
+import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 
 /**
  * It is the default ServiceDirectoryManagerFactory to access remote ServiceDirectory server node.
@@ -36,7 +36,7 @@ import com.cisco.oss.foundation.directory.lifecycle.Closable;
  *
  */
 public class DefaultServiceDirectoryManagerFactory implements
-        ServiceDirectoryManagerFactory, Closable {
+        ServiceDirectoryManagerFactory, Stoppable {
 
     /**
      * RegistrationManager, it is lazy initialized.

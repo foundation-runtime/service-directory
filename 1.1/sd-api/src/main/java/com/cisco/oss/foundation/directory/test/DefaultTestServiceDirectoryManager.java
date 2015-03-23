@@ -45,7 +45,7 @@ import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
 import com.cisco.oss.foundation.directory.impl.ServiceInstanceQueryHelper;
-import com.cisco.oss.foundation.directory.lifecycle.Closable;
+import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 import com.cisco.oss.foundation.directory.query.QueryCriterion;
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
@@ -61,7 +61,7 @@ import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
  *
  */
 public class DefaultTestServiceDirectoryManager implements
-        RegistrationManager, LookupManager, Closable {
+        RegistrationManager, LookupManager, Stoppable {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(DefaultTestServiceDirectoryManager.class);
 

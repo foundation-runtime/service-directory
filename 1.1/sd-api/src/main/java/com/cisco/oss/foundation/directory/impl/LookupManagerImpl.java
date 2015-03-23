@@ -39,7 +39,7 @@ import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
 import com.cisco.oss.foundation.directory.lb.LoadBalancerManager;
 import com.cisco.oss.foundation.directory.lb.ServiceInstanceLoadBalancer;
-import com.cisco.oss.foundation.directory.lifecycle.Closable;
+import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 import com.cisco.oss.foundation.directory.query.QueryCriterion;
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery.ContainQueryCriterion;
@@ -52,7 +52,7 @@ import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDire
  *
  *
  */
-public class LookupManagerImpl implements LookupManager, Closable {
+public class LookupManagerImpl implements LookupManager, Stoppable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LookupManagerImpl.class);
 
@@ -112,9 +112,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
     @Override
     public void stop(){
         if (isStarted.compareAndSet(true, false)) {
-            if (getLookupService() instanceof Closable) {
-                ((Closable) getLookupService()).stop();
-            }
+           ((Stoppable) getLookupService()).stop();
         }
     }
 

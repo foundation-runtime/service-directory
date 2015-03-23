@@ -25,7 +25,7 @@ import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
 import com.cisco.oss.foundation.directory.config.ServiceDirectoryConfig;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
-import com.cisco.oss.foundation.directory.lifecycle.Closable;
+import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 
 /**
  * The default ServiceDirectoryManagerFactory for integration test on top of SD API.
@@ -37,7 +37,7 @@ import com.cisco.oss.foundation.directory.lifecycle.Closable;
  *
  */
 public class TestServiceDirectoryManagerFactory implements
-        ServiceDirectoryManagerFactory, Closable {
+        ServiceDirectoryManagerFactory, Stoppable {
 
     /**
      * The DefaultTestServiceDirectoryManager.
@@ -107,7 +107,7 @@ public class TestServiceDirectoryManagerFactory implements
 
     @Override
     public void stop() {
-        ((Closable) testManager).stop();
+        ((Stoppable) testManager).stop();
     }
 
 

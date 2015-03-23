@@ -38,11 +38,11 @@ import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
-import com.cisco.oss.foundation.directory.lifecycle.Closable;
+import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
 
-public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory, Closable {
-
+public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory, Stoppable {
+    interface ForTestingManagerFactory extends ServiceDirectoryManagerFactory,Stoppable{};
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceDirectoryImplTest.class);
     @Test
     public void testSetFactory() {
@@ -70,7 +70,7 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory,
 
         final LookupManager lookup = new MockLookup();
 
-        ServiceDirectoryManagerFactory factory = new ServiceDirectoryManagerFactory(){
+        ServiceDirectoryManagerFactory factory = new ForTestingManagerFactory(){
 
             @Override
             public RegistrationManager getRegistrationManager()
@@ -96,6 +96,16 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory,
             @Override
             public DirectoryServiceClientManager getDirectoryServiceClientManager() {
                 return null;
+            }
+
+            @Override
+            public void stop() {
+                //to nothing
+            }
+
+            @Override
+            public void start() {
+                //to nothing
             }
         };
 

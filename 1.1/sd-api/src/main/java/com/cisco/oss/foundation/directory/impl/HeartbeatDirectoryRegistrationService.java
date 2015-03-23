@@ -43,7 +43,7 @@ import com.cisco.oss.foundation.directory.entity.ServiceInstanceHeartbeat;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
-import com.cisco.oss.foundation.directory.lifecycle.Closable;
+import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
 
 /**
@@ -55,7 +55,7 @@ import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDire
  *
  */
 public class HeartbeatDirectoryRegistrationService extends
-        DirectoryRegistrationService implements Closable {
+        DirectoryRegistrationService implements Stoppable {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(HeartbeatDirectoryRegistrationService.class);

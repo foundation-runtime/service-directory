@@ -31,7 +31,7 @@ import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
-import com.cisco.oss.foundation.directory.lifecycle.Closable;
+import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
 /**
@@ -39,7 +39,7 @@ import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDire
  *
  *
  */
-public class RegistrationManagerImpl implements RegistrationManager, Closable{
+public class RegistrationManagerImpl implements RegistrationManager, Stoppable{
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(RegistrationManagerImpl.class);
@@ -95,9 +95,7 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
     @Override
     public void stop(){
         if (isStarted.compareAndSet(true,false)) {
-            if (getRegistrationService() instanceof Closable) {
-                ((Closable) getRegistrationService()).stop();
-            }
+            ((Stoppable) getRegistrationService()).stop();
         }
     }
 

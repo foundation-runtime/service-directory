@@ -32,7 +32,7 @@ import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
-import com.cisco.oss.foundation.directory.lifecycle.Closable;
+import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 
 import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
 
@@ -172,9 +172,8 @@ public class ServiceDirectoryImpl {
 
             if (this.directoryManagerFactory != null) {
 
-                if (directoryManagerFactory instanceof Closable) {
-                    ((Closable) directoryManagerFactory).stop();
-                }
+                ((Stoppable) directoryManagerFactory).stop();
+
 
                 LOGGER.info("Resetting ServiceDirectoryManagerFactory, old="
                         + this.directoryManagerFactory.getClass().getName()
@@ -208,9 +207,7 @@ public class ServiceDirectoryImpl {
     public synchronized void shutdown(){
         if (!isShutdown) {
             if (directoryManagerFactory != null) {
-                if (directoryManagerFactory instanceof Closable) {
-                    ((Closable) directoryManagerFactory).stop();
-                }
+                ((Stoppable) directoryManagerFactory).stop();
                 directoryManagerFactory = null;
             }
             this.isShutdown = true;
@@ -223,7 +220,7 @@ public class ServiceDirectoryImpl {
      */
     public synchronized void restart(){
         if (directoryManagerFactory != null) {
-            ((Closable) directoryManagerFactory).start();
+            ((Stoppable) directoryManagerFactory).start();
         }
         isShutdown = false;
     }

@@ -42,7 +42,7 @@ import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.OperationResult;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
-import com.cisco.oss.foundation.directory.lifecycle.Closable;
+import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
 import static com.cisco.oss.foundation.directory.utils.JsonSerializer.*;
@@ -55,7 +55,7 @@ import static com.cisco.oss.foundation.directory.utils.JsonSerializer.*;
  *
  *
  */
-public class CachedDirectoryLookupService extends DirectoryLookupService implements Closable {
+public class CachedDirectoryLookupService extends DirectoryLookupService implements Stoppable {
 
     private static final Logger LOGGER = LoggerFactory
             .getLogger(CachedDirectoryLookupService.class);
