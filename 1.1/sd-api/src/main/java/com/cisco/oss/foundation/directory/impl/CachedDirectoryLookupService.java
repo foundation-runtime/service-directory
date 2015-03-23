@@ -171,10 +171,8 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
      */
     @Override
     protected ModelService getModelService(String serviceName){
-        ModelService service = null;
-        if (getCache().containsKey(serviceName)) {
-            service = getCache().get(serviceName);
-        } else {
+        ModelService service = getCache().get(serviceName);
+        if (service == null) {
             service = super.getModelService(serviceName);
             getCache().putIfAbsent(serviceName, service);
         }
@@ -193,10 +191,8 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
      */
     @Override
     protected ModelMetadataKey getModelMetadataKeyValue(String keyName){
-        ModelMetadataKey key = null;
-        if(this.getMetadataKeyCache().containsKey(keyName)){
-            key = getMetadataKeyCache().get(keyName);
-        } else {
+        ModelMetadataKey key = getMetadataKeyCache().get(keyName);
+        if (key == null) {
             key = super.getModelMetadataKeyValue(keyName);
             getMetadataKeyCache().putIfAbsent(keyName, key);
         }

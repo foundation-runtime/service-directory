@@ -488,14 +488,10 @@ public class HeartbeatDirectoryRegistrationService extends
         public void run() {
             read.lock();
             try {
-                if(LOGGER.isDebugEnabled()){
-                    LOGGER.debug("Kickoff the heartbeat thread");
-                }
+                LOGGER.debug("Kickoff the heartbeat thread");
                 List<ServiceInstanceHeartbeat> serviceHBList = new ArrayList<ServiceInstanceHeartbeat>();
                 for (CachedProviderServiceInstance cachedInstance : getCacheServiceInstances().values()) {
-                    if(LOGGER.isDebugEnabled()){
-                        LOGGER.debug("Service instance: {}.", cachedInstance.toString());
-                    }
+                    LOGGER.debug("Service instance: {}.", cachedInstance.toString());
                     if (cachedInstance.monitorEnabled && OperationalStatus.UP.equals(cachedInstance.status)
                             && cachedInstance.isHealth) {
                         ServiceInstanceHeartbeat hb = new ServiceInstanceHeartbeat(
