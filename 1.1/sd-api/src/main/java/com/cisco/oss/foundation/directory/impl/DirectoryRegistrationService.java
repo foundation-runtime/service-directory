@@ -19,7 +19,6 @@
 
 package com.cisco.oss.foundation.directory.impl;
 
-import com.cisco.oss.foundation.directory.Configurations;
 import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
@@ -28,6 +27,8 @@ import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
+
+import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
 
 /**
  * It is the Directory Registration Service to perform the ServiceInstance registration.
@@ -64,7 +65,7 @@ public class DirectoryRegistrationService {
     public DirectoryRegistrationService(
             DirectoryServiceClientManager directoryServiceClientManager) {
         this.directoryServiceClientManager = directoryServiceClientManager;
-        disableOwnerError = Configurations.getBoolean(SD_API_REGISTRY_DISABLE_OWNER_ERROR_PROPERTY_NAME,
+        disableOwnerError = getServiceDirectoryConfig().getBoolean(SD_API_REGISTRY_DISABLE_OWNER_ERROR_PROPERTY_NAME,
                 SD_API_REGISTRY_DISABLE_OWNER_ERROR_DEFAULT);
     }
 

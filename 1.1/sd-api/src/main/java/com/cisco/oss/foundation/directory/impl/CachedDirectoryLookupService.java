@@ -35,7 +35,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cisco.oss.foundation.directory.Configurations;
 import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
@@ -44,8 +43,9 @@ import com.cisco.oss.foundation.directory.entity.OperationResult;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.lifecycle.Closable;
-import static com.cisco.oss.foundation.directory.utils.JsonSerializer.*;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
+import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
+import static com.cisco.oss.foundation.directory.utils.JsonSerializer.*;
 
 /**
  * It is the DirectoryLookupService with client-side Cache.
@@ -207,10 +207,10 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
      * initialization of the CacheSyncTask
      */
     private void initCacheSyncTask(){
-        int delay = Configurations.getInt(
+        int delay = getServiceDirectoryConfig().getInt(
                 SD_API_CACHE_SYNC_DELAY_PROPERTY,
                 SD_API_CACHE_SYNC_DELAY_DEFAULT);
-        int interval = Configurations.getInt(
+        int interval = getServiceDirectoryConfig().getInt(
                 SD_API_CACHE_SYNC_INTERVAL_PROPERTY,
                 SD_API_CACHE_SYNC_INTERVAL_DEFAULT);
 

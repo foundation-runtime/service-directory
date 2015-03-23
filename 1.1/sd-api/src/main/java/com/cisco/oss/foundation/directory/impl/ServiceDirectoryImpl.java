@@ -22,18 +22,19 @@ package com.cisco.oss.foundation.directory.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cisco.oss.foundation.directory.Configurations;
 import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
-import com.cisco.oss.foundation.directory.config.ServiceDirectoryConfig;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.lifecycle.Closable;
+
+import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
 
 /**
  * The ServiceDirectory context class.
@@ -70,7 +71,7 @@ public class ServiceDirectoryImpl {
 
     // Singleton, private the constructor.
     private ServiceDirectoryImpl() {
-        String custProvider = Configurations
+        String custProvider = getServiceDirectoryConfig()
                 .getString(SD_API_SERVICE_DIRECTORY_MANAGER_FACTORY_PROVIDER_PROPERTY);
 
         if (custProvider != null && !custProvider.isEmpty()) {
@@ -128,16 +129,7 @@ public class ServiceDirectoryImpl {
         return getServiceDirectoryManagerFactory().getLookupManager();
     }
 
-    /**
-     * Get the ServiceDirectoryConfig.
-     *
-     * @return
-     *         the ServiceDirectory configuration.
-     */
-    public ServiceDirectoryConfig getServiceDirectoryConfig(){
-        return new ServiceDirectoryConfig(Configurations.getConfiguration());
-    }
-    
+
     /**
      * Get the SD API version
      * 

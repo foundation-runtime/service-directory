@@ -34,7 +34,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cisco.oss.foundation.directory.Configurations;
 import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
 import com.cisco.oss.foundation.directory.entity.OperationResult;
@@ -45,6 +44,7 @@ import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
 import com.cisco.oss.foundation.directory.lifecycle.Closable;
+import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
 
 /**
  * The DirectoryRegistrationService with heartbeat and ServiceInstanceHealth callback checking.
@@ -421,10 +421,10 @@ public class HeartbeatDirectoryRegistrationService extends
                         return t;
                     }
                 });
-        int rhDelay = Configurations.getInt(
+        int rhDelay = getServiceDirectoryConfig().getInt(
                 SD_API_REGISTRY_HEALTH_CHECK_DELAY_PROPERTY,
                 SD_API_REGISTRY_HEALTH_CHECK_DELAY_DEFAULT);
-        int rhInterval = Configurations.getInt(
+        int rhInterval = getServiceDirectoryConfig().getInt(
                 SD_API_REGISTRY_HEALTH_CHECK_INTERVAL_PROPERTY,
                 SD_API_REGISTRY_HEALTH_CHECK_INTERVAL_DEFAULT);
         LOGGER.info("Start the SD API RegistryHealth Task scheduler, delay="
@@ -432,9 +432,9 @@ public class HeartbeatDirectoryRegistrationService extends
         healthJob.scheduleAtFixedRate(new HealthCheckTask(), rhDelay,
                 rhInterval, TimeUnit.SECONDS);
 
-        int hbDelay = Configurations.getInt(SD_API_HEARTBEAT_DELAY_PROPERTY,
+        int hbDelay = getServiceDirectoryConfig().getInt(SD_API_HEARTBEAT_DELAY_PROPERTY,
                 SD_API_HEARTBEAT_DELAY_DEFAULT);
-        int hbInterval = Configurations.getInt(
+        int hbInterval = getServiceDirectoryConfig().getInt(
                 SD_API_HEARTBEAT_INTERVAL_PROPERTY,
                 SD_API_HEARTBEAT_INTERVAL_DEFAULT);
         LOGGER.info("Start the SD API Heartbeat Task scheduler, delay="

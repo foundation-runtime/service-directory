@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cisco.oss.foundation.directory.Configurations;
 import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
@@ -34,7 +33,7 @@ import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
 import com.cisco.oss.foundation.directory.lifecycle.Closable;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
-
+import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
 /**
  * The RegistrationManager implementation.
  *
@@ -212,7 +211,7 @@ public class RegistrationManagerImpl implements RegistrationManager, Closable{
         if(registrationService == null){
             synchronized(this){
                 if(registrationService == null){
-                    boolean heartbeatEnabled = Configurations.getBoolean(SD_API_HEARTBEAT_ENABLED_PROPERTY,
+                    boolean heartbeatEnabled = getServiceDirectoryConfig().getBoolean(SD_API_HEARTBEAT_ENABLED_PROPERTY,
                             SD_API_HEARTBEAT_ENABLED_DEFAULT);
                     if(heartbeatEnabled){
                         HeartbeatDirectoryRegistrationService service = new HeartbeatDirectoryRegistrationService(directoryServiceClientManager);

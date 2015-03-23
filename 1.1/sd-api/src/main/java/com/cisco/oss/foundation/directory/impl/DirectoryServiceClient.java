@@ -37,7 +37,6 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 
-import com.cisco.oss.foundation.directory.Configurations;
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
@@ -53,6 +52,7 @@ import com.cisco.oss.foundation.directory.utils.HttpResponse;
 import com.cisco.oss.foundation.directory.utils.HttpUtils.HttpMethod;
 import com.cisco.oss.foundation.directory.utils.HttpUtils;
 import static com.cisco.oss.foundation.directory.utils.JsonSerializer.*;
+import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
 
 /**
  * This is the client object to invoke the remote service in ServiceDirectory Server Node.
@@ -496,8 +496,8 @@ public class DirectoryServiceClient{
          *
          */
         public DirectoryInvoker() {
-            String sdFQDN = Configurations.getString(SD_API_SD_SERVER_FQDN_PROPERTY, SD_API_SD_SERVER_FQDN_DEFAULT);
-            int port = Configurations.getInt(SD_API_SD_SERVER_PORT_PROPERTY, SD_API_SD_SERVER_PORT_DEFAULT);
+            String sdFQDN = getServiceDirectoryConfig().getString(SD_API_SD_SERVER_FQDN_PROPERTY, SD_API_SD_SERVER_FQDN_DEFAULT);
+            int port = getServiceDirectoryConfig().getInt(SD_API_SD_SERVER_PORT_PROPERTY, SD_API_SD_SERVER_PORT_DEFAULT);
             this.directoryAddresses = "http://" + sdFQDN + ":" + port;
         }
 

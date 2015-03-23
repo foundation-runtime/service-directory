@@ -27,7 +27,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cisco.oss.foundation.directory.Configurations;
 import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.NotificationHandler;
@@ -46,6 +45,7 @@ import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery.ContainQueryCriterion;
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery.NotContainQueryCriterion;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
+import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
 
 /**
  * The default LookupManager implementation to access the remote Directory Server.
@@ -492,7 +492,7 @@ public class LookupManagerImpl implements LookupManager, Closable {
         if(lookupService == null){
             synchronized(this){
                 if(lookupService == null){
-                    boolean cacheEnabled = Configurations.getBoolean(SD_API_CACHE_ENABLED_PROPERTY,
+                    boolean cacheEnabled = getServiceDirectoryConfig().getBoolean(SD_API_CACHE_ENABLED_PROPERTY,
                             SD_API_CACHE_ENABLED_DEFAULT);
                     if(cacheEnabled){
                         CachedDirectoryLookupService service = new CachedDirectoryLookupService(directoryServiceClientManager);
