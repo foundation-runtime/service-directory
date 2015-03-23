@@ -70,6 +70,21 @@ public class DirectoryServiceClient{
     public static final int SD_API_HTTPCLIENT_READ_TIMEOUT_DEFAULT = 5;
 
     /**
+     * The Service Directory server FQDN property name.
+     * @deprecated use DirectoryInvoker.SD_API_SD_SERVER_FQDN_PROPERTY instead
+     */
+    @Deprecated
+    public static final String SD_API_SD_SERVER_FQDN_PROPERTY = DirectoryInvoker.SD_API_SD_SERVER_FQDN_PROPERTY;
+
+    /**
+     * The default Service Directory server FQDN name.
+     * @deprecated use DirectoryInvoker.SD_API_SD_SERVER_FQDN_DEFAULT
+     */
+    @Deprecated
+    public static final String SD_API_SD_SERVER_FQDN_DEFAULT = DirectoryInvoker.SD_API_SD_SERVER_FQDN_DEFAULT;
+
+
+    /**
      * The HTTP invoker to access remote ServiceDirectory node.
      */
     private DirectoryInvoker invoker;
