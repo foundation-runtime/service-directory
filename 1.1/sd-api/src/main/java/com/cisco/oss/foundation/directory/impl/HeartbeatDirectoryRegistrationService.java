@@ -533,7 +533,7 @@ public class HeartbeatDirectoryRegistrationService extends
                   }
                     }
                 } else {
-                    LOGGER.error("Get no heartbeat responce from Directory Server.");
+                    LOGGER.error("No heartbeat response from Directory Server.");
                 }
             } catch (Exception e) {
                 LOGGER.error("Send heartbeat failed.", e);
