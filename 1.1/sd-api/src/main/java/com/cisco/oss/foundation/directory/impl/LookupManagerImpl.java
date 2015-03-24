@@ -34,9 +34,7 @@ import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
-import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
-import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
 import com.cisco.oss.foundation.directory.lb.LoadBalancerManager;
 import com.cisco.oss.foundation.directory.lb.ServiceInstanceLoadBalancer;
 import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
@@ -125,13 +123,9 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
 
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
         ServiceInstanceUtils.validateServiceName(serviceName);
-        
-        try{
-            ServiceInstanceLoadBalancer lb = lbManager.getDefaultLoadBalancer();
-            return lb.vote(lookupInstances(serviceName));
-        } catch(ServiceRuntimeException e){
-            throw new ServiceException(e);
-        }
+        ServiceInstanceLoadBalancer lb = lbManager.getDefaultLoadBalancer();
+        return lb.vote(lookupInstances(serviceName));
+
     }
 
     /**
@@ -143,20 +137,16 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
         
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
         ServiceInstanceUtils.validateServiceName(serviceName);
-        
-        try{
-            List<ModelServiceInstance> modelSvc = getLookupService().getUPModelInstances(serviceName);
-            if(modelSvc == null || modelSvc.isEmpty()){
-                return Collections.<ServiceInstance>emptyList();
-            }else{
-                List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
-                for(ModelServiceInstance modelInstance : modelSvc){
-                    instances.add(ServiceInstanceUtils.toServiceInstance(modelInstance));
-                }
-                return instances;
+
+        List<ModelServiceInstance> modelSvc = getLookupService().getUPModelInstances(serviceName);
+        if (modelSvc == null || modelSvc.isEmpty()) {
+            return Collections.<ServiceInstance>emptyList();
+        } else {
+            List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
+            for (ModelServiceInstance modelInstance : modelSvc) {
+                instances.add(ServiceInstanceUtils.toServiceInstance(modelInstance));
             }
-        } catch(ServiceRuntimeException e){
-            throw new ServiceException(e);
+            return instances;
         }
     }
 
@@ -170,17 +160,12 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
         ServiceInstanceUtils.validateServiceName(serviceName);
         if (query == null) {
-            throw new ServiceException(new ServiceDirectoryError(
-                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
-                    "ServiceInstanceQuery"));
+            throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
+                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR.getMessageTemplate(),
+                    "ServiceInstanceQuery");
         }
-        
-        try{
-            ServiceInstanceLoadBalancer lb = lbManager.getDefaultLoadBalancer();
-            return lb.vote(queryInstancesByName(serviceName,query));
-        } catch(ServiceRuntimeException e){
-            throw new ServiceException(e);
-        }
+        ServiceInstanceLoadBalancer lb = lbManager.getDefaultLoadBalancer();
+        return lb.vote(queryInstancesByName(serviceName,query));
     }
 
     /**
@@ -193,25 +178,21 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
         ServiceInstanceUtils.validateServiceName(serviceName);
         if (query == null) {
-            throw new ServiceException(new ServiceDirectoryError(
-                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
-                    "ServiceInstanceQuery"));
+            throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
+                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR.getMessageTemplate(),
+                    "ServiceInstanceQuery");
         }
-
-        try{
-            List<ModelServiceInstance> modelSvc = getLookupService().getUPModelInstances(serviceName);
-            if(modelSvc != null && ! modelSvc.isEmpty()){
-                List<ModelServiceInstance> filteredInstances = ServiceInstanceQueryHelper.filter(query, modelSvc);
-                List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
-                for (ModelServiceInstance model : filteredInstances) {
-                    instances.add(ServiceInstanceUtils.toServiceInstance(model));
-                }
-                return instances;
+        List<ModelServiceInstance> modelSvc = getLookupService().getUPModelInstances(serviceName);
+        if (modelSvc != null && !modelSvc.isEmpty()) {
+            List<ModelServiceInstance> filteredInstances = ServiceInstanceQueryHelper.filter(query, modelSvc);
+            List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
+            for (ModelServiceInstance model : filteredInstances) {
+                instances.add(ServiceInstanceUtils.toServiceInstance(model));
             }
-            return Collections.<ServiceInstance>emptyList();
-        } catch(ServiceRuntimeException e){
-            throw new ServiceException(e);
+            return instances;
         }
+        return Collections.<ServiceInstance>emptyList();
+
     }
 
     /**
@@ -224,12 +205,8 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
         validateServiceInstanceMetadataQuery(query);
 
-        try{
-            ServiceInstanceLoadBalancer lb = lbManager.getDefaultLoadBalancer();
-            return lb.vote(queryInstancesByMetadataKey(query));
-        } catch(ServiceRuntimeException e){
-            throw new ServiceException(e);
-        }
+        ServiceInstanceLoadBalancer lb = lbManager.getDefaultLoadBalancer();
+        return lb.vote(queryInstancesByMetadataKey(query));
     }
 
     /**
@@ -241,29 +218,25 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
         
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
         validateServiceInstanceMetadataQuery(query);
-        
-        try{
-            List<ServiceInstance> instances = null;
-            String keyName = null;
-            if (query.getCriteria().size() > 0) {
-                keyName = query.getCriteria().get(0).getMetadataKey();
-            }
-            if (keyName != null && !keyName.isEmpty()) {
-                List<ModelServiceInstance> modelInstances = getLookupService()
-                        .getUPModelInstancesByMetadataKey(keyName);
-                List<ModelServiceInstance> filteredInstances = ServiceInstanceQueryHelper
-                        .filter(query, modelInstances);
 
-                instances = new ArrayList<ServiceInstance>();
-                for (ModelServiceInstance model : filteredInstances) {
-                    instances.add(ServiceInstanceUtils.toServiceInstance(model));
-                }
-                return instances;
-            }
-            return Collections.<ServiceInstance>emptyList();
-        } catch(ServiceRuntimeException e){
-            throw new ServiceException(e);
+        List<ServiceInstance> instances = null;
+        String keyName = null;
+        if (query.getCriteria().size() > 0) {
+            keyName = query.getCriteria().get(0).getMetadataKey();
         }
+        if (keyName != null && !keyName.isEmpty()) {
+            List<ModelServiceInstance> modelInstances = getLookupService()
+                    .getUPModelInstancesByMetadataKey(keyName);
+            List<ModelServiceInstance> filteredInstances = ServiceInstanceQueryHelper
+                    .filter(query, modelInstances);
+
+            instances = new ArrayList<ServiceInstance>();
+            for (ModelServiceInstance model : filteredInstances) {
+                instances.add(ServiceInstanceUtils.toServiceInstance(model));
+            }
+            return instances;
+        }
+        return Collections.<ServiceInstance>emptyList();
     }
 
     /**
@@ -277,20 +250,9 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
         ServiceInstanceUtils.validateServiceName(serviceName);
         ServiceInstanceUtils.validateServiceInstanceID(instanceId);
 
-        try{
-            ModelServiceInstance instance = getLookupService().getModelServiceInstance(serviceName, instanceId);
-            if(instance != null){
-                return ServiceInstanceUtils.toServiceInstance(instance);
-            }
-        } catch(ServiceRuntimeException e){
-            ServiceDirectoryError reason = e.getServiceDirectoryError();
-            if (reason != null && reason.getExceptionCode() != null
-                    && reason.getExceptionCode() == ErrorCode.SERVICE_NOT_EXIST) {
-                LOGGER.info("The service name {} not found at Service Directory.", serviceName);
-            } else {
-                throw new ServiceException(e);
-            }
-        }
+        ModelServiceInstance instance = getLookupService().getModelServiceInstance(serviceName, instanceId);
+
+        if (instance!=null) return ServiceInstanceUtils.toServiceInstance(instance);
         return null;
     }
 
@@ -304,20 +266,17 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
         ServiceInstanceUtils.validateServiceName(serviceName);
 
-        try{
-            List<ModelServiceInstance> modelSvc = getLookupService().getModelInstances(serviceName);
-            if(modelSvc == null || modelSvc.isEmpty()){
-                return Collections.<ServiceInstance>emptyList();
-            }else{
-                List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
-                for(ModelServiceInstance modelInstance : modelSvc){
-                    instances.add(ServiceInstanceUtils.toServiceInstance(modelInstance));
-                }
-                return instances;
+        List<ModelServiceInstance> modelSvc = getLookupService().getModelInstances(serviceName);
+        if (modelSvc == null || modelSvc.isEmpty()) {
+            return Collections.<ServiceInstance>emptyList();
+        } else {
+            List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
+            for (ModelServiceInstance modelInstance : modelSvc) {
+                instances.add(ServiceInstanceUtils.toServiceInstance(modelInstance));
             }
-        } catch(ServiceRuntimeException e){
-            throw new ServiceException(e);
+            return instances;
         }
+
     }
 
     /**
@@ -330,26 +289,23 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
         ServiceInstanceUtils.validateServiceName(serviceName);
         if (query == null) {
-            throw new ServiceException(new ServiceDirectoryError(
-                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
-                    "ServiceInstanceQuery"));
+            throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
+                     ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR.getMessageTemplate(),
+                    "ServiceInstanceQuery");
         }
 
-        try{
-            List<ModelServiceInstance> modelSvc = getLookupService().getModelInstances(serviceName);
-            if (modelSvc != null && !modelSvc.isEmpty()) {
-                List<ModelServiceInstance> filteredInstances = ServiceInstanceQueryHelper
-                        .filter(query, modelSvc);
-                List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
-                for (ModelServiceInstance model : filteredInstances) {
-                    instances.add(ServiceInstanceUtils.toServiceInstance(model));
-                }
-                return instances;
+        List<ModelServiceInstance> modelSvc = getLookupService().getModelInstances(serviceName);
+        if (modelSvc != null && !modelSvc.isEmpty()) {
+            List<ModelServiceInstance> filteredInstances = ServiceInstanceQueryHelper
+                    .filter(query, modelSvc);
+            List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
+            for (ModelServiceInstance model : filteredInstances) {
+                instances.add(ServiceInstanceUtils.toServiceInstance(model));
             }
-            return Collections.<ServiceInstance>emptyList();
-        } catch(ServiceRuntimeException e){
-            throw new ServiceException(e);
+            return instances;
         }
+        return Collections.<ServiceInstance>emptyList();
+
     }
 
     /**
@@ -361,28 +317,24 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
         
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
         validateServiceInstanceMetadataQuery(query);
-        
-        try{
-            List<ServiceInstance> instances = null;
-            String keyName = null;
-            if (query.getCriteria().size() > 0) {
-                keyName = query.getCriteria().get(0).getMetadataKey();
-            }
-            if (keyName != null && !keyName.isEmpty()) {
-                List<ModelServiceInstance> modelInstances = getLookupService()
-                        .getModelInstancesByMetadataKey(keyName);
-                List<ModelServiceInstance> filteredInstances = ServiceInstanceQueryHelper
-                        .filter(query, modelInstances);
-                instances = new ArrayList<ServiceInstance>();
-                for (ModelServiceInstance model : filteredInstances) {
-                    instances.add(ServiceInstanceUtils.toServiceInstance(model));
-                }
-                return instances;
-            }
-            return Collections.<ServiceInstance>emptyList();
-        } catch(ServiceRuntimeException e){
-            throw new ServiceException(e);
+
+        List<ServiceInstance> instances = null;
+        String keyName = null;
+        if (query.getCriteria().size() > 0) {
+            keyName = query.getCriteria().get(0).getMetadataKey();
         }
+        if (keyName != null && !keyName.isEmpty()) {
+            List<ModelServiceInstance> modelInstances = getLookupService()
+                    .getModelInstancesByMetadataKey(keyName);
+            List<ModelServiceInstance> filteredInstances = ServiceInstanceQueryHelper
+                    .filter(query, modelInstances);
+            instances = new ArrayList<ServiceInstance>();
+            for (ModelServiceInstance model : filteredInstances) {
+                instances.add(ServiceInstanceUtils.toServiceInstance(model));
+            }
+            return instances;
+        }
+        return Collections.<ServiceInstance>emptyList();
     }
 
     /**
@@ -394,22 +346,17 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
 
         List<ServiceInstance> instances = null;
-        try {
-            List<ModelServiceInstance> allInstances = getLookupService()
-                    .getAllInstances();
-            for (ModelServiceInstance serviceInstance : allInstances) {
-                instances = new ArrayList<ServiceInstance>();
-                instances.add(ServiceInstanceUtils
-                        .toServiceInstance(serviceInstance));
-            }
-        } catch (ServiceRuntimeException e) {
-            throw new ServiceException(e);
-        }
 
+        List<ModelServiceInstance> allInstances = getLookupService()
+                .getAllInstances();
+        for (ModelServiceInstance serviceInstance : allInstances) {
+            instances = new ArrayList<ServiceInstance>();
+            instances.add(ServiceInstanceUtils
+                    .toServiceInstance(serviceInstance));
+        }
         if (instances == null) {
             return Collections.<ServiceInstance>emptyList();
         }
-
         return instances;
     }
 
@@ -433,21 +380,16 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
         ServiceInstanceUtils.validateServiceName(serviceName);
         if (handler == null) {
-            throw new ServiceException(new ServiceDirectoryError(
-                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
-                    "NotificationHandler"));
+            throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
+                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR.getMessageTemplate(),
+                    "NotificationHandler");
         }
+        ModelService service = getLookupService().getModelService(serviceName);
+        if (service == null) {
+            throw new ServiceException(ErrorCode.SERVICE_NOT_EXIST);
+        }
+        getLookupService().addNotificationHandler(serviceName, handler);
 
-        try{
-            ModelService service = getLookupService().getModelService(serviceName);
-            if(service == null){
-                ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_NOT_EXIST);
-                throw new ServiceException(error);
-            }
-            getLookupService().addNotificationHandler(serviceName, handler);
-        } catch(ServiceRuntimeException e){
-            throw new ServiceException(e);
-        }
     }
 
     /**
@@ -464,16 +406,12 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
         ServiceInstanceUtils.validateServiceName(serviceName);
         if (handler == null) {
-            throw new ServiceException(new ServiceDirectoryError(
-                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
-                    "NotificationHandler"));
+            throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
+                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR.getMessageTemplate(),
+                    "NotificationHandler");
         }
-
-        try{
-            getLookupService().removeNotificationHandler(serviceName, handler);;
-        } catch(ServiceRuntimeException e){
-            throw new ServiceException(e);
-        }
+        //TODO, why here need not to check service_not_found like above?
+        getLookupService().removeNotificationHandler(serviceName, handler);;
     }
 
     /**
@@ -519,15 +457,14 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
     private void validateServiceInstanceMetadataQuery(ServiceInstanceQuery query) throws ServiceException{
 
         if (query == null) {
-            throw new ServiceException(new ServiceDirectoryError(
-                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
-                    "service instance query"));
+            throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
+                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR.getMessageTemplate(),
+                    "service instance query");
         }
         
         for(QueryCriterion criterion : query.getCriteria()){
             if(criterion instanceof ContainQueryCriterion || criterion instanceof NotContainQueryCriterion){
-                ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.QUERY_CRITERION_ILLEGAL_IN_QUERY);
-                throw new ServiceException(error);
+                throw new ServiceException(ErrorCode.QUERY_CRITERION_ILLEGAL_IN_QUERY);
             }
         }
     }

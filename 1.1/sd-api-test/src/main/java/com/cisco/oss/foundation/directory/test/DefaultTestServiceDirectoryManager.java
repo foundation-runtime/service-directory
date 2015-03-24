@@ -39,11 +39,9 @@ import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
-import com.cisco.oss.foundation.directory.exception.DirectoryServerClientException;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
-import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
 import com.cisco.oss.foundation.directory.impl.ServiceInstanceQueryHelper;
 import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 import com.cisco.oss.foundation.directory.query.QueryCriterion;
@@ -227,8 +225,9 @@ public class DefaultTestServiceDirectoryManager implements
 
         ProvidedServiceInstance cachedInstance = this.getProvidedServiceInstance(serviceInstance.getServiceName(), serviceInstance.getProviderId());
         if(cachedInstance != null){
-            ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_INSTANCE_ALREADY_EXIST, serviceInstance.getServiceName());
-            throw new ServiceException(error);
+            throw new ServiceException(ErrorCode.SERVICE_INSTANCE_ALREADY_EXIST,
+                    ErrorCode.SERVICE_INSTANCE_ALREADY_EXIST.getMessageTemplate(),
+                    serviceInstance.getServiceName());
         }
         String serviceName = serviceInstance.getServiceName();
 
@@ -280,10 +279,9 @@ public class DefaultTestServiceDirectoryManager implements
         ProvidedServiceInstance model = getProvidedServiceInstance(serviceName, providerId);
         if(model == null){
             LOGGER.error("Update Service Instance OperationalStatus failed - can not find the ServiceInstance.");
-            ServiceDirectoryError sde = new ServiceDirectoryError(
-                    ErrorCode.SERVICE_INSTANCE_NOT_EXIST,
+            throw new ServiceException(ErrorCode.SERVICE_INSTANCE_NOT_EXIST,
+                    ErrorCode.SERVICE_INSTANCE_NOT_EXIST.getMessageTemplate(),
                     serviceName);
-            throw new DirectoryServerClientException(sde);
         }
         model.setStatus(status);
 
@@ -306,10 +304,9 @@ public class DefaultTestServiceDirectoryManager implements
         ProvidedServiceInstance model = getProvidedServiceInstance(serviceName, providerId);
         if(model == null){
             LOGGER.error("Update Service Instance URI failed - can not find the ServiceInstance.");
-            ServiceDirectoryError sde = new ServiceDirectoryError(
-                    ErrorCode.SERVICE_INSTANCE_NOT_EXIST,
+            throw new ServiceException(ErrorCode.SERVICE_INSTANCE_NOT_EXIST,
+                    ErrorCode.SERVICE_INSTANCE_NOT_EXIST.getMessageTemplate(),
                     serviceName);
-            throw new DirectoryServerClientException(sde);
         }
         model.setUri(uri);
 
@@ -329,13 +326,8 @@ public class DefaultTestServiceDirectoryManager implements
             throws ServiceException {
 
         ServiceInstanceUtils.validateProvidedServiceInstance(serviceInstance);
-
         updateMetadataKeyMap(serviceInstance);
-        try{
-            updateInstance(serviceInstance);
-        } catch(ServiceRuntimeException e){
-            throw new ServiceException(e);
-        }
+        updateInstance(serviceInstance);
 
     }
 
@@ -358,10 +350,9 @@ public class DefaultTestServiceDirectoryManager implements
         ProvidedServiceInstance model = getProvidedServiceInstance(serviceName, providerId);
         if(model == null){
             LOGGER.error("Unregister Service failed - can not find the ServiceInstance.");
-            ServiceDirectoryError sde = new ServiceDirectoryError(
-                    ErrorCode.SERVICE_INSTANCE_NOT_EXIST,
+            throw new ServiceException(ErrorCode.SERVICE_INSTANCE_NOT_EXIST,
+                    ErrorCode.SERVICE_INSTANCE_NOT_EXIST.getMessageTemplate(),
                     serviceName);
-            throw new DirectoryServerClientException(sde);
         }
 
         getService(serviceName).getServiceInstances().remove(model);
@@ -657,10 +648,9 @@ public class DefaultTestServiceDirectoryManager implements
      */
     private void validateProvidedServiceInstance(ProvidedServiceInstance instance){
         if(instance.getUri() == null || instance.getUri().isEmpty()){
-            ServiceDirectoryError sde = new ServiceDirectoryError(
-                    ErrorCode.SERVICE_INSTANCE_URI_FORMAT_ERROR,
+           throw new ServiceException(ErrorCode.SERVICE_INSTANCE_URI_FORMAT_ERROR,
+                    ErrorCode.SERVICE_INSTANCE_URI_FORMAT_ERROR.getMessageTemplate(),
                     instance.getServiceName());
-            throw new DirectoryServerClientException(sde);
         }
     }
 
@@ -718,10 +708,9 @@ public class DefaultTestServiceDirectoryManager implements
         ProvidedServiceInstance model = getProvidedServiceInstance(serviceName, instanceId);
         if(model == null){
             LOGGER.error("Update Service failed - cannot find the ServiceInstance");
-            ServiceDirectoryError sde = new ServiceDirectoryError(
-                    ErrorCode.SERVICE_INSTANCE_NOT_EXIST,
+            throw new ServiceException(ErrorCode.SERVICE_INSTANCE_NOT_EXIST,
+                    ErrorCode.SERVICE_INSTANCE_NOT_EXIST.getMessageTemplate(),
                     instance.getServiceName());
-            throw new DirectoryServerClientException(sde);
         }
 
         model.setMonitorEnabled(instance.isMonitorEnabled());
@@ -759,10 +748,9 @@ public class DefaultTestServiceDirectoryManager implements
         ProvidedServiceInstance model = getProvidedServiceInstance(serviceName, instanceId);
         if(model == null){
             LOGGER.error("Update Service OperationalStatus failed - cannot find the ServiceInstance");
-            ServiceDirectoryError sde = new ServiceDirectoryError(
-                    ErrorCode.SERVICE_INSTANCE_NOT_EXIST,
+            throw new ServiceException(ErrorCode.SERVICE_INSTANCE_NOT_EXIST,
+                    ErrorCode.SERVICE_INSTANCE_NOT_EXIST.getMessageTemplate(),
                     serviceName);
-            throw new DirectoryServerClientException(sde);
         }
 
         model.setStatus(status);

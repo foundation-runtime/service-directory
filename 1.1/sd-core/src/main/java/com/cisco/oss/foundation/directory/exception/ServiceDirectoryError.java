@@ -15,77 +15,57 @@
  */
 package com.cisco.oss.foundation.directory.exception;
 
-import java.text.MessageFormat;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * The official ServiceDirectory ERROR.
- *
- * This error will be thrown to upper Application in Exception. Application can do
- * recovery based on the ExceptionCode if desired.
- *
- *
+ * The Error class acts as a transfer object, so that exception(server-side) -> SDError -> json
+ * serializer/deserializer -> SDError (client side) -> exception (client side)
+ * the class is immutable;
  */
 public class ServiceDirectoryError {
 
     /**
      * The ExceptionCode.
      */
-    private ErrorCode exceptionCode;
+    private final ErrorCode exceptionCode;
 
     /**
-     * resource bundle replacement.
+     * The error message
      */
-    private Object[] params;
-
-    /**
-     * Default constructor for JSON serializer.
-     */
-    public ServiceDirectoryError() {
-
-    }
+    private final String errMsg;
 
     /**
      * Constructor.
      *
      * @param ec
      *            the ExceptionCode.
-     * @param params
-     *            the string holder parameters.
+     * @param errMsg
+     *            the error message.
      */
-    public ServiceDirectoryError(ErrorCode ec, Object... params) {
-        this.params = params;
+    @JsonCreator
+    public ServiceDirectoryError(@JsonProperty("exceptionCode")ErrorCode ec, @JsonProperty("errorMessage")String errMsg) {
         this.exceptionCode = ec;
+        this.errMsg = errMsg;
     }
 
+    public ServiceDirectoryError(ErrorCode ec) {
+        this.exceptionCode = ec;
+        this.errMsg = ec.getMessageTemplate();
+    }
     /**
-     * Get the locale-specific error message.
+     * Get the error message.
      *
      * @return the error message String.
      */
-    @JsonIgnore
     public String getErrorMessage() {
-        if (params != null && params.length > 0) {
-            return (MessageFormat.format(exceptionCode.getMessage(), params));
-        } else {
-            return (exceptionCode.getMessage());
-        }
+       return this.errMsg;
     }
 
     /**
-     * Get the String holder parameters.
+     * Get the ErrorCode of the error.
      *
-     * @return the String holder parameters.
-     */
-    public Object[] getParams() {
-        return this.params;
-    }
-
-    /**
-     * Get the ExceptionCode of the error.
-     *
-     * @return the ExceptionCode.
+     * @return the ErrorCode.
      */
     public ErrorCode getExceptionCode() {
         return exceptionCode;

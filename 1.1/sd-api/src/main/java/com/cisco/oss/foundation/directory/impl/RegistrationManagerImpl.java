@@ -30,7 +30,6 @@ import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
-import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
 import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
@@ -109,11 +108,7 @@ public class RegistrationManagerImpl implements RegistrationManager, Stoppable{
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
         ServiceInstanceUtils.validateProvidedServiceInstance(serviceInstance);
 
-        try {
-           getRegistrationService().registerService(serviceInstance);
-        } catch (ServiceRuntimeException e) {
-            throw new ServiceException(e);
-        }
+        getRegistrationService().registerService(serviceInstance);
     }
 
     /**
@@ -125,12 +120,7 @@ public class RegistrationManagerImpl implements RegistrationManager, Stoppable{
 
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
         ServiceInstanceUtils.validateProvidedServiceInstance(serviceInstance);
-
-        try{
-            getRegistrationService().registerService(serviceInstance, registryHealth);
-        } catch(ServiceRuntimeException e){
-            throw new ServiceException(e);
-        }
+        getRegistrationService().registerService(serviceInstance, registryHealth);
     }
 
     /**
@@ -145,11 +135,7 @@ public class RegistrationManagerImpl implements RegistrationManager, Stoppable{
         ServiceInstanceUtils.validateServiceInstanceID(providerId);
         ServiceInstanceUtils.validateURI(uri);
 
-        try{
-            getRegistrationService().updateServiceUri(serviceName, providerId, uri);
-        } catch(ServiceRuntimeException e){
-            throw new ServiceException(e);
-        }
+        getRegistrationService().updateServiceUri(serviceName, providerId, uri);
     }
 
     /**
@@ -163,11 +149,7 @@ public class RegistrationManagerImpl implements RegistrationManager, Stoppable{
         ServiceInstanceUtils.validateServiceName(serviceName);
         ServiceInstanceUtils.validateServiceInstanceID(providerId);
 
-        try{
-            getRegistrationService().updateServiceOperationalStatus(serviceName, providerId, status);
-        } catch(ServiceRuntimeException e){
-            throw new ServiceException(e);
-        }
+        getRegistrationService().updateServiceOperationalStatus(serviceName, providerId, status);
     }
 
     /**
@@ -180,11 +162,7 @@ public class RegistrationManagerImpl implements RegistrationManager, Stoppable{
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
         ServiceInstanceUtils.validateProvidedServiceInstance(serviceInstance);
      
-        try{
-            getRegistrationService().updateService(serviceInstance);
-        } catch(ServiceRuntimeException e){
-            throw new ServiceException(e);
-        }
+        getRegistrationService().updateService(serviceInstance);
     }
 
     /**
@@ -198,11 +176,7 @@ public class RegistrationManagerImpl implements RegistrationManager, Stoppable{
         ServiceInstanceUtils.validateServiceName(serviceName);
         ServiceInstanceUtils.validateServiceInstanceID(providerId);
         
-        try{
-            getRegistrationService().unregisterService(serviceName, providerId);
-        } catch(ServiceRuntimeException e){
-            throw new ServiceException(e);
-        }
+        getRegistrationService().unregisterService(serviceName, providerId);
     }
 
     private DirectoryRegistrationService getRegistrationService(){

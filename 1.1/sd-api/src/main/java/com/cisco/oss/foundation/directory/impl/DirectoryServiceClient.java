@@ -44,7 +44,6 @@ import com.cisco.oss.foundation.directory.entity.OperationResult;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstanceHeartbeat;
-import com.cisco.oss.foundation.directory.exception.DirectoryServerClientException;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
@@ -121,10 +120,8 @@ public class DirectoryServiceClient{
                 HttpMethod.POST);
 
         if (result.getHttpCode() != HTTP_CREATED) {
-            ServiceDirectoryError sde = new ServiceDirectoryError(
-                    ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
-                    "HTTP Code is not OK, code=" + result.getHttpCode());
-            throw new DirectoryServerClientException(sde);
+            throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
+                    "HTTP Code is not OK, code=%s",result.getHttpCode());
         }
     }
 
@@ -144,10 +141,8 @@ public class DirectoryServiceClient{
                 HttpMethod.PUT);
 
         if (result.getHttpCode() != HTTP_CREATED) {
-            ServiceDirectoryError sde = new ServiceDirectoryError(
-                    ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
-                    "HTTP Code is not OK, code=" + result.getHttpCode());
-            throw new DirectoryServerClientException(sde);
+            throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
+                    "HTTP Code is not OK, code=%s",result.getHttpCode());
         }
     }
 
@@ -179,9 +174,8 @@ public class DirectoryServiceClient{
                 HttpMethod.PUT, headers);
 
         if (result.getHttpCode() != HTTP_OK) {
-            ServiceDirectoryError sde = new ServiceDirectoryError(
-                    ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
-            throw new DirectoryServerClientException(sde);
+            throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
+                    "HTTP Code is not OK, code=%s", result.getHttpCode());
         }
     }
 
@@ -214,9 +208,8 @@ public class DirectoryServiceClient{
                 HttpMethod.PUT, headers);
 
         if (result.getHttpCode() != HTTP_OK) {
-            ServiceDirectoryError sde = new ServiceDirectoryError(
-                    ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
-            throw new DirectoryServerClientException(sde);
+            throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
+                    "HTTP Code is not OK, code=%s", result.getHttpCode());
         }
     }
 
@@ -236,9 +229,8 @@ public class DirectoryServiceClient{
                 HttpMethod.DELETE);
 
         if (result.getHttpCode() != HTTP_OK) {
-            ServiceDirectoryError sde = new ServiceDirectoryError(
-                    ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
-            throw new DirectoryServerClientException(sde);
+            throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
+                    "HTTP Code is not OK, code=%s", result.getHttpCode());
         }
     }
 
@@ -254,9 +246,8 @@ public class DirectoryServiceClient{
                 HttpMethod.PUT);
 
         if (result.getHttpCode() != HTTP_OK) {
-            ServiceDirectoryError sde = new ServiceDirectoryError(
-                    ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
-            throw new DirectoryServerClientException(sde);
+           throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
+                    "HTTP Code is not OK, code=%s", result.getHttpCode());
         }
 
         Map<String, OperationResult<String>> operateResult = _deserialize(
@@ -277,9 +268,8 @@ public class DirectoryServiceClient{
         HttpResponse result = invoker.invoke("/service/" + serviceName , null, HttpMethod.GET);
 
         if (result.getHttpCode() != HTTP_OK) {
-            ServiceDirectoryError sde = new ServiceDirectoryError(
-                    ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
-            throw new DirectoryServerClientException(sde);
+            throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
+                    "HTTP Code is not OK, code=%s", result.getHttpCode());
         }
 
         ModelService service = _deserialize(result.getRetBody(), ModelService.class);
@@ -296,9 +286,8 @@ public class DirectoryServiceClient{
         HttpResponse result = invoker.invoke("/service" , null, HttpMethod.GET);
 
         if (result.getHttpCode() != HTTP_OK) {
-            ServiceDirectoryError sde = new ServiceDirectoryError(
-                    ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
-            throw new DirectoryServerClientException(sde);
+           throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
+                    "HTTP Code is not OK, code=%s", result.getHttpCode());
         }
 
         List<ModelServiceInstance> allInstances = _deserialize(result.getRetBody(), new TypeReference<List<ModelServiceInstance>>(){});
@@ -317,9 +306,8 @@ public class DirectoryServiceClient{
         HttpResponse result = invoker.invoke("/metadatakey/" + keyName , null, HttpMethod.GET);
 
         if (result.getHttpCode() != HTTP_OK) {
-            ServiceDirectoryError sde = new ServiceDirectoryError(
-                    ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
-            throw new DirectoryServerClientException(sde);
+           throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
+                    "HTTP Code is not OK, code=%s", result.getHttpCode());
         }
 
         ModelMetadataKey key = _deserialize(
@@ -342,9 +330,8 @@ public class DirectoryServiceClient{
         HttpResponse result = invoker.invoke("/service/changing" , body, HttpMethod.POST);
 
         if (result.getHttpCode() != HTTP_OK) {
-            ServiceDirectoryError sde = new ServiceDirectoryError(
-                    ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
-            throw new DirectoryServerClientException(sde);
+            throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
+                    "HTTP Code is not OK, code=%s", result.getHttpCode());
         }
 
         Map<String, OperationResult<ModelService>> changedServices = _deserialize(
@@ -366,11 +353,9 @@ public class DirectoryServiceClient{
         HttpResponse result = invoker.invoke("/metadatakey/changing" , body, HttpMethod.POST);
 
         if (result.getHttpCode() != HTTP_OK) {
-            ServiceDirectoryError sde = new ServiceDirectoryError(
-                    ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "HTTP Code is not OK, code=" + result.getHttpCode());
-            throw new DirectoryServerClientException(sde);
+            throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
+                    "HTTP Code is not OK, code=%s", result.getHttpCode());
         }
-
 
         Map<String, OperationResult<ModelMetadataKey>> changedKeys = _deserialize(
                     result.getRetBody(), new TypeReference<Map<String, OperationResult<ModelMetadataKey>>>(){});
@@ -393,17 +378,17 @@ public class DirectoryServiceClient{
      */
     <T> T _deserialize(String body, Class<T> clazz) {
         if(body == null || body.isEmpty()){
-            ServiceDirectoryError sde = new ServiceDirectoryError(
-                    ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "the message body is empty");
-            throw new DirectoryServerClientException(sde);
+           throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
+                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR.getMessageTemplate(),
+                    "the message body is empty");
         }
 
         try {
             return deserialize(body.getBytes(), clazz);
         } catch (IOException e) {
-            ServiceDirectoryError sde = new ServiceDirectoryError(
-                    ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "unrecognized message, deserialize failed.");
-            throw new DirectoryServerClientException(sde, e);
+            throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, e,
+                    ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR.getMessageTemplate(),
+                    "unrecognized message, deserialize failed.");
         }
     }
 
@@ -424,17 +409,18 @@ public class DirectoryServiceClient{
      */
      <T> T _deserialize(String body, TypeReference<T> typeRef){
         if(body == null || body.isEmpty()){
-            ServiceDirectoryError sde = new ServiceDirectoryError(
-                    ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "the message body is empty");
-            throw new DirectoryServerClientException(sde);
+            throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
+                    ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR.getMessageTemplate(),
+                    "the message body is empty");
+
         }
 
         try {
             return deserialize(body.getBytes(), typeRef);
         } catch (IOException e) {
-            ServiceDirectoryError sde = new ServiceDirectoryError(
-                    ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "unrecognized message, deserialize failed.");
-            throw new DirectoryServerClientException(sde, e);
+            throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, e,
+                    ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR.getMessageTemplate(),
+                    "unrecognized message, deserialize failed.");
         }
     }
 
@@ -451,9 +437,9 @@ public class DirectoryServiceClient{
             try {
                 body = new String(serialize(o));
             } catch (IOException e) {
-                ServiceDirectoryError sde = new ServiceDirectoryError(
-                        ErrorCode.HTTP_CLIENT_ERROR, "serialize failed.");
-                throw new DirectoryServerClientException(sde, e);
+                throw new ServiceException(ErrorCode.HTTP_CLIENT_ERROR,
+                        ErrorCode.HTTP_CLIENT_ERROR.getMessageTemplate(),
+                        "serialize failed.");
             }
         return body;
     }
@@ -525,8 +511,7 @@ public class DirectoryServiceClient{
                 String errMsg = "Send HTTP Request to remote Directory Server failed";
                 LOGGER.error(errMsg);
                 LOGGER.debug(errMsg, e);
-                ServiceDirectoryError sde = new ServiceDirectoryError(ErrorCode.HTTP_CLIENT_ERROR, errMsg);
-                throw new DirectoryServerClientException(sde, e);
+                throw new ServiceException(ErrorCode.HTTP_CLIENT_ERROR,e,errMsg);
             }
             // HTTP_OK 200, HTTP_MULT_CHOICE 300
             if (result.getHttpCode() < HTTP_OK || result.getHttpCode() >= HTTP_MULT_CHOICE) {
@@ -536,25 +521,23 @@ public class DirectoryServiceClient{
                     LOGGER.error(
                             "Invoke remote directory server failed, status={}, Error Message body is empty.",
                             result.getHttpCode());
-                    ServiceDirectoryError sde = new ServiceDirectoryError(
-                            ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "Error Message body is empty.");
-                    throw new DirectoryServerClientException(sde);
+                    throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
+                            ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR.getMessageTemplate(),
+                            "Error Message body is empty.");
                 }
+                //TODO, server-side support of SDError
                 ServiceDirectoryError sde = null;
                 try {
-                    sde = (ServiceDirectoryError)
-                            deserialize(errorBody.getBytes(),
-                                    ServiceDirectoryError.class);
+                    sde =  deserialize(errorBody.getBytes(), ServiceDirectoryError.class);
                 } catch (IOException  e) {
                     String errMsg = "Deserialize error body message failed";
                     LOGGER.error(errMsg);
                     LOGGER.debug(errMsg + ", messageBody=" + errorBody, e);
-                    ServiceDirectoryError sde1 = new ServiceDirectoryError(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, errMsg);
-                    throw new DirectoryServerClientException(sde1, e);
+                    throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,e,errMsg);
                 }
 
                 if (sde != null) {
-                    throw new DirectoryServerClientException(sde);
+                    throw new ServiceException(sde.getExceptionCode(),sde.getErrorMessage());
                 }
             }
             return result;
@@ -581,8 +564,8 @@ public class DirectoryServiceClient{
                 String errMsg = "Send HTTP Request to remote Directory Server failed";
                 LOGGER.error(errMsg);
                 LOGGER.debug(errMsg, e);
-                ServiceDirectoryError sde = new ServiceDirectoryError(ErrorCode.HTTP_CLIENT_ERROR, errMsg);
-                throw new DirectoryServerClientException(sde, e);
+                throw new ServiceException(ErrorCode.HTTP_CLIENT_ERROR,e,errMsg);
+
             }
 
             // HTTP_OK 200, HTTP_MULT_CHOICE 300
@@ -593,25 +576,23 @@ public class DirectoryServiceClient{
                     LOGGER.error(
                             "Invoke remote directory server failed, status={}, Error Message body is empty.",
                             result.getHttpCode());
-                    ServiceDirectoryError sde = new ServiceDirectoryError(
-                            ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, "Error Message body is empty.");
-                    throw new DirectoryServerClientException(sde);
+                    throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
+                            ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR.getMessageTemplate(),
+                            "Error Message body is empty.");
                 }
                 ServiceDirectoryError sde = null;
                 try {
-                    sde = (ServiceDirectoryError)
-                            deserialize(errorBody.getBytes(),
+                    sde = deserialize(errorBody.getBytes(),
                                     ServiceDirectoryError.class);
                 } catch (IOException  e) {
                     String errMsg = "Deserialize error body message failed";
                     LOGGER.error(errMsg);
                     LOGGER.debug(errMsg + ", messageBody=" + errorBody, e);
-                    ServiceDirectoryError sde1 = new ServiceDirectoryError(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, errMsg);
-                    throw new DirectoryServerClientException(sde1, e);
+                    throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,e,errMsg);
                 }
 
                 if (sde != null) {
-                    throw new DirectoryServerClientException(sde);
+                    throw new ServiceException(sde.getExceptionCode(),sde.getErrorMessage());
                 }
             }
             return result;

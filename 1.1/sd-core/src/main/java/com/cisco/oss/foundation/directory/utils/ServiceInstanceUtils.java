@@ -109,8 +109,8 @@ public class ServiceInstanceUtils {
      */
     public static void validateServiceName(String name) throws ServiceException {
         if (!validateRequiredField(name, nameRegEx)) {
-            throw new ServiceException(new ServiceDirectoryError(
-                    ErrorCode.SERVICE_INSTANCE_NAME_FORMAT_ERROR));
+            throw new ServiceException(
+                    ErrorCode.SERVICE_INSTANCE_NAME_FORMAT_ERROR);
         }
     }
 
@@ -125,8 +125,8 @@ public class ServiceInstanceUtils {
      */
     public static void validateAddress(String address) throws ServiceException {
         if (address == null || address.isEmpty()) {
-            throw new ServiceException(new ServiceDirectoryError(
-                    ErrorCode.SERVICE_INSTANCE_ADDRESS_FORMAT_ERROR));
+            throw new ServiceException(
+                    ErrorCode.SERVICE_INSTANCE_ADDRESS_FORMAT_ERROR);
         }
     }
 
@@ -139,8 +139,8 @@ public class ServiceInstanceUtils {
      */
     public static void validatePort(int port) throws ServiceException {
         if (port > 65535 || port < 1) {
-            throw new ServiceException(new ServiceDirectoryError(
-                    ErrorCode.SERVICE_INSTANCE_PORT_FORMAT_ERROR));
+            throw new ServiceException(
+                    ErrorCode.SERVICE_INSTANCE_PORT_FORMAT_ERROR);
         }
   }
 
@@ -153,8 +153,8 @@ public class ServiceInstanceUtils {
      */
     public static void validateServiceInstanceID(String id) throws ServiceException {
         if (!validateRequiredField(id, idRegEx)) {
-            throw new ServiceException(new ServiceDirectoryError(
-                    ErrorCode.SERVICE_INSTANCE_ID_FORMAT_ERROR));
+            throw new ServiceException(
+                    ErrorCode.SERVICE_INSTANCE_ID_FORMAT_ERROR);
         }
     }
 
@@ -167,11 +167,12 @@ public class ServiceInstanceUtils {
      */
     public static void validateURI(String uri) throws ServiceException {
         ErrorCode ec = ErrorCode.SERVICE_INSTANCE_URI_FORMAT_ERROR;
+        //TODO, fix the wried logic
         if (uri == null || uri.isEmpty()) {
-            throw new ServiceException(new ServiceDirectoryError(ec));
+            throw new ServiceException(ec);
         }
         if (!validateRequiredField(uri, urlRegEx) || !isValidBrace(uri)) {
-            throw new ServiceException(new ServiceDirectoryError(ec));
+            throw new ServiceException(ec);
         }
     }
     
@@ -189,8 +190,8 @@ public class ServiceInstanceUtils {
             Map.Entry<String, String> entry = (Map.Entry<String, String>) itor
                     .next();
             if (!validateOptionalField(entry.getKey(), metaKeyRegEx)) {
-                throw new ServiceException(new ServiceDirectoryError(
-                        ErrorCode.SERVICE_INSTANCE_METAKEY_FORMAT_ERROR));
+                throw new ServiceException(
+                        ErrorCode.SERVICE_INSTANCE_METAKEY_FORMAT_ERROR);
             }
         }
     }
@@ -206,9 +207,10 @@ public class ServiceInstanceUtils {
             ProvidedServiceInstance serviceInstance) throws ServiceException {
         
         if (serviceInstance == null) {
-            throw new ServiceException(new ServiceDirectoryError(
+            throw new ServiceException(
                     ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
-                    "service instance"));
+                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR.getMessageTemplate(),
+                    "service instance");
         }
                
         validateServiceName(serviceInstance.getServiceName());
@@ -231,7 +233,7 @@ public class ServiceInstanceUtils {
     
     public static void validateManagerIsStarted(AtomicBoolean isStarted) throws ServiceException {
         if (!isStarted.get()) {
-            throw new ServiceException(new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED));
+            throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
         }
     }
 

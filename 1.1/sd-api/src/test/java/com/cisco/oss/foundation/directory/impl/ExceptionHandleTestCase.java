@@ -24,7 +24,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.cisco.oss.foundation.directory.exception.DirectoryServerClientException;
 import junit.framework.Assert;
 
 import org.junit.BeforeClass;
@@ -105,7 +104,7 @@ public class ExceptionHandleTestCase  {
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method) {
 
                 Assert.assertEquals("http://vcsdirsvc:2013/service/mock-test01/" + instance.getProviderId(), directoryAddresses+uri);
-                throw new DirectoryServerClientException(error.get());
+                throw new ServiceException(error.get().getExceptionCode(),error.get().getErrorMessage());
             }
         };
         client.setInvoker(mockInvoker);

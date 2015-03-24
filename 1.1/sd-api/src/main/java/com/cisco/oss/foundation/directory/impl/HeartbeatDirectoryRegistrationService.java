@@ -31,6 +31,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import com.cisco.oss.foundation.directory.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,8 +42,6 @@ import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstanceHeartbeat;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
-import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
-import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
 import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
 
@@ -239,7 +238,7 @@ public class HeartbeatDirectoryRegistrationService extends
                     serviceInstance.getProviderId());
 
             if(inst == null){
-                throw new ServiceRuntimeException(new ServiceDirectoryError(ErrorCode.ILLEGAL_SERVICE_INSTANCE_OWNER_ERROR));
+                throw new ServiceException(ErrorCode.ILLEGAL_SERVICE_INSTANCE_OWNER_ERROR);
             }
             this.editCachedServiceInstance(serviceInstance);
 

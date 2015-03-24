@@ -15,80 +15,50 @@
  */
 package com.cisco.oss.foundation.directory.exception;
 
+
 /**
- * The sub RuntimeException to wrap ServiceDirectory failure and errors.
+ * The RuntimeException to wrap ServiceDirectory failure and errors.
  *
  * The ServiceException has the ExceptionCode to categorize certain error
  * types.
  *
  *
  */
-public class ServiceException extends Exception {
+public class ServiceException extends RuntimeException {
 
     private static final long serialVersionUID = -3706093386454084825L;
-    /**
-     * The ExceptionCode.
-     */
-    private ServiceDirectoryError error;
 
-    /**
-     * Constructor from the ServiceRuntimeException.
-     *
-     * Transfer the ServiceRuntimeException to the checked ServiceException.
-     *
-     * @param exception
-     *            the root ServiceRuntimeException.
-     */
-    public ServiceException(ServiceRuntimeException exception) {
-        this(exception.getServiceDirectoryError(), exception);
+    private final ErrorCode _errorCode;
+    private final String _errMsg;
+
+    @Override
+    public String getMessage() {
+        return _errMsg;
     }
 
-    /**
-     * Constructor.
-     *
-     * @param error
-     *            the ServiceDirectoryError.
-     */
-    public ServiceException(ServiceDirectoryError error) {
-        super(error.getErrorMessage());
-        this.error = error;
+    public ServiceException(ErrorCode errorCode){
+        this(errorCode,errorCode.getMessageTemplate());
+    }
+    public ServiceException(ErrorCode errorCode, String errMsgTemplate, Object ... errMsgArgs){
+        this(errorCode, null, errMsgTemplate, errMsgArgs);
+
+    }
+    public ServiceException(ErrorCode errorCode,Throwable cause){
+        this(errorCode,cause,"");
     }
 
-    /**
-     * Constructor.
-     *
-     * @param error
-     *            the ServiceDirectoryError.
-     * @param ex
-     *            the root Exception.
-     */
-    public ServiceException(ServiceDirectoryError error, Exception ex) {
-        super(ex);
-        this.error = error;
+    public ServiceException(ErrorCode errorCode, Throwable cause, String errMsgTemplate, Object ... errMsgArgs) {
+        super(cause);
+        _errMsg = String.format(errMsgTemplate,errMsgArgs);
+        _errorCode=errorCode;
     }
 
-    /**
-     * Constructor.
-     *
-     * @param error
-     *            the ServiceDirectoryError.
-     * @param message
-     *            the error message.
-     * @param ex
-     *            the exception.
-     */
-    public ServiceException(ServiceDirectoryError error, String message,
-            Exception ex) {
-        super(message, ex);
-        this.error = error;
+    public ErrorCode getErrorCode(){
+        return _errorCode;
     }
 
-    /**
-     * Get the ServiceDirectoryError.
-     *
-     * @return the ServiceDirectoryError.
-     */
     public ServiceDirectoryError getServiceDirectoryError() {
-        return error;
+        return new ServiceDirectoryError(_errorCode,_errMsg);
     }
+
 }

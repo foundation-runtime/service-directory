@@ -24,9 +24,7 @@ import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
-import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
-import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
 
 import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
 
@@ -105,7 +103,7 @@ public class DirectoryRegistrationService {
     public void registerService(ProvidedServiceInstance serviceInstance, ServiceInstanceHealth registryHealth) {
         // Monitor disabled ProvidedServiceInstance should not have the ServiceInstanceHealth.
         if(serviceInstance.isMonitorEnabled()== false){
-            throw new ServiceRuntimeException(new ServiceDirectoryError(ErrorCode.SERVICE_INSTANCE_HEALTH_ERROR));
+            throw new ServiceException(ErrorCode.SERVICE_INSTANCE_HEALTH_ERROR);
         }
         registerService(serviceInstance);
     }
@@ -172,10 +170,6 @@ public class DirectoryRegistrationService {
      * @return the DirectoryServiceClient to access remote directory server.
      */
     protected DirectoryServiceClient getServiceDirectoryClient() {
-        try {
-            return directoryServiceClientManager.getDirectoryServiceClient();
-        } catch (ServiceException e) {
-            throw new ServiceRuntimeException(e.getServiceDirectoryError());
-        }
+        return directoryServiceClientManager.getDirectoryServiceClient();
     }
 }

@@ -30,7 +30,6 @@ import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
-import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 
@@ -167,7 +166,7 @@ public class ServiceDirectoryImpl {
 
         synchronized(this){
             if(isShutdown){
-                throw new ServiceException(new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_IS_SHUTDOWN));
+                throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_IS_SHUTDOWN);
             }
 
             if (this.directoryManagerFactory != null) {
@@ -194,8 +193,7 @@ public class ServiceDirectoryImpl {
      */
     public DirectoryServiceClient getDirectoryServiceClient() throws ServiceException{
         if (isShutdown) {
-            ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_IS_SHUTDOWN);
-            throw new ServiceException(error);
+            throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_IS_SHUTDOWN);
         }
         return getServiceDirectoryManagerFactory().getDirectoryServiceClientManager().getDirectoryServiceClient();
     }
@@ -238,8 +236,7 @@ public class ServiceDirectoryImpl {
 
         if(directoryManagerFactory == null){
             if(isShutdown){
-                ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DIRECTORY_IS_SHUTDOWN);
-                throw new ServiceException(error);
+                throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_IS_SHUTDOWN);
             }else{
                 // should not allow to return a null
                 // TODO, make directoryManagerFactory is immutable.

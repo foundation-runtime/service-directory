@@ -32,8 +32,6 @@ import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
-import com.cisco.oss.foundation.directory.exception.ServiceException;
-import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
 
 /**
  * It is the Directory LookupService to perform the lookup functionality.
@@ -258,11 +256,7 @@ public class DirectoryLookupService {
      *         the DirectoryServiceClient
      */
     protected DirectoryServiceClient getDirectoryServiceClient(){
-        try {
-            return directoryServiceClientManager.getDirectoryServiceClient();
-        } catch (ServiceException e) {
-            throw new ServiceRuntimeException(e.getServiceDirectoryError());
-        }
+        return directoryServiceClientManager.getDirectoryServiceClient();
     }
 
     /**
