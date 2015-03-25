@@ -63,7 +63,7 @@ public class RegistrationManagerImplTest {
         final AtomicInteger statusInvoked = new AtomicInteger(0);
         final AtomicInteger unregisterInvoked = new AtomicInteger(0);
 
-        RegistrationManagerImpl impl = new RegistrationManagerImpl(new HeartbeatDirectoryRegistrationService(new DirectoryServiceClient(){
+        HeartbeatRegistrationManagerImpl impl = new HeartbeatRegistrationManagerImpl(new HeartbeatDirectoryRegistrationService(new DirectoryServiceClient(){
             @Override
             public void registerInstance(ProvidedServiceInstance inst) {
                 Assert.assertTrue(instance == inst || instance2 == inst);

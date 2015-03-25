@@ -28,6 +28,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
@@ -107,17 +108,17 @@ public class HeartbeatDirectoryRegistrationService extends
     /**
      * ServiceInstanceHealth check ExecutorService.
      */
-    private ScheduledExecutorService healthJob;
+    private final ScheduledExecutorService healthCheckService;
 
     /**
      * The heartbeat executor service.
      */
-    private ScheduledExecutorService heartbeatJob;
+    private final ScheduledExecutorService heartbeatService;
 
     /**
      * Mark whether component is started?
      */
-    private boolean isStarted = false;
+    private final AtomicBoolean isStarted = new AtomicBoolean(false);
 
     /**
      * The Read and Write lock to protect the CachedProviderServiceInstance Set.
@@ -139,7 +140,9 @@ public class HeartbeatDirectoryRegistrationService extends
      */
     @Override
     public void start() {
-        isStarted = true;
+        if(isStarted.compareAndSet(false,true)){
+            scheduleTasks();
+        }
     }
 
     /**
@@ -149,14 +152,9 @@ public class HeartbeatDirectoryRegistrationService extends
      */
     @Override
     public void stop() {
-        if (isStarted) {
-            isStarted = false;
-            if (heartbeatJob != null) {
-                heartbeatJob.shutdown();
-            }
-            if (healthJob != null) {
-                healthJob.shutdown();
-            }
+        if(isStarted.compareAndSet(true,false)){
+            healthCheckService.shutdown();
+            heartbeatService.shutdown();
         }
     }
 
@@ -170,8 +168,25 @@ public class HeartbeatDirectoryRegistrationService extends
             DirectoryServiceClient directoryServiceClient) {
         super(directoryServiceClient);
         instanceCache = new HashMap<ServiceInstanceId, CachedProviderServiceInstance>();
-        initJobTasks();
+        healthCheckService = Executors
+                .newSingleThreadScheduledExecutor(new ThreadFactory() {
+                    public Thread newThread(Runnable r) {
+                        Thread t = new Thread(r);
+                        t.setName("SD API RegistryHealth Check");
+                        t.setDaemon(true);
+                        return t;
+                    }
+                });
 
+        heartbeatService = Executors
+                .newSingleThreadScheduledExecutor(new ThreadFactory() {
+                    public Thread newThread(Runnable r) {
+                        Thread t = new Thread(r);
+                        t.setName("SD API Heartbeat");
+                        t.setDaemon(true);
+                        return t;
+                    }
+                });
      }
 
     /**
@@ -380,30 +395,10 @@ public class HeartbeatDirectoryRegistrationService extends
     }
 
     /**
-     * Initialize the Heartbeat task and Health Check task. It is invoked in the
-     * getCacheServiceInstances method which is thread safe, no synchronized block
-     * needed.
+     * schedule the Heartbeat task and Health Check task.
      */
-    private void initJobTasks() {
-        healthJob = Executors
-                .newSingleThreadScheduledExecutor(new ThreadFactory() {
-                    public Thread newThread(Runnable r) {
-                        Thread t = new Thread(r);
-                        t.setName("SD API RegistryHealth Check");
-                        t.setDaemon(true);
-                        return t;
-                    }
-                });
+    private void scheduleTasks() {
 
-        heartbeatJob = Executors
-                .newSingleThreadScheduledExecutor(new ThreadFactory() {
-                    public Thread newThread(Runnable r) {
-                        Thread t = new Thread(r);
-                        t.setName("SD API Heartbeat");
-                        t.setDaemon(true);
-                        return t;
-                    }
-                });
         int rhDelay = getServiceDirectoryConfig().getInt(
                 SD_API_REGISTRY_HEALTH_CHECK_DELAY_PROPERTY,
                 SD_API_REGISTRY_HEALTH_CHECK_DELAY_DEFAULT);
@@ -413,7 +408,7 @@ public class HeartbeatDirectoryRegistrationService extends
         LOGGER.info(
                 "Start the SD API RegistryHealth Task scheduler, delay={}, interval={}.",
                 rhDelay, rhInterval);
-        healthJob.scheduleAtFixedRate(new HealthCheckTask(), rhDelay,
+        healthCheckService.scheduleAtFixedRate(new HealthCheckTask(), rhDelay,
                 rhInterval, TimeUnit.SECONDS);
 
         int hbDelay = getServiceDirectoryConfig().getInt(SD_API_HEARTBEAT_DELAY_PROPERTY,
@@ -424,7 +419,7 @@ public class HeartbeatDirectoryRegistrationService extends
         LOGGER.info(
                 "Start the SD API Heartbeat Task scheduler, delay={}, interval={}.",
                 hbDelay, hbInterval);
-        heartbeatJob.scheduleAtFixedRate(new HeartbeatTask(), hbDelay,
+        heartbeatService.scheduleAtFixedRate(new HeartbeatTask(), hbDelay,
                 hbInterval, TimeUnit.SECONDS);
     }
 
