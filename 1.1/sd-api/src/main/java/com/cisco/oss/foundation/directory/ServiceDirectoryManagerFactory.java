@@ -50,18 +50,6 @@ public interface ServiceDirectoryManagerFactory extends Stoppable{
     public LookupManager getLookupManager() throws ServiceException;
 
     /**
-     * Initialize the factory with the DirectoryServiceClient.
-     * The method is considered to be removed in the future if reinit() 
-     * method in ServiceDirectory can be removed.
-     * {@link ServiceDirectory#reinitServiceDirectoryManagerFactory(ServiceDirectoryManagerFactory)}
-     *
-     * @param client
-     *         The DirectoryServiceClient.
-     */
-    @Deprecated
-    public void initialize(DirectoryServiceClient client);
-
-    /**
      * Set the ServiceDirectoryConfig for factory.
      *
      * @param config

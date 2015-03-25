@@ -63,7 +63,7 @@ public class RegistrationManagerImplTest {
         final AtomicInteger statusInvoked = new AtomicInteger(0);
         final AtomicInteger unregisterInvoked = new AtomicInteger(0);
 
-        RegistrationManagerImpl impl = new RegistrationManagerImpl(new DirectoryServiceClient(){
+        RegistrationManagerImpl impl = new RegistrationManagerImpl(new HeartbeatDirectoryRegistrationService(new DirectoryServiceClient(){
             @Override
             public void registerInstance(ProvidedServiceInstance inst) {
                 Assert.assertTrue(instance == inst || instance2 == inst);
@@ -97,7 +97,7 @@ public class RegistrationManagerImplTest {
                 Assert.assertEquals(instanceId, "192.168.7.4-8901");
                 Assert.assertTrue(isOwned);
             }
-        });
+        }));
         impl.start();
 
         final AtomicBoolean ret = new AtomicBoolean(false);
@@ -208,7 +208,7 @@ public class RegistrationManagerImplTest {
         final AtomicInteger statusInvoked = new AtomicInteger(0);
         final AtomicInteger hbInvoked = new AtomicInteger(0);
 
-        RegistrationManagerImpl impl = new RegistrationManagerImpl(new DirectoryServiceClient(){
+        RegistrationManagerImpl impl = new RegistrationManagerImpl(new HeartbeatDirectoryRegistrationService(new DirectoryServiceClient(){
 
             @Override
             public void registerInstance(ProvidedServiceInstance inst) {
@@ -256,7 +256,7 @@ public class RegistrationManagerImplTest {
                 Assert.assertTrue(isOwned);
             }
 
-        });
+        }));
         impl.start();
 
         try {

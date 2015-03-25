@@ -42,7 +42,7 @@ import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery.ContainQueryCriterion;
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery.NotContainQueryCriterion;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
-import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
+
 
 /**
  * The LookupManager implementation.
@@ -53,20 +53,6 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LookupManagerImpl.class);
 
-    /**
-     * The LookupManager cache enabled property.
-     */
-    public static final String SD_API_CACHE_ENABLED_PROPERTY = "com.cisco.oss.foundation.directory.cache.enabled";
-
-    /**
-     * The default cache enabled property value.
-     */
-    public static final boolean SD_API_CACHE_ENABLED_DEFAULT = true;
-
-    /**
-     * The remote ServiceDirectory node client.
-     */
-    private final DirectoryServiceClient directoryServiceClient ;
 
     /**
      * The loadbalancer manager for Services.
@@ -76,36 +62,18 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
     /**
      * The LookupService.
      */
-    private volatile DirectoryLookupService lookupService;
+    private final DirectoryLookupService lookupService;
 
     /**
      * Mark component started or not
      */
     private final AtomicBoolean isStarted = new AtomicBoolean(false);
 
-    /**
-     * Constructor.
-     */
-    public LookupManagerImpl(DirectoryServiceClient directoryServiceClient){
-        this.directoryServiceClient = directoryServiceClient;
-        if(lookupService == null){
-            synchronized(this){
-                if(lookupService == null){
-                    boolean cacheEnabled = getServiceDirectoryConfig().getBoolean(SD_API_CACHE_ENABLED_PROPERTY,
-                            SD_API_CACHE_ENABLED_DEFAULT);
-                    if(cacheEnabled){
-                        CachedDirectoryLookupService service = new CachedDirectoryLookupService(directoryServiceClient);
-                        service.start();
-                        lookupService = service;
-                        LOGGER.info("Created the CachedDirectoryLookupService in LookupManager");
-                    } else {
-                        lookupService = new DirectoryLookupService(directoryServiceClient);
-                        LOGGER.info("Created the DirectoryLookupService in LookupManager");
-                    }
-                }
-            }
-        }
+
+
+    public LookupManagerImpl(DirectoryLookupService lookupService){
         this.lbManager = new LoadBalancerManager();
+        this.lookupService = lookupService;
     }
 
     /**
@@ -417,7 +385,7 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
      * @return
      *         the LookupService.
      */
-    private DirectoryLookupService getLookupService(){
+    public DirectoryLookupService getLookupService(){
 
         return lookupService;
     }

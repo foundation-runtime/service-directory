@@ -172,7 +172,7 @@ public class ServiceDirectoryImpl {
 
             if (this.directoryManagerFactory != null) {
 
-                ((Stoppable) directoryManagerFactory).stop();
+                directoryManagerFactory.stop();
                 LOGGER.info(
                         "Resetting ServiceDirectoryManagerFactory, old={}, new={}.",
                         this.directoryManagerFactory.getClass().getName(),

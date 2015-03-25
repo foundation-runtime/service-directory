@@ -72,15 +72,6 @@ public class TestServiceDirectoryManagerFactory implements
      * {@inheritDoc}
      */
     @Override
-    public void initialize(DirectoryServiceClient client) {
-        // do nothing.
-
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
     public void setServiceDirectoryConfig(ServiceDirectoryConfig config) {
         // Do nothing.
     }

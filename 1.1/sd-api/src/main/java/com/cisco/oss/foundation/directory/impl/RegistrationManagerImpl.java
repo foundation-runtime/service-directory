@@ -42,22 +42,8 @@ public class RegistrationManagerImpl implements RegistrationManager, Stoppable{
     private static final Logger LOGGER = LoggerFactory
             .getLogger(RegistrationManagerImpl.class);
 
-    /**
-     * The Registration heartbeat and health check enabled property name.
-     */
-    public static final String SD_API_HEARTBEAT_ENABLED_PROPERTY = "com.cisco.oss.foundation.directory.heartbeat.enabled";
 
-    /**
-     * the default value of hearbeat enabled property value.
-     */
-    public static final boolean SD_API_HEARTBEAT_ENABLED_DEFAULT = true;
-
-    /**
-     * The DirectoryServiceClient.
-     */
-    private final DirectoryServiceClient directoryServiceClient ;
-
-    /**
+   /**
      * Mark component started or not
      */
     private final AtomicBoolean isStarted = new AtomicBoolean(false);
@@ -65,31 +51,14 @@ public class RegistrationManagerImpl implements RegistrationManager, Stoppable{
     /**
      * The DirectoryRegistrationService to do Service Registration.
      */
-    private volatile DirectoryRegistrationService registrationService;
+    private final DirectoryRegistrationService registrationService;
 
     /**
      * Constructor.
      *
      */
-    public RegistrationManagerImpl(DirectoryServiceClient directoryServiceClient){
-        this.directoryServiceClient = directoryServiceClient;
-        if(registrationService == null){
-            synchronized(this){
-                if(registrationService == null){
-                    boolean heartbeatEnabled = getServiceDirectoryConfig().getBoolean(SD_API_HEARTBEAT_ENABLED_PROPERTY,
-                            SD_API_HEARTBEAT_ENABLED_DEFAULT);
-                    if(heartbeatEnabled){
-                        HeartbeatDirectoryRegistrationService service = new HeartbeatDirectoryRegistrationService(directoryServiceClient);
-                        service.start();
-                        registrationService = service;
-                        LOGGER.info("Created the HeartbeatDirectoryRegistrationService in RegistrationManager");
-                    } else {
-                        registrationService = new DirectoryRegistrationService(directoryServiceClient);
-                        LOGGER.info("Created the DirectoryRegistrationService in RegistrationManager");
-                    }
-                }
-            }
-        }
+    public RegistrationManagerImpl(DirectoryRegistrationService service) {
+        this.registrationService = service;
     }
 
     /**

@@ -87,7 +87,7 @@ public class LookupManagerImplTest {
         final AtomicInteger keyChangingInvoked = new AtomicInteger(0);
 //        final AtomicInteger unregisterInvoked = new AtomicInteger(0);
 
-        LookupManagerImpl impl = new LookupManagerImpl(new DirectoryServiceClient(){
+        CachedLookupManagerImpl impl = new CachedLookupManagerImpl(new CachedDirectoryLookupService(new DirectoryServiceClient(){
             @Override
             public ModelService lookupService(String serviceName) {
                 Assert.assertTrue(serviceName.equals("odrm"));
@@ -156,7 +156,7 @@ public class LookupManagerImplTest {
                 rr.put("solution", new OperationResult<ModelMetadataKey>(true, key, null));
                 return rr;
             }
-        });
+        }));
 
 
         impl.start();

@@ -83,11 +83,6 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory 
             }
 
             @Override
-            public void initialize(DirectoryServiceClient manager) {
-                initializeInvoked.incrementAndGet();
-            }
-
-            @Override
             public void setServiceDirectoryConfig(ServiceDirectoryConfig config) {
                 setInvoked.incrementAndGet();
             }
@@ -164,12 +159,6 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory 
     public LookupManager getLookupManager() throws ServiceException {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    @Override
-    public void initialize(DirectoryServiceClient manager) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
