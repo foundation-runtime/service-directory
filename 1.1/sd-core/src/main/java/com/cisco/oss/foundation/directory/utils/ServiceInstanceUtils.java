@@ -42,6 +42,7 @@ public class ServiceInstanceUtils {
      * 3.) refactor the validateRequired and validateOptionalField
      * 4.) refactor ErrorCode.XXXX_FORMAT_ERROR, we don't need a lot of FORMAT_ERROR.
      *     One ErrorCode with a well-defined msgTemplate are enough.
+     * 5.) the naming of the Class is misleading. What the class doing is generic formatting checking.
      *
      */
     public static final String nameRegEx = "^[0-9a-zA-Z][\\w-.:]{0,127}$";
