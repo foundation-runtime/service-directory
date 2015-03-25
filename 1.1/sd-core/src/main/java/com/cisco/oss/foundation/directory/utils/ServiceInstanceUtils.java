@@ -33,9 +33,17 @@ import com.cisco.oss.foundation.directory.exception.ServiceException;
 /**
  * ServiceInstance util methods.
  *
- *
  */
 public class ServiceInstanceUtils {
+    /*
+     * TODO:
+     * 1.) add unit test cover the validation methods
+     * 2.) use 5.0 for each prefer to old java.util.Iterator
+     * 3.) refactor the validateRequired and validateOptionalField
+     * 4.) refactor ErrorCode.XXXX_FORMAT_ERROR, we don't need a lot of FORMAT_ERROR.
+     *     One ErrorCode with a well-defined msgTemplate are enough.
+     *
+     */
     public static final String nameRegEx = "^[0-9a-zA-Z][\\w-.:]{0,127}$";
     public static final String idRegEx = "^[0-9a-zA-Z][\\w-.]{0,63}$";
     public static final String urlRegEx = "^[0-9a-zA-Z{}][^\\s]{0,1023}$";
@@ -149,7 +157,7 @@ public class ServiceInstanceUtils {
      *
      * @param id
      *            the id String
-     * @throws ServiceException.
+     * @throws ServiceException
      */
     public static void validateServiceInstanceID(String id) throws ServiceException {
         if (!validateRequiredField(id, idRegEx)) {
@@ -163,7 +171,7 @@ public class ServiceInstanceUtils {
      *
      * @param uri
      *            the URI String.
-     * @throws ServiceException.
+     * @throws ServiceException
      */
     public static void validateURI(String uri) throws ServiceException {
         ErrorCode ec = ErrorCode.SERVICE_INSTANCE_URI_FORMAT_ERROR;
@@ -182,18 +190,18 @@ public class ServiceInstanceUtils {
      *
      * @param metadata
      *            the service instance metadata map.
-     * @throws ServiceException.
+     * @throws ServiceException
      */
     public static void validateMetadata(Map<String, String> metadata) throws ServiceException {
-        Iterator<Entry<String, String>> itor = metadata.entrySet().iterator();
-        while (itor.hasNext()) {
-            Map.Entry<String, String> entry = (Map.Entry<String, String>) itor
-                    .next();
-            if (!validateOptionalField(entry.getKey(), metaKeyRegEx)) {
-                throw new ServiceException(
-                        ErrorCode.SERVICE_INSTANCE_METAKEY_FORMAT_ERROR);
+        for ( String key : metadata.keySet()){
+            if (!validateRequiredField(key, metaKeyRegEx)){
+               throw new ServiceException(
+                    ErrorCode.SERVICE_INSTANCE_METAKEY_FORMAT_ERROR,
+                    ErrorCode.SERVICE_INSTANCE_METAKEY_FORMAT_ERROR.getMessageTemplate(),key
+               );
             }
         }
+
     }
 
     /**
@@ -218,7 +226,9 @@ public class ServiceInstanceUtils {
         validatePort(serviceInstance.getPort());
         validateAddress(serviceInstance.getAddress());
         validateServiceInstanceID(serviceInstance.getProviderId());
-        validateMetadata(serviceInstance.getMetadata());
+        if (serviceInstance.getMetadata()!=null) { //allow metadata as null
+            validateMetadata(serviceInstance.getMetadata());
+        }
     }
     
     

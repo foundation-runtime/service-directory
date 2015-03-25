@@ -80,7 +80,7 @@ public enum ErrorCode {
      * parts can contain character, number, '_', '-' or '.'.
      */
     SERVICE_INSTANCE_METAKEY_FORMAT_ERROR("400.7",
-            "Wrong format for the metadata key. The service metadata key must start with a character or a number, and contain only character, number, '_', '-' or '.'."),
+            "Wrong format for the metadata key [%s]. The service metadata key must start with a character or a number, and contain only character, number, '_', '-' or '.'."),
 
     /**
      * The ContainQueryCriterion and NotContainQueryCriterion are not supported
