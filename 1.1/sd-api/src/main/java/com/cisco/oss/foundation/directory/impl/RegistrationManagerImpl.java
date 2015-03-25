@@ -24,7 +24,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
@@ -54,9 +53,9 @@ public class RegistrationManagerImpl implements RegistrationManager, Stoppable{
     public static final boolean SD_API_HEARTBEAT_ENABLED_DEFAULT = true;
 
     /**
-     * The DirectoryServiceClientManager.
+     * The DirectoryServiceClient.
      */
-    private DirectoryServiceClientManager directoryServiceClientManager ;
+    private final DirectoryServiceClient directoryServiceClient ;
 
     /**
      * Mark component started or not
@@ -72,8 +71,8 @@ public class RegistrationManagerImpl implements RegistrationManager, Stoppable{
      * Constructor.
      *
      */
-    public RegistrationManagerImpl(DirectoryServiceClientManager directoryServiceClientManager){
-        this.directoryServiceClientManager = directoryServiceClientManager;
+    public RegistrationManagerImpl(DirectoryServiceClient directoryServiceClient){
+        this.directoryServiceClient = directoryServiceClient;
     }
 
     /**
@@ -183,12 +182,12 @@ public class RegistrationManagerImpl implements RegistrationManager, Stoppable{
                     boolean heartbeatEnabled = getServiceDirectoryConfig().getBoolean(SD_API_HEARTBEAT_ENABLED_PROPERTY,
                             SD_API_HEARTBEAT_ENABLED_DEFAULT);
                     if(heartbeatEnabled){
-                        HeartbeatDirectoryRegistrationService service = new HeartbeatDirectoryRegistrationService(directoryServiceClientManager);
+                        HeartbeatDirectoryRegistrationService service = new HeartbeatDirectoryRegistrationService(directoryServiceClient);
                         service.start();
                         registrationService = service;
                         LOGGER.info("Created the HeartbeatDirectoryRegistrationService in RegistrationManager");
                     } else {
-                        registrationService = new DirectoryRegistrationService(directoryServiceClientManager);
+                        registrationService = new DirectoryRegistrationService(directoryServiceClient);
                         LOGGER.info("Created the DirectoryRegistrationService in RegistrationManager");
                     }
                 }

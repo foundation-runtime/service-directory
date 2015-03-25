@@ -90,6 +90,7 @@ public class ServiceDirectoryImpl {
             LOGGER.info("Initialize the ServiceDirectoryManager with default implementation.");
             directoryManagerFactory = new DefaultServiceDirectoryManagerFactory();
         }
+        directoryManagerFactory.start();
 
     }
 
@@ -183,7 +184,9 @@ public class ServiceDirectoryImpl {
                 LOGGER.info("Setting ServiceDirectoryManagerFactory, factory={}.",
                         factory.getClass().getName());
             }
+            directoryManagerFactory.start();
         }
+
     }
 
     /**
@@ -195,20 +198,17 @@ public class ServiceDirectoryImpl {
         if (isShutdown) {
             throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_IS_SHUTDOWN);
         }
-        return getServiceDirectoryManagerFactory().getDirectoryServiceClientManager().getDirectoryServiceClient();
+        return getServiceDirectoryManagerFactory().getDirectoryServiceClient();
     }
 
     /**
      * Shut down the ServiceDirectory client and the ServiceDirectoryManagerFactory.
      */
     public synchronized void shutdown(){
-        if (!isShutdown) {
-            if (directoryManagerFactory != null) {
-                ((Stoppable) directoryManagerFactory).stop();
-                directoryManagerFactory = null;
-            }
-            this.isShutdown = true;
+        if (directoryManagerFactory != null) {
+            directoryManagerFactory.stop();
         }
+        this.isShutdown = true;
     }
 
     /**
@@ -217,7 +217,7 @@ public class ServiceDirectoryImpl {
      */
     public synchronized void restart(){
         if (directoryManagerFactory != null) {
-            ((Stoppable) directoryManagerFactory).start();
+            directoryManagerFactory.start();
         }
         isShutdown = false;
     }
@@ -232,18 +232,16 @@ public class ServiceDirectoryImpl {
      *         the ServiceDirectoryManagerFactory instance.
      */
     protected ServiceDirectoryManagerFactory getServiceDirectoryManagerFactory() throws ServiceException{
-
+        if(isShutdown){
+            throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_IS_SHUTDOWN);
+        }
         if(directoryManagerFactory == null){
-            if(isShutdown){
-                throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_IS_SHUTDOWN);
-            }else{
-                // should not allow to return a null
-                // TODO, make directoryManagerFactory is immutable.
-                // TODO. remove the initialize and reinit method in ServiceDirectoryManagerFactory and ServiceDirectory
-                throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
-                        ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR.getMessageTemplate(),
-                       "ServiceDirectoryManagerFactory");
-            }
+            // should not allow to return a null
+            // TODO, make directoryManagerFactory is immutable.
+            // TODO. remove the initialize and reinit method in ServiceDirectoryManagerFactory and ServiceDirectory
+            throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
+                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR.getMessageTemplate(),
+                    "ServiceDirectoryManagerFactory");
         }
         return directoryManagerFactory;
     }

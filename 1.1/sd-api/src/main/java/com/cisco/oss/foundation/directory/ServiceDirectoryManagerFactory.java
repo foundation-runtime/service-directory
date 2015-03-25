@@ -17,6 +17,8 @@ package com.cisco.oss.foundation.directory;
 
 import com.cisco.oss.foundation.directory.config.ServiceDirectoryConfig;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
+import com.cisco.oss.foundation.directory.impl.DirectoryServiceClient;
+import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 
 /**
  * The ServiceDirectoryManagerFactory to initialize LookupManager and RegistrationManager.
@@ -27,7 +29,7 @@ import com.cisco.oss.foundation.directory.exception.ServiceException;
  *
  *
  */
-public interface ServiceDirectoryManagerFactory{
+public interface ServiceDirectoryManagerFactory extends Stoppable{
 
     /**
      * Get the RegistrationManager.
@@ -48,16 +50,16 @@ public interface ServiceDirectoryManagerFactory{
     public LookupManager getLookupManager() throws ServiceException;
 
     /**
-     * Initialize the factory with the DirectoryServiceClientManager.
+     * Initialize the factory with the DirectoryServiceClient.
      * The method is considered to be removed in the future if reinit() 
      * method in ServiceDirectory can be removed.
      * {@link ServiceDirectory#reinitServiceDirectoryManagerFactory(ServiceDirectoryManagerFactory)}
      *
-     * @param manager
-     *         The DirectoryServiceClientManager.
+     * @param client
+     *         The DirectoryServiceClient.
      */
     @Deprecated
-    public void initialize(DirectoryServiceClientManager manager);
+    public void initialize(DirectoryServiceClient client);
 
     /**
      * Set the ServiceDirectoryConfig for factory.
@@ -68,8 +70,8 @@ public interface ServiceDirectoryManagerFactory{
     public void setServiceDirectoryConfig(ServiceDirectoryConfig config);
 
     /**
-     * Get the DirectoryServiceClientManager
-     * @return DirectoryServiceClientManager
+     * Get the DirectoryServiceClient
+     * @return DirectoryServiceClient
      */
-    public DirectoryServiceClientManager getDirectoryServiceClientManager();
+    public DirectoryServiceClient getDirectoryServiceClient();
 }

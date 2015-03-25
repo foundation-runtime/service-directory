@@ -35,7 +35,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
@@ -110,11 +109,11 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     /**
      * Constructor.
      *
-     * @param directoryServiceClientManager
-     *         the DirectoryServiceClientManager.
+     * @param directoryServiceClient
+     *         the DirectoryServiceClient.
      */
-    public CachedDirectoryLookupService(DirectoryServiceClientManager directoryServiceClientManager) {
-        super(directoryServiceClientManager);
+    public CachedDirectoryLookupService(DirectoryServiceClient directoryServiceClient) {
+        super(directoryServiceClient);
         syncService = Executors
                 .newSingleThreadScheduledExecutor(new ThreadFactory() {
 

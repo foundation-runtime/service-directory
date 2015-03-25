@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.NotificationHandler;
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
@@ -48,7 +47,7 @@ public class DirectoryLookupService {
     /**
      * The DirectoryServiceClientManager to get the DirectoryServiceClient.
      */
-    private final DirectoryServiceClientManager directoryServiceClientManager;
+    private final DirectoryServiceClient directoryServiceClient;
 
     /**
      * The Service NotificationHandler Map.
@@ -58,11 +57,11 @@ public class DirectoryLookupService {
     /**
      * Constructor.
      *
-     * @param directoryServiceClientManager
-     *         the DirectoryServiceClientManager.
+     * @param directoryServiceClient
+     *         the DirectoryServiceClient.
      */
-    public DirectoryLookupService(DirectoryServiceClientManager directoryServiceClientManager){
-        this.directoryServiceClientManager = directoryServiceClientManager;
+    public DirectoryLookupService(DirectoryServiceClient directoryServiceClient){
+        this.directoryServiceClient = directoryServiceClient;
     }
 
     /**
@@ -258,7 +257,7 @@ public class DirectoryLookupService {
      *         the DirectoryServiceClient
      */
     protected DirectoryServiceClient getDirectoryServiceClient(){
-        return directoryServiceClientManager.getDirectoryServiceClient();
+        return this.directoryServiceClient;
     }
 
     /**

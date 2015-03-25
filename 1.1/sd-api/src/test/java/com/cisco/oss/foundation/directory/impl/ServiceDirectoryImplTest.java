@@ -25,7 +25,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.NotificationHandler;
 import com.cisco.oss.foundation.directory.RegistrationManager;
@@ -41,7 +40,7 @@ import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
 
-public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory, Stoppable {
+public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory {
     interface ForTestingManagerFactory extends ServiceDirectoryManagerFactory,Stoppable{};
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceDirectoryImplTest.class);
     @Test
@@ -70,7 +69,7 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory,
 
         final LookupManager lookup = new MockLookup();
 
-        ServiceDirectoryManagerFactory factory = new ForTestingManagerFactory(){
+        ServiceDirectoryManagerFactory factory = new ServiceDirectoryManagerFactory(){
 
             @Override
             public RegistrationManager getRegistrationManager()
@@ -84,7 +83,7 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory,
             }
 
             @Override
-            public void initialize(DirectoryServiceClientManager manager) {
+            public void initialize(DirectoryServiceClient manager) {
                 initializeInvoked.incrementAndGet();
             }
 
@@ -94,7 +93,7 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory,
             }
 
             @Override
-            public DirectoryServiceClientManager getDirectoryServiceClientManager() {
+            public DirectoryServiceClient getDirectoryServiceClient() {
                 return null;
             }
 
@@ -168,7 +167,7 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory,
     }
 
     @Override
-    public void initialize(DirectoryServiceClientManager manager) {
+    public void initialize(DirectoryServiceClient manager) {
         // TODO Auto-generated method stub
 
     }
@@ -180,7 +179,7 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory,
     }
 
     @Override
-    public DirectoryServiceClientManager getDirectoryServiceClientManager() {
+    public DirectoryServiceClient getDirectoryServiceClient() {
         return null;
     }
 

@@ -25,7 +25,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.ServiceDirectory;
 import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
 import com.cisco.oss.foundation.directory.entity.OperationResult;
@@ -64,44 +63,39 @@ public class RegistrationManagerImplTest {
         final AtomicInteger statusInvoked = new AtomicInteger(0);
         final AtomicInteger unregisterInvoked = new AtomicInteger(0);
 
-        RegistrationManagerImpl impl = new RegistrationManagerImpl(new DirectoryServiceClientManager(){
+        RegistrationManagerImpl impl = new RegistrationManagerImpl(new DirectoryServiceClient(){
             @Override
-            public DirectoryServiceClient getDirectoryServiceClient() {
-                return new DirectoryServiceClient(){
-                    @Override
-                    public void registerInstance(ProvidedServiceInstance inst){
-                        Assert.assertTrue(instance == inst || instance2 == inst);
-                        registerInvoked.incrementAndGet();
-                    }
+            public void registerInstance(ProvidedServiceInstance inst) {
+                Assert.assertTrue(instance == inst || instance2 == inst);
+                registerInvoked.incrementAndGet();
+            }
 
-                    @Override
-                    public Map<String, OperationResult<String>> sendHeartBeat(Map<String, ServiceInstanceHeartbeat> heartbeatMap){
+            @Override
+            public Map<String, OperationResult<String>> sendHeartBeat(Map<String, ServiceInstanceHeartbeat> heartbeatMap) {
 
-                        Assert.assertEquals(heartbeatMap.size(), 1);
-                        Assert.assertTrue(heartbeatMap.containsKey("odrm-192.168.7.4-8901"));
-                        Map<String, OperationResult<String>> result = new HashMap<String, OperationResult<String>>();
-                        result.put("odrm-192.168.7.4-8901", new OperationResult<String>(true, "it is OK", null));
-                        hbInvoked.incrementAndGet();
-                        return result;
-                    }
+                Assert.assertEquals(heartbeatMap.size(), 1);
+                Assert.assertTrue(heartbeatMap.containsKey("odrm-192.168.7.4-8901"));
+                Map<String, OperationResult<String>> result = new HashMap<String, OperationResult<String>>();
+                result.put("odrm-192.168.7.4-8901", new OperationResult<String>(true, "it is OK", null));
+                hbInvoked.incrementAndGet();
+                return result;
+            }
 
-                    @Override
-                    public void updateInstanceStatus(String serviceName, String instanceId, OperationalStatus status, boolean isOwned){
-                        statusInvoked.incrementAndGet();
-                        Assert.assertEquals(serviceName, "odrm");
-                        Assert.assertEquals(instanceId, "192.168.7.4-8901");
-                        Assert.assertEquals(OperationalStatus.DOWN, status);
-                        Assert.assertTrue(isOwned);
-                    }
+            @Override
+            public void updateInstanceStatus(String serviceName, String instanceId, OperationalStatus status, boolean isOwned) {
+                statusInvoked.incrementAndGet();
+                Assert.assertEquals(serviceName, "odrm");
+                Assert.assertEquals(instanceId, "192.168.7.4-8901");
+                Assert.assertEquals(OperationalStatus.DOWN, status);
+                Assert.assertTrue(isOwned);
+            }
 
-                    @Override
-                    public void unregisterInstance(String serviceName, String instanceId, boolean isOwned){
-                        unregisterInvoked.incrementAndGet();
-                        Assert.assertEquals(serviceName, "odrm");
-                        Assert.assertEquals(instanceId, "192.168.7.4-8901");
-                        Assert.assertTrue(isOwned);
-                    }
-                };
+            @Override
+            public void unregisterInstance(String serviceName, String instanceId, boolean isOwned) {
+                unregisterInvoked.incrementAndGet();
+                Assert.assertEquals(serviceName, "odrm");
+                Assert.assertEquals(instanceId, "192.168.7.4-8901");
+                Assert.assertTrue(isOwned);
             }
         });
         impl.start();
@@ -214,62 +208,53 @@ public class RegistrationManagerImplTest {
         final AtomicInteger statusInvoked = new AtomicInteger(0);
         final AtomicInteger hbInvoked = new AtomicInteger(0);
 
-        RegistrationManagerImpl impl = new RegistrationManagerImpl(new DirectoryServiceClientManager(){
+        RegistrationManagerImpl impl = new RegistrationManagerImpl(new DirectoryServiceClient(){
+
             @Override
-            public DirectoryServiceClient getDirectoryServiceClient() {
-                return new DirectoryServiceClient(){
-
-                    @Override
-                    public void registerInstance(ProvidedServiceInstance inst){
-                    }
-
-                    @Override
-                    public Map<String, OperationResult<String>> sendHeartBeat(Map<String, ServiceInstanceHeartbeat> heartbeatMap){
-
-                        Assert.assertEquals(heartbeatMap.size(), 1);
-                        Assert.assertTrue(heartbeatMap.containsKey("odrm-192.168.7.4-8901"));
-                        Map<String, OperationResult<String>> result = new HashMap<String, OperationResult<String>>();
-                        result.put("odrm-192.168.7.4-8901", new OperationResult<String>(true, "it is OK", null));
-                        hbInvoked.incrementAndGet();
-                        return result;
-                    }
-
-                    @Override
-                    public void updateInstance(ProvidedServiceInstance inst){
-                        updateInvoked.incrementAndGet();
-                        Assert.assertTrue(inst== instance);
-                    }
-
-                    @Override
-                    public void updateInstanceStatus(String serviceName, String instanceId, OperationalStatus status, boolean isOwned){
-                        statusInvoked.incrementAndGet();
-                        Assert.assertEquals(serviceName, "odrm");
-                        Assert.assertEquals(instanceId, "192.168.7.4-8901");
-                        Assert.assertEquals(OperationalStatus.DOWN, status);
-                        Assert.assertTrue(isOwned);
-                    }
-
-                    @Override
-                    public void updateInstanceUri(String serviceName, String instanceId, String uri, boolean isOwned){
-                        uriInvoked.incrementAndGet();
-                        Assert.assertEquals(serviceName, "odrm");
-                        Assert.assertEquals(instanceId, "192.168.7.4-8901");
-                        Assert.assertEquals("new", uri);
-                        Assert.assertTrue(isOwned);
-                    }
-
-                    @Override
-                    public void unregisterInstance(String serviceName, String instanceId, boolean isOwned){
-                        Assert.assertEquals(serviceName, "odrm");
-                        Assert.assertEquals(instanceId, "192.168.7.4-8901");
-                        Assert.assertTrue(isOwned);
-                    }
-
-                };
+            public void registerInstance(ProvidedServiceInstance inst) {
             }
 
+            @Override
+            public Map<String, OperationResult<String>> sendHeartBeat(Map<String, ServiceInstanceHeartbeat> heartbeatMap) {
 
+                Assert.assertEquals(heartbeatMap.size(), 1);
+                Assert.assertTrue(heartbeatMap.containsKey("odrm-192.168.7.4-8901"));
+                Map<String, OperationResult<String>> result = new HashMap<String, OperationResult<String>>();
+                result.put("odrm-192.168.7.4-8901", new OperationResult<String>(true, "it is OK", null));
+                hbInvoked.incrementAndGet();
+                return result;
+            }
 
+            @Override
+            public void updateInstance(ProvidedServiceInstance inst) {
+                updateInvoked.incrementAndGet();
+                Assert.assertTrue(inst == instance);
+            }
+
+            @Override
+            public void updateInstanceStatus(String serviceName, String instanceId, OperationalStatus status, boolean isOwned) {
+                statusInvoked.incrementAndGet();
+                Assert.assertEquals(serviceName, "odrm");
+                Assert.assertEquals(instanceId, "192.168.7.4-8901");
+                Assert.assertEquals(OperationalStatus.DOWN, status);
+                Assert.assertTrue(isOwned);
+            }
+
+            @Override
+            public void updateInstanceUri(String serviceName, String instanceId, String uri, boolean isOwned) {
+                uriInvoked.incrementAndGet();
+                Assert.assertEquals(serviceName, "odrm");
+                Assert.assertEquals(instanceId, "192.168.7.4-8901");
+                Assert.assertEquals("new", uri);
+                Assert.assertTrue(isOwned);
+            }
+
+            @Override
+            public void unregisterInstance(String serviceName, String instanceId, boolean isOwned) {
+                Assert.assertEquals(serviceName, "odrm");
+                Assert.assertEquals(instanceId, "192.168.7.4-8901");
+                Assert.assertTrue(isOwned);
+            }
 
         });
         impl.start();

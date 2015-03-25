@@ -19,7 +19,6 @@
 
 package com.cisco.oss.foundation.directory.impl;
 
-import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
@@ -36,38 +35,33 @@ import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
  *
  */
 public class DefaultServiceDirectoryManagerFactory implements
-        ServiceDirectoryManagerFactory, Stoppable {
+        ServiceDirectoryManagerFactory {
 
     /**
-     * The RegistrationManager, it is lazy initialized.
+     * The RegistrationManager.
      */
-    private volatile RegistrationManagerImpl registrationManager;
+    private final RegistrationManagerImpl registrationManager;
 
     /**
-     * The LookupManager, it is lazy initialized.
+     * The LookupManager.
      */
-    private volatile LookupManagerImpl lookupManager;
+    private final LookupManagerImpl lookupManager;
+
 
     /**
-     * The DirectoryServiceClientManager.
+     * The DirectoryServiceClient.
      * TODO: should be final
      * the field is not declared final because the reinit() method try to change the reference.
      */
-    private DirectoryServiceClientManager dirSvcClientMgr;
-
-    private static class DefaultDirectoryServiceClientManager implements DirectoryServiceClientManager{
-        private final static DirectoryServiceClient _client = new DirectoryServiceClient();
-        @Override
-        public DirectoryServiceClient getDirectoryServiceClient() throws ServiceException {
-            return _client;
-        }
-    }
+    private DirectoryServiceClient dirSvcClient;
 
     /**
      * Default constructor.
      */
     public DefaultServiceDirectoryManagerFactory(){
-        dirSvcClientMgr = new DefaultDirectoryServiceClientManager();
+        dirSvcClient = new DirectoryServiceClient();
+        registrationManager = new RegistrationManagerImpl(dirSvcClient);
+        lookupManager = new LookupManagerImpl(dirSvcClient);
     }
 
     /**
@@ -80,16 +74,7 @@ public class DefaultServiceDirectoryManagerFactory implements
      */
     @Override
     public RegistrationManager getRegistrationManager(){
-        if (registrationManager == null) {
-            synchronized (this) {
-                if (registrationManager == null) {
-                    RegistrationManagerImpl registration = new RegistrationManagerImpl(dirSvcClientMgr);
-                    registration.start();
-                    registrationManager = registration;
-                }
-            }
-        }
-        return registrationManager;
+       return registrationManager;
     }
 
     /**
@@ -102,15 +87,6 @@ public class DefaultServiceDirectoryManagerFactory implements
      */
     @Override
     public LookupManager getLookupManager() {
-        if (lookupManager == null) {
-            synchronized (this) {
-                if (lookupManager == null) {
-                    LookupManagerImpl lookup = new LookupManagerImpl(dirSvcClientMgr);
-                    lookup.start();
-                    lookupManager = lookup;
-                }
-            }
-        }
         return lookupManager;
     }
 
@@ -120,19 +96,19 @@ public class DefaultServiceDirectoryManagerFactory implements
      */
     @Override
     @Deprecated
-    public void initialize(DirectoryServiceClientManager manager) {
-        this.dirSvcClientMgr = manager;
+    public void initialize(DirectoryServiceClient client) {
+        this.dirSvcClient = client;
     }
 
     /**
-     * get the DirectoryServiceClientManager to access remote directory server.
+     * get the DirectoryServiceClient to access remote directory server.
      *
      * @return
-     *         the DirectoryServiceClientManager.
+     *         the DirectoryServiceClient.
      */
     @Override
-    public DirectoryServiceClientManager getDirectoryServiceClientManager(){
-        return dirSvcClientMgr;
+    public DirectoryServiceClient getDirectoryServiceClient(){
+        return dirSvcClient;
     }
 
     /**
@@ -146,18 +122,14 @@ public class DefaultServiceDirectoryManagerFactory implements
 
     @Override
     public void start() {
-        // do nothing now.
+        registrationManager.start();
+        lookupManager.start();
     }
 
     @Override
     public void stop() {
-        if (registrationManager != null) {
-            ((RegistrationManagerImpl) registrationManager).stop();
-        }
-
-        if (lookupManager != null) {
-            ((LookupManagerImpl) lookupManager).stop();
-        }
+        registrationManager.stop();
+        lookupManager.stop();
     }
 
 }

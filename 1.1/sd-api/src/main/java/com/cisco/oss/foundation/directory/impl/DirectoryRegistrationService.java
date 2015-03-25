@@ -19,7 +19,6 @@
 
 package com.cisco.oss.foundation.directory.impl;
 
-import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
@@ -50,19 +49,19 @@ public class DirectoryRegistrationService {
     /**
      * The remote ServiceDirectory client.
      */
-    private final DirectoryServiceClientManager directoryServiceClientManager;
+    private final DirectoryServiceClient directoryServiceClient;
 
     private boolean disableOwnerError = false;
 
     /**
      * Constructor.
      *
-     * @param directoryServiceClientManager
+     * @param directoryServiceClient
      *         DirectoryServiceClientManager to get DirectoryServiceClient.
      */
     public DirectoryRegistrationService(
-            DirectoryServiceClientManager directoryServiceClientManager) {
-        this.directoryServiceClientManager = directoryServiceClientManager;
+            DirectoryServiceClient directoryServiceClient) {
+        this.directoryServiceClient = directoryServiceClient;
         disableOwnerError = getServiceDirectoryConfig().getBoolean(SD_API_REGISTRY_DISABLE_OWNER_ERROR_PROPERTY_NAME,
                 SD_API_REGISTRY_DISABLE_OWNER_ERROR_DEFAULT);
     }
@@ -173,6 +172,6 @@ public class DirectoryRegistrationService {
      * @return the DirectoryServiceClient to access remote directory server.
      */
     protected DirectoryServiceClient getServiceDirectoryClient() {
-        return directoryServiceClientManager.getDirectoryServiceClient();
+        return this.directoryServiceClient;
     }
 }

@@ -19,12 +19,12 @@
 
 package com.cisco.oss.foundation.directory.test;
 
-import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
 import com.cisco.oss.foundation.directory.config.ServiceDirectoryConfig;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
+import com.cisco.oss.foundation.directory.impl.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 
 /**
@@ -37,7 +37,7 @@ import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
  *
  */
 public class TestServiceDirectoryManagerFactory implements
-        ServiceDirectoryManagerFactory, Stoppable {
+        ServiceDirectoryManagerFactory {
 
     /**
      * The DefaultTestServiceDirectoryManager.
@@ -72,7 +72,7 @@ public class TestServiceDirectoryManagerFactory implements
      * {@inheritDoc}
      */
     @Override
-    public void initialize(DirectoryServiceClientManager manager) {
+    public void initialize(DirectoryServiceClient client) {
         // do nothing.
 
     }
@@ -86,7 +86,7 @@ public class TestServiceDirectoryManagerFactory implements
     }
 
     @Override
-    public DirectoryServiceClientManager getDirectoryServiceClientManager() {
+    public DirectoryServiceClient getDirectoryServiceClient() {
         return null;
     }
 

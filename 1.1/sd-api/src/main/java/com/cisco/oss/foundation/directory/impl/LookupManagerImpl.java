@@ -27,7 +27,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.NotificationHandler;
 import com.cisco.oss.foundation.directory.entity.ModelService;
@@ -67,7 +66,7 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
     /**
      * The remote ServiceDirectory node client.
      */
-    private final DirectoryServiceClientManager directoryServiceClientManager ;
+    private final DirectoryServiceClient directoryServiceClient ;
 
     /**
      * The loadbalancer manager for Services.
@@ -87,8 +86,8 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
     /**
      * Constructor.
      */
-    public LookupManagerImpl(DirectoryServiceClientManager directoryServiceClientManager){
-        this.directoryServiceClientManager = directoryServiceClientManager;
+    public LookupManagerImpl(DirectoryServiceClient directoryServiceClient){
+        this.directoryServiceClient = directoryServiceClient;
         this.lbManager = new LoadBalancerManager();
     }
 
@@ -408,12 +407,12 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
                     boolean cacheEnabled = getServiceDirectoryConfig().getBoolean(SD_API_CACHE_ENABLED_PROPERTY,
                             SD_API_CACHE_ENABLED_DEFAULT);
                     if(cacheEnabled){
-                        CachedDirectoryLookupService service = new CachedDirectoryLookupService(directoryServiceClientManager);
+                        CachedDirectoryLookupService service = new CachedDirectoryLookupService(directoryServiceClient);
                         service.start();
                         lookupService = service;
                         LOGGER.info("Created the CachedDirectoryLookupService in LookupManager");
                     } else {
-                        lookupService = new DirectoryLookupService(directoryServiceClientManager);
+                        lookupService = new DirectoryLookupService(directoryServiceClient);
                         LOGGER.info("Created the DirectoryLookupService in LookupManager");
                     }
                 }

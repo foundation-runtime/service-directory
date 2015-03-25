@@ -35,7 +35,6 @@ import com.cisco.oss.foundation.directory.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
 import com.cisco.oss.foundation.directory.entity.OperationResult;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
@@ -164,12 +163,12 @@ public class HeartbeatDirectoryRegistrationService extends
     /**
      * Constructor.
      *
-     * @param directoryServiceClientManager
+     * @param directoryServiceClient
      *         the DirectoryServiceClientManager to get DirectoryServiceClient.
      */
     public HeartbeatDirectoryRegistrationService(
-            DirectoryServiceClientManager directoryServiceClientManager) {
-        super(directoryServiceClientManager);
+            DirectoryServiceClient directoryServiceClient) {
+        super(directoryServiceClient);
     }
 
     /**
