@@ -88,6 +88,23 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
      */
     public LookupManagerImpl(DirectoryServiceClient directoryServiceClient){
         this.directoryServiceClient = directoryServiceClient;
+        if(lookupService == null){
+            synchronized(this){
+                if(lookupService == null){
+                    boolean cacheEnabled = getServiceDirectoryConfig().getBoolean(SD_API_CACHE_ENABLED_PROPERTY,
+                            SD_API_CACHE_ENABLED_DEFAULT);
+                    if(cacheEnabled){
+                        CachedDirectoryLookupService service = new CachedDirectoryLookupService(directoryServiceClient);
+                        service.start();
+                        lookupService = service;
+                        LOGGER.info("Created the CachedDirectoryLookupService in LookupManager");
+                    } else {
+                        lookupService = new DirectoryLookupService(directoryServiceClient);
+                        LOGGER.info("Created the DirectoryLookupService in LookupManager");
+                    }
+                }
+            }
+        }
         this.lbManager = new LoadBalancerManager();
     }
 
@@ -401,23 +418,7 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
      *         the LookupService.
      */
     private DirectoryLookupService getLookupService(){
-        if(lookupService == null){
-            synchronized(this){
-                if(lookupService == null){
-                    boolean cacheEnabled = getServiceDirectoryConfig().getBoolean(SD_API_CACHE_ENABLED_PROPERTY,
-                            SD_API_CACHE_ENABLED_DEFAULT);
-                    if(cacheEnabled){
-                        CachedDirectoryLookupService service = new CachedDirectoryLookupService(directoryServiceClient);
-                        service.start();
-                        lookupService = service;
-                        LOGGER.info("Created the CachedDirectoryLookupService in LookupManager");
-                    } else {
-                        lookupService = new DirectoryLookupService(directoryServiceClient);
-                        LOGGER.info("Created the DirectoryLookupService in LookupManager");
-                    }
-                }
-            }
-        }
+
         return lookupService;
     }
 

@@ -73,6 +73,23 @@ public class RegistrationManagerImpl implements RegistrationManager, Stoppable{
      */
     public RegistrationManagerImpl(DirectoryServiceClient directoryServiceClient){
         this.directoryServiceClient = directoryServiceClient;
+        if(registrationService == null){
+            synchronized(this){
+                if(registrationService == null){
+                    boolean heartbeatEnabled = getServiceDirectoryConfig().getBoolean(SD_API_HEARTBEAT_ENABLED_PROPERTY,
+                            SD_API_HEARTBEAT_ENABLED_DEFAULT);
+                    if(heartbeatEnabled){
+                        HeartbeatDirectoryRegistrationService service = new HeartbeatDirectoryRegistrationService(directoryServiceClient);
+                        service.start();
+                        registrationService = service;
+                        LOGGER.info("Created the HeartbeatDirectoryRegistrationService in RegistrationManager");
+                    } else {
+                        registrationService = new DirectoryRegistrationService(directoryServiceClient);
+                        LOGGER.info("Created the DirectoryRegistrationService in RegistrationManager");
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -176,23 +193,7 @@ public class RegistrationManagerImpl implements RegistrationManager, Stoppable{
     }
 
     private DirectoryRegistrationService getRegistrationService(){
-        if(registrationService == null){
-            synchronized(this){
-                if(registrationService == null){
-                    boolean heartbeatEnabled = getServiceDirectoryConfig().getBoolean(SD_API_HEARTBEAT_ENABLED_PROPERTY,
-                            SD_API_HEARTBEAT_ENABLED_DEFAULT);
-                    if(heartbeatEnabled){
-                        HeartbeatDirectoryRegistrationService service = new HeartbeatDirectoryRegistrationService(directoryServiceClient);
-                        service.start();
-                        registrationService = service;
-                        LOGGER.info("Created the HeartbeatDirectoryRegistrationService in RegistrationManager");
-                    } else {
-                        registrationService = new DirectoryRegistrationService(directoryServiceClient);
-                        LOGGER.info("Created the DirectoryRegistrationService in RegistrationManager");
-                    }
-                }
-            }
-        }
+
         return registrationService;
     }
 

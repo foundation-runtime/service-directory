@@ -102,7 +102,7 @@ public class HeartbeatDirectoryRegistrationService extends
     /**
      * The CachedProviderServiceInstance Set
      */
-    private volatile HashMap<ServiceInstanceId, CachedProviderServiceInstance> instanceCache;
+    private final HashMap<ServiceInstanceId, CachedProviderServiceInstance> instanceCache;
 
     /**
      * ServiceInstanceHealth check ExecutorService.
@@ -169,7 +169,10 @@ public class HeartbeatDirectoryRegistrationService extends
     public HeartbeatDirectoryRegistrationService(
             DirectoryServiceClient directoryServiceClient) {
         super(directoryServiceClient);
-    }
+        instanceCache = new HashMap<ServiceInstanceId, CachedProviderServiceInstance>();
+        initJobTasks();
+
+     }
 
     /**
      * {@inheritDoc}
@@ -373,15 +376,7 @@ public class HeartbeatDirectoryRegistrationService extends
      *         the CachedProviderServiceInstance Set.
      */
     private HashMap<ServiceInstanceId, CachedProviderServiceInstance> getCacheServiceInstances() {
-        if (instanceCache == null) {
-            synchronized (this) {
-                if (instanceCache == null) {
-                    instanceCache = new HashMap<ServiceInstanceId, CachedProviderServiceInstance>();
-                    initJobTasks();
-                }
-            }
-        }
-        return instanceCache;
+       return instanceCache;
     }
 
     /**
