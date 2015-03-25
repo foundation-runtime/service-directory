@@ -455,22 +455,15 @@ public class DefaultTestServiceDirectoryManager implements
      */
     @Override
     public List<ServiceInstance> getAllInstances() throws ServiceException {
-
-        List<ServiceInstance> instances = null;
+        List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
         for(ProvidedService service : cache.values()){
-            if(instances == null){
-                instances = new ArrayList<ServiceInstance>();
-            }
             for(ProvidedServiceInstance model : service.getServiceInstances()){
                 instances.add(new ServiceInstance(model.getServiceName(), model.getProviderId(), model.getUri(),
                         model.isMonitorEnabled(), model.getStatus(), model.getAddress(), model.getPort(), model.getMetadata()));
             }
         }
-        if(instances == null ){
-            return Collections.<ServiceInstance>emptyList();
-        }else{
-            return instances;
-        }
+
+        return instances;
     }
 
     /**
@@ -507,10 +500,14 @@ public class DefaultTestServiceDirectoryManager implements
     @Override
     public void addNotificationHandler(String serviceName,
             NotificationHandler handler) throws ServiceException {
-        if(handler == null || serviceName == null || serviceName.isEmpty()){
-            throw new IllegalArgumentException();
+       
+        ServiceInstanceUtils.validateServiceName(serviceName);
+        if (handler == null) {
+            throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
+                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR.getMessageTemplate(),
+                    "NotificationHandler");
         }
-
+   
         synchronized(notificationHandlers){
             if(! notificationHandlers.containsKey(serviceName)){
                 notificationHandlers.put(serviceName, new ArrayList<NotificationHandler>());
@@ -526,10 +523,14 @@ public class DefaultTestServiceDirectoryManager implements
     @Override
     public void removeNotificationHandler(String serviceName,
             NotificationHandler handler) throws ServiceException {
-        if(handler == null || serviceName == null || serviceName.isEmpty()){
-            throw new IllegalArgumentException();
+        
+        ServiceInstanceUtils.validateServiceName(serviceName);
+        if (handler == null) {
+            throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
+                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR.getMessageTemplate(),
+                    "NotificationHandler");
         }
-
+   
         synchronized(notificationHandlers){
             if(notificationHandlers.containsKey(serviceName)){
                 List<NotificationHandler> list = notificationHandlers.get(serviceName);
@@ -566,17 +567,19 @@ public class DefaultTestServiceDirectoryManager implements
             return ;
         }
         String serviceName = instance.getServiceName();
-        synchronized(notificationHandlers){
-            if(notificationHandlers.containsKey(serviceName)){
-                for(NotificationHandler h : notificationHandlers.get(serviceName)){
-                    h.serviceInstanceUnavailable(instance);
-                }
+        List<NotificationHandler> handlerList = new ArrayList<NotificationHandler>();
+        synchronized (notificationHandlers) {
+            if (notificationHandlers.containsKey(serviceName)) {
+                handlerList.addAll(notificationHandlers.get(serviceName));
             }
+        }
+        for (NotificationHandler h : handlerList) {
+            h.serviceInstanceUnavailable(instance);
         }
     }
 
     /**
-     * On a ServiceInstance Unavailable.
+     * On a ServiceInstance metadata change.
      *
      * It will invoke the serviceInstanceChange of the NotificationHandler.
      *
@@ -585,17 +588,19 @@ public class DefaultTestServiceDirectoryManager implements
      */
     private void onServiceInstanceChanged(ServiceInstance instance){
         String serviceName = instance.getServiceName();
-        synchronized(notificationHandlers){
-            if(notificationHandlers.containsKey(serviceName)){
-                for(NotificationHandler h : notificationHandlers.get(serviceName)){
-                    h.serviceInstanceChange(instance);
-                }
+        List<NotificationHandler> handlerList = new ArrayList<NotificationHandler>();
+        synchronized (notificationHandlers) {
+            if (notificationHandlers.containsKey(serviceName)) {
+                handlerList.addAll(notificationHandlers.get(serviceName));
             }
+        }
+        for (NotificationHandler h : handlerList) {
+            h.serviceInstanceChange(instance);
         }
     }
 
     /**
-     * On a ServiceInstance Unavailable.
+     * On a ServiceInstance available.
      *
      * It will invoke the serviceInstanceAvailable of the NotificationHandler.
      *
@@ -604,12 +609,14 @@ public class DefaultTestServiceDirectoryManager implements
      */
     private void onServiceInstanceAvailable(ServiceInstance instance){
         String serviceName = instance.getServiceName();
-        synchronized(notificationHandlers){
-            if(notificationHandlers.containsKey(serviceName)){
-                for(NotificationHandler h : notificationHandlers.get(serviceName)){
-                    h.serviceInstanceAvailable(instance);
-                }
+        List<NotificationHandler> handlerList = new ArrayList<NotificationHandler>();
+        synchronized (notificationHandlers) {
+            if (notificationHandlers.containsKey(serviceName)) {
+                handlerList.addAll(notificationHandlers.get(serviceName));
             }
+        }
+        for (NotificationHandler h : handlerList) {
+            h.serviceInstanceAvailable(instance);
         }
     }
 
@@ -658,15 +665,14 @@ public class DefaultTestServiceDirectoryManager implements
      *         the ProvidedService.
      */
     private ProvidedService createServiceIfNotExists(String serviceName){
-        if(cache.containsKey(serviceName)){
-            return cache.get(serviceName);
-        }else{
-            ProvidedService service = new ProvidedService(serviceName);
+        ProvidedService service = cache.get(serviceName);
+        if (service == null){
+            service = new ProvidedService(serviceName);
             List<ProvidedServiceInstance> ins = new ArrayList<ProvidedServiceInstance>();
             service.setServiceInstances(ins);
             cache.put(serviceName, service);
-            return service;
         }
+        return service;
     }
 
     /**
@@ -678,10 +684,7 @@ public class DefaultTestServiceDirectoryManager implements
      *         the ProvidedService.
      */
     private ProvidedService getService(String serviceName){
-        if(cache.containsKey(serviceName)){
-            return cache.get(serviceName);
-        }
-        return null;
+        return cache.get(serviceName);
     }
 
     /**
@@ -694,7 +697,6 @@ public class DefaultTestServiceDirectoryManager implements
     private void updateInstance(ProvidedServiceInstance instance)
             throws ServiceException {
 
-
         validateProvidedServiceInstance(instance);
 
         String serviceName = instance.getServiceName();
@@ -702,7 +704,6 @@ public class DefaultTestServiceDirectoryManager implements
 
         ProvidedServiceInstance model = getProvidedServiceInstance(serviceName, instanceId);
         if(model == null){
-            LOGGER.error("Update Service failed - cannot find the ServiceInstance");
             throw new ServiceException(ErrorCode.SERVICE_INSTANCE_NOT_EXIST,
                     ErrorCode.SERVICE_INSTANCE_NOT_EXIST.getMessageTemplate(),
                     instance.getServiceName());
@@ -742,7 +743,6 @@ public class DefaultTestServiceDirectoryManager implements
 
         ProvidedServiceInstance model = getProvidedServiceInstance(serviceName, instanceId);
         if(model == null){
-            LOGGER.error("Update Service OperationalStatus failed - cannot find the ServiceInstance");
             throw new ServiceException(ErrorCode.SERVICE_INSTANCE_NOT_EXIST,
                     ErrorCode.SERVICE_INSTANCE_NOT_EXIST.getMessageTemplate(),
                     serviceName);
