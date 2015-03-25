@@ -50,7 +50,7 @@ public class ServiceInstanceQuery {
     /**
      * Get a metadata value equal QueryCriterion.
      *
-     * Add a QueryCriterion to check ServiceInstance has metadata value
+     * Add a QueryCriterion to check whether ServiceInstance has the same metadata value
      * equal to target.
      *
      * @param key
@@ -69,7 +69,7 @@ public class ServiceInstanceQuery {
     /**
      * Get a metadata value not equal QueryCriterion.
      *
-     * Add a QueryCriterion to check ServiceInstance has metadata value
+     * Add a QueryCriterion to check whether ServiceInstance has tbe metadata value
      * not equal to target.
      *
      * @param key
@@ -86,10 +86,10 @@ public class ServiceInstanceQuery {
     }
 
     /**
-     * Get a metadata value match regex pattern QueryCriterion.
+     * Get a metadata value matching regex pattern QueryCriterion.
      *
-     * Add a QueryCriterion to check ServiceInstance has metadata value
-     * match the target regex pattern.
+     * Add a QueryCriterion to check whether ServiceInstance has the metadata value
+     * matching the target regex pattern.
      *
      * @param key
      *         the metadata key.
@@ -107,8 +107,8 @@ public class ServiceInstanceQuery {
     /**
      * Get a metadata contain QueryCriterion.
      *
-     * Add a QueryCriterion to check ServiceInstance has the
-     * the specified metadata.
+     * Add a QueryCriterion to check whether ServiceInstance has the
+     * the specified metadata key name.
      *
      * @param key
      *         the metadata key.
@@ -124,8 +124,8 @@ public class ServiceInstanceQuery {
     /**
      * Get a metadata not contain QueryCriterion.
      *
-     * Add a QueryCriterion to check ServiceInstance doesn't have the
-     * the specified metadata.
+     * Add a QueryCriterion to check whether ServiceInstance doesn't have the
+     * the specified metadata key name.
      *
      * @param key
      *         the metadata key.
@@ -141,7 +141,7 @@ public class ServiceInstanceQuery {
     /**
      * Get a metadata value in String list QueryCriterion.
      *
-     * Add a QueryCriterion to check ServiceInstance has metadata value
+     * Add a QueryCriterion to check whether ServiceInstance has the metadata value
      * in the target String list.
      *
      * @param key
@@ -160,7 +160,7 @@ public class ServiceInstanceQuery {
     /**
      * Get a metadata value not in String list QueryCriterion.
      *
-     * Add a QueryCriterion to check ServiceInstance has metadata value
+     * Add a QueryCriterion to check whether ServiceInstance has the metadata value
      * not in the target String list.
      *
      * @param key
@@ -200,7 +200,7 @@ public class ServiceInstanceQuery {
     /**
      * Logical not equal QueryCriterion.
      *
-     * Check whether the ServiceInstance has the same metadata value doesn't equal to the criterion.
+     * Check whether the ServiceInstance has the metadata value not equal to the criterion.
      *
      *
      */
@@ -532,7 +532,7 @@ public class ServiceInstanceQuery {
     /**
      * Metadata value not in list QueryCriterion.
      *
-     * It check the value of the metatdata not in a target String list.
+     * It checks whether the service instance has the metadata value not in a target String list.
      *
      *
      */

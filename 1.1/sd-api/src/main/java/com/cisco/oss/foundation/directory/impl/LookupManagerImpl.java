@@ -46,7 +46,7 @@ import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
 
 /**
- * The default LookupManager implementation to access the remote Directory Server.
+ * The LookupManager implementation.
  *
  *
  */
@@ -70,7 +70,7 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
     private final DirectoryServiceClientManager directoryServiceClientManager ;
 
     /**
-     * The loadbalancer map for Services.
+     * The loadbalancer manager for Services.
      */
     private final LoadBalancerManager lbManager;
 
@@ -94,8 +94,6 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
 
     /**
      * Start the LookupManagerImpl.
-     *
-     * It is idempotent, and can be invoked multiple times.
      */
     @Override
     public void start(){
@@ -139,15 +137,11 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
         ServiceInstanceUtils.validateServiceName(serviceName);
 
         List<ModelServiceInstance> modelSvc = getLookupService().getUPModelInstances(serviceName);
-        if (modelSvc == null || modelSvc.isEmpty()) {
-            return Collections.<ServiceInstance>emptyList();
-        } else {
-            List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
-            for (ModelServiceInstance modelInstance : modelSvc) {
-                instances.add(ServiceInstanceUtils.toServiceInstance(modelInstance));
-            }
-            return instances;
+        List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
+        for (ModelServiceInstance modelInstance : modelSvc) {
+            instances.add(ServiceInstanceUtils.toServiceInstance(modelInstance));
         }
+        return instances;
     }
 
     /**
@@ -183,16 +177,12 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
                     "ServiceInstanceQuery");
         }
         List<ModelServiceInstance> modelSvc = getLookupService().getUPModelInstances(serviceName);
-        if (modelSvc != null && !modelSvc.isEmpty()) {
-            List<ModelServiceInstance> filteredInstances = ServiceInstanceQueryHelper.filter(query, modelSvc);
-            List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
-            for (ModelServiceInstance model : filteredInstances) {
-                instances.add(ServiceInstanceUtils.toServiceInstance(model));
-            }
-            return instances;
+        List<ModelServiceInstance> filteredInstances = ServiceInstanceQueryHelper.filter(query, modelSvc);
+        List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
+        for (ModelServiceInstance model : filteredInstances) {
+            instances.add(ServiceInstanceUtils.toServiceInstance(model));
         }
-        return Collections.<ServiceInstance>emptyList();
-
+        return instances;
     }
 
     /**
@@ -252,7 +242,9 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
 
         ModelServiceInstance instance = getLookupService().getModelServiceInstance(serviceName, instanceId);
 
-        if (instance!=null) return ServiceInstanceUtils.toServiceInstance(instance);
+        if (instance!=null) {
+            return ServiceInstanceUtils.toServiceInstance(instance);
+        }
         return null;
     }
 
@@ -267,16 +259,11 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
         ServiceInstanceUtils.validateServiceName(serviceName);
 
         List<ModelServiceInstance> modelSvc = getLookupService().getModelInstances(serviceName);
-        if (modelSvc == null || modelSvc.isEmpty()) {
-            return Collections.<ServiceInstance>emptyList();
-        } else {
-            List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
-            for (ModelServiceInstance modelInstance : modelSvc) {
-                instances.add(ServiceInstanceUtils.toServiceInstance(modelInstance));
-            }
-            return instances;
+        List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
+        for (ModelServiceInstance modelInstance : modelSvc) {
+            instances.add(ServiceInstanceUtils.toServiceInstance(modelInstance));
         }
-
+        return instances;
     }
 
     /**
@@ -295,17 +282,12 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
         }
 
         List<ModelServiceInstance> modelSvc = getLookupService().getModelInstances(serviceName);
-        if (modelSvc != null && !modelSvc.isEmpty()) {
-            List<ModelServiceInstance> filteredInstances = ServiceInstanceQueryHelper
-                    .filter(query, modelSvc);
-            List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
-            for (ModelServiceInstance model : filteredInstances) {
-                instances.add(ServiceInstanceUtils.toServiceInstance(model));
-            }
-            return instances;
+        List<ModelServiceInstance> filteredInstances = ServiceInstanceQueryHelper.filter(query, modelSvc);
+        List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
+        for (ModelServiceInstance model : filteredInstances) {
+            instances.add(ServiceInstanceUtils.toServiceInstance(model));
         }
-        return Collections.<ServiceInstance>emptyList();
-
+        return instances;
     }
 
     /**
@@ -318,7 +300,6 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
         validateServiceInstanceMetadataQuery(query);
 
-        List<ServiceInstance> instances = null;
         String keyName = null;
         if (query.getCriteria().size() > 0) {
             keyName = query.getCriteria().get(0).getMetadataKey();
@@ -328,7 +309,7 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
                     .getModelInstancesByMetadataKey(keyName);
             List<ModelServiceInstance> filteredInstances = ServiceInstanceQueryHelper
                     .filter(query, modelInstances);
-            instances = new ArrayList<ServiceInstance>();
+            List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
             for (ModelServiceInstance model : filteredInstances) {
                 instances.add(ServiceInstanceUtils.toServiceInstance(model));
             }
@@ -346,14 +327,12 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
 
         List<ServiceInstance> instances = null;
-
-        List<ModelServiceInstance> allInstances = getLookupService()
-                .getAllInstances();
+        List<ModelServiceInstance> allInstances = getLookupService().getAllInstances();
         for (ModelServiceInstance serviceInstance : allInstances) {
             instances = new ArrayList<ServiceInstance>();
-            instances.add(ServiceInstanceUtils
-                    .toServiceInstance(serviceInstance));
+            instances.add(ServiceInstanceUtils.toServiceInstance(serviceInstance));
         }
+        
         if (instances == null) {
             return Collections.<ServiceInstance>emptyList();
         }
@@ -410,7 +389,7 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
                     ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR.getMessageTemplate(),
                     "NotificationHandler");
         }
-        //TODO, why here need not to check service_not_found like above?
+        
         getLookupService().removeNotificationHandler(serviceName, handler);;
     }
 
@@ -444,10 +423,9 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
     }
 
     /**
-     * Validate the ServiceInstanceQuery for the queryInstanceByMetadataKey, queryInstancesByMetadataKey
-     * and getAllInstancesByMetadataKey method.
-     *
-     * For those methods, the ContainQueryCriterion and NotContainQueryCriterion are not supported.
+     * Validate the metadata query for the queryInstanceByMetadataKey, queryInstancesByMetadataKey 
+     * and getAllInstancesByMetadataKey methods. For those methods, the ContainQueryCriterion and 
+     * NotContainQueryCriterion are not supported.
      *
      * @param query
      *         the ServiceInstanceQuery to be validated.

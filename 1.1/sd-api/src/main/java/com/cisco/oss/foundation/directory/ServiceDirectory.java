@@ -34,12 +34,12 @@ import com.cisco.oss.foundation.directory.impl.ServiceDirectoryImpl;
 public class ServiceDirectory {
 
     /**
-     * The ServiceDirectory enable property name, indicating whether ServiceDirectory enabled for directory service.
+     * The ServiceDirectory enabled property name, indicating whether ServiceDirectory is enabled for directory service.
      */
     public static final String SD_API_SERVICE_DIRECTORY_ENABLED_PROPERTY = "com.cisco.oss.foundation.directory.enabled";
 
     /**
-     * Default value to enable ServiceDirectory for directory service.
+     * Default is to enable ServiceDirectory for directory service.
      */
     public static final boolean SD_API_SERVICE_DIRECTORY_ENABLED_DEFAULT = true;
 
@@ -78,7 +78,7 @@ public class ServiceDirectory {
      * Get the ServiceDirectoryConfig.
      *
      * @return
-     *         the ServiceDirectoryConfig of the SD API.
+     *         the ServiceDirectoryConfig
      */
     public static ServiceDirectoryConfig getServiceDirectoryConfig() {
         return serviceDirectoryConfig;
@@ -99,7 +99,7 @@ public class ServiceDirectory {
     /**
      * Check whether ServiceDirectory is enabled for the directory service.
      *
-     * The value comes from the SD API configuration property "scom.cisco.oss.foundation.directory.enabled".
+     * The value comes from the configuration property "com.cisco.oss.foundation.directory.enabled".
      *
      * By default the ServiceDirectory is enabled.
      *
@@ -112,10 +112,10 @@ public class ServiceDirectory {
     }
 
     /**
-     * Get the SD API version
+     * Get the Service Directory API version
      * 
      * @return
-     *        the SD API version 
+     *        the Service Directory API version 
      */
     public static String getAPIVersion() {
         return getImpl().getVersion();
@@ -125,7 +125,7 @@ public class ServiceDirectory {
      * Shut down the ServiceDirectory.
      *
      * Be careful to invoke this method. When shutdown() is called, ServiceDirectory cannot be used 
-     * unless restart the jvm and reload the ServiceDirectory class. 
+     * unless jvm is restarted to reload the ServiceDirectory class. 
      *
      */
     public static void shutdown(){
@@ -141,7 +141,5 @@ public class ServiceDirectory {
     private static ServiceDirectoryImpl getImpl() {
         return ServiceDirectoryImpl.getInstance();
     }
-
-
 
 }

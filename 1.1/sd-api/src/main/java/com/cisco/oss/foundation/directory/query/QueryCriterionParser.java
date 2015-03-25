@@ -33,12 +33,11 @@ import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery.PatternQuer
 /**
  * It is a Parser to convert QueryCriterion from/to commandline expression string
  *
- *
  */
 public class QueryCriterionParser {
 
     /**
-     * convert the QueryCriterion to a String expression.
+     * Convert the QueryCriterion to a String expression.
      *
      * @param queryCriterion
      *         the QueryCriterion.
@@ -175,12 +174,12 @@ public class QueryCriterionParser {
     }
 
     /**
-     * Parse the ServiceInstanceQuery from command line String expression.
+     * Parse the ServiceInstanceQuery from commandline String expression.
      *
-     * Deserialize the ServiceInstanceQuery command line to the ServiceInstanceQuery.
+     * Convert the ServiceInstanceQuery commandline input to the ServiceInstanceQuery.
      *
      * @param cli
-     *         the ServiceInstanceQuery command line String expression.
+     *         the ServiceInstanceQuery commandline String expression.
      * @return
      *         the QueryCriterion statement String list.
      */
@@ -197,7 +196,7 @@ public class QueryCriterionParser {
     }
 
     /**
-     * Convert the ServiceInstanceQuery to the command line string expression.
+     * Convert the ServiceInstanceQuery to the commandline string expression.
      *
      * @param query
      *         the ServiceInstanceQuery.
@@ -288,7 +287,7 @@ public class QueryCriterionParser {
     /**
      * Split a complete String to String array by the delimeter array.
      *
-     * This method used to split a command or a statement to sub elements.
+     * This method is used to split a command or a statement to sub elements.
      * It will trim the sub elements too.
      *
      * @param str

@@ -78,8 +78,6 @@ public class RegistrationManagerImpl implements RegistrationManager, Stoppable{
 
     /**
      * Start the RegistrationManagerImpl.
-     *
-     * it is idempotent, it can be invoked multiple times while in same state and is not thread safe.
      */
     @Override
     public void start(){
@@ -89,7 +87,6 @@ public class RegistrationManagerImpl implements RegistrationManager, Stoppable{
     /**
      * Stop the RegistrationManagerImpl
      *
-     * it is idempotent, it can be invoked in multiple times while in same state. But not thread safe.
      */
     @Override
     public void stop(){

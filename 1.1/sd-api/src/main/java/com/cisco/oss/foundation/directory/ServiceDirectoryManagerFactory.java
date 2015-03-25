@@ -49,7 +49,8 @@ public interface ServiceDirectoryManagerFactory{
 
     /**
      * Initialize the factory with the DirectoryServiceClientManager.
-     * The method is considered to be removed in the future. if reinit() method in ServiceDirectory has been removed.
+     * The method is considered to be removed in the future if reinit() 
+     * method in ServiceDirectory can be removed.
      * {@link ServiceDirectory#reinitServiceDirectoryManagerFactory(ServiceDirectoryManagerFactory)}
      *
      * @param manager

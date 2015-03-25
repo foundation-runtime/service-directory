@@ -30,8 +30,8 @@ import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 /**
  * It is the default ServiceDirectoryManagerFactory to access remote ServiceDirectory server node.
  *
- * When there is no other ServiceDirectoryManagerFactory provider assigned, SD API will initialize
- * this class to provide ServiceDirectory services.
+ * When there is no other ServiceDirectoryManagerFactory provider assigned, Service Directory API will 
+ * initialize this class to provide ServiceDirectory services.
  *
  *
  */
@@ -39,14 +39,14 @@ public class DefaultServiceDirectoryManagerFactory implements
         ServiceDirectoryManagerFactory, Stoppable {
 
     /**
-     * RegistrationManager, it is lazy initialized.
+     * The RegistrationManager, it is lazy initialized.
      */
-    private final RegistrationManagerImpl registrationManager;
+    private volatile RegistrationManagerImpl registrationManager;
 
     /**
      * The LookupManager, it is lazy initialized.
      */
-    private final LookupManagerImpl lookupManager;
+    private volatile LookupManagerImpl lookupManager;
 
     /**
      * The DirectoryServiceClientManager.
@@ -68,10 +68,6 @@ public class DefaultServiceDirectoryManagerFactory implements
      */
     public DefaultServiceDirectoryManagerFactory(){
         dirSvcClientMgr = new DefaultDirectoryServiceClientManager();
-        lookupManager= new LookupManagerImpl(dirSvcClientMgr);
-        lookupManager.start();
-        registrationManager = new RegistrationManagerImpl(dirSvcClientMgr);
-        registrationManager.start();
     }
 
     /**
@@ -84,6 +80,15 @@ public class DefaultServiceDirectoryManagerFactory implements
      */
     @Override
     public RegistrationManager getRegistrationManager(){
+        if (registrationManager == null) {
+            synchronized (this) {
+                if (registrationManager == null) {
+                    RegistrationManagerImpl registration = new RegistrationManagerImpl(dirSvcClientMgr);
+                    registration.start();
+                    registrationManager = registration;
+                }
+            }
+        }
         return registrationManager;
     }
 
@@ -96,7 +101,16 @@ public class DefaultServiceDirectoryManagerFactory implements
      *         the LookupManager implementation instance.
      */
     @Override
-    public LookupManager getLookupManager(){
+    public LookupManager getLookupManager() {
+        if (lookupManager == null) {
+            synchronized (this) {
+                if (lookupManager == null) {
+                    LookupManagerImpl lookup = new LookupManagerImpl(dirSvcClientMgr);
+                    lookup.start();
+                    lookupManager = lookup;
+                }
+            }
+        }
         return lookupManager;
     }
 
@@ -137,8 +151,13 @@ public class DefaultServiceDirectoryManagerFactory implements
 
     @Override
     public void stop() {
-       registrationManager.stop();
-       lookupManager.stop();
+        if (registrationManager != null) {
+            ((RegistrationManagerImpl) registrationManager).stop();
+        }
+
+        if (lookupManager != null) {
+            ((LookupManagerImpl) lookupManager).stop();
+        }
     }
 
 }

@@ -130,7 +130,7 @@ public class DefaultTestServiceDirectoryManager implements
     public ServiceInstance lookupInstance(String serviceName)
             throws ServiceException {
         List<ServiceInstance> list = this.lookupInstances(serviceName);
-        if(list == null || list.size() == 0){
+        if(list == null || list.isEmpty()){
             return null;
         }
         int index = getNextQueryInstanceIndex(serviceName, list.size());
@@ -156,18 +156,14 @@ public class DefaultTestServiceDirectoryManager implements
             service = cache.get(serviceName);
         }
 
-        if(service == null || service.getServiceInstances().size() == 0){
-            return Collections.emptyList();
-        }else{
-            List<ServiceInstance> list = new ArrayList<ServiceInstance>();
-            for(ProvidedServiceInstance model : service.getServiceInstances()){
-                if(model.getStatus() == OperationalStatus.UP){
-                    list.add(new ServiceInstance(serviceName, model.getProviderId(), model.getUri(),
-                            model.isMonitorEnabled(), model.getStatus(), model.getAddress(), model.getPort(), model.getMetadata()));
-                }
+        List<ServiceInstance> list = new ArrayList<ServiceInstance>();
+        for(ProvidedServiceInstance model : service.getServiceInstances()){
+            if(model.getStatus() == OperationalStatus.UP){
+                list.add(new ServiceInstance(serviceName, model.getProviderId(), model.getUri(),
+                        model.isMonitorEnabled(), model.getStatus(), model.getAddress(), model.getPort(), model.getMetadata()));
             }
-            return list;
         }
+        return list;
     }
 
     /**
@@ -185,7 +181,7 @@ public class DefaultTestServiceDirectoryManager implements
     public ServiceInstance queryInstanceByName(String serviceName, ServiceInstanceQuery query)
             throws ServiceException {
         List<ServiceInstance> list = this.queryInstancesByName(serviceName, query);
-        if(list == null || list.size() == 0){
+        if(list == null || list.isEmpty()){
             return null;
         }
         int index = getNextQueryInstanceIndex(serviceName, list.size());
@@ -373,7 +369,7 @@ public class DefaultTestServiceDirectoryManager implements
 
             String key = criteria.get(0).getMetadataKey();
             List<ServiceInstance> list = this.queryInstancesByMetadataKey(query);
-            if(list == null || list.size() == 0){
+            if(list == null || list.isEmpty()){
                 return null;
             }
             int index = getNextQueryInstanceIndex(key, list.size());
@@ -404,8 +400,7 @@ public class DefaultTestServiceDirectoryManager implements
                     }
                 }
 
-                return ServiceInstanceQueryHelper.filterServiceInstance(query,
-                        list);
+                return ServiceInstanceQueryHelper.filterServiceInstance(query, list);
             }
         }
 
@@ -472,7 +467,7 @@ public class DefaultTestServiceDirectoryManager implements
             }
         }
         if(instances == null ){
-            return Collections.emptyList();
+            return Collections.<ServiceInstance>emptyList();
         }else{
             return instances;
         }
@@ -503,7 +498,7 @@ public class DefaultTestServiceDirectoryManager implements
             }
         }
 
-        return Collections.emptyList();
+        return Collections.<ServiceInstance>emptyList();
     }
 
     /**

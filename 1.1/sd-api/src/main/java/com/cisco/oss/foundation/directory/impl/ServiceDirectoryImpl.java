@@ -52,11 +52,6 @@ public class ServiceDirectoryImpl {
     public static final String SD_API_SERVICE_DIRECTORY_MANAGER_FACTORY_PROVIDER_PROPERTY = "com.cisco.oss.foundation.directory.manager.factory.provider";
 
     /**
-     * ServiceDirectory client.
-    private DirectoryServiceClient client ;
-     */
-
-    /**
      * ServiceDirectoryManagerFactory.
      */
     private ServiceDirectoryManagerFactory directoryManagerFactory;
@@ -80,7 +75,9 @@ public class ServiceDirectoryImpl {
                         .isAssignableFrom(provider)) {
                     directoryManagerFactory = (ServiceDirectoryManagerFactory) provider
                             .newInstance();
-                    LOGGER.info("Initialize the ServiceDirectoryManager with customer implementation {}.", custProvider);
+                    LOGGER.info(
+                            "Initialize the ServiceDirectoryManager with customer implementation {}.",
+                            custProvider);
                 }
             } catch (Exception e) {
                 LOGGER.error(
@@ -90,7 +87,7 @@ public class ServiceDirectoryImpl {
         }
 
         if (directoryManagerFactory == null) {
-            LOGGER.info("Initialize the ServiceDirectoryManager with default implementation - StandServiceDirectoryManager.");
+            LOGGER.info("Initialize the ServiceDirectoryManager with default implementation.");
             directoryManagerFactory = new DefaultServiceDirectoryManagerFactory();
         }
 
@@ -130,10 +127,10 @@ public class ServiceDirectoryImpl {
 
 
     /**
-     * Get the SD API version
+     * Get the Service Directory API version
      * 
      * @return
-     *        the SD API version 
+     *        the Service Directory API version 
      */
     public String getVersion() {
         
@@ -160,8 +157,11 @@ public class ServiceDirectoryImpl {
      * @throws ServiceException
      */
     public void reinitServiceDirectoryManagerFactory(ServiceDirectoryManagerFactory factory) throws ServiceException{
+
         if (factory == null) {
-            throw new IllegalArgumentException("The ServiceDirectoryManagerFactory cannot be NULL.");
+            throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
+                     ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR.getMessageTemplate(),
+                    "ServiceDirectoryManagerFactory");
         }
 
         synchronized(this){
@@ -213,7 +213,7 @@ public class ServiceDirectoryImpl {
 
     /**
      * not properly implemented, just works as an opposite part with shutdown() method
-     * since the shutdown() is not implemented properly also
+     * since the shutdown() is not implemented properly
      */
     public synchronized void restart(){
         if (directoryManagerFactory != null) {
@@ -225,9 +225,8 @@ public class ServiceDirectoryImpl {
     /**
      * Get the ServiceDirectoryManagerFactory.
      *
-     * It is lazy initialized and thread safe.
      * It looks up the configuration "com.cisco.oss.foundation.directory.manager.factory.provider".
-     * If the configuration is null or the provider instantialization fails, it will instantiate the DefaultServiceDirectoryManagerFactory.
+     * If the configuration is null or the provider instantiation fails, it will instantiate the DefaultServiceDirectoryManagerFactory.
      *
      * @return
      *         the ServiceDirectoryManagerFactory instance.
@@ -241,7 +240,9 @@ public class ServiceDirectoryImpl {
                 // should not allow to return a null
                 // TODO, make directoryManagerFactory is immutable.
                 // TODO. remove the initialize and reinit method in ServiceDirectoryManagerFactory and ServiceDirectory
-                throw new IllegalStateException("ServiceDirectoryManagerFactory is null");
+                throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
+                        ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR.getMessageTemplate(),
+                       "ServiceDirectoryManagerFactory");
             }
         }
         return directoryManagerFactory;

@@ -109,7 +109,8 @@ public class DirectoryRegistrationService {
     }
 
     /**
-     * Update the uri of the ProvidedServiceInstance by serviceName and providerId.
+     * Update the uri attribute of the ProvidedServiceInstance
+     * The ProvidedServiceInstance is uniquely identified by serviceName and providerId
      *
      * @param serviceName
      *         the serviceName of the ProvidedServiceInstance.
@@ -125,7 +126,8 @@ public class DirectoryRegistrationService {
     }
 
     /**
-     * Update the OperationalStatus of the ProvidedServiceInstance by serviceName and providerId.
+     * Update the OperationalStatus of the ProvidedServiceInstance
+     * The ProvidedServiceInstance is uniquely identified by serviceName and providerId
      *
      * @param serviceName
      *         the serviceName of the ProvidedServiceInstance.
@@ -153,7 +155,8 @@ public class DirectoryRegistrationService {
     }
 
     /**
-     * Unregister a ProvidedServiceInstance by serviceName and providerId.
+     * Unregister a ProvidedServiceInstance
+     * The ProvidedServiceInstance is uniquely identified by serviceName and providerId
      *
      * @param serviceName
      *         the serviceName of ProvidedServiceInstance.

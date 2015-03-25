@@ -32,6 +32,9 @@ import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
+import com.cisco.oss.foundation.directory.exception.ErrorCode;
+import com.cisco.oss.foundation.directory.exception.ServiceException;
+import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 
 /**
  * It is the Directory LookupService to perform the lookup functionality.
@@ -75,14 +78,15 @@ public class DirectoryLookupService {
     }
 
     /**
-     * Get the ModelMetadataKey Value by key name
+     * Get ModelMetadataKey, which is an object holding a list of service instances that 
+     * contain the key name in the service metadata.
      *
      * @param keyName
      *         the metadata key name.
      * @return
      *         the ModelMetadataKey.
      */
-    protected ModelMetadataKey getModelMetadataKeyValue(String keyName){
+    protected ModelMetadataKey getModelMetadataKey(String keyName){
         return getDirectoryServiceClient().getMetadataKey(keyName);
     }
 
@@ -109,7 +113,7 @@ public class DirectoryLookupService {
     }
 
     /**
-     * Get the ModelServiceInstance list by the Metadata Key.
+     * Get the ModelServiceInstance list that contains the metadata key.
      *
      * @param keyName
      *         the metadata key name.
@@ -117,7 +121,7 @@ public class DirectoryLookupService {
      *         the UP ModelServiceInstances that has the metadata key.
      */
     public List<ModelServiceInstance> getModelInstancesByMetadataKey(String keyName){
-        ModelMetadataKey key = getModelMetadataKeyValue(keyName);
+        ModelMetadataKey key = getModelMetadataKey(keyName);
         if(key == null || key.getServiceInstances().isEmpty()){
             return Collections.<ModelServiceInstance>emptyList();
         }else{
@@ -126,13 +130,13 @@ public class DirectoryLookupService {
     }
 
     /**
-     * Get the UP ModelServiceInstance list by the Metadata Key.
+     * Get the UP ModelServiceInstance list that contains the metadata key.
      *
      *
      * @param keyName
      *         the metadata key name.
      * @return
-     *         the ModelServiceInstances that has the metadata key.
+     *         the ModelServiceInstances that have the metadata key.
      */
     public List<ModelServiceInstance> getUPModelInstancesByMetadataKey(String keyName){
         List<ModelServiceInstance> list = new ArrayList<ModelServiceInstance>();
@@ -192,10 +196,8 @@ public class DirectoryLookupService {
     /**
      * Add a NotificationHandler to the Service.
      *
-     * This method will check the duplicate NotificationHandler for the serviceName, if the NotificationHandler
+     * This method checks the duplicated NotificationHandler for the serviceName, if the NotificationHandler
      * already exists for the serviceName, do nothing.
-     *
-     * Throw IllegalArgumentException if serviceName or handler is null.
      *
      * @param serviceName
      *         the service name.
@@ -204,13 +206,13 @@ public class DirectoryLookupService {
      */
     public void addNotificationHandler(String serviceName, NotificationHandler handler){
 
-        if(handler == null){
-            throw new IllegalArgumentException("handler should not be null");
+        ServiceInstanceUtils.validateServiceName(serviceName);
+        if (handler == null) {
+            throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
+                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR.getMessageTemplate(),
+                    "NotificationHandler");
         }
-        if(serviceName == null || serviceName.isEmpty()){
-            throw new IllegalArgumentException("serviceName should not be null or empty");
-        }
-
+  
         synchronized(notificationHandlers){
             if(! notificationHandlers.containsKey(serviceName)){
                 notificationHandlers.put(serviceName, new ArrayList<NotificationHandler>());
@@ -229,20 +231,20 @@ public class DirectoryLookupService {
      */
     public void removeNotificationHandler(String serviceName, NotificationHandler handler){
 
-        if(handler == null){
-            throw new IllegalArgumentException("handler should not be null");
+        ServiceInstanceUtils.validateServiceName(serviceName);
+        if (handler == null) {
+            throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
+                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR.getMessageTemplate(),
+                    "NotificationHandler");
         }
-        if(serviceName == null || serviceName.isEmpty()){
-            throw new IllegalArgumentException("serviceName should not be null or empty");
-        }
-
+  
         synchronized(notificationHandlers){
             if(notificationHandlers.containsKey(serviceName)){
                 List<NotificationHandler> list = notificationHandlers.get(serviceName);
                 if(list.contains(handler)){
                     list.remove(handler);
                 }
-                if(list.size() == 0){
+                if(list.isEmpty()){
                     notificationHandlers.remove(serviceName);
                 }
             }

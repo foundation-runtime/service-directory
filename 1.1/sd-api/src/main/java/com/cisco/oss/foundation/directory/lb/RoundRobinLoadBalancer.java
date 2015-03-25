@@ -49,7 +49,7 @@ public class RoundRobinLoadBalancer implements ServiceInstanceLoadBalancer{
     }
 
     /**
-     * Vote a ServiceInstance based on the LoadBalancer algorithm.
+     * Vote a ServiceInstance based on the RoundRobin LoadBalancer algorithm.
      *
      * @return
      *         the voted ServiceInstance.

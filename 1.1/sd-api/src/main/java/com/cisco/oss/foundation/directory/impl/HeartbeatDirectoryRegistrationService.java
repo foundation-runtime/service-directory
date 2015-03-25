@@ -60,13 +60,13 @@ public class HeartbeatDirectoryRegistrationService extends
             .getLogger(HeartbeatDirectoryRegistrationService.class);
 
     /**
-     * The RegistrationManager health check executor kick off delay time
-     * property name in seconds.
+     * The RegistrationManager health check executor kickoff delay time property
+     * name in seconds.
      */
     public static final String SD_API_REGISTRY_HEALTH_CHECK_DELAY_PROPERTY = "com.cisco.oss.foundation.directory.registry.health.check.delay";
 
     /**
-     * The default delay time of health check executor kick off.
+     * The default delay time of health check executor kickoff.
      */
     public static final int SD_API_REGISTRY_HEALTH_CHECK_DELAY_DEFAULT = 1;
 
@@ -81,26 +81,22 @@ public class HeartbeatDirectoryRegistrationService extends
     public static final int SD_API_REGISTRY_HEALTH_CHECK_INTERVAL_DEFAULT = 5;
 
     /**
-     * The RegistrationManager heart beat executor kick off delay time property
-     * name in seconds.
+     * The RegistrationManager heartbeat executor kickoff delay time property name in seconds.
      */
     public static final String SD_API_HEARTBEAT_DELAY_PROPERTY = "com.cisco.oss.foundation.directory.heartbeat.delay";
 
     /**
-     * The default delay time of RegistrationManager heart beat executor kick
-     * off.
+     * The default delay time of RegistrationManager heartbeat executor kickoff
      */
     public static final int SD_API_HEARTBEAT_DELAY_DEFAULT = 1;
 
     /**
-     * The RegistrationManager send ServiceInstance heart beat interval property
-     * name.
+     * The RegistrationManager send ServiceInstance heartbeat interval property name.
      */
     public static final String SD_API_HEARTBEAT_INTERVAL_PROPERTY = "com.cisco.oss.foundation.directory.heartbeat.interval";
 
     /**
-     * The default interval value of RegistrationManager send ServiceInstance
-     * heart beat.
+     * The default interval value of RegistrationManager send ServiceInstance heartbeats.
      */
     public static final int SD_API_HEARTBEAT_INTERVAL_DEFAULT = 10;
 
@@ -314,9 +310,8 @@ public class HeartbeatDirectoryRegistrationService extends
                 cachedInstance.setMonitorEnabled(instance.isMonitorEnabled());
                 cachedInstance.setStatus(instance.getStatus());
             }
-            if(LOGGER.isDebugEnabled()){
-                LOGGER.debug("update cached ProvidedServiceInstance: {}.", cachedInstance.toString());
-            }
+            
+            LOGGER.debug("update cached ProvidedServiceInstance: {}.", cachedInstance.toString());
 
         } finally {
             write.unlock();
@@ -362,11 +357,9 @@ public class HeartbeatDirectoryRegistrationService extends
             write.lock();
             ServiceInstanceId id = new ServiceInstanceId(serviceName, providerId);
             getCacheServiceInstances().remove(id);
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug(
-                        "delete cached ProvidedServiceInstance, serviceName={}, providerId={}.",
-                        serviceName, providerId);
-            }
+            LOGGER.debug(
+                    "delete cached ProvidedServiceInstance, serviceName={}, providerId={}.",
+                    serviceName, providerId);
         } finally {
             write.unlock();
         }
@@ -452,19 +445,18 @@ public class HeartbeatDirectoryRegistrationService extends
         public void run() {
             read.lock();
             try {
-                if(LOGGER.isDebugEnabled()){
-                    LOGGER.debug("Kickoff the HealthCheckTask thread");
-                }
+                
+                LOGGER.debug("Kick off the HealthCheckTask thread");
 
                 for (CachedProviderServiceInstance ist : getCacheServiceInstances().values()) {
                     if (ist.getServiceInstanceHealth() == null) {
                         continue;
                     }
-                    if(LOGGER.isDebugEnabled()){
-                        LOGGER.debug(
-                                "Check the Health for service={}, providerId={}.",
-                                ist.getServiceName(), ist.getProviderId());
-      }
+                   
+                    LOGGER.debug(
+                            "Check the Health for service={}, providerId={}.",
+                            ist.getServiceName(), ist.getProviderId());
+
                     ist.isHealth = ist.getServiceInstanceHealth().isHealthy();
                 }
             } catch (Exception e) {
@@ -487,7 +479,7 @@ public class HeartbeatDirectoryRegistrationService extends
         public void run() {
             read.lock();
             try {
-                LOGGER.debug("Kickoff the heartbeat thread");
+                LOGGER.debug("Kick off the heartbeat thread");
                 List<ServiceInstanceHeartbeat> serviceHBList = new ArrayList<ServiceInstanceHeartbeat>();
                 for (CachedProviderServiceInstance cachedInstance : getCacheServiceInstances().values()) {
                     LOGGER.debug("Service instance: {}.", cachedInstance.toString());
@@ -544,10 +536,7 @@ public class HeartbeatDirectoryRegistrationService extends
     }
 
     /**
-     * The cached ProviderServiceInstance for the ServiceInstanceHealth and
-     * heartbeat.
-     *
-     *
+     * The cached ProviderServiceInstance for the ServiceInstanceHealth and heartbeat.
      */
     private static class CachedProviderServiceInstance {
         /**
@@ -576,7 +565,7 @@ public class HeartbeatDirectoryRegistrationService extends
         private ServiceInstanceHealth healthCallback;
 
         /**
-         * Store the ServiceInstanceHealth call back result.
+         * Store the ServiceInstanceHealth callback result.
          * If the ServiceInstanceHealth is null, default to true;
          */
         private boolean isHealth = true;

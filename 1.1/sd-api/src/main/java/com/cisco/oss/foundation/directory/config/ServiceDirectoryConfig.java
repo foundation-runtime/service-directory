@@ -19,7 +19,7 @@ package com.cisco.oss.foundation.directory.config;
 import org.apache.commons.configuration.Configuration;
 
 /**
- * The SD API Configuration class.
+ * The Service Directory API Configuration class.
  * 
  * It allows application to get a property value, set a new property value and
  * add ConfigurationListener in runtime.

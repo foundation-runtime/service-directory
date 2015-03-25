@@ -182,7 +182,7 @@ public class DirectoryServiceClient{
 
 
     /**
-     * Update the ServiceInstance URI by serviceName and instanceId.
+     * Update the ServiceInstance attribute "uri".
      *
      * @param serviceName
      *         the service name.
@@ -295,7 +295,8 @@ public class DirectoryServiceClient{
     }
 
     /**
-     * Get the MetadataKey value by key name.
+     * Get ModelMetadataKey, which is an object holding a list of service instances that contain 
+     * the key name in the service metadata.
      *
      * @param keyName
      *         the key name.
@@ -317,12 +318,12 @@ public class DirectoryServiceClient{
     }
 
     /**
-     * Get the changed services for Services list.
+     * Get the changed services list.
      *
      * @param services
      *         the Service list.
      * @return
-     *         the Service list that has modification.
+     *         the list of Services that have been changed.
      * @throws ServiceException
      */
     public Map<String, OperationResult<ModelService>> getChangedServices(Map<String, ModelService> services){
@@ -341,12 +342,12 @@ public class DirectoryServiceClient{
     }
 
     /**
-     * Get the changed MetadataKey.
+     * Get the changed MetadataKey list.
      *
      * @param keys
      *         the MetadataKey List.
      * @return
-     *         the ModelMetadataKey that has been changed.
+     *         the list of ModelMetadataKeys that have been changed.
      */
     public Map<String, OperationResult<ModelMetadataKey>> getChangedMetadataKeys(Map<String, ModelMetadataKey> keys) {
         String body = _serialize(keys);
@@ -407,11 +408,11 @@ public class DirectoryServiceClient{
      * @throws JsonMappingException
      * @throws JsonParseException
      */
-     <T> T _deserialize(String body, TypeReference<T> typeRef){
-        if(body == null || body.isEmpty()){
+    <T> T _deserialize(String body, TypeReference<T> typeRef) {
+        if (body == null || body.isEmpty()) {
             throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
-                    ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR.getMessageTemplate(),
-                    "the message body is empty");
+                    ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR
+                            .getMessageTemplate(), "the message body is empty");
 
         }
 
@@ -459,21 +460,16 @@ public class DirectoryServiceClient{
     }
 
     /**
-     * It is the HTTP invoker to the ServiceDirectory ServerNode.
+     * It is the HTTP invoker to the ServiceDirectory Server Node.
      *
-     * It wraps the complexity of HttpClient and exposes a easy method to invoke RESTful services.
+     * It wraps the complexity of HttpClient and exposes an easy method to invoke RESTful services.
      *
      *
      */
     public static class DirectoryInvoker {
-        private static final Logger LOGGER = LoggerFactory
-                .getLogger(DirectoryInvoker.class);
-
 
         /* The remote ServiceDirectory node address array, in the format of http://<host>:<port> */
         public String directoryAddresses;
-
-
 
         /**
          * Constructor.
@@ -509,8 +505,6 @@ public class DirectoryServiceClient{
                 }
             } catch (IOException e) {
                 String errMsg = "Send HTTP Request to remote Directory Server failed";
-                LOGGER.error(errMsg);
-                LOGGER.debug(errMsg, e);
                 throw new ServiceException(ErrorCode.HTTP_CLIENT_ERROR,e,errMsg);
             }
             // HTTP_OK 200, HTTP_MULT_CHOICE 300
@@ -518,9 +512,6 @@ public class DirectoryServiceClient{
                 String errorBody = result.getRetBody();
 
                 if(errorBody == null || errorBody.isEmpty()){
-                    LOGGER.error(
-                            "Invoke remote directory server failed, status={}, Error Message body is empty.",
-                            result.getHttpCode());
                     throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
                             ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR.getMessageTemplate(),
                             "Error Message body is empty.");
@@ -531,8 +522,6 @@ public class DirectoryServiceClient{
                     sde =  deserialize(errorBody.getBytes(), ServiceDirectoryError.class);
                 } catch (IOException  e) {
                     String errMsg = "Deserialize error body message failed";
-                    LOGGER.error(errMsg);
-                    LOGGER.debug(errMsg + ", messageBody=" + errorBody, e);
                     throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,e,errMsg);
                 }
 
@@ -562,20 +551,14 @@ public class DirectoryServiceClient{
                 }
             } catch (IOException e) {
                 String errMsg = "Send HTTP Request to remote Directory Server failed";
-                LOGGER.error(errMsg);
-                LOGGER.debug(errMsg, e);
                 throw new ServiceException(ErrorCode.HTTP_CLIENT_ERROR,e,errMsg);
-
             }
 
             // HTTP_OK 200, HTTP_MULT_CHOICE 300
             if (result.getHttpCode() < HTTP_OK || result.getHttpCode() >= 300) {
                 String errorBody = result.getRetBody();
 
-                if(errorBody == null || errorBody.isEmpty()){
-                    LOGGER.error(
-                            "Invoke remote directory server failed, status={}, Error Message body is empty.",
-                            result.getHttpCode());
+                if(errorBody == null || errorBody.isEmpty()) {
                     throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
                             ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR.getMessageTemplate(),
                             "Error Message body is empty.");
@@ -586,8 +569,6 @@ public class DirectoryServiceClient{
                                     ServiceDirectoryError.class);
                 } catch (IOException  e) {
                     String errMsg = "Deserialize error body message failed";
-                    LOGGER.error(errMsg);
-                    LOGGER.debug(errMsg + ", messageBody=" + errorBody, e);
                     throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,e,errMsg);
                 }
 

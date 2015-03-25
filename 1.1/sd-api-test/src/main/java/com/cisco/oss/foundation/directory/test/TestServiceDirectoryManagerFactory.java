@@ -91,7 +91,7 @@ public class TestServiceDirectoryManagerFactory implements
     }
 
     /**
-     * Get the DefaultTestServiceDirectoryManager, it is lazy initialized.
+     * Get the DefaultTestServiceDirectoryManager.
      *
      * @return
      *         the DefaultTestServiceDirectoryManager.

@@ -33,7 +33,7 @@ public interface DirectoryServiceClientManager {
     /**
      * Get the DirectoryServiceClient.
      *
-     * It is thread safe in lazy initialization.
+     * It is thread safe.
      *
      * @return
      *         the directory server client.
