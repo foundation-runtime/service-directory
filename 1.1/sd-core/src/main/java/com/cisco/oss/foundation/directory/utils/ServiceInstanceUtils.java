@@ -16,7 +16,6 @@
 package com.cisco.oss.foundation.directory.utils;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
@@ -27,7 +26,6 @@ import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
-import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 
 /**
@@ -241,7 +239,7 @@ public class ServiceInstanceUtils {
      * @throws ServiceException SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED 
      *         if the registration/lookup manager is not started.
      */
-    
+    // TODO, we don't need a AtomicBoolean here, it really need to extract a static methods here?
     public static void validateManagerIsStarted(AtomicBoolean isStarted) throws ServiceException {
         if (!isStarted.get()) {
             throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
