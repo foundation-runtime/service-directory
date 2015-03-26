@@ -107,7 +107,7 @@ public class DefaultServiceDirectoryManagerFactory implements
     public RegistrationManager getRegistrationManager(){
        return _getRegistrationMgrImpl();
     }
-    private RegistrationManagerImpl _getRegistrationMgrImpl(){
+    private static RegistrationManagerImpl _getRegistrationMgrImpl(){
         boolean heartbeatEnabled = getServiceDirectoryConfig().getBoolean(SD_API_HEARTBEAT_ENABLED_PROPERTY,
                 SD_API_HEARTBEAT_ENABLED_DEFAULT);
         if(heartbeatEnabled){
@@ -130,7 +130,7 @@ public class DefaultServiceDirectoryManagerFactory implements
         return _getLookupMgrImpl();
     }
 
-    private LookupManagerImpl _getLookupMgrImpl(){
+    private static LookupManagerImpl _getLookupMgrImpl(){
         boolean cacheEnabled = getServiceDirectoryConfig().getBoolean(SD_API_CACHE_ENABLED_PROPERTY,
                 SD_API_CACHE_ENABLED_DEFAULT);
         if(cacheEnabled){
