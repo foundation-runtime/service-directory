@@ -31,7 +31,6 @@ import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
-import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 
 import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
 
@@ -63,8 +62,26 @@ public class ServiceDirectoryImpl {
 
     private boolean isShutdown = false;
 
+    private final String _version;
+
     // Singleton, private the constructor.
     private ServiceDirectoryImpl() {
+        String version = "Unknown";
+        try {
+            InputStream input = ServiceDirectoryImpl.class.getClassLoader()
+                    .getResourceAsStream("version.txt");
+            if (input == null) {
+            }
+            Properties prop = new Properties();
+            prop.load(input);
+            input.close();
+            if (prop.containsKey("version")) {
+                version = prop.getProperty("version", "Unknown");
+            }
+        } catch (IOException e) {
+        }
+        _version = version;
+
         String custProvider = getServiceDirectoryConfig()
                 .getString(SD_API_SERVICE_DIRECTORY_MANAGER_FACTORY_PROVIDER_PROPERTY);
 
@@ -134,20 +151,7 @@ public class ServiceDirectoryImpl {
      *        the Service Directory API version 
      */
     public String getVersion() {
-        
-        try {
-            InputStream input = ServiceDirectoryImpl.class.getClassLoader()
-                    .getResourceAsStream("version.txt");
-            if (input == null) {
-                return "Unknown";
-            }
-            Properties prop = new Properties();
-            prop.load(input);
-            input.close();
-            return prop.getProperty("version", "Unknown");
-        } catch (IOException e) {
-            return "Unknown";
-        }
+        return this._version;
     }
 
     /**
