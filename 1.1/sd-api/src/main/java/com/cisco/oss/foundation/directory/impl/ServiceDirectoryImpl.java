@@ -70,13 +70,14 @@ public class ServiceDirectoryImpl {
         try {
             InputStream input = ServiceDirectoryImpl.class.getClassLoader()
                     .getResourceAsStream("version.txt");
-            if (input == null) {
-            }
-            Properties prop = new Properties();
-            prop.load(input);
-            input.close();
-            if (prop.containsKey("version")) {
-                version = prop.getProperty("version", "Unknown");
+            if (input != null) {
+                Properties prop = new Properties();
+                prop.load(input);
+                input.close();
+
+                if (prop.containsKey("version")) {
+                    version = prop.getProperty("version", "Unknown");
+                }
             }
         } catch (IOException e) {
         }
