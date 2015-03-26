@@ -23,8 +23,6 @@ import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
 import com.cisco.oss.foundation.directory.config.ServiceDirectoryConfig;
-import com.cisco.oss.foundation.directory.exception.ServiceException;
-import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
 
 /**
@@ -80,14 +78,6 @@ public class DefaultServiceDirectoryManagerFactory implements
         public static final RegistrationManagerImpl INSTANCE
                 = new RegistrationManagerImpl(new DirectoryRegistrationService(dirSvcClient));
     }
-
-
-
-    /**
-     * The DirectoryServiceClient.
-     * TODO: should be final
-     * the field is not declared final because the reinit() method try to change the reference.
-     */
 
     /**
      * Default constructor.
