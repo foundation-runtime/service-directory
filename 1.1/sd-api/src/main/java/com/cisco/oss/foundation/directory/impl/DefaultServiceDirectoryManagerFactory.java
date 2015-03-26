@@ -141,16 +141,6 @@ public class DefaultServiceDirectoryManagerFactory implements
         return dirSvcClient;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @Deprecated
-    public void setServiceDirectoryConfig(ServiceDirectoryConfig config) {
-        // TODO Auto-generated method stub
-        // TODO remove
-
-    }
 
     @Override
     public void start() {

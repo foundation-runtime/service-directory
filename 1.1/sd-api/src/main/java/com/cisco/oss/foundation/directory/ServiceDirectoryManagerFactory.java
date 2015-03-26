@@ -50,14 +50,6 @@ public interface ServiceDirectoryManagerFactory extends Stoppable{
     public LookupManager getLookupManager() throws ServiceException;
 
     /**
-     * Set the ServiceDirectoryConfig for factory.
-     *
-     * @param config
-     *         the ServiceDirectory Configuration.
-     */
-    public void setServiceDirectoryConfig(ServiceDirectoryConfig config);
-
-    /**
      * Get the DirectoryServiceClient
      * @return DirectoryServiceClient
      */

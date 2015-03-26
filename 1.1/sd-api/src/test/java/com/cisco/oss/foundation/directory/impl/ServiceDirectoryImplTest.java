@@ -62,9 +62,6 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory 
             Assert.assertTrue(false);
         }
 
-        final AtomicInteger initializeInvoked = new AtomicInteger(0);
-        final AtomicInteger setInvoked = new AtomicInteger(0);
-
         final RegistrationManager registration = new MockRegistration();
 
         final LookupManager lookup = new MockLookup();
@@ -80,11 +77,6 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory 
             @Override
             public LookupManager getLookupManager() throws ServiceException {
                 return lookup;
-            }
-
-            @Override
-            public void setServiceDirectoryConfig(ServiceDirectoryConfig config) {
-                setInvoked.incrementAndGet();
             }
 
             @Override
@@ -105,9 +97,6 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory 
 
         try {
             ServiceDirectory.reinitServiceDirectoryManagerFactory(factory);
-            Assert.assertEquals(setInvoked.get(), 0);
-            //The initialize() method will not be called by default, so that we change expect to 0
-            Assert.assertEquals(0,initializeInvoked.get());
 
             Assert.assertTrue(ServiceDirectory.getLookupManager() == lookup);
             Assert.assertTrue(ServiceDirectory.getRegistrationManager() == registration);
@@ -159,12 +148,6 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory 
     public LookupManager getLookupManager() throws ServiceException {
         // TODO Auto-generated method stub
         return null;
-    }
-
-    @Override
-    public void setServiceDirectoryConfig(ServiceDirectoryConfig config) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
