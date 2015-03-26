@@ -106,7 +106,7 @@ public enum ErrorCode {
     /**
      * Service not exists. Message: The Service doesn't exist.
      */
-    SERVICE_NOT_EXIST("404.2","The Service does not exist."),
+    SERVICE_NOT_EXIST("404.2","The Service '%s' does not exist."),
 
     /**
      * Service Instance metadata key not exists. Message: The MetadataKey

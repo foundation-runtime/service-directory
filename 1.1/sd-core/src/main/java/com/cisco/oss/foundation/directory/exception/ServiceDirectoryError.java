@@ -16,6 +16,7 @@
 package com.cisco.oss.foundation.directory.exception;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -31,35 +32,34 @@ public class ServiceDirectoryError {
     private final ErrorCode exceptionCode;
 
     /**
-     * The error message
+     * The error message arguments holder
+     * compatible with 1.1.0.5 api, so that we don't change the naming
      */
-    private final String errMsg;
+    private final Object[] params;
 
     /**
      * Constructor.
      *
      * @param ec
      *            the ExceptionCode.
-     * @param errMsg
-     *            the error message.
+     * @param errMsgArgs
+     *            the array of message parameters.
      */
     @JsonCreator
-    public ServiceDirectoryError(@JsonProperty("exceptionCode")ErrorCode ec, @JsonProperty("errorMessage")String errMsg) {
+    public ServiceDirectoryError(@JsonProperty("exceptionCode")ErrorCode ec, @JsonProperty("params")Object... errMsgArgs) {
         this.exceptionCode = ec;
-        this.errMsg = errMsg;
+        this.params = errMsgArgs;
     }
 
-    public ServiceDirectoryError(ErrorCode ec) {
-        this.exceptionCode = ec;
-        this.errMsg = ec.getMessageTemplate();
-    }
     /**
      * Get the error message.
-     *
+     * The message is json ignored, so that no serialize/deserialize.
      * @return the error message String.
      */
+    @JsonIgnore
     public String getErrorMessage() {
-       return this.errMsg;
+        return (params.length == 0) ? exceptionCode.getMessageTemplate() :
+                String.format(exceptionCode.getMessageTemplate(), params);
     }
 
     /**
@@ -69,5 +69,15 @@ public class ServiceDirectoryError {
      */
     public ErrorCode getExceptionCode() {
         return exceptionCode;
+    }
+
+    /**
+     * Get the String holder parameters.
+     *
+     * @return
+     * 		the String holder parameters.
+     */
+    public Object[] getParams(){
+        return this.params;
     }
 }

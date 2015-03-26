@@ -20,4 +20,27 @@ public class SDErrorWithJSonTest {
                 ServiceDirectoryError.class);
         assertEquals("The Service already exists.",errorBack.getErrorMessage());
     }
+
+    @Test
+    public void testServiceDirectoryErrorWithMsgArgs() throws Exception{
+        ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_NOT_EXIST,
+                "fooService");
+        String body = new String(serialize(error));
+        System.out.println(body);
+        ServiceDirectoryError errorBack = deserialize(body.getBytes(),
+                ServiceDirectoryError.class);
+        assertEquals("The Service 'fooService' does not exist.",errorBack.getErrorMessage());
+    }
+
+    @Test
+    public void testServiceDirectoryErrorWithWrongMsgArgs() throws Exception{
+        ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_NOT_EXIST);
+        String body = new String(serialize(error));
+        System.out.println(body);
+        ServiceDirectoryError errorBack = deserialize(body.getBytes(),
+                ServiceDirectoryError.class);
+        assertEquals("The Service '%s' does not exist.",errorBack.getErrorMessage());
+    }
+
+
 }

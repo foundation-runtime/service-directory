@@ -29,11 +29,12 @@ public class ServiceException extends RuntimeException {
     private static final long serialVersionUID = -3706093386454084825L;
 
     private final ErrorCode _errorCode;
-    private final String _errMsg;
+    private final String _errMsgTemplate;
+    private final Object[] _errMsgArgs;
 
     @Override
     public String getMessage() {
-        return _errMsg;
+        return String.format(_errMsgTemplate,_errMsgArgs);
     }
 
     public ServiceException(ErrorCode errorCode){
@@ -44,13 +45,14 @@ public class ServiceException extends RuntimeException {
 
     }
     public ServiceException(ErrorCode errorCode,Throwable cause){
-        this(errorCode,cause,"");
+        this(errorCode,cause,errorCode.getMessageTemplate());
     }
 
     public ServiceException(ErrorCode errorCode, Throwable cause, String errMsgTemplate, Object ... errMsgArgs) {
         super(cause);
-        _errMsg = String.format(errMsgTemplate,errMsgArgs);
         _errorCode=errorCode;
+        _errMsgTemplate = errMsgTemplate;
+        _errMsgArgs = errMsgArgs;
     }
 
     public ErrorCode getErrorCode(){
@@ -58,7 +60,7 @@ public class ServiceException extends RuntimeException {
     }
 
     public ServiceDirectoryError getServiceDirectoryError() {
-        return new ServiceDirectoryError(_errorCode,_errMsg);
+        return new ServiceDirectoryError(_errorCode,_errMsgArgs);
     }
 
 }
