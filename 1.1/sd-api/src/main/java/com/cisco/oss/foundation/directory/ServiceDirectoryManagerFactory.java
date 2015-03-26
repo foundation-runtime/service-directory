@@ -15,7 +15,6 @@
  */
 package com.cisco.oss.foundation.directory;
 
-import com.cisco.oss.foundation.directory.config.ServiceDirectoryConfig;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.impl.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.lifecycle.Stoppable;

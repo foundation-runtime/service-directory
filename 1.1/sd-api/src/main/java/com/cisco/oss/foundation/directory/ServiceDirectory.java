@@ -20,9 +20,9 @@
 package com.cisco.oss.foundation.directory;
 
 import com.cisco.oss.foundation.configuration.ConfigurationFactory;
-import com.cisco.oss.foundation.directory.config.ServiceDirectoryConfig;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.impl.ServiceDirectoryImpl;
+import org.apache.commons.configuration.Configuration;
 
 /**
  * ServiceDirectory client class.
@@ -44,7 +44,7 @@ public class ServiceDirectory {
     public static final boolean SD_API_SERVICE_DIRECTORY_ENABLED_DEFAULT = true;
 
 
-    private static final ServiceDirectoryConfig serviceDirectoryConfig = new ServiceDirectoryConfig(ConfigurationFactory.getConfiguration());
+    private static final Configuration serviceDirectoryConfig = ConfigurationFactory.getConfiguration();
 
     /**
      * Singleton, private constructor.
@@ -80,7 +80,7 @@ public class ServiceDirectory {
      * @return
      *         the ServiceDirectoryConfig
      */
-    public static ServiceDirectoryConfig getServiceDirectoryConfig() {
+    public static Configuration getServiceDirectoryConfig() {
         return serviceDirectoryConfig;
     }
 

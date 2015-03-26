@@ -22,7 +22,6 @@ package com.cisco.oss.foundation.directory.test;
 import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
-import com.cisco.oss.foundation.directory.config.ServiceDirectoryConfig;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.impl.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
