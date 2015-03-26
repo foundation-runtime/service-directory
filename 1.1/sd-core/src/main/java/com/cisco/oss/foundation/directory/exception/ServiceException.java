@@ -34,7 +34,7 @@ public class ServiceException extends RuntimeException {
 
     @Override
     public String getMessage() {
-        return String.format(_errMsgTemplate,_errMsgArgs);
+        return _errMsgArgs.length==0 ? _errMsgTemplate : String.format(_errMsgTemplate,_errMsgArgs);
     }
 
     public ServiceException(ErrorCode errorCode){
