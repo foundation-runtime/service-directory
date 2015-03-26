@@ -68,14 +68,6 @@ public class TestServiceDirectoryManagerFactory implements
         return getDefaultTestServiceDirectoryManager();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void setServiceDirectoryConfig(ServiceDirectoryConfig config) {
-        // Do nothing.
-    }
-
     @Override
     public DirectoryServiceClient getDirectoryServiceClient() {
         return null;
