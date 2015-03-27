@@ -24,7 +24,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.cisco.oss.foundation.directory</groupId>
   <artifactId>sd-core</artifactId>
-  <name>Service Directory Core Classes</name>
+  <name>Service Directory Core Library</name>
   <version>1.2.0-0-SNAPSHOT</version>
   <description>Project for the common library shared by Cisco directory service and Cisco OSS service directory API.</description>
   <url>https://github.com/foundation-runtime/service-directory/sd-core</url>
@@ -84,7 +84,6 @@
         <artifactId>maven-ipcentral-plugin</artifactId>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
       </plugin>
       <plugin>
@@ -100,7 +99,6 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
       </plugin>
     </plugins>
@@ -109,15 +107,12 @@
   <reporting>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
      </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
       </plugin>
     </plugins>
