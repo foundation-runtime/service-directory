@@ -16,12 +16,7 @@
  -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <parent>
-    <groupId>com.cisco.oss.foundation</groupId>
-    <artifactId>foundation-common-base</artifactId>
-    <version>0.0.0-5</version>
-  </parent>
-  <modelVersion>4.0.0</modelVersion>
+ <modelVersion>4.0.0</modelVersion>
   <groupId>com.cisco.oss.foundation.directory</groupId>
   <artifactId>sd-api</artifactId>
   <name>Service Directory API</name>
@@ -66,7 +61,6 @@
       </roles>
     </developer>
   </developers>
-
   <scm>
     <connection>scm:git:git@github.com:foundation-runtime/service-directory.git</connection>
     <developerConnection>scm:git:git@github.com:foundation-runtime/service-directory.git</developerConnection>
@@ -77,43 +71,41 @@
     <name>Cisco</name>
     <url>http://www.cisco.com</url>
   </organization>
+
+  <parent>
+    <groupId>com.cisco.oss.foundation.directory</groupId>
+    <artifactId>sd-common-pom</artifactId>
+    <version>1.0.0</version>
+  </parent>
+
   <build>
-    <finalName>cisco.sd.api-${version}</finalName>
-      <resources>
-        <resource>
-          <directory>src/main/resources</directory>
-            <includes>
-              <include>version.txt</include>
-            </includes>  
-          <filtering>true</filtering>
-        </resource>
+    <finalName>cisco.sd.api-${project.version}</finalName>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>version.txt</include>
+        </includes>
+        <filtering>true</filtering>
+      </resource>
       <resource>
         <directory>src/main/resources</directory>
       </resource>
     </resources>
+
     <plugins>
+
       <plugin>
         <groupId>com.cisco.ipcentral</groupId>
         <artifactId>maven-ipcentral-plugin</artifactId>
-        <version>5.0.6</version>
-        <configuration>
-          <username>xuzhong</username>
-          <businessUnit>SPVSS</businessUnit>
-          <componentEditorsGrouper>sd-dev</componentEditorsGrouper>
-          <assetEditorsGrouper>sd-dev</assetEditorsGrouper>
-        </configuration>
       </plugin>
+
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-        </configuration>
       </plugin>
+
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.7</version>
         <executions>
           <execution>
             <id>attach-doc</id>
@@ -124,6 +116,7 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
         <executions>
@@ -136,13 +129,14 @@
           </execution>
         </executions>
         <configuration>
+          <appendAssemblyId>false</appendAssemblyId> <!-- not append id to the result name-->
           <descriptors>
-            <descriptor>assembly.xml</descriptor>
+            <descriptor>src/assembly/assembly.xml</descriptor>
           </descriptors>
         </configuration>
       </plugin>
+
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <systemProperties>
@@ -197,10 +191,10 @@
           </systemProperties>
         </configuration>
       </plugin>
+
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
-        <version>1.8</version>
         <executions>
           <execution>
             <id>reserve-network-port</id>
@@ -229,156 +223,60 @@
       </plugin>
 
       <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <executions>
-                <execution>
-                <id>copy-dependencies</id>
-                <phase>prepare-package</phase>
-                <goals>
-                    <goal>copy-dependencies</goal>
-                </goals>
-                <configuration>
-                    <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                    <overWriteReleases>false</overWriteReleases>
-                    <overWriteSnapshots>false</overWriteSnapshots>
-                    <overWriteIfNewer>true</overWriteIfNewer>
-                </configuration>
-                </execution>
-            </executions>
-          </plugin>
-          <!--
-          <plugin>
-          <artifactId>exec-maven-plugin</artifactId>
-          <groupId>org.codehaus.mojo</groupId>
-          <executions>
-            <execution>
-              <id>grant execute</id>
-              <phase>package</phase>
-              <goals>
-                <goal>exec</goal>
-              </goals>
-              <configuration>
-                <executable>chmod</executable>
-                        <arguments>
-                            <argument>+x</argument>
-                            <argument>${basedir}/src/main/script/module.sh</argument>
-                        </arguments>
-              </configuration>
-            </execution>
-            <execution>
-              <id>generate module xml</id>
-              <phase>package</phase>
-              <goals>
-                <goal>exec</goal>
-              </goals>
-              <configuration>
-                <workingDirectory>${project.build.directory}</workingDirectory>
-                <executable>${basedir}/src/main/script/module.sh</executable>
-                <arguments>
-                            <argument>cisco.sd.api-jboss-module-${version}.jar</argument>
-                        </arguments>
-              </configuration>
-            </execution>
-          </executions>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-dependencies</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/lib</outputDirectory>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>false</overWriteSnapshots>
+              <overWriteIfNewer>true</overWriteIfNewer>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
-      -->
+
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>3.4</version>
       </plugin>
+
     </plugins>
   </build>
 
   <reporting>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.7</version>
         <configuration>
           <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.7</version>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
-        <version>2.17</version>
       </plugin>
     </plugins>
   </reporting>
   
   <properties>
-       <com.fasterxml.jackson.version>2.2.2</com.fasterxml.jackson.version>
        <timestamp>${maven.build.timestamp}</timestamp>
        <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
   </properties>
 
   <dependencies>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.6.1</version>
-    </dependency>
+
     <dependency>
       <groupId>com.cisco.oss.foundation.directory</groupId>
       <artifactId>sd-core</artifactId>
       <version>1.2.0-0-SNAPSHOT</version>
     </dependency>
-    <dependency>
-      <groupId>com.cisco.oss.foundation</groupId>
-      <artifactId>configuration-api</artifactId>
-      <version>1.0.2-1</version>
-    </dependency>
-    <dependency>
-      <groupId>com.cisco.oss.foundation</groupId>
-      <artifactId>configuration-lib</artifactId>
-      <version>1.0.2-1</version>
-    </dependency>
-    
-    <!-- jackson  -->
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-      <version>${com.fasterxml.jackson.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-annotations</artifactId>
-      <version>${com.fasterxml.jackson.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>${com.fasterxml.jackson.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.jaxrs</groupId>
-      <artifactId>jackson-jaxrs-base</artifactId>
-      <version>${com.fasterxml.jackson.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.jaxrs</groupId>
-      <artifactId>jackson-jaxrs-json-provider</artifactId>
-      <version>${com.fasterxml.jackson.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.fasterxml.jackson.module</groupId>
-      <artifactId>jackson-module-jaxb-annotations</artifactId>
-      <version>${com.fasterxml.jackson.version}</version>
-    </dependency> 
-    
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.8.2</version>
-      <scope>test</scope>
-    </dependency>
+
   </dependencies>
 </project>
