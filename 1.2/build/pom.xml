@@ -9,6 +9,7 @@
   <description>a parent project to hold all modules for build.</description>
 
   <modules>
+    <module>../sd-common-pom</module>
     <module>../sd-core</module>
     <module>../sd-api</module>
   </modules>
