@@ -2,15 +2,15 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.cisco.oss.foundation.directory</groupId>
-  <artifactId>service-directory-api-parent</artifactId>
+  <artifactId>service-directory-api-build</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>Service Directory API Parent</name>
-  <description>Service Directory API parent project.</description>
+  <name>Service Directory API Build </name>
+  <description>a parent project to hold all modules for build.</description>
 
   <modules>
-    <module>sd-core</module>
-    <module>sd-api</module>
+    <module>../sd-core</module>
+    <module>../sd-api</module>
   </modules>
 
 </project>
