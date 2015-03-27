@@ -81,14 +81,15 @@
     <url>http://www.cisco.com</url>
   </organization>
 
-
-
-
   <properties>
     <!--
-      The versions of sd common dependencs which not incudled in 'foundation-common-base'
-      or overrided by service-directory projects
+      The versions of sd common dependencs which not included by 'foundation-common-base'
+      or overridden by service-directory projects
     -->
+    <!-- override versions -->
+    <configuration-api-version>1.0.2-4</configuration-api-version>
+    <configuration-lib-version>1.0.2-5</configuration-lib-version>
+    
     <!-- maven plugins -->
     <maven-compiler-plugin.version>2.5.1</maven-compiler-plugin.version>
     <maven-javadoc-plugin.version>2.9</maven-javadoc-plugin.version>
