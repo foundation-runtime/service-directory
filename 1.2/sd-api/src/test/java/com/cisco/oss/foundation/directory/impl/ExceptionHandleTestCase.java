@@ -19,13 +19,11 @@
 
 package com.cisco.oss.foundation.directory.impl;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -40,8 +38,7 @@ import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.utils.HttpResponse;
 import com.cisco.oss.foundation.directory.utils.HttpUtils;
-import static com.cisco.oss.foundation.directory.utils.JsonSerializer.*;
-import static org.junit.Assert.assertEquals;
+
 import com.cisco.oss.foundation.directory.impl.DirectoryServiceClient.DirectoryInvoker;
 /**
  * Test Suite to test the Exception Handling in the Directory API.

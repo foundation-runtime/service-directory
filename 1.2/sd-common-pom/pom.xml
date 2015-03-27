@@ -16,6 +16,15 @@
  -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <!--
+    the parent pom will define the verion properties of commmon dependences
+    such as : spring-framework, junit, apache-commmon etc.
+  -->
+  <parent>
+    <groupId>com.cisco.oss.foundation</groupId>
+    <artifactId>foundation-common-base</artifactId>
+    <version>1.0.0-3</version>
+  </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.cisco.oss.foundation.directory</groupId>
   <name>Service Directory Common POM</name>
@@ -72,15 +81,7 @@
     <url>http://www.cisco.com</url>
   </organization>
 
-  <!--
-    the parent pom will define the verion properties of commmon dependences
-    such as : spring-framework, junit, apache-commmon etc.
-  -->
-  <parent>
-    <groupId>com.cisco.oss.foundation</groupId>
-    <artifactId>foundation-common-base</artifactId>
-    <version>1.0.0-3</version>
-  </parent>
+
 
 
   <properties>

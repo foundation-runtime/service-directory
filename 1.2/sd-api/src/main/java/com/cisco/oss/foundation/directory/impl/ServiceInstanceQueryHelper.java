@@ -20,7 +20,6 @@
 package com.cisco.oss.foundation.directory.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;

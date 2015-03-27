@@ -21,7 +21,6 @@ package com.cisco.oss.foundation.directory.lb;
 
 import java.util.List;
 
-import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 
 /**

@@ -16,8 +16,12 @@
  -->
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
- <modelVersion>4.0.0</modelVersion>
-  <groupId>com.cisco.oss.foundation.directory</groupId>
+  <parent>
+    <groupId>com.cisco.oss.foundation.directory</groupId>
+    <artifactId>sd-common-pom</artifactId>
+    <version>1.0.0</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
   <artifactId>sd-api</artifactId>
   <name>Service Directory API</name>
   <version>1.2.0-0-SNAPSHOT</version>
@@ -72,11 +76,10 @@
     <url>http://www.cisco.com</url>
   </organization>
 
-  <parent>
-    <groupId>com.cisco.oss.foundation.directory</groupId>
-    <artifactId>sd-common-pom</artifactId>
-    <version>1.0.0</version>
-  </parent>
+  <properties>
+       <timestamp>${maven.build.timestamp}</timestamp>
+       <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
+  </properties>
 
   <build>
     <finalName>cisco.sd.api-${project.version}</finalName>
@@ -118,22 +121,33 @@
       </plugin>
 
       <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>make-assembly</id> <!-- this is used for inheritance merges -->
-            <phase>package</phase> <!-- bind to the packaging phase -->
+            <id>reserve-network-port</id>
             <goals>
-              <goal>single</goal>
+              <goal>reserve-network-port</goal>
             </goals>
+            <phase>process-resources</phase>
+            <configuration>
+              <portNames>
+                <portName>jetty.http.port1</portName>
+                <portName>jetty.http.port2</portName>
+                <portName>jetty.http.port3</portName>
+                <portName>zk.client.port1</portName>
+                <portName>zk.client.port2</portName>
+                <portName>zk.client.port3</portName>
+                <portName>zk.sync.port1</portName>
+                <portName>zk.sync.port2</portName>
+                <portName>zk.sync.port3</portName>
+                <portName>zk.sync.port4</portName>
+                <portName>zk.sync.port5</portName>
+                <portName>zk.sync.port6</portName>
+              </portNames>
+            </configuration>
           </execution>
         </executions>
-        <configuration>
-          <appendAssemblyId>false</appendAssemblyId> <!-- not append id to the result name-->
-          <descriptors>
-            <descriptor>src/assembly/assembly.xml</descriptor>
-          </descriptors>
-        </configuration>
       </plugin>
 
       <plugin>
@@ -193,36 +207,6 @@
       </plugin>
 
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>reserve-network-port</id>
-            <goals>
-              <goal>reserve-network-port</goal>
-            </goals>
-            <phase>process-resources</phase>
-            <configuration>
-              <portNames>
-                <portName>jetty.http.port1</portName>
-                <portName>jetty.http.port2</portName>
-                <portName>jetty.http.port3</portName>
-                <portName>zk.client.port1</portName>
-                <portName>zk.client.port2</portName>
-                <portName>zk.client.port3</portName>
-                <portName>zk.sync.port1</portName>
-                <portName>zk.sync.port2</portName>
-                <portName>zk.sync.port3</portName>
-                <portName>zk.sync.port4</portName>
-                <portName>zk.sync.port5</portName>
-                <portName>zk.sync.port6</portName>
-              </portNames>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
-      <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
@@ -242,9 +226,27 @@
       </plugin>
 
       <plugin>
-        <artifactId>maven-site-plugin</artifactId>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>make-assembly</id> <!-- this is used for inheritance merges -->
+            <phase>package</phase> <!-- bind to the packaging phase -->
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <appendAssemblyId>false</appendAssemblyId> <!-- not append id to the result name-->
+          <descriptors>
+            <descriptor>src/assembly/assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
       </plugin>
 
+      <plugin>
+        <artifactId>maven-site-plugin</artifactId>
+      </plugin>
     </plugins>
   </build>
 
@@ -265,12 +267,7 @@
     </plugins>
   </reporting>
   
-  <properties>
-       <timestamp>${maven.build.timestamp}</timestamp>
-       <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
-  </properties>
-
-  <dependencies>
+ <dependencies>
 
     <dependency>
       <groupId>com.cisco.oss.foundation.directory</groupId>

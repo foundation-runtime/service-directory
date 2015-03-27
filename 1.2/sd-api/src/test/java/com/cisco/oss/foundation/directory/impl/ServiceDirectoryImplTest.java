@@ -18,7 +18,6 @@ package com.cisco.oss.foundation.directory.impl;
 import static org.junit.Assert.fail;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Assert;
 import org.junit.Test;

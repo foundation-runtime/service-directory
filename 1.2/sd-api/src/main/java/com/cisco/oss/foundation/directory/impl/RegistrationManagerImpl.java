@@ -31,7 +31,6 @@ import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
-import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
 /**
  * The RegistrationManager implementation.
  *

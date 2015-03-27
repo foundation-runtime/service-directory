@@ -22,8 +22,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
-import junit.framework.Assert;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;

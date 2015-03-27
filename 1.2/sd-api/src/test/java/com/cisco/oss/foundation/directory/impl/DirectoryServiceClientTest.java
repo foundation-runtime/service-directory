@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import junit.framework.Assert;
-
 import com.fasterxml.jackson.core.type.TypeReference;
+
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -395,10 +395,6 @@ public class DirectoryServiceClientTest {
 
         Map<String, ModelService> services = new HashMap<String, ModelService>();
         services.put("odrm", new ModelService("odrm", "odrm", date));
-
-        final String serviceName = "odrm";
-
-
 
         Map<String, String> metadata = new HashMap<String, String>();
         metadata.put("datacenter", "dc01");

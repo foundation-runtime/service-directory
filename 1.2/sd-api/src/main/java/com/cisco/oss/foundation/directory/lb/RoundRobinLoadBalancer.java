@@ -22,10 +22,7 @@ package com.cisco.oss.foundation.directory.lb;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
-import com.cisco.oss.foundation.directory.impl.DirectoryLookupService;
-import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 
 /**
  * A RoundRobin LoadBalancer abstract template based on DirectoryLookupService.
