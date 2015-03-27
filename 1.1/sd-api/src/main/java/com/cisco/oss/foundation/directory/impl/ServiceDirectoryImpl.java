@@ -76,7 +76,7 @@ public class ServiceDirectoryImpl {
                 input.close();
 
                 if (prop.containsKey("version")) {
-                    version = prop.getProperty("version", "Unknown");
+                    version = prop.getProperty("version");
                 }
             }
         } catch (IOException e) {
