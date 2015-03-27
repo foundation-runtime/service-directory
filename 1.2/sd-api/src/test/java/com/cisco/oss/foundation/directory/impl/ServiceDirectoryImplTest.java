@@ -21,8 +21,6 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.NotificationHandler;
@@ -40,7 +38,6 @@ import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
 
 public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory {
     interface ForTestingManagerFactory extends ServiceDirectoryManagerFactory,Stoppable{};
-    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceDirectoryImplTest.class);
     @Test
     public void testSetFactory() {
         ServiceDirectory.getServiceDirectoryConfig().setProperty(

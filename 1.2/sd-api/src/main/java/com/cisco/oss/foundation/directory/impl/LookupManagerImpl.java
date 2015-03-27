@@ -24,9 +24,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.NotificationHandler;
 import com.cisco.oss.foundation.directory.entity.ModelService;
@@ -50,9 +47,6 @@ import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
  *
  */
 public class LookupManagerImpl implements LookupManager, Stoppable {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(LookupManagerImpl.class);
-
 
     /**
      * The loadbalancer manager for Services.
