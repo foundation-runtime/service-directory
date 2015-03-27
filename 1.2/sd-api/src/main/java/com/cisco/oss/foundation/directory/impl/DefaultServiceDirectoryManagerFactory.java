@@ -19,38 +19,64 @@
 
 package com.cisco.oss.foundation.directory.impl;
 
-import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
-import com.cisco.oss.foundation.directory.config.ServiceDirectoryConfig;
-import com.cisco.oss.foundation.directory.lifecycle.Closable;
+import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
 
 /**
  * It is the default ServiceDirectoryManagerFactory to access remote ServiceDirectory server node.
  *
- * When there is no other ServiceDirectoryManagerFactory provider assigned, SD API will instantialize
- * this class to provide ServiceDirectory services.
+ * When there is no other ServiceDirectoryManagerFactory provider assigned, Service Directory API will 
+ * initialize this class to provide ServiceDirectory services.
  *
  *
  */
 public class DefaultServiceDirectoryManagerFactory implements
-        ServiceDirectoryManagerFactory, Closable {
+        ServiceDirectoryManagerFactory {
+    /**
+     * The LookupManager cache enabled property.
+     */
+    public static final String SD_API_CACHE_ENABLED_PROPERTY = "com.cisco.oss.foundation.directory.cache.enabled";
 
     /**
-     * RegistrationManager, it is lazy initialized.
+     * The default cache enabled property value.
      */
-    private volatile RegistrationManagerImpl registrationManager;
+    public static final boolean SD_API_CACHE_ENABLED_DEFAULT = true;
 
     /**
-     * The LookupManager, it is lazy initialized.
+     * The Registration heartbeat and health check enabled property name.
      */
-    private volatile LookupManagerImpl lookupManager;
+    public static final String SD_API_HEARTBEAT_ENABLED_PROPERTY = "com.cisco.oss.foundation.directory.heartbeat.enabled";
 
     /**
-     * The DirectoryServiceClientManager.
+     * the default value of hearbeat enabled property value.
      */
-    private DirectoryServiceClientManager dirSvcClientMgr;
+    public static final boolean SD_API_HEARTBEAT_ENABLED_DEFAULT = true;
+
+
+    private static final DirectoryServiceClient dirSvcClient = new DirectoryServiceClient();
+
+    /**
+     * The XXXImpl holders for wired lazy-init requirement
+     * Sigh! where is spring!
+     */
+    private static class LookupManagerImplHolder {
+        public static final LookupManagerImpl INSTANCE =
+                new LookupManagerImpl(new DirectoryLookupService(dirSvcClient));
+    }
+    private static class CachedLookupManagerImplHolder {
+        public static final CachedLookupManagerImpl INSTANCE =
+                new CachedLookupManagerImpl(new CachedDirectoryLookupService(dirSvcClient));
+    }
+    private static class HeartbeatRegistrationManagerImplHolder {
+        public static final HeartbeatRegistrationManagerImpl INSTANCE
+                = new HeartbeatRegistrationManagerImpl(new HeartbeatDirectoryRegistrationService(dirSvcClient));
+    }
+    private static class RegistrationManagerImplHolder {
+        public static final RegistrationManagerImpl INSTANCE
+                = new RegistrationManagerImpl(new DirectoryRegistrationService(dirSvcClient));
+    }
 
     /**
      * Default constructor.
@@ -68,16 +94,16 @@ public class DefaultServiceDirectoryManagerFactory implements
      */
     @Override
     public RegistrationManager getRegistrationManager(){
-        if(registrationManager == null){
-            synchronized(this){
-                if(registrationManager == null){
-                    RegistrationManagerImpl registration = new RegistrationManagerImpl(getDirectoryServiceClientManager());
-                    registration.start();
-                    registrationManager = registration;
-                }
-            }
+       return _getRegistrationMgrImpl();
+    }
+    private static RegistrationManagerImpl _getRegistrationMgrImpl(){
+        boolean heartbeatEnabled = getServiceDirectoryConfig().getBoolean(SD_API_HEARTBEAT_ENABLED_PROPERTY,
+                SD_API_HEARTBEAT_ENABLED_DEFAULT);
+        if(heartbeatEnabled){
+            return HeartbeatRegistrationManagerImplHolder.INSTANCE;
+        } else {
+            return RegistrationManagerImplHolder.INSTANCE;
         }
-        return registrationManager;
     }
 
     /**
@@ -89,60 +115,42 @@ public class DefaultServiceDirectoryManagerFactory implements
      *         the LookupManager implementation instance.
      */
     @Override
-    public LookupManager getLookupManager(){
-        if(lookupManager == null){
-            synchronized(this){
-                if(lookupManager == null){
-                    LookupManagerImpl lookup = new LookupManagerImpl(getDirectoryServiceClientManager());
-                    lookup.start();
-                    lookupManager = lookup;
-                }
-            }
+    public LookupManager getLookupManager() {
+        return _getLookupMgrImpl();
+    }
+
+    private static LookupManagerImpl _getLookupMgrImpl(){
+        boolean cacheEnabled = getServiceDirectoryConfig().getBoolean(SD_API_CACHE_ENABLED_PROPERTY,
+                SD_API_CACHE_ENABLED_DEFAULT);
+        if(cacheEnabled){
+            return CachedLookupManagerImplHolder.INSTANCE;
+        } else {
+            return LookupManagerImplHolder.INSTANCE;
         }
-        return lookupManager;
     }
 
     /**
-     * {@inheritDoc}
-     */
-    @Override
-    public void initialize(DirectoryServiceClientManager manager) {
-        this.dirSvcClientMgr = manager;
-    }
-
-    /**
-     * get the DirectoryServiceClientManager to access remote directory server.
+     * get the DirectoryServiceClient to access remote directory server.
      *
      * @return
-     *         the DirectoryServiceClientManager.
-     */
-    public DirectoryServiceClientManager getDirectoryServiceClientManager(){
-        return dirSvcClientMgr;
-    }
-
-    /**
-     * {@inheritDoc}
+     *         the DirectoryServiceClient.
      */
     @Override
-    public void setServiceDirectoryConfig(ServiceDirectoryConfig config) {
-        // TODO Auto-generated method stub
-
+    public DirectoryServiceClient getDirectoryServiceClient(){
+        return dirSvcClient;
     }
+
 
     @Override
     public void start() {
-        // do nothing now.
+        _getRegistrationMgrImpl().start();
+        _getLookupMgrImpl().start();
     }
 
     @Override
     public void stop() {
-        if(registrationManager != null){
-            ((RegistrationManagerImpl) registrationManager).stop();
-        }
-
-        if(lookupManager != null){
-            ((LookupManagerImpl) lookupManager).stop();
-        }
+        _getRegistrationMgrImpl().stop();
+        _getLookupMgrImpl().stop();
     }
 
 }

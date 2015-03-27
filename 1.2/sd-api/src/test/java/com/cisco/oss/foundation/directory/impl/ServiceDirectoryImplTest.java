@@ -15,6 +15,8 @@
  */
 package com.cisco.oss.foundation.directory.impl;
 
+import static org.junit.Assert.fail;
+
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -23,24 +25,22 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.NotificationHandler;
 import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectory;
 import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
 import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
-import com.cisco.oss.foundation.directory.config.ServiceDirectoryConfig;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
-import com.cisco.oss.foundation.directory.lifecycle.Closable;
+import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
 
-public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory, Closable {
-
+public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory {
+    interface ForTestingManagerFactory extends ServiceDirectoryManagerFactory,Stoppable{};
     private static final Logger LOGGER = LoggerFactory.getLogger(ServiceDirectoryImplTest.class);
     @Test
     public void testSetFactory() {
@@ -61,9 +61,6 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory,
             Assert.assertTrue(false);
         }
 
-        final AtomicInteger initializeInvoked = new AtomicInteger(0);
-        final AtomicInteger setInvoked = new AtomicInteger(0);
-
         final RegistrationManager registration = new MockRegistration();
 
         final LookupManager lookup = new MockLookup();
@@ -82,19 +79,23 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory,
             }
 
             @Override
-            public void initialize(DirectoryServiceClientManager manager) {
-                initializeInvoked.incrementAndGet();
+            public DirectoryServiceClient getDirectoryServiceClient() {
+                return null;
             }
 
             @Override
-            public void setServiceDirectoryConfig(ServiceDirectoryConfig config) {
-                setInvoked.incrementAndGet();
-            }};
+            public void stop() {
+                //to nothing
+            }
+
+            @Override
+            public void start() {
+                //to nothing
+            }
+        };
 
         try {
             ServiceDirectory.reinitServiceDirectoryManagerFactory(factory);
-            Assert.assertEquals(setInvoked.get(), 0);
-            Assert.assertEquals(initializeInvoked.get(), 1);
 
             Assert.assertTrue(ServiceDirectory.getLookupManager() == lookup);
             Assert.assertTrue(ServiceDirectory.getRegistrationManager() == registration);
@@ -117,28 +118,23 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory,
         // When the ServiceDirectory shutdown, getRegistrationManager and getLookupManager should get SERVICE_DIRECTORY_IS_SHUTDOWN error.
         try {
             ServiceDirectory.getRegistrationManager();
+            fail();
         } catch (ServiceException e) {
             Assert.assertEquals(ErrorCode.SERVICE_DIRECTORY_IS_SHUTDOWN, e.getServiceDirectoryError().getExceptionCode());
-            LOGGER.error("Shutdown error", e);
         }
 
         // When the DefaultServiceDirectoryManagerFactory, close lookupManager and registrationManager should get SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED.
         try {
             lookupMgr.getAllInstances();
+            fail();
         } catch (ServiceException e1) {
             Assert.assertEquals(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED, e1.getServiceDirectoryError().getExceptionCode());
-            LOGGER.error("Shutdown error", e1);
         }
 
-        ServiceDirectoryImpl.getInstance().revertForUnitTest();
-
-        try {
-            Assert.assertNull(ServiceDirectory.getRegistrationManager());
-
-        } catch (ServiceException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        // need to call the method to set the isStarted to true
+        // otherwise other unit-test will be failed
+        // TODO: re-implement the shutdown()/start() method properly so that unit-test not depends on each other.
+        ServiceDirectoryImpl.getInstance().restart();
     }
 
     @Override
@@ -154,15 +150,8 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory,
     }
 
     @Override
-    public void initialize(DirectoryServiceClientManager manager) {
-        // TODO Auto-generated method stub
-
-    }
-
-    @Override
-    public void setServiceDirectoryConfig(ServiceDirectoryConfig config) {
-        // TODO Auto-generated method stub
-
+    public DirectoryServiceClient getDirectoryServiceClient() {
+        return null;
     }
 
     @Override
@@ -242,13 +231,13 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory,
         }
 
         @Override
-        public ServiceInstance queryInstanceByKey(ServiceInstanceQuery query)
+        public ServiceInstance queryInstanceByMetadataKey(ServiceInstanceQuery query)
                 throws ServiceException {
             return null;
         }
 
         @Override
-        public List<ServiceInstance> queryInstancesByKey(
+        public List<ServiceInstance> queryInstancesByMetadataKey(
                 ServiceInstanceQuery query) throws ServiceException {
             return null;
         }
@@ -278,7 +267,7 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory,
         }
 
         @Override
-        public List<ServiceInstance> getAllInstancesByKey(
+        public List<ServiceInstance> getAllInstancesByMetadataKey(
                 ServiceInstanceQuery query) throws ServiceException {
             return null;
         }

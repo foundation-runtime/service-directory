@@ -27,7 +27,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.ServiceDirectory;
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
@@ -43,7 +42,7 @@ public class LookupManagerImplTest {
 
     @Test
     public void test01(){
-        ServiceDirectory.getServiceDirectoryConfig().setProperty("heartbeat.interval", 1);
+        ServiceDirectory.getServiceDirectoryConfig().setProperty(HeartbeatDirectoryRegistrationService.SD_API_HEARTBEAT_INTERVAL_PROPERTY, 1);
         ServiceDirectory.getServiceDirectoryConfig().setProperty(CachedDirectoryLookupService.SD_API_CACHE_SYNC_INTERVAL_PROPERTY, 1);
 
         final String serviceName = "odrm";
@@ -88,81 +87,77 @@ public class LookupManagerImplTest {
         final AtomicInteger keyChangingInvoked = new AtomicInteger(0);
 //        final AtomicInteger unregisterInvoked = new AtomicInteger(0);
 
-        LookupManagerImpl impl = new LookupManagerImpl(new DirectoryServiceClientManager(){
+        CachedLookupManagerImpl impl = new CachedLookupManagerImpl(new CachedDirectoryLookupService(new DirectoryServiceClient(){
             @Override
-            public DirectoryServiceClient getDirectoryServiceClient() {
-                return new DirectoryServiceClient(){
-                    @Override
-                    public ModelService lookupService(String serviceName){
-                        Assert.assertTrue(serviceName.equals("odrm"));
-                        serviceInvoked.incrementAndGet();
-                        return result;
-                    }
-
-                    @Override
-                    public ModelMetadataKey getMetadataKey(String keyName){
-                        Assert.assertTrue(keyName.equals("solution"));
-                        keyInvoked.incrementAndGet();
-                        return keyResult;
-                    }
-
-                    @Override
-                    public Map<String, OperationResult<ModelService>> getServiceChanging(Map<String, ModelService> services){
-                        serviceChangingInvoked.incrementAndGet();
-                        Assert.assertTrue(services.containsKey("odrm"));
-                        Map<String, OperationResult<ModelService>> rr = new HashMap<String, OperationResult<ModelService>>();
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-
-                        Map<String, String> metadata = new HashMap<String, String>();
-                        metadata.put("datacenter", "dc02");
-                        metadata.put("solution", "core02");
-                        List<ModelServiceInstance> instances = new ArrayList<ModelServiceInstance>();
-                        ModelServiceInstance instance = new ModelServiceInstance("odrm", "192.168.2.3-8901", "192.168.2.3-8901", "http://cisco.com/vbo/odrm/setupsession/v02",
-                                OperationalStatus.UP, null, 0, date,
-                                date, metadata);
-                        instance.setHeartbeatTime(date);
-                        instances.add(instance);
-                        ModelService service = new ModelService("odrm", "odrm", date);
-                        service.setServiceInstances(instances);
-                        rr.put("odrm", new OperationResult<ModelService>(true, service, null));
-                        return rr;
-                    }
-
-                    @Override
-                    public Map<String, OperationResult<ModelMetadataKey>> getMetadataKeyChanging(Map<String, ModelMetadataKey> keys) {
-                        keyChangingInvoked.incrementAndGet();
-                        Assert.assertTrue(keys.containsKey("solution"));
-                        Map<String, OperationResult<ModelMetadataKey>> rr = new HashMap<String, OperationResult<ModelMetadataKey>>();
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            // TODO Auto-generated catch block
-                            e.printStackTrace();
-                        }
-
-                        Map<String, String> metadata = new HashMap<String, String>();
-                        metadata.put("datacenter", "dc03");
-                        metadata.put("solution", "core03");
-                        List<ModelServiceInstance> instances = new ArrayList<ModelServiceInstance>();
-                        ModelServiceInstance instance = new ModelServiceInstance("odrm", "192.168.2.3-8901", "192.168.2.3-8901", "http://cisco.com/vbo/odrm/setupsession/v03",
-                                OperationalStatus.UP, null, 0, date,
-                                date, metadata);
-                        instance.setHeartbeatTime(date);
-                        instances.add(instance);
-                        ModelMetadataKey key = new ModelMetadataKey(keyName, keyName, date, date);
-                        key.setServiceInstances(instances);
-
-                        rr.put("solution", new OperationResult<ModelMetadataKey>(true, key, null));
-                        return rr;
-                    }
-                };
+            public ModelService lookupService(String serviceName) {
+                Assert.assertTrue(serviceName.equals("odrm"));
+                serviceInvoked.incrementAndGet();
+                return result;
             }
-        });
+
+            @Override
+            public ModelMetadataKey getMetadataKey(String keyName) {
+                Assert.assertTrue(keyName.equals("solution"));
+                keyInvoked.incrementAndGet();
+                return keyResult;
+            }
+
+            @Override
+            public Map<String, OperationResult<ModelService>> getChangedServices(Map<String, ModelService> services) {
+                serviceChangingInvoked.incrementAndGet();
+                Assert.assertTrue(services.containsKey("odrm"));
+                Map<String, OperationResult<ModelService>> rr = new HashMap<String, OperationResult<ModelService>>();
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
+                Map<String, String> metadata = new HashMap<String, String>();
+                metadata.put("datacenter", "dc02");
+                metadata.put("solution", "core02");
+                List<ModelServiceInstance> instances = new ArrayList<ModelServiceInstance>();
+                ModelServiceInstance instance = new ModelServiceInstance("odrm", "192.168.2.3-8901", "192.168.2.3-8901", "http://cisco.com/vbo/odrm/setupsession/v02",
+                        OperationalStatus.UP, null, 0, date,
+                        date, metadata);
+                instance.setHeartbeatTime(date);
+                instances.add(instance);
+                ModelService service = new ModelService("odrm", "odrm", date);
+                service.setServiceInstances(instances);
+                rr.put("odrm", new OperationResult<ModelService>(true, service, null));
+                return rr;
+            }
+
+            @Override
+            public Map<String, OperationResult<ModelMetadataKey>> getChangedMetadataKeys(Map<String, ModelMetadataKey> keys) {
+                keyChangingInvoked.incrementAndGet();
+                Assert.assertTrue(keys.containsKey("solution"));
+                Map<String, OperationResult<ModelMetadataKey>> rr = new HashMap<String, OperationResult<ModelMetadataKey>>();
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+
+                Map<String, String> metadata = new HashMap<String, String>();
+                metadata.put("datacenter", "dc03");
+                metadata.put("solution", "core03");
+                List<ModelServiceInstance> instances = new ArrayList<ModelServiceInstance>();
+                ModelServiceInstance instance = new ModelServiceInstance("odrm", "192.168.2.3-8901", "192.168.2.3-8901", "http://cisco.com/vbo/odrm/setupsession/v03",
+                        OperationalStatus.UP, null, 0, date,
+                        date, metadata);
+                instance.setHeartbeatTime(date);
+                instances.add(instance);
+                ModelMetadataKey key = new ModelMetadataKey(keyName, keyName, date, date);
+                key.setServiceInstances(instances);
+
+                rr.put("solution", new OperationResult<ModelMetadataKey>(true, key, null));
+                return rr;
+            }
+        }));
+
 
         impl.start();
 
@@ -170,7 +165,7 @@ public class LookupManagerImplTest {
         try {
             Assert.assertEquals(impl.getAllInstances(serviceName).get(0).getInstanceId(), instanceId);
             Assert.assertTrue(impl.getAllInstances(serviceName, query).get(0).getInstanceId().equals(instanceId));
-            Assert.assertTrue(impl.getAllInstancesByKey(query).get(0).getInstanceId().equals(instanceId));
+            Assert.assertTrue(impl.getAllInstancesByMetadataKey(query).get(0).getInstanceId().equals(instanceId));
             Assert.assertTrue(impl.getInstance(serviceName, instanceId).getInstanceId().equals(instanceId));
         } catch (ServiceException e) {
             // TODO Auto-generated catch block
@@ -197,8 +192,8 @@ public class LookupManagerImplTest {
         try {
             Assert.assertEquals(impl.getAllInstances(serviceName).get(0).getInstanceId(), instanceId);
             Assert.assertTrue(impl.getAllInstances(serviceName, query).get(0).getUri().equals("http://cisco.com/vbo/odrm/setupsession/v02"));
-            Assert.assertTrue(impl.getAllInstancesByKey(query).get(0).getInstanceId().equals(instanceId));
-            Assert.assertTrue(impl.getAllInstancesByKey(query).get(0).getUri().equals("http://cisco.com/vbo/odrm/setupsession/v03"));
+            Assert.assertTrue(impl.getAllInstancesByMetadataKey(query).get(0).getInstanceId().equals(instanceId));
+            Assert.assertTrue(impl.getAllInstancesByMetadataKey(query).get(0).getUri().equals("http://cisco.com/vbo/odrm/setupsession/v03"));
             Assert.assertTrue(impl.getInstance(serviceName, instanceId).getInstanceId().equals(instanceId));
             Assert.assertTrue(impl.getInstance(serviceName, instanceId).getMetadata().get("solution").equals("core02"));
         } catch (ServiceException e) {

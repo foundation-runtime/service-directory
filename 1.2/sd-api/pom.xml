@@ -25,9 +25,9 @@
   <groupId>com.cisco.oss.foundation.directory</groupId>
   <artifactId>sd-api</artifactId>
   <name>Service Directory API</name>
-  <version>1.2.0-1-SNAPSHOT</version>
+  <version>1.2.0-0-SNAPSHOT</version>
   <description>Project for Cisco OSS service directory API library.</description>
-  <url>https://github.com/foundation-runtime/service-directory/1.2/sd-api</url>
+  <url>https://github.com/foundation-runtime/service-directory/1.1/sd-api</url>
   <packaging>jar</packaging>
   <licenses>
     <license>
@@ -46,9 +46,9 @@
   </mailingLists>
   <developers>
     <developer>
-      <id>Zuochang Xiang</id>
-      <name>Zuochang Xiang</name>
-      <email>zuxiang@cisco.com</email>
+      <id>Alex Wu</id>
+      <name>Yiding Wu</name>
+      <email>yidwu@cisco.com</email>
       <organization>Cisco</organization>
       <organizationUrl>http://www.cisco.com</organizationUrl>
       <roles>
@@ -79,6 +79,18 @@
   </organization>
   <build>
     <finalName>cisco.sd.api-${version}</finalName>
+      <resources>
+        <resource>
+          <directory>src/main/resources</directory>
+            <includes>
+              <include>version.txt</include>
+            </includes>  
+          <filtering>true</filtering>
+        </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
     <plugins>
       <plugin>
         <groupId>com.cisco.ipcentral</groupId>
@@ -90,7 +102,7 @@
           <componentEditorsGrouper>sd-dev</componentEditorsGrouper>
           <assetEditorsGrouper>sd-dev</assetEditorsGrouper>
         </configuration>
-      </plugin> 
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -301,6 +313,12 @@
       </plugin>
     </plugins>
   </reporting>
+  
+  <properties>
+       <com.fasterxml.jackson.version>2.2.2</com.fasterxml.jackson.version>
+       <timestamp>${maven.build.timestamp}</timestamp>
+       <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -311,7 +329,7 @@
     <dependency>
       <groupId>com.cisco.oss.foundation.directory</groupId>
       <artifactId>sd-core</artifactId>
-      <version>1.2.0-1-SNAPSHOT</version>
+      <version>1.2.0-0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.cisco.oss.foundation</groupId>
@@ -323,17 +341,39 @@
       <artifactId>configuration-lib</artifactId>
       <version>1.0.2-1</version>
     </dependency>
+    
+    <!-- jackson  -->
     <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-asl</artifactId>
-      <version>1.9.12</version>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${com.fasterxml.jackson.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-      <version>1.9.12</version>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${com.fasterxml.jackson.version}</version>
     </dependency>
-
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${com.fasterxml.jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.jaxrs</groupId>
+      <artifactId>jackson-jaxrs-base</artifactId>
+      <version>${com.fasterxml.jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.jaxrs</groupId>
+      <artifactId>jackson-jaxrs-json-provider</artifactId>
+      <version>${com.fasterxml.jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.module</groupId>
+      <artifactId>jackson-module-jaxb-annotations</artifactId>
+      <version>${com.fasterxml.jackson.version}</version>
+    </dependency> 
+    
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>

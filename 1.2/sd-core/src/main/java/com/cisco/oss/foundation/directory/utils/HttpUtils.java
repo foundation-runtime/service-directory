@@ -15,6 +15,8 @@
  */
 package com.cisco.oss.foundation.directory.utils;
 
+import static java.net.HttpURLConnection.*;
+
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -35,35 +37,16 @@ import com.google.common.io.CharStreams;
  *
  *
  */
-public class HttpUtils {
+public final class HttpUtils {
     public static enum HttpMethod {
         GET, PUT, POST, DELETE
     }
 
-    private volatile static HttpUtils instance = null;
-
     /**
-     * protect the singleton.
+     * prevent to create instance
      */
-    protected HttpUtils() {
+    private HttpUtils() { }
 
-    }
-
-    /**
-     * Get the HttpUtils singleton instance.
-     *
-     * @return HttpUtils instance.
-     */
-    public static HttpUtils getInstance() {
-        if (instance == null) {
-            synchronized (HttpUtils.class) {
-                if (instance == null) {
-                    instance = new HttpUtils();
-                }
-            }
-        }
-        return instance;
-    }
 
     /**
      * Invoke REST Service using POST method.
@@ -75,7 +58,7 @@ public class HttpUtils {
      * @return the HttpResponse.
      * @throws IOException
      */
-    public HttpResponse postJson(String urlStr, String body) throws IOException {
+    public static HttpResponse postJson(String urlStr, String body) throws IOException {
 
         URL url = new URL(urlStr);
         HttpURLConnection urlConnection = (HttpURLConnection) url
@@ -94,29 +77,7 @@ public class HttpUtils {
         OutputStream out = urlConnection.getOutputStream();
         out.write(body.getBytes());
         ByteStreams.copy(new ByteArrayInputStream(body.getBytes()), out);
-        BufferedReader in = null;
-        try {
-            int errorCode = urlConnection.getResponseCode();
-            if ((errorCode <= 202) && (errorCode >= 200)) {
-                in = new BufferedReader(new InputStreamReader(
-                        urlConnection.getInputStream()));
-            } else {
-                InputStream error = urlConnection.getErrorStream();
-                if (error != null) {
-                    in = new BufferedReader(new InputStreamReader(error));
-                }
-            }
-
-            String json = null;
-            if (in != null) {
-                json = CharStreams.toString(in);
-            }
-            return new HttpResponse(errorCode, json);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-        }
+        return getHttpResponse(urlConnection);
     }
 
     /**
@@ -129,7 +90,7 @@ public class HttpUtils {
      * @return the HttpResponse.
      * @throws IOException
      */
-    public HttpResponse putJson(String urlStr, String body) throws IOException {
+    public static HttpResponse putJson(String urlStr, String body) throws IOException {
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-Type", "application/json");
         return put(urlStr, body, headers);
@@ -149,7 +110,7 @@ public class HttpUtils {
      * @return the HttpResponse.
      * @throws IOException
      */
-    public HttpResponse put(String urlStr, String body,
+    public static HttpResponse put(String urlStr, String body,
             Map<String, String> headers) throws IOException {
         URL url = new URL(urlStr);
         HttpURLConnection urlConnection = (HttpURLConnection) url
@@ -175,29 +136,7 @@ public class HttpUtils {
         if (body != null && body.length() > 0)
             ByteStreams.copy(new ByteArrayInputStream(body.getBytes()), out);
 
-        BufferedReader in = null;
-        try {
-            int errorCode = urlConnection.getResponseCode();
-            if ((errorCode <= 202) && (errorCode >= 200)) {
-                in = new BufferedReader(new InputStreamReader(
-                        urlConnection.getInputStream()));
-            } else {
-                InputStream error = urlConnection.getErrorStream();
-                if (error != null) {
-                    in = new BufferedReader(new InputStreamReader(error));
-                }
-            }
-
-            String json = null;
-            if (in != null) {
-                json = CharStreams.toString(in);
-            }
-            return new HttpResponse(errorCode, json);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-        }
+        return getHttpResponse(urlConnection);
 
     }
 
@@ -209,35 +148,13 @@ public class HttpUtils {
      * @return the HttpResponse.
      * @throws IOException
      */
-    public HttpResponse getJson(String urlStr) throws IOException {
+    public static HttpResponse getJson(String urlStr) throws IOException {
         URL url = new URL(urlStr);
         HttpURLConnection urlConnection = (HttpURLConnection) url
                 .openConnection();
         urlConnection.addRequestProperty("Accept", "application/json");
 
-        BufferedReader in = null;
-        try {
-            int errorCode = urlConnection.getResponseCode();
-            if ((errorCode <= 202) && (errorCode >= 200)) {
-                in = new BufferedReader(new InputStreamReader(
-                        urlConnection.getInputStream()));
-            } else {
-                InputStream error = urlConnection.getErrorStream();
-                if (error != null) {
-                    in = new BufferedReader(new InputStreamReader(error));
-                }
-            }
-
-            String json = null;
-            if (in != null) {
-                json = CharStreams.toString(in);
-            }
-            return new HttpResponse(errorCode, json);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
-        }
+        return getHttpResponse(urlConnection);
     }
 
     /**
@@ -248,7 +165,7 @@ public class HttpUtils {
      * @return the HttpResponse.
      * @throws IOException
      */
-    public HttpResponse deleteJson(String urlStr) throws IOException {
+    public static HttpResponse deleteJson(String urlStr) throws IOException {
         URL url = new URL(urlStr);
         HttpURLConnection urlConnection = (HttpURLConnection) url
                 .openConnection();
@@ -256,10 +173,15 @@ public class HttpUtils {
 
         urlConnection.setRequestMethod("DELETE");
 
+        return getHttpResponse(urlConnection);
+    }
+
+    private static HttpResponse getHttpResponse(HttpURLConnection urlConnection) throws IOException {
         BufferedReader in = null;
         try {
             int errorCode = urlConnection.getResponseCode();
-            if ((errorCode <= 202) && (errorCode >= 200)) {
+            // HTTP_OK (200), HTTP_CREATED (201), HTTP_ACCEPTED (202)
+            if (((errorCode == HTTP_OK) || (errorCode == HTTP_CREATED) || errorCode == HTTP_ACCEPTED) ) {
                 in = new BufferedReader(new InputStreamReader(
                         urlConnection.getInputStream()));
             } else {

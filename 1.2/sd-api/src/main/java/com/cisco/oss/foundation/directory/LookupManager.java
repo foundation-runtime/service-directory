@@ -40,7 +40,7 @@ public interface LookupManager {
      * It selects one instance from a set of instances for a given service based on round robin strategy.
      *
      * @param serviceName    The Service name.
-     * @return                The ServiceInstance.
+     * @return               The ServiceInstance.
      * @throws ServiceException
      */
     public ServiceInstance lookupInstance(String serviceName) throws ServiceException;
@@ -48,7 +48,7 @@ public interface LookupManager {
     /**
      * Look up a list of service instances for a given service.
      *
-     * It returns the complete list of the service instances.
+     * It returns the complete list of the UP service instances.
      *
      * @param serviceName    The Service name.
      * @return                The ServiceInstance list.
@@ -83,16 +83,16 @@ public interface LookupManager {
     public List<ServiceInstance> queryInstancesByName(String serviceName, ServiceInstanceQuery query) throws ServiceException;
 
     /**
-     * Query for one the ServiceInstances which satisfy the query criteria on the service metadata.
+     * Query for a ServiceInstance which satisfies the query criteria on the service metadata.
      *
      * It returns a service instance from the service instance list based on round robin selection strategy.
-     * The ServiceInstance list have different Services.
+     * The ServiceInstance list may have different Services.
      *
      * @param query         The ServiceInstanceQuery for filtering the service instances.
      * @return                The ServiceInstance list.
      * @throws ServiceException
      */
-    public ServiceInstance queryInstanceByKey(ServiceInstanceQuery query) throws ServiceException;
+    public ServiceInstance queryInstanceByMetadataKey(ServiceInstanceQuery query) throws ServiceException;
 
     /**
      * Query for all the ServiceInstances which satisfy the query criteria on the service metadata.
@@ -103,7 +103,7 @@ public interface LookupManager {
      * @return                The ServiceInstance list.
      * @throws ServiceException
      */
-    public List<ServiceInstance> queryInstancesByKey(ServiceInstanceQuery query) throws ServiceException;
+    public List<ServiceInstance> queryInstancesByMetadataKey(ServiceInstanceQuery query) throws ServiceException;
 
     /**
      * Get a ServiceInstance.
@@ -121,7 +121,7 @@ public interface LookupManager {
     public ServiceInstance getInstance(String serviceName, String instanceId) throws ServiceException;
 
     /**
-     * Get all ServiceInstance List of the target Service, including the DOWN ServiceInstance.
+     * Get all ServiceInstances of the target Service, including the DOWN ServiceInstance.
      *
      * It will return all ServiceInstances of the Service including the ServiceInstance of OperationalStatus DOWN.
      *
@@ -137,7 +137,7 @@ public interface LookupManager {
      * Get all ServiceInstances of the specified Service, including the DOWN ServiceIntance,
      * which satisfy the query criteria on the service metadata.
      *
-     * It filter all ServiceInstances of the specified Service including the ServiceInstance of OperationalStatus DOWN,
+     * It filters all ServiceInstances of the specified Service including the ServiceInstance of OperationalStatus DOWN,
      * against the ServiceInstanceQuery.
      *
      * @param serviceName
@@ -162,10 +162,10 @@ public interface LookupManager {
      *         the ServiceInstance List.
      * @throws ServiceException
      */
-    public List<ServiceInstance> getAllInstancesByKey(ServiceInstanceQuery query) throws ServiceException;
+    public List<ServiceInstance> getAllInstancesByMetadataKey(ServiceInstanceQuery query) throws ServiceException;
 
     /**
-     * Get the all ServiceInstances in the ServiceDirectory including the DOWN ServiceInstance.
+     * Get all ServiceInstances in the ServiceDirectory including the DOWN ServiceInstance.
      *
      * @return
      *         the ServiceInstance List.
@@ -176,10 +176,9 @@ public interface LookupManager {
     /**
      * Add a NotificationHandler to the Service.
      *
-     * This method can check the duplicated NotificationHandler for the serviceName, if the NotificationHandler
+     * This method checks the duplicated NotificationHandler for the serviceName, if the NotificationHandler
      * already exists for the serviceName, do nothing.
      *
-     * Throw IllegalArgumentException if serviceName or handler is null.
      *
      * @param serviceName
      *         the service name.
@@ -192,7 +191,6 @@ public interface LookupManager {
     /**
      * Remove a NotificationHandler from the Service.
      *
-     * Throw IllegalArgumentException if serviceName or handler is null.
      *
      * @param serviceName
      *         the service name.

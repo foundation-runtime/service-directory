@@ -47,20 +47,10 @@ public class ServiceInstanceQueryHelper {
      */
     public static List<ModelServiceInstance> filter(ServiceInstanceQuery query, List<ModelServiceInstance> list) {
 
-        if (list == null || list.size() == 0) {
-            return Collections.emptyList();
-        }
-
-        List<QueryCriterion> criteria = query.getCriteria();
-
-        if (criteria == null || criteria.size() == 0) {
-            return list;
-        }
-
         List<ModelServiceInstance> instances = new ArrayList<ModelServiceInstance>();
         for (ModelServiceInstance instance : list) {
             boolean passed = true;
-            for (QueryCriterion criterion : criteria) {
+            for (QueryCriterion criterion : query.getCriteria()) {
                 if (criterion.isMatch(instance.getMetadata()) == false) {
                     passed = false;
                     break;
@@ -70,7 +60,6 @@ public class ServiceInstanceQueryHelper {
                 instances.add(instance);
             }
         }
-
         return instances;
 
     }
@@ -87,20 +76,10 @@ public class ServiceInstanceQueryHelper {
      */
     public static List<ServiceInstance> filterServiceInstance(ServiceInstanceQuery query, List<ServiceInstance> list) {
 
-        if (list == null || list.size() == 0) {
-            return Collections.emptyList();
-        }
-
-        List<QueryCriterion> criteria = query.getCriteria();
-
-        if (criteria == null || criteria.size() == 0) {
-            return list;
-        }
-
         List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
         for (ServiceInstance instance : list) {
             boolean passed = true;
-            for (QueryCriterion criterion : criteria) {
+            for (QueryCriterion criterion : query.getCriteria()) {
                 if (criterion.isMatch(instance.getMetadata()) == false) {
                     passed = false;
                     break;
@@ -110,8 +89,6 @@ public class ServiceInstanceQueryHelper {
                 instances.add(instance);
             }
         }
-
         return instances;
-
     }
 }
