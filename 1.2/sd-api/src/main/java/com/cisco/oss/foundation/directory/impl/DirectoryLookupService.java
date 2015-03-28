@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cisco.oss.foundation.directory.NotificationHandler;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;

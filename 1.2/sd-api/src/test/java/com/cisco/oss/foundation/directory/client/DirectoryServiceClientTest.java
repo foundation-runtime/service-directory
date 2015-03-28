@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cisco.oss.foundation.directory.impl;
+package com.cisco.oss.foundation.directory.client;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -25,11 +25,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.cisco.oss.foundation.directory.client.DirectoryServiceClient.DirectoryInvoker;
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
@@ -42,7 +42,6 @@ import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.utils.HttpResponse;
 import com.cisco.oss.foundation.directory.utils.HttpUtils;
-import com.cisco.oss.foundation.directory.impl.DirectoryServiceClient.DirectoryInvoker;
 
 public class DirectoryServiceClientTest {
 

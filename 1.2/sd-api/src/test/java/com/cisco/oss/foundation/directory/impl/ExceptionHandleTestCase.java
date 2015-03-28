@@ -31,6 +31,8 @@ import org.slf4j.LoggerFactory;
 
 import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectory;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceClient.DirectoryInvoker;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
@@ -38,8 +40,6 @@ import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.utils.HttpResponse;
 import com.cisco.oss.foundation.directory.utils.HttpUtils;
-
-import com.cisco.oss.foundation.directory.impl.DirectoryServiceClient.DirectoryInvoker;
 /**
  * Test Suite to test the Exception Handling in the Directory API.
  *

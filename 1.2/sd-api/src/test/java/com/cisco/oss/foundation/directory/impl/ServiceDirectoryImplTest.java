@@ -15,8 +15,6 @@
  */
 package com.cisco.oss.foundation.directory.impl;
 
-import static org.junit.Assert.fail;
-
 import java.util.List;
 
 import org.junit.Assert;
@@ -28,6 +26,7 @@ import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectory;
 import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
 import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
@@ -35,6 +34,8 @@ import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
+
+import static org.junit.Assert.fail;
 
 public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory {
     interface ForTestingManagerFactory extends ServiceDirectoryManagerFactory,Stoppable{};

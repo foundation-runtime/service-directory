@@ -13,10 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
-
-
 package com.cisco.oss.foundation.directory.impl;
 
 import java.util.ArrayList;
@@ -35,6 +31,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
@@ -43,8 +40,9 @@ import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
+
 import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
-import static com.cisco.oss.foundation.directory.utils.JsonSerializer.*;
+import static com.cisco.oss.foundation.directory.utils.JsonSerializer.serialize;
 
 /**
  * It is the DirectoryLookupService with client-side Cache.

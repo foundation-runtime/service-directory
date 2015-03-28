@@ -19,10 +19,11 @@
 
 package com.cisco.oss.foundation.directory;
 
+import org.apache.commons.configuration.Configuration;
+
 import com.cisco.oss.foundation.configuration.ConfigurationFactory;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.impl.ServiceDirectoryImpl;
-import org.apache.commons.configuration.Configuration;
 
 /**
  * ServiceDirectory client class.

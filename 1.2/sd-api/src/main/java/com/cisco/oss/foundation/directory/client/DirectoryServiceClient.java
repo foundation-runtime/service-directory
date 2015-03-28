@@ -13,11 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
-
-
-package com.cisco.oss.foundation.directory.impl;
+package com.cisco.oss.foundation.directory.client;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -26,16 +22,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static java.net.HttpURLConnection.HTTP_MULT_CHOICE;
-import static java.net.HttpURLConnection.HTTP_OK;
-import static java.net.HttpURLConnection.HTTP_CREATED;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
@@ -48,10 +39,16 @@ import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.utils.HttpResponse;
-import com.cisco.oss.foundation.directory.utils.HttpUtils.HttpMethod;
 import com.cisco.oss.foundation.directory.utils.HttpUtils;
-import static com.cisco.oss.foundation.directory.utils.JsonSerializer.*;
+import com.cisco.oss.foundation.directory.utils.HttpUtils.HttpMethod;
+
+import static java.net.HttpURLConnection.HTTP_CREATED;
+import static java.net.HttpURLConnection.HTTP_MULT_CHOICE;
+import static java.net.HttpURLConnection.HTTP_OK;
+
 import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
+import static com.cisco.oss.foundation.directory.utils.JsonSerializer.deserialize;
+import static com.cisco.oss.foundation.directory.utils.JsonSerializer.serialize;
 
 /**
  * This is the client object to invoke the remote service in ServiceDirectory Server Node.
