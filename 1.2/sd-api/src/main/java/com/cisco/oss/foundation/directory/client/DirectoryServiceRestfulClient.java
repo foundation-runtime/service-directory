@@ -549,25 +549,27 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
             }
 
             // HTTP_OK 200, HTTP_MULT_CHOICE 300
-            if (result.getHttpCode() < HTTP_OK || result.getHttpCode() >= 300) {
-                String errorBody = result.getRetBody();
+            if (result != null) {
+                if (result.getHttpCode() < HTTP_OK || result.getHttpCode() >= 300) {
+                    String errorBody = result.getRetBody();
 
-                if(errorBody == null || errorBody.isEmpty()) {
-                    throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
-                            ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR.getMessageTemplate(),
-                            "Error Message body is empty.");
-                }
-                ServiceDirectoryError sde;
-                try {
-                    sde = deserialize(errorBody.getBytes(),
-                                    ServiceDirectoryError.class);
-                } catch (IOException  e) {
-                    String errMsg = "Deserialize error body message failed";
-                    throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,e,errMsg);
-                }
+                    if(errorBody == null || errorBody.isEmpty()) {
+                        throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
+                                ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR.getMessageTemplate(),
+                                "Error Message body is empty.");
+                    }
+                    ServiceDirectoryError sde;
+                    try {
+                        sde = deserialize(errorBody.getBytes(),
+                                        ServiceDirectoryError.class);
+                    } catch (IOException  e) {
+                        String errMsg = "Deserialize error body message failed";
+                        throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,e,errMsg);
+                    }
 
-                if (sde != null) {
-                    throw new ServiceException(sde.getExceptionCode(),sde.getErrorMessage());
+                    if (sde != null) {
+                        throw new ServiceException(sde.getExceptionCode(),sde.getErrorMessage());
+                    }
                 }
             }
             return result;

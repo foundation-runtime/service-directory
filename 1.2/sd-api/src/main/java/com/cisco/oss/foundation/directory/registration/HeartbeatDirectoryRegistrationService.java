@@ -330,7 +330,7 @@ public class HeartbeatDirectoryRegistrationService extends
                 cachedInstance.setStatus(instance.getStatus());
             }
             
-            LOGGER.debug("update cached ProvidedServiceInstance: {}.", cachedInstance.toString());
+            LOGGER.debug("update cached ProvidedServiceInstance: {}.", cachedInstance);
 
         } finally {
             write.unlock();
