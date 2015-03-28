@@ -17,7 +17,7 @@
 
 
 
-package com.cisco.oss.foundation.directory.impl;
+package com.cisco.oss.foundation.directory.lookup;
 
 import java.util.ArrayList;
 import java.util.Collections;

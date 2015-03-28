@@ -35,7 +35,10 @@ import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.OperationResult;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
+import com.cisco.oss.foundation.directory.lookup.CachedDirectoryLookupService;
+import com.cisco.oss.foundation.directory.lookup.CachedLookupManagerImpl;
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
+import com.cisco.oss.foundation.directory.registration.HeartbeatDirectoryRegistrationService;
 
 public class LookupManagerImplTest {
 

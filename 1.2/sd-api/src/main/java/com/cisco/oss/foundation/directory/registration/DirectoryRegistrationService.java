@@ -17,7 +17,7 @@
 
 
 
-package com.cisco.oss.foundation.directory.impl;
+package com.cisco.oss.foundation.directory.registration;
 
 import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;

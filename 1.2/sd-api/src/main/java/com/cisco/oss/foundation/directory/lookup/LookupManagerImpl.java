@@ -17,7 +17,7 @@
 
 
 
-package com.cisco.oss.foundation.directory.impl;
+package com.cisco.oss.foundation.directory.lookup;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,9 +31,11 @@ import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
+import com.cisco.oss.foundation.directory.impl.ServiceInstanceQueryHelper;
 import com.cisco.oss.foundation.directory.lb.LoadBalancerManager;
 import com.cisco.oss.foundation.directory.lb.ServiceInstanceLoadBalancer;
 import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
+import com.cisco.oss.foundation.directory.lookup.DirectoryLookupService;
 import com.cisco.oss.foundation.directory.query.QueryCriterion;
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery.ContainQueryCriterion;

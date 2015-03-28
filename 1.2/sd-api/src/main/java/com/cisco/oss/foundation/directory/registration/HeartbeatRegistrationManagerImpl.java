@@ -1,4 +1,4 @@
-package com.cisco.oss.foundation.directory.impl;
+package com.cisco.oss.foundation.directory.registration;
 
 /**
  * Created by alex on 3/25/15.

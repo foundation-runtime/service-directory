@@ -41,7 +41,7 @@ public class LoadBalancerManager {
     }
 
     /**
-     * The default load Balancer which is used by {@link com.cisco.oss.foundation.directory.impl.LookupManagerImpl}
+     * The default load Balancer which is used by {@link com.cisco.oss.foundation.directory.lookup.LookupManagerImpl}
      * @return ServiceInstanceLoadBalancer
      */
     public ServiceInstanceLoadBalancer getDefaultLoadBalancer(){

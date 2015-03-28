@@ -23,6 +23,14 @@ import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
+import com.cisco.oss.foundation.directory.lookup.CachedDirectoryLookupService;
+import com.cisco.oss.foundation.directory.lookup.CachedLookupManagerImpl;
+import com.cisco.oss.foundation.directory.lookup.DirectoryLookupService;
+import com.cisco.oss.foundation.directory.lookup.LookupManagerImpl;
+import com.cisco.oss.foundation.directory.registration.DirectoryRegistrationService;
+import com.cisco.oss.foundation.directory.registration.HeartbeatDirectoryRegistrationService;
+import com.cisco.oss.foundation.directory.registration.HeartbeatRegistrationManagerImpl;
+import com.cisco.oss.foundation.directory.registration.RegistrationManagerImpl;
 
 import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
 

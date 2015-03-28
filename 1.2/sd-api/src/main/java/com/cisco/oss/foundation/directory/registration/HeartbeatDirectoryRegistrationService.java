@@ -17,7 +17,7 @@
 
 
 
-package com.cisco.oss.foundation.directory.impl;
+package com.cisco.oss.foundation.directory.registration;
 
 import java.util.ArrayList;
 import java.util.HashMap;

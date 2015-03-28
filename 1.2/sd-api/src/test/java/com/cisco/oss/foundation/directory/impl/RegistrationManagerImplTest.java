@@ -32,6 +32,9 @@ import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstanceHeartbeat;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
+import com.cisco.oss.foundation.directory.registration.HeartbeatDirectoryRegistrationService;
+import com.cisco.oss.foundation.directory.registration.HeartbeatRegistrationManagerImpl;
+import com.cisco.oss.foundation.directory.registration.RegistrationManagerImpl;
 
 import static org.junit.Assert.fail;
 
