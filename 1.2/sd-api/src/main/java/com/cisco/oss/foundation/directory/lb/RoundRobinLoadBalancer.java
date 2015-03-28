@@ -22,10 +22,7 @@ package com.cisco.oss.foundation.directory.lb;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
-import com.cisco.oss.foundation.directory.impl.DirectoryLookupService;
-import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 
 /**
  * A RoundRobin LoadBalancer abstract template based on DirectoryLookupService.
@@ -34,62 +31,32 @@ import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
  *
  *
  */
-public abstract class RoundRobinLoadBalancer implements ServiceInstanceLoadBalancer{
+public class RoundRobinLoadBalancer implements ServiceInstanceLoadBalancer{
 
-    /**
-     * The DirectoryLookupService to get the ServiceInstance List.
-     */
-    private final DirectoryLookupService lookupService ;
-
-    /**
+   /**
      * The Round Robin position index.
      */
-    private AtomicInteger index;
+    private final AtomicInteger index;
 
     /**
      * Constructor.
      */
-    public RoundRobinLoadBalancer(DirectoryLookupService lookupService){
-        this.lookupService = lookupService;
+    public RoundRobinLoadBalancer(){
         this.index = new AtomicInteger(0);
     }
 
     /**
-     * Vote a ServiceInstance based on the LoadBalancer algorithm.
+     * Vote a ServiceInstance based on the RoundRobin LoadBalancer algorithm.
      *
      * @return
      *         the voted ServiceInstance.
      */
     @Override
-    public ServiceInstance vote() {
-        List<ModelServiceInstance> instances = getServiceInstanceList();
-        if(instances == null || instances.isEmpty()){
-            return null;
-        }
+    public ServiceInstance vote(List<ServiceInstance> instances) {
         int i = index.getAndIncrement();
         int pos = i % instances.size();
-        ModelServiceInstance instance = instances.get(pos);
-        return ServiceInstanceUtils.transferFromModelServiceInstance(instance);
+        ServiceInstance instance = instances.get(pos);
+        return instance;
     }
-
-    /**
-     * Get the LookupService.
-     *
-     * @return
-     *         the LookupService.
-     */
-    public DirectoryLookupService getLookupService(){
-        return lookupService;
-    }
-
-    /**
-     * Get the ServiceInstance list for the Round Robin.
-     *
-     * @return
-     *         the ServiceInstance list.
-     */
-    public abstract List<ModelServiceInstance> getServiceInstanceList();
-
-
 
 }

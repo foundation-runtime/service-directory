@@ -16,23 +16,33 @@
 package com.cisco.oss.foundation.directory.utils;
 
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
+import com.cisco.oss.foundation.directory.exception.ServiceException;
 
 /**
  * ServiceInstance util methods.
  *
- *
  */
 public class ServiceInstanceUtils {
+    /*
+     * TODO:
+     * 1.) add unit test cover the validation methods
+     * 2.) use 5.0 for each prefer to old java.util.Iterator
+     * 3.) refactor the validateRequired and validateOptionalField
+     * 4.) refactor ErrorCode.XXXX_FORMAT_ERROR, we don't need a lot of FORMAT_ERROR.
+     *     One ErrorCode with a well-defined msgTemplate are enough.
+     * 5.) the naming of the Class is misleading. What the class doing is generic formatting checking.
+     *
+     */
     public static final String nameRegEx = "^[0-9a-zA-Z][\\w-.:]{0,127}$";
     public static final String idRegEx = "^[0-9a-zA-Z][\\w-.]{0,63}$";
     public static final String urlRegEx = "^[0-9a-zA-Z{}][^\\s]{0,1023}$";
@@ -42,7 +52,7 @@ public class ServiceInstanceUtils {
     public static final String ipRegEx = "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\.([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
 
     /**
-     * Transfer a ModelServiceInstance to a ServiceInstance object.
+     * Convert a ModelServiceInstance to a ServiceInstance object.
      *
      * It will do the deep clone for the metadata.
      *
@@ -50,7 +60,7 @@ public class ServiceInstanceUtils {
      *            the ModelServiceInstance object.
      * @return the ServiceInstance Object.
      */
-    public static ServiceInstance transferFromModelServiceInstance(
+    public static ServiceInstance toServiceInstance(
             ModelServiceInstance modelInstance) {
         Map<String, String> meta = new HashMap<String, String>();
         if (modelInstance.getMetadata() != null) {
@@ -74,8 +84,8 @@ public class ServiceInstanceUtils {
      *            the regex.
      * @return true if matched.
      */
-    public static boolean isMustFieldValid(String field, String reg) {
-        if (field == null || field.length() == 0) {
+    public static boolean validateRequiredField(String field, String reg) {
+        if (field == null || field.isEmpty()) {
             return false;
         }
         return Pattern.matches(reg, field);
@@ -90,8 +100,8 @@ public class ServiceInstanceUtils {
      *            the regex.
      * @return true if field is empty of matched the pattern.
      */
-    public static boolean isOptionalFieldValid(String field, String reg) {
-        if (field == null || field.length() == 0) {
+    public static boolean validateOptionalField(String field, String reg) {
+        if (field == null || field.isEmpty()) {
             return true;
         }
         return Pattern.matches(reg, field);
@@ -102,13 +112,13 @@ public class ServiceInstanceUtils {
      *
      * @param name
      *            the service name String.
-     * @return OK if matched the name pattern.
+     * @throws ServiceException 
      */
-    public static ErrorCode isNameValid(String name) {
-        if (!isMustFieldValid(name, nameRegEx)) {
-            return ErrorCode.SERVICE_INSTANCE_NAME_FORMAT_ERROR;
+    public static void validateServiceName(String name) throws ServiceException {
+        if (!validateRequiredField(name, nameRegEx)) {
+            throw new ServiceException(
+                    ErrorCode.SERVICE_INSTANCE_NAME_FORMAT_ERROR);
         }
-        return ErrorCode.OK;
     }
 
     /**
@@ -118,14 +128,13 @@ public class ServiceInstanceUtils {
      *
      * @param address
      *            the address.
-     * @return OK if it is not null or an empty string.
+     * @throws ServiceException 
      */
-    public static ErrorCode isAddressValid(String address) {
-        //if (!isMustFieldValid(address, ipRegEx)) {
-    	 if (address == null || address.length() == 0) {
-            return ErrorCode.SERVICE_INSTANCE_ADDRESS_FORMAT_ERROR;
+    public static void validateAddress(String address) throws ServiceException {
+        if (address == null || address.isEmpty()) {
+            throw new ServiceException(
+                    ErrorCode.SERVICE_INSTANCE_ADDRESS_FORMAT_ERROR);
         }
-        return ErrorCode.OK;
     }
 
     /**
@@ -133,27 +142,27 @@ public class ServiceInstanceUtils {
      *
      * @param port
      *            the port number.
-     * @return OK if in the port range.
+     * @throws ServiceException 
      */
-    public static ErrorCode isPortValid(int port) {
+    public static void validatePort(int port) throws ServiceException {
         if (port > 65535 || port < 1) {
-            return ErrorCode.SERVICE_INSTANCE_PORT_FORMAT_ERROR;
+            throw new ServiceException(
+                    ErrorCode.SERVICE_INSTANCE_PORT_FORMAT_ERROR);
         }
-        return ErrorCode.OK;
-    }
+  }
 
     /**
      * Validate the instance id.
      *
      * @param id
      *            the id String
-     * @return OK if matched the id pattern.
+     * @throws ServiceException
      */
-    public static ErrorCode isIdValid(String id) {
-        if (!isMustFieldValid(id, idRegEx)) {
-            return ErrorCode.SERVICE_INSTANCE_ID_FORMAT_ERROR;
+    public static void validateServiceInstanceID(String id) throws ServiceException {
+        if (!validateRequiredField(id, idRegEx)) {
+            throw new ServiceException(
+                    ErrorCode.SERVICE_INSTANCE_ID_FORMAT_ERROR);
         }
-        return ErrorCode.OK;
     }
 
     /**
@@ -161,16 +170,37 @@ public class ServiceInstanceUtils {
      *
      * @param uri
      *            the URI String.
-     * @return true if it is valid.
+     * @throws ServiceException
      */
-    public static ErrorCode isUriValid(String uri) {
+    public static void validateURI(String uri) throws ServiceException {
+        ErrorCode ec = ErrorCode.SERVICE_INSTANCE_URI_FORMAT_ERROR;
+        //TODO, fix the wried logic
         if (uri == null || uri.isEmpty()) {
-            return ErrorCode.SERVICE_INSTANCE_URI_FORMAT_ERROR;
+            throw new ServiceException(ec);
         }
-        if (!isMustFieldValid(uri, urlRegEx) || !isValidBrace(uri)) {
-            return ErrorCode.SERVICE_INSTANCE_URI_FORMAT_ERROR;
+        if (!validateRequiredField(uri, urlRegEx) || !isValidBrace(uri)) {
+            throw new ServiceException(ec);
         }
-        return ErrorCode.OK;
+    }
+    
+
+    /**
+     * Validate the ServiceInstance Metadata.
+     *
+     * @param metadata
+     *            the service instance metadata map.
+     * @throws ServiceException
+     */
+    public static void validateMetadata(Map<String, String> metadata) throws ServiceException {
+        for ( String key : metadata.keySet()){
+            if (!validateRequiredField(key, metaKeyRegEx)){
+               throw new ServiceException(
+                    ErrorCode.SERVICE_INSTANCE_METAKEY_FORMAT_ERROR,
+                    ErrorCode.SERVICE_INSTANCE_METAKEY_FORMAT_ERROR.getMessageTemplate(),key
+               );
+            }
+        }
+
     }
 
     /**
@@ -178,50 +208,42 @@ public class ServiceInstanceUtils {
      *
      * @param serviceInstance
      *            the ServiceInstance.
-     * @return OK if all ServiceInstance fields are valid.
+     * @throws ServiceException 
      */
-    public static ErrorCode validateProvidedServiceInstance(
-            ProvidedServiceInstance serviceInstance) {
-
-        ErrorCode retstr = isNameValid(serviceInstance.getServiceName());
-        if (retstr != ErrorCode.OK) {
-            return retstr;
+    public static void validateProvidedServiceInstance(
+            ProvidedServiceInstance serviceInstance) throws ServiceException {
+        
+        if (serviceInstance == null) {
+            throw new ServiceException(
+                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
+                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR.getMessageTemplate(),
+                    "service instance");
         }
-
-        retstr = isUriValid(serviceInstance.getUri());
-        if (retstr != ErrorCode.OK) {
-            return retstr;
+               
+        validateServiceName(serviceInstance.getServiceName());
+        validateURI(serviceInstance.getUri());
+        validatePort(serviceInstance.getPort());
+        validateAddress(serviceInstance.getAddress());
+        validateServiceInstanceID(serviceInstance.getProviderId());
+        if (serviceInstance.getMetadata()!=null) { //allow metadata as null
+            validateMetadata(serviceInstance.getMetadata());
         }
-
-        retstr = isPortValid(serviceInstance.getPort());
-        if (retstr != ErrorCode.OK) {
-            return retstr;
+    }
+    
+    
+    /**
+     * Validate if the registration/Lookup manager is started.
+     *
+     * @param isStarted
+     *            AtomicBoolean to indicate the registration/lookup manager is started or not
+     * @throws ServiceException SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED 
+     *         if the registration/lookup manager is not started.
+     */
+    // TODO, we don't need a AtomicBoolean here, it really need to extract a static methods here?
+    public static void validateManagerIsStarted(AtomicBoolean isStarted) throws ServiceException {
+        if (!isStarted.get()) {
+            throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
         }
-
-		retstr = isAddressValid(serviceInstance.getAddress());
-		if (retstr != ErrorCode.OK) {
-			return retstr;
-		}	
-		 
-		retstr = isIdValid(serviceInstance.getProviderId());
-		if (retstr != ErrorCode.OK) {
-			return retstr;
-
-		}
-
-        Map<String, String> metadata = serviceInstance.getMetadata();
-        if (metadata != null && metadata.size() > 0 ) {
-            Iterator<Entry<String, String>> itor = metadata.entrySet()
-                    .iterator();
-            while (itor.hasNext()) {
-                Map.Entry<String, String> entry = (Map.Entry<String, String>) itor
-                        .next();
-                if (!isOptionalFieldValid(entry.getKey(), metaKeyRegEx)) {
-                    return ErrorCode.SERVICE_INSTANCE_METAKEY_FORMAT_ERROR;
-                }
-            }
-        }
-        return ErrorCode.OK;
     }
 
     /**

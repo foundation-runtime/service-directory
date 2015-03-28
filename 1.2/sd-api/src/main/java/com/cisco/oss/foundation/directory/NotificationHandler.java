@@ -32,7 +32,7 @@ public interface NotificationHandler {
      *
      *
      * @param service
-     *          The ServiceInstance which the NotificationHandler triggered for.
+     *          The ServiceInstance which the NotificationHandler is triggered for.
      *
      */
     public void serviceInstanceAvailable(ServiceInstance service);
@@ -42,7 +42,7 @@ public interface NotificationHandler {
      *
      *
      * @param service
-     *             The ServiceInstance which the NotificationHandler triggered for.
+     *             The ServiceInstance which the NotificationHandler is triggered for.
      *
      */
     public void serviceInstanceUnavailable(ServiceInstance service);
@@ -52,7 +52,7 @@ public interface NotificationHandler {
      *
      *
      * @param service
-     *             The ServiceInstance which the NotificationHandler triggered for.
+     *             The ServiceInstance which the NotificationHandler is triggered for.
      */
     public void serviceInstanceChange(ServiceInstance service);
 

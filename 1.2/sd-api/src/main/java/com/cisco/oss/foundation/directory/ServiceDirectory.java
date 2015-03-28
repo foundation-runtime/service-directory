@@ -19,7 +19,9 @@
 
 package com.cisco.oss.foundation.directory;
 
-import com.cisco.oss.foundation.directory.config.ServiceDirectoryConfig;
+import org.apache.commons.configuration.Configuration;
+
+import com.cisco.oss.foundation.configuration.ConfigurationFactory;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.impl.ServiceDirectoryImpl;
 
@@ -33,14 +35,17 @@ import com.cisco.oss.foundation.directory.impl.ServiceDirectoryImpl;
 public class ServiceDirectory {
 
     /**
-     * The ServiceDirectory enable property name, indicating whether ServiceDirectory enabled for directory service.
+     * The ServiceDirectory enabled property name, indicating whether ServiceDirectory is enabled for directory service.
      */
-    public static final String SD_API_SERVICE_DIRECTORY_ENABLED_PROPERTY = "service.directory.enabled";
+    public static final String SD_API_SERVICE_DIRECTORY_ENABLED_PROPERTY = "com.cisco.oss.foundation.directory.enabled";
 
     /**
-     * Default value to enable ServiceDirectory for directory service.
+     * Default is to enable ServiceDirectory for directory service.
      */
     public static final boolean SD_API_SERVICE_DIRECTORY_ENABLED_DEFAULT = true;
+
+
+    private static final Configuration serviceDirectoryConfig = ConfigurationFactory.getConfiguration();
 
     /**
      * Singleton, private constructor.
@@ -74,10 +79,10 @@ public class ServiceDirectory {
      * Get the ServiceDirectoryConfig.
      *
      * @return
-     *         the ServiceDirectoryConfig of the SD API.
+     *         the ServiceDirectoryConfig
      */
-    public static ServiceDirectoryConfig getServiceDirectoryConfig() {
-        return getImpl().getServiceDirectoryConfig();
+    public static Configuration getServiceDirectoryConfig() {
+        return serviceDirectoryConfig;
     }
 
     /**
@@ -95,7 +100,7 @@ public class ServiceDirectory {
     /**
      * Check whether ServiceDirectory is enabled for the directory service.
      *
-     * The value comes from the SD API configuration property "service.directory.enabled".
+     * The value comes from the configuration property "com.cisco.oss.foundation.directory.enabled".
      *
      * By default the ServiceDirectory is enabled.
      *
@@ -108,11 +113,20 @@ public class ServiceDirectory {
     }
 
     /**
+     * Get the Service Directory API version
+     * 
+     * @return
+     *        the Service Directory API version 
+     */
+    public static String getAPIVersion() {
+        return getImpl().getVersion();
+    }
+    
+    /**
      * Shut down the ServiceDirectory.
      *
      * Be careful to invoke this method. When shutdown() is called, ServiceDirectory cannot be used 
-     * unless restart the jvm and reload the ServiceDirectory class. 
-     *
+     * unless jvm is restarted to reload the ServiceDirectory class. 
      */
     public static void shutdown(){
         getImpl().shutdown();
@@ -127,7 +141,5 @@ public class ServiceDirectory {
     private static ServiceDirectoryImpl getImpl() {
         return ServiceDirectoryImpl.getInstance();
     }
-
-
 
 }

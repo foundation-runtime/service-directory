@@ -17,17 +17,16 @@
 
 
 
-package com.cisco.oss.foundation.directory.impl;
+package com.cisco.oss.foundation.directory.registration;
 
-import com.cisco.oss.foundation.directory.Configurations;
-import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
-import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
-import com.cisco.oss.foundation.directory.exception.ServiceRuntimeException;
+
+import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
 
 /**
  * It is the Directory Registration Service to perform the ServiceInstance registration.
@@ -41,7 +40,7 @@ public class DirectoryRegistrationService {
     /**
      * The property to disable the ILLEGAL_SERVICE_INSTANCE_OWNER_ERROR error in the Directory tool.
      */
-    public static final String SD_API_REGISTRY_DISABLE_OWNER_ERROR_PROPERTY_NAME = "registry.disable.owner.error";
+    public static final String SD_API_REGISTRY_DISABLE_OWNER_ERROR_PROPERTY_NAME = "com.cisco.oss.foundation.directory.registry.disable.owner.error";
 
     /**
      * Default to disable ILLEGAL_SERVICE_INSTANCE_OWNER_ERROR.
@@ -51,20 +50,20 @@ public class DirectoryRegistrationService {
     /**
      * The remote ServiceDirectory client.
      */
-    private final DirectoryServiceClientManager directoryServiceClientManager;
+    private final DirectoryServiceClient directoryServiceClient;
 
     private boolean disableOwnerError = false;
 
     /**
      * Constructor.
      *
-     * @param directoryServiceClientManager
+     * @param directoryServiceClient
      *         DirectoryServiceClientManager to get DirectoryServiceClient.
      */
     public DirectoryRegistrationService(
-            DirectoryServiceClientManager directoryServiceClientManager) {
-        this.directoryServiceClientManager = directoryServiceClientManager;
-        disableOwnerError = Configurations.getBoolean(SD_API_REGISTRY_DISABLE_OWNER_ERROR_PROPERTY_NAME,
+            DirectoryServiceClient directoryServiceClient) {
+        this.directoryServiceClient = directoryServiceClient;
+        disableOwnerError = getServiceDirectoryConfig().getBoolean(SD_API_REGISTRY_DISABLE_OWNER_ERROR_PROPERTY_NAME,
                 SD_API_REGISTRY_DISABLE_OWNER_ERROR_DEFAULT);
     }
 
@@ -104,13 +103,14 @@ public class DirectoryRegistrationService {
     public void registerService(ProvidedServiceInstance serviceInstance, ServiceInstanceHealth registryHealth) {
         // Monitor disabled ProvidedServiceInstance should not have the ServiceInstanceHealth.
         if(serviceInstance.isMonitorEnabled()== false){
-            throw new ServiceRuntimeException(new ServiceDirectoryError(ErrorCode.SERVICE_INSTANCE_HEALTH_ERROR));
+            throw new ServiceException(ErrorCode.SERVICE_INSTANCE_HEALTH_ERROR);
         }
         registerService(serviceInstance);
     }
 
     /**
-     * Update the uri of the ProvidedServiceInstance by serviceName and providerId.
+     * Update the uri attribute of the ProvidedServiceInstance
+     * The ProvidedServiceInstance is uniquely identified by serviceName and providerId
      *
      * @param serviceName
      *         the serviceName of the ProvidedServiceInstance.
@@ -126,7 +126,8 @@ public class DirectoryRegistrationService {
     }
 
     /**
-     * Update the OperationalStatus of the ProvidedServiceInstance by serviceName and providerId.
+     * Update the OperationalStatus of the ProvidedServiceInstance
+     * The ProvidedServiceInstance is uniquely identified by serviceName and providerId
      *
      * @param serviceName
      *         the serviceName of the ProvidedServiceInstance.
@@ -154,7 +155,8 @@ public class DirectoryRegistrationService {
     }
 
     /**
-     * Unregister a ProvidedServiceInstance by serviceName and providerId.
+     * Unregister a ProvidedServiceInstance
+     * The ProvidedServiceInstance is uniquely identified by serviceName and providerId
      *
      * @param serviceName
      *         the serviceName of ProvidedServiceInstance.
@@ -171,10 +173,6 @@ public class DirectoryRegistrationService {
      * @return the DirectoryServiceClient to access remote directory server.
      */
     protected DirectoryServiceClient getServiceDirectoryClient() {
-        try {
-            return directoryServiceClientManager.getDirectoryServiceClient();
-        } catch (ServiceException e) {
-            throw new ServiceRuntimeException(e.getServiceDirectoryError());
-        }
+        return this.directoryServiceClient;
     }
 }

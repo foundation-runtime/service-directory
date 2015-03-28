@@ -17,7 +17,7 @@ package com.cisco.oss.foundation.directory.entity;
 
 import java.util.Map;
 
-import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
  * ProvidedServiceInstance used by Service Provider to register/update a service

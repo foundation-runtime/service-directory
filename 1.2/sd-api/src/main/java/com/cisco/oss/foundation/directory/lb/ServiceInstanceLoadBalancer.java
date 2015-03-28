@@ -19,6 +19,8 @@
 
 package com.cisco.oss.foundation.directory.lb;
 
+import java.util.List;
+
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 
 /**
@@ -34,5 +36,5 @@ public interface ServiceInstanceLoadBalancer {
      * @return
      *         the ServiceInstance.
      */
-    public ServiceInstance vote();
+    public ServiceInstance vote(List<ServiceInstance> instanceList);
 }

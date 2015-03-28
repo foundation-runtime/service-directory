@@ -17,6 +17,7 @@ package com.cisco.oss.foundation.directory.config;
 
 import java.util.NoSuchElementException;
 
+import org.apache.commons.configuration.Configuration;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -30,7 +31,7 @@ public class ServiceDirectoryConfigTest {
 
     @Test
     public void testGetProperty(){
-        ServiceDirectoryConfig config = ServiceDirectory.getServiceDirectoryConfig();
+        Configuration config= ServiceDirectory.getServiceDirectoryConfig();
 
         Assert.assertFalse(config.getBoolean("ddd"));
         Assert.assertTrue(config.getDouble("notexists", 89.1) == 89.1);
@@ -40,6 +41,6 @@ public class ServiceDirectoryConfigTest {
             Assert.assertTrue(e instanceof NoSuchElementException);
         }
 
-        Assert.assertFalse(config.containsProperty("not_property"));
+        Assert.assertFalse(config.containsKey("not_property"));
     }
 }

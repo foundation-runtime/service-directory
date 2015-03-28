@@ -19,21 +19,20 @@
 
 package com.cisco.oss.foundation.directory.impl;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cisco.oss.foundation.directory.DirectoryServiceClientManager;
 import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectory;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient.DirectoryInvoker;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
@@ -41,8 +40,6 @@ import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.utils.HttpResponse;
 import com.cisco.oss.foundation.directory.utils.HttpUtils;
-import com.cisco.oss.foundation.directory.utils.JsonSerializer;
-
 /**
  * Test Suite to test the Exception Handling in the Directory API.
  *
@@ -64,8 +61,6 @@ public class ExceptionHandleTestCase  {
 
     }
 
-    private JsonSerializer serializer = new JsonSerializer();
-
     /**
      * Test the exception handling in register, update, unregister and lookup ServiceInstance.
      * @throws ServiceException
@@ -73,13 +68,14 @@ public class ExceptionHandleTestCase  {
      */
     @Test
     public void testRegistrationManager() throws ServiceException {
-        DirectoryServiceClient client = ((DirectoryServiceClientManager)ServiceDirectoryImpl.getInstance()).getDirectoryServiceClient();
+        final DirectoryServiceRestfulClient client = ServiceDirectoryImpl.getInstance().getDirectoryServiceRestfulClient();
         String serviceName = "mock-test01";
         final ProvidedServiceInstance instance = createInstance(serviceName);
 
         ServiceDirectoryError sde1 = new ServiceDirectoryError(ErrorCode.SERVICE_INSTANCE_NOT_EXIST);
-        final AtomicReference<ServiceDirectoryError> error = new AtomicReference<ServiceDirectoryError>();
+        final AtomicReference<ServiceDirectoryError> error = new AtomicReference<>();
         error.set(sde1);
+        /*
         HttpUtils utils = new HttpUtils(){
             @Override
             public HttpResponse postJson(String urlStr, String body)
@@ -87,30 +83,32 @@ public class ExceptionHandleTestCase  {
 
                 Assert.assertEquals("http://vcsdirsvc:2013/service/mock-test01/" + instance.getProviderId(), urlStr);
 
-                return new HttpResponse(500, new String(serializer.serialize(error.get())));
+                return new HttpResponse(500, new String(serialize(error.get())));
 
             }
 
             @Override
             public HttpResponse putJson(String urlStr, String body)
                     throws IOException {
-                return new HttpResponse(500, new String(serializer.serialize(error.get())));
+                return new HttpResponse(500, new String(serialize(error.get())));
             }
         };
-        client.getDirectoryInvoker().setHttpUtils(utils);
+        */
+
+        final DirectoryInvoker mockInvoker = new DirectoryInvoker() {
+            @Override
+            public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method) {
+
+                Assert.assertEquals("http://vcsdirsvc:2013/service/mock-test01/" + instance.getProviderId(), directoryAddresses+uri);
+                throw new ServiceException(error.get().getExceptionCode(),error.get().getErrorMessage());
+            }
+        };
+        client.setInvoker(mockInvoker);
 
 
-        RegistrationManager registration = null;
-        try {
-            registration = ServiceDirectory.getRegistrationManager();
-        } catch (ServiceException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+        RegistrationManager registration = ServiceDirectory.getRegistrationManager();
 
         LOGGER.info("Do the negative test.....");
-
-
 
         try {
             registration.registerService(instance);
@@ -148,12 +146,7 @@ public class ExceptionHandleTestCase  {
      */
     @Test
     public void testServiceInstanceValidate() {
-        RegistrationManager registration = null;
-        try {
-            registration = ServiceDirectory.getRegistrationManager();
-        } catch (ServiceException e) {
-            e.printStackTrace();
-        }
+        RegistrationManager registration = ServiceDirectory.getRegistrationManager();
 
         LOGGER.info("Do the negative test.....");
 
@@ -186,7 +179,7 @@ public class ExceptionHandleTestCase  {
         ProvidedServiceInstance si = new ProvidedServiceInstance(serviceName,
                 address, port);
         si.setUri("http://www.sina.com.cn");
-        Map<String, String> pair = new HashMap<String, String>();
+        Map<String, String> pair = new HashMap<>();
         pair.put("meta1", "value1");
         pair.put("meta2", "value2");
         si.setMetadata(pair);

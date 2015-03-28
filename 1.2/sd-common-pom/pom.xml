@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!--
+ * Copyright 2014 Cisco Systems, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <!--
+    the parent pom will define the verion properties of commmon dependences
+    such as : spring-framework, junit, apache-commmon etc.
+  -->
+  <parent>
+    <groupId>com.cisco.oss.foundation</groupId>
+    <artifactId>foundation-common-base</artifactId>
+    <version>1.0.0-3</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.cisco.oss.foundation.directory</groupId>
+  <name>Service Directory Common POM</name>
+  <version>1.0.0</version>
+  <artifactId>sd-common-pom</artifactId>
+  <packaging>pom</packaging>
+  <description>The project is the master pom of all service directory projects.</description>
+  <url>https://github.com/foundation-runtime/service-directory/</url>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  <issueManagement>
+    <system>Github
+        </system>
+    <url>{URL in JIRA or Product name in CQ}</url>
+  </issueManagement>
+  <mailingLists>
+    <mailingList />
+  </mailingLists>
+  <developers>
+    <developer>
+      <id>Alex Wu</id>
+      <name>Yiding Wu</name>
+      <email>yidwu@cisco.com</email>
+      <organization>Cisco</organization>
+      <organizationUrl>http://www.cisco.com</organizationUrl>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+    <developer>
+      <id>Xuan Zhong</id>
+      <name>Xuan Zhong</name>
+      <email>xuzhong@cisco.com</email>
+      <organization>Cisco</organization>
+      <organizationUrl>http://www.cisco.com</organizationUrl>
+      <roles>
+        <role>Developer</role>
+      </roles>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:git@github.com:foundation-runtime/service-directory.git</connection>
+    <developerConnection>scm:git:git@github.com:foundation-runtime/service-directory.git</developerConnection>
+    <url>https://github.com/foundation-runtime/service-directory.git</url>
+    <tag>HEAD</tag>
+  </scm>
+  <organization>
+    <name>Cisco</name>
+    <url>http://www.cisco.com</url>
+  </organization>
+
+  <properties>
+    <!--
+      The versions of sd common dependencs which not included by 'foundation-common-base'
+      or overridden by service-directory projects
+    -->
+    <!-- override versions -->
+    <configuration-api-version>1.0.2-4</configuration-api-version>
+    <configuration-lib-version>1.0.2-5</configuration-lib-version>
+    
+    <!-- maven plugins -->
+    <maven-clean-plugin.version>2.6.1</maven-clean-plugin.version>
+    <maven-resources-plugin.version>2.7</maven-resources-plugin.version>
+    <maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
+    <maven-javadoc-plugin.version>2.9</maven-javadoc-plugin.version>
+    <maven-release-plugin.version>2.4.2</maven-release-plugin.version>
+    <maven-surefire-plugin.version>2.18.1</maven-surefire-plugin.version>
+    <maven-source-plugin.version>2.4</maven-source-plugin.version>
+    <maven-assembly-plugin.version>2.5.3</maven-assembly-plugin.version>
+    <maven-dependency-plugin.version>2.9</maven-dependency-plugin.version>
+    <maven-site-plugin.version>3.4</maven-site-plugin.version>
+    <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
+    <maven-project-info-reports-plugin.version>2.8</maven-project-info-reports-plugin.version>
+    <!-- codehaus mojo -->
+    <build-helper-maven-plugin.version>1.9.1</build-helper-maven-plugin.version>
+    <!-- cisco ipcentral plugin -->
+    <maven-ipcentral-plugin.version>5.0.6</maven-ipcentral-plugin.version>
+
+    <!-- service directory projects shared -->
+    <com.fasterxml.jackson.version>2.2.2</com.fasterxml.jackson.version>
+
+  </properties>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+
+        <plugin>
+          <groupId>com.cisco.ipcentral</groupId>
+          <artifactId>maven-ipcentral-plugin</artifactId>
+          <version>${maven-ipcentral-plugin.version}</version>
+          <configuration>
+            <username>xuzhong</username>
+            <businessUnit>SPVSS</businessUnit>
+            <componentEditorsGrouper>sd-dev</componentEditorsGrouper>
+            <assetEditorsGrouper>sd-dev</assetEditorsGrouper>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-clean-plugin</artifactId>
+          <version>${maven-clean-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-resources-plugin</artifactId>
+          <version>${maven-resources-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>${maven-compiler-plugin.version}</version> 
+          <configuration>
+            <source>${javaVersion}</source>
+            <target>${javaVersion}</target>
+            <compilerVersion>${javaVersion}</compilerVersion>
+            <showDeprecation>true</showDeprecation>
+            <showWarnings>true</showWarnings>
+            <executable>${env.JAVA_HOME}/bin/javac</executable>
+            <fork>true</fork>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>${maven-javadoc-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>${maven-release-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>${maven-surefire-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-surefire-report-plugin</artifactId>
+          <version>${maven-surefire-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>${maven-source-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-site-plugin</artifactId>
+          <version>${maven-site-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>${maven-deploy-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-project-info-reports-plugin</artifactId>
+          <version>${maven-project-info-reports-plugin.version}</version>
+          <configuration>
+            <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
+          </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-assembly-plugin</artifactId>
+          <version>${maven-assembly-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-dependency-plugin</artifactId>
+          <version>${maven-dependency-plugin.version}</version>
+        </plugin>
+
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>${build-helper-maven-plugin.version}</version>
+        </plugin>
+
+        <!-- m2e lifecycle mapping define to remove eclipse error in pom.xml -->
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <versionRange>[1.0.0,)</versionRange>
+                    <goals>
+                      <goal>enforce</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore/>
+                  </action>
+                </pluginExecution>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>build-helper-maven-plugin</artifactId>
+                    <versionRange>1.9.1</versionRange>
+                    <goals>
+                      <goal>reserve-network-port</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore />
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+
+      </plugins>
+    </pluginManagement>
+
+  </build>
+
+  <dependencies>
+
+    <!-- foundation-runtime configuration library -->
+    <dependency>
+      <groupId>com.cisco.oss.foundation</groupId>
+      <artifactId>configuration-api</artifactId>
+      <version>${configuration-api-version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.cisco.oss.foundation</groupId>
+      <artifactId>configuration-lib</artifactId>
+      <version>${configuration-lib-version}</version>
+    </dependency>
+
+    <!-- jackson  -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${com.fasterxml.jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${com.fasterxml.jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${com.fasterxml.jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.jaxrs</groupId>
+      <artifactId>jackson-jaxrs-base</artifactId>
+      <version>${com.fasterxml.jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.jaxrs</groupId>
+      <artifactId>jackson-jaxrs-json-provider</artifactId>
+      <version>${com.fasterxml.jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.module</groupId>
+      <artifactId>jackson-module-jaxb-annotations</artifactId>
+      <version>${com.fasterxml.jackson.version}</version>
+    </dependency>   
+
+ </dependencies>
+
+</project>
+

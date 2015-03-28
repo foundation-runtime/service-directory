@@ -17,15 +17,14 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
-    <groupId>com.cisco.oss.foundation</groupId>
-    <artifactId>foundation-common-base</artifactId>
-    <version>0.0.0-5</version>
+    <groupId>com.cisco.oss.foundation.directory</groupId>
+    <artifactId>sd-common-pom</artifactId>
+    <version>1.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.cisco.oss.foundation.directory</groupId>
   <artifactId>sd-core</artifactId>
-  <name>Service Directory Core Classes</name>
-  <version>1.2.0-1-SNAPSHOT</version>
+  <name>Service Directory Core Library</name>
+  <version>1.2.0-0-SNAPSHOT</version>
   <description>Project for the common library shared by Cisco directory service and Cisco OSS service directory API.</description>
   <url>https://github.com/foundation-runtime/service-directory/sd-core</url>
   <packaging>jar</packaging>
@@ -46,9 +45,9 @@
   </mailingLists>
   <developers>
     <developer>
-      <id>Zuochang Xiang</id>
-      <name>Zuochang Xiang</name>
-      <email>zuxiang@cisco.com</email>
+      <id>Alex Wu</id>
+      <name>Yiding Wu</name>
+      <email>yidwu@cisco.com</email>
       <organization>Cisco</organization>
       <organizationUrl>http://www.cisco.com</organizationUrl>
       <roles>
@@ -82,29 +81,12 @@
       <plugin>
         <groupId>com.cisco.ipcentral</groupId>
         <artifactId>maven-ipcentral-plugin</artifactId>
-        <version>5.0.6</version>
-        <configuration>
-          <username>xuzhong</username>
-          <businessUnit>SPVSS</businessUnit>
-          <componentEditorsGrouper>sd-dev</componentEditorsGrouper>
-          <assetEditorsGrouper>sd-dev</assetEditorsGrouper>
-        </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-          <showDeprecation>true</showDeprecation>
-          <showWarnings>true</showWarnings>
-          <executable>${env.JAVA_HOME}/bin/javac</executable>
-          <fork>true</fork>
-        </configuration>
       </plugin>
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.7</version>
         <executions>
           <execution>
             <id>attach-doc</id>
@@ -116,9 +98,7 @@
         </executions>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>3.4</version>
       </plugin>
     </plugins>
   </build>
@@ -126,61 +106,22 @@
   <reporting>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.7</version>
-        <configuration>
-          <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
-        </configuration>
-      </plugin>
+     </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.7</version>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
-        <version>2.17</version>
       </plugin>
     </plugins>
   </reporting>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.6.1</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>18.0</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-asl</artifactId>
-      <version>1.9.12</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-      <version>1.9.12</version>
-    </dependency>
-    <dependency>
+ <dependencies>
+   <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>jaxrs-api</artifactId>
       <version>3.0.4.Final</version>
-    </dependency>
-    <dependency>
-      <groupId>com.cisco.oss.foundation</groupId>
-      <artifactId>configuration-api</artifactId>
-      <version>1.0.2-1</version>
-    </dependency>
-    <dependency>
-      <groupId>com.cisco.oss.foundation</groupId>
-      <artifactId>configuration-lib</artifactId>
-      <version>1.0.2-1</version>
     </dependency>
   </dependencies>
 </project>

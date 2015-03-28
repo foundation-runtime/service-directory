@@ -5,85 +5,85 @@
 	<NamespaceDefinition>
 		<NamespaceIdentifier version="1.0.0" name="com.cisco.oss.foundation.directory.api" />
 		
-		<Parameter name="cache.enabled" type="BOOLEAN" description="">
+		<Parameter name="com.cisco.oss.foundation.directory.cache.enabled" type="BOOLEAN" description="">
 			<DefaultValue>
 				<PrimitiveValue value="true" />
 			</DefaultValue>
 		</Parameter>
 		
-		<Parameter name="heartbeat.enabled" type="BOOLEAN" description="">
+		<Parameter name="com.cisco.oss.foundation.directory.heartbeat.enabled" type="BOOLEAN" description="">
 			<DefaultValue>
 				<PrimitiveValue value="true" />
 			</DefaultValue>
 		</Parameter>
 		
-		<Parameter name="registry.disable.owner.error" type="BOOLEAN" description="">
+		<Parameter name="com.cisco.oss.foundation.directory.registry.disable.owner.error" type="BOOLEAN" description="">
 			<DefaultValue>
 				<PrimitiveValue value="false" />
 			</DefaultValue>
 		</Parameter>
 		
-		<Parameter name="httpclient.read.timeout" type="INTEGER" description="">
+		<Parameter name="com.cisco.oss.foundation.directory.httpclient.read.timeout" type="INTEGER" description="">
 			<DefaultValue>
 				<PrimitiveValue value="5" />
 			</DefaultValue>
 		</Parameter>
 		
-		<Parameter name="heartbeat.interval" type="INTEGER" description="">
+		<Parameter name="com.cisco.oss.foundation.directory.heartbeat.interval" type="INTEGER" description="">
 			<DefaultValue>
 				<PrimitiveValue value="10" />
 			</DefaultValue>
 		</Parameter>
 		
-		<Parameter name="registry.health.check.interval" type="INTEGER" description="">
+		<Parameter name="com.cisco.oss.foundation.directory.registry.health.check.interval" type="INTEGER" description="">
 			<DefaultValue>
 				<PrimitiveValue value="5" />
 			</DefaultValue>
 		</Parameter>
 		
-		<Parameter name="heartbeat.delay" type="INTEGER" description="">
+		<Parameter name="com.cisco.oss.foundation.directory.heartbeat.delay" type="INTEGER" description="">
 			<DefaultValue>
 				<PrimitiveValue value="1" />
 			</DefaultValue>
 		</Parameter>
 		
-		<Parameter name="registry.health.check.delay" type="INTEGER" description="">
+		<Parameter name="com.cisco.oss.foundation.directory.registry.health.check.delay" type="INTEGER" description="">
 			<DefaultValue>
 				<PrimitiveValue value="1" />
 			</DefaultValue>
 		</Parameter>
 		
-		<Parameter name="server.fqdn" type="STRING" description="">
+		<Parameter name="com.cisco.oss.foundation.directory.server.fqdn" type="STRING" description="">
 			<DefaultValue>
 				<PrimitiveValue value="vcsdirsvc" />
 			</DefaultValue>
 		</Parameter>
 		
-		<Parameter name="server.port" type="INTEGER" description="">
+		<Parameter name="com.cisco.oss.foundation.directory.server.port" type="INTEGER" description="">
 			<DefaultValue>
 				<PrimitiveValue value="2013" />
 			</DefaultValue>
 		</Parameter>
 		
-		<Parameter name="cache.sync.delay" type="INTEGER" description="">
+		<Parameter name="com.cisco.oss.foundation.directory.cache.sync.delay" type="INTEGER" description="">
 			<DefaultValue>
 				<PrimitiveValue value="1" />
 			</DefaultValue>
 		</Parameter>
 		
-		<Parameter name="cache.sync.interval" type="INTEGER" description="">
+		<Parameter name="com.cisco.oss.foundation.directory.cache.sync.interval" type="INTEGER" description="">
 			<DefaultValue>
 				<PrimitiveValue value="10" />
 			</DefaultValue>
 		</Parameter>
 		
-		<Parameter name="service.directory.manager.factory.provider" type="STRING" description="">
+		<Parameter name="com.cisco.oss.foundation.directory.manager.factory.provider" type="STRING" description="">
 			<DefaultValue>
 				<PrimitiveValue value="" />
 			</DefaultValue>
 		</Parameter>
 		
-		<Parameter name="service.directory.enabled" type="BOOLEAN" description="">
+		<Parameter name="com.cisco.oss.foundation.directory.enabled" type="BOOLEAN" description="">
 			<DefaultValue>
 				<PrimitiveValue value="true" />
 			</DefaultValue>

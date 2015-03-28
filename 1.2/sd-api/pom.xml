@@ -17,17 +17,16 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
-    <groupId>com.cisco.oss.foundation</groupId>
-    <artifactId>foundation-common-base</artifactId>
-    <version>0.0.0-5</version>
+    <groupId>com.cisco.oss.foundation.directory</groupId>
+    <artifactId>sd-common-pom</artifactId>
+    <version>1.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.cisco.oss.foundation.directory</groupId>
   <artifactId>sd-api</artifactId>
   <name>Service Directory API</name>
-  <version>1.2.0-1-SNAPSHOT</version>
+  <version>1.2.0-0-SNAPSHOT</version>
   <description>Project for Cisco OSS service directory API library.</description>
-  <url>https://github.com/foundation-runtime/service-directory/1.2/sd-api</url>
+  <url>https://github.com/foundation-runtime/service-directory/1.1/sd-api</url>
   <packaging>jar</packaging>
   <licenses>
     <license>
@@ -46,9 +45,9 @@
   </mailingLists>
   <developers>
     <developer>
-      <id>Zuochang Xiang</id>
-      <name>Zuochang Xiang</name>
-      <email>zuxiang@cisco.com</email>
+      <id>Alex Wu</id>
+      <name>Yiding Wu</name>
+      <email>yidwu@cisco.com</email>
       <organization>Cisco</organization>
       <organizationUrl>http://www.cisco.com</organizationUrl>
       <roles>
@@ -66,7 +65,6 @@
       </roles>
     </developer>
   </developers>
-
   <scm>
     <connection>scm:git:git@github.com:foundation-runtime/service-directory.git</connection>
     <developerConnection>scm:git:git@github.com:foundation-runtime/service-directory.git</developerConnection>
@@ -77,31 +75,40 @@
     <name>Cisco</name>
     <url>http://www.cisco.com</url>
   </organization>
+
+  <properties>
+       <timestamp>${maven.build.timestamp}</timestamp>
+       <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
+  </properties>
+
   <build>
-    <finalName>cisco.sd.api-${version}</finalName>
+    <finalName>cisco.sd.api-${project.version}</finalName>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>version.txt</include>
+        </includes>
+        <filtering>true</filtering>
+      </resource>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+    </resources>
+
     <plugins>
+
       <plugin>
         <groupId>com.cisco.ipcentral</groupId>
         <artifactId>maven-ipcentral-plugin</artifactId>
-        <version>5.0.6</version>
-        <configuration>
-          <username>xuzhong</username>
-          <businessUnit>SPVSS</businessUnit>
-          <componentEditorsGrouper>sd-dev</componentEditorsGrouper>
-          <assetEditorsGrouper>sd-dev</assetEditorsGrouper>
-        </configuration>
-      </plugin> 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
-        </configuration>
       </plugin>
+
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+      </plugin>
+
       <plugin>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.7</version>
         <executions>
           <execution>
             <id>attach-doc</id>
@@ -112,25 +119,38 @@
           </execution>
         </executions>
       </plugin>
+
       <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>build-helper-maven-plugin</artifactId>
         <executions>
           <execution>
-            <id>make-assembly</id> <!-- this is used for inheritance merges -->
-            <phase>package</phase> <!-- bind to the packaging phase -->
+            <id>reserve-network-port</id>
             <goals>
-              <goal>single</goal>
+              <goal>reserve-network-port</goal>
             </goals>
+            <phase>process-resources</phase>
+            <configuration>
+              <portNames>
+                <portName>jetty.http.port1</portName>
+                <portName>jetty.http.port2</portName>
+                <portName>jetty.http.port3</portName>
+                <portName>zk.client.port1</portName>
+                <portName>zk.client.port2</portName>
+                <portName>zk.client.port3</portName>
+                <portName>zk.sync.port1</portName>
+                <portName>zk.sync.port2</portName>
+                <portName>zk.sync.port3</portName>
+                <portName>zk.sync.port4</portName>
+                <portName>zk.sync.port5</portName>
+                <portName>zk.sync.port6</portName>
+              </portNames>
+            </configuration>
           </execution>
         </executions>
-        <configuration>
-          <descriptors>
-            <descriptor>assembly.xml</descriptor>
-          </descriptors>
-        </configuration>
       </plugin>
+
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
           <systemProperties>
@@ -185,96 +205,47 @@
           </systemProperties>
         </configuration>
       </plugin>
+
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>build-helper-maven-plugin</artifactId>
-        <version>1.8</version>
+        <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
-            <id>reserve-network-port</id>
+            <id>copy-dependencies</id>
+            <phase>prepare-package</phase>
             <goals>
-              <goal>reserve-network-port</goal>
+              <goal>copy-dependencies</goal>
             </goals>
-            <phase>process-resources</phase>
             <configuration>
-              <portNames>
-                <portName>jetty.http.port1</portName>
-                <portName>jetty.http.port2</portName>
-                <portName>jetty.http.port3</portName>
-                <portName>zk.client.port1</portName>
-                <portName>zk.client.port2</portName>
-                <portName>zk.client.port3</portName>
-                <portName>zk.sync.port1</portName>
-                <portName>zk.sync.port2</portName>
-                <portName>zk.sync.port3</portName>
-                <portName>zk.sync.port4</portName>
-                <portName>zk.sync.port5</portName>
-                <portName>zk.sync.port6</portName>
-              </portNames>
+              <outputDirectory>${project.build.directory}/lib</outputDirectory>
+              <overWriteReleases>false</overWriteReleases>
+              <overWriteSnapshots>false</overWriteSnapshots>
+              <overWriteIfNewer>true</overWriteIfNewer>
             </configuration>
           </execution>
         </executions>
       </plugin>
 
       <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-dependency-plugin</artifactId>
-            <executions>
-                <execution>
-                <id>copy-dependencies</id>
-                <phase>prepare-package</phase>
-                <goals>
-                    <goal>copy-dependencies</goal>
-                </goals>
-                <configuration>
-                    <outputDirectory>${project.build.directory}/lib</outputDirectory>
-                    <overWriteReleases>false</overWriteReleases>
-                    <overWriteSnapshots>false</overWriteSnapshots>
-                    <overWriteIfNewer>true</overWriteIfNewer>
-                </configuration>
-                </execution>
-            </executions>
-          </plugin>
-          <!--
-          <plugin>
-          <artifactId>exec-maven-plugin</artifactId>
-          <groupId>org.codehaus.mojo</groupId>
-          <executions>
-            <execution>
-              <id>grant execute</id>
-              <phase>package</phase>
-              <goals>
-                <goal>exec</goal>
-              </goals>
-              <configuration>
-                <executable>chmod</executable>
-                        <arguments>
-                            <argument>+x</argument>
-                            <argument>${basedir}/src/main/script/module.sh</argument>
-                        </arguments>
-              </configuration>
-            </execution>
-            <execution>
-              <id>generate module xml</id>
-              <phase>package</phase>
-              <goals>
-                <goal>exec</goal>
-              </goals>
-              <configuration>
-                <workingDirectory>${project.build.directory}</workingDirectory>
-                <executable>${basedir}/src/main/script/module.sh</executable>
-                <arguments>
-                            <argument>cisco.sd.api-jboss-module-${version}.jar</argument>
-                        </arguments>
-              </configuration>
-            </execution>
-          </executions>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>make-assembly</id> <!-- this is used for inheritance merges -->
+            <phase>package</phase> <!-- bind to the packaging phase -->
+            <goals>
+              <goal>single</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <appendAssemblyId>false</appendAssemblyId> <!-- not append id to the result name-->
+          <descriptors>
+            <descriptor>src/assembly/assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
       </plugin>
-      -->
+
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-site-plugin</artifactId>
-        <version>3.4</version>
       </plugin>
     </plugins>
   </build>
@@ -282,63 +253,27 @@
   <reporting>
     <plugins>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-project-info-reports-plugin</artifactId>
-        <version>2.7</version>
         <configuration>
           <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
         </configuration>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>2.7</version>
       </plugin>
       <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-report-plugin</artifactId>
-        <version>2.17</version>
       </plugin>
     </plugins>
   </reporting>
+  
+ <dependencies>
 
-  <dependencies>
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>1.6.1</version>
-    </dependency>
     <dependency>
       <groupId>com.cisco.oss.foundation.directory</groupId>
       <artifactId>sd-core</artifactId>
-      <version>1.2.0-1-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>com.cisco.oss.foundation</groupId>
-      <artifactId>configuration-api</artifactId>
-      <version>1.0.2-1</version>
-    </dependency>
-    <dependency>
-      <groupId>com.cisco.oss.foundation</groupId>
-      <artifactId>configuration-lib</artifactId>
-      <version>1.0.2-1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-core-asl</artifactId>
-      <version>1.9.12</version>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.jackson</groupId>
-      <artifactId>jackson-mapper-asl</artifactId>
-      <version>1.9.12</version>
+      <version>1.2.0-0-SNAPSHOT</version>
     </dependency>
 
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>4.8.2</version>
-      <scope>test</scope>
-    </dependency>
   </dependencies>
 </project>

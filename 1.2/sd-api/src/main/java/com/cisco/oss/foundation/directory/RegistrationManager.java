@@ -68,9 +68,9 @@ public interface RegistrationManager {
     public void updateServiceOperationalStatus(String serviceName, String providerId, OperationalStatus status) throws ServiceException;
 
     /**
-     * Update the URI of the ProvidedServiceInstance.
+     * Update the uri attribute of the ProvidedServiceInstance.
      *
-     * It is a convenient method to update the URI of the ProvidedServiceInstance.
+     * It is a convenient method to update the uri attribute of the ProvidedServiceInstance.
      *
      * @param serviceName   The name of the service.
      * @param providerId    The providerId of the ProvidedServiceInstance.
@@ -84,7 +84,7 @@ public interface RegistrationManager {
      * Update the ProvidedServiceInstance.
      *
      * Update the existing ProvidedServiceInstance.
-     * For the referenced metadata Map in the ProvidedServiceInstance, it will not update it when it is null.
+     * The metadata Map in the ProvidedServiceInstance will not be updated when it is null.
      *
      * @param serviceInstance    The ProvidedServiceInstance.
      * @throws ServiceException
@@ -94,7 +94,7 @@ public interface RegistrationManager {
     /**
      * Unregister the ProvidedServiceInstance.
      *
-     * Unregister the existing ProvidedServiceInstance in the directory server.
+     * Unregister an existing ProvidedServiceInstance in the directory server.
      *
      * @param serviceName    The name of the Service.
      * @param providerId     The providerId of ProvidedServiceInstance.

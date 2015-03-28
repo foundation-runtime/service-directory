@@ -20,7 +20,7 @@ package com.cisco.oss.foundation.directory.lifecycle;
  *
  *
  */
-public interface Closable {
+public interface Stoppable {
 
     /**
      * Start the component.
