@@ -52,7 +52,7 @@ public class DirectoryLookupService {
     /**
      * The Service NotificationHandler Map.
      */
-    private Map<String, List<NotificationHandler>> notificationHandlers  = new HashMap<String, List<NotificationHandler>>();
+    private final Map<String, List<NotificationHandler>> notificationHandlers  = new HashMap<String, List<NotificationHandler>>();
 
     /**
      * Constructor.
