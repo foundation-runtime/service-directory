@@ -25,7 +25,7 @@ import org.junit.Test;
 
 import com.cisco.oss.foundation.directory.ServiceDirectory;
 import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
-import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient;
 import com.cisco.oss.foundation.directory.entity.OperationResult;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
@@ -50,7 +50,7 @@ public class RegistrationManagerImplTest {
         instance.setMonitorEnabled(true);
         instance.setStatus(OperationalStatus.UP);
         instance.setUri("http://cisco.com/vbo/odrm/setupsession");
-        Map<String, String> metadata = new HashMap<String, String>();
+        Map<String, String> metadata = new HashMap<>();
         metadata.put("datacenter", "dc01");
         metadata.put("solution", "core");
         instance.setMetadata(metadata);
@@ -67,7 +67,7 @@ public class RegistrationManagerImplTest {
         final AtomicInteger statusInvoked = new AtomicInteger(0);
         final AtomicInteger unregisterInvoked = new AtomicInteger(0);
 
-        HeartbeatRegistrationManagerImpl impl = new HeartbeatRegistrationManagerImpl(new HeartbeatDirectoryRegistrationService(new DirectoryServiceClient(){
+        HeartbeatRegistrationManagerImpl impl = new HeartbeatRegistrationManagerImpl(new HeartbeatDirectoryRegistrationService(new DirectoryServiceRestfulClient(){
             @Override
             public void registerInstance(ProvidedServiceInstance inst) {
                 Assert.assertTrue(instance == inst || instance2 == inst);
@@ -79,8 +79,8 @@ public class RegistrationManagerImplTest {
 
                 Assert.assertEquals(heartbeatMap.size(), 1);
                 Assert.assertTrue(heartbeatMap.containsKey("odrm-192.168.7.4-8901"));
-                Map<String, OperationResult<String>> result = new HashMap<String, OperationResult<String>>();
-                result.put("odrm-192.168.7.4-8901", new OperationResult<String>(true, "it is OK", null));
+                Map<String, OperationResult<String>> result = new HashMap<>();
+                result.put("odrm-192.168.7.4-8901", new OperationResult<>(true, "it is OK", null));
                 hbInvoked.incrementAndGet();
                 return result;
             }
@@ -202,7 +202,7 @@ public class RegistrationManagerImplTest {
         instance.setMonitorEnabled(true);
         instance.setStatus(OperationalStatus.UP);
         instance.setUri("http://cisco.com/vbo/odrm/setupsession");
-        Map<String, String> metadata = new HashMap<String, String>();
+        Map<String, String> metadata = new HashMap<>();
         metadata.put("datacenter", "dc01");
         metadata.put("solution", "core");
         instance.setMetadata(metadata);
@@ -212,7 +212,7 @@ public class RegistrationManagerImplTest {
         final AtomicInteger statusInvoked = new AtomicInteger(0);
         final AtomicInteger hbInvoked = new AtomicInteger(0);
 
-        RegistrationManagerImpl impl = new RegistrationManagerImpl(new HeartbeatDirectoryRegistrationService(new DirectoryServiceClient(){
+        RegistrationManagerImpl impl = new RegistrationManagerImpl(new HeartbeatDirectoryRegistrationService(new DirectoryServiceRestfulClient(){
 
             @Override
             public void registerInstance(ProvidedServiceInstance inst) {
@@ -223,8 +223,8 @@ public class RegistrationManagerImplTest {
 
                 Assert.assertEquals(heartbeatMap.size(), 1);
                 Assert.assertTrue(heartbeatMap.containsKey("odrm-192.168.7.4-8901"));
-                Map<String, OperationResult<String>> result = new HashMap<String, OperationResult<String>>();
-                result.put("odrm-192.168.7.4-8901", new OperationResult<String>(true, "it is OK", null));
+                Map<String, OperationResult<String>> result = new HashMap<>();
+                result.put("odrm-192.168.7.4-8901", new OperationResult<>(true, "it is OK", null));
                 hbInvoked.incrementAndGet();
                 return result;
             }

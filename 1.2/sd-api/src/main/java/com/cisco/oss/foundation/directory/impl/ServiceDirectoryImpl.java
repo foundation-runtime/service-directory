@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
-import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 
@@ -81,6 +81,7 @@ public class ServiceDirectoryImpl {
                 }
             }
         } catch (IOException e) {
+            LOGGER.error("Fail to get ServiceDirectory API version.",e);
         }
         _version = version;
 
@@ -200,11 +201,11 @@ public class ServiceDirectoryImpl {
      * @throws ServiceException
      *
      */
-    public DirectoryServiceClient getDirectoryServiceClient() throws ServiceException{
+    public DirectoryServiceRestfulClient getDirectoryServiceRestfulClient() throws ServiceException{
         if (isShutdown) {
             throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_IS_SHUTDOWN);
         }
-        return getServiceDirectoryManagerFactory().getDirectoryServiceClient();
+        return getServiceDirectoryManagerFactory().getDirectoryServiceRestfulClient();
     }
 
     /**

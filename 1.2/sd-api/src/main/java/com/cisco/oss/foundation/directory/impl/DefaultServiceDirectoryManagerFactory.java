@@ -22,7 +22,7 @@ package com.cisco.oss.foundation.directory.impl;
 import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
-import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient;
 import com.cisco.oss.foundation.directory.lookup.CachedDirectoryLookupService;
 import com.cisco.oss.foundation.directory.lookup.CachedLookupManagerImpl;
 import com.cisco.oss.foundation.directory.lookup.DirectoryLookupService;
@@ -65,7 +65,7 @@ public class DefaultServiceDirectoryManagerFactory implements
     public static final boolean SD_API_HEARTBEAT_ENABLED_DEFAULT = true;
 
 
-    private static final DirectoryServiceClient dirSvcClient = new DirectoryServiceClient();
+    private static final DirectoryServiceRestfulClient dirSvcRestfulClient = new DirectoryServiceRestfulClient();
 
     /**
      * The XXXImpl holders for wired lazy-init requirement
@@ -73,19 +73,19 @@ public class DefaultServiceDirectoryManagerFactory implements
      */
     private static class LookupManagerImplHolder {
         public static final LookupManagerImpl INSTANCE =
-                new LookupManagerImpl(new DirectoryLookupService(dirSvcClient));
+                new LookupManagerImpl(new DirectoryLookupService(dirSvcRestfulClient));
     }
     private static class CachedLookupManagerImplHolder {
         public static final CachedLookupManagerImpl INSTANCE =
-                new CachedLookupManagerImpl(new CachedDirectoryLookupService(dirSvcClient));
+                new CachedLookupManagerImpl(new CachedDirectoryLookupService(dirSvcRestfulClient));
     }
     private static class HeartbeatRegistrationManagerImplHolder {
         public static final HeartbeatRegistrationManagerImpl INSTANCE
-                = new HeartbeatRegistrationManagerImpl(new HeartbeatDirectoryRegistrationService(dirSvcClient));
+                = new HeartbeatRegistrationManagerImpl(new HeartbeatDirectoryRegistrationService(dirSvcRestfulClient));
     }
     private static class RegistrationManagerImplHolder {
         public static final RegistrationManagerImpl INSTANCE
-                = new RegistrationManagerImpl(new DirectoryRegistrationService(dirSvcClient));
+                = new RegistrationManagerImpl(new DirectoryRegistrationService(dirSvcRestfulClient));
     }
 
     /**
@@ -146,8 +146,8 @@ public class DefaultServiceDirectoryManagerFactory implements
      *         the DirectoryServiceClient.
      */
     @Override
-    public DirectoryServiceClient getDirectoryServiceClient(){
-        return dirSvcClient;
+    public DirectoryServiceRestfulClient getDirectoryServiceRestfulClient(){
+        return dirSvcRestfulClient;
     }
 
 

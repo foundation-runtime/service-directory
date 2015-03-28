@@ -127,7 +127,6 @@ public class ServiceDirectory {
      *
      * Be careful to invoke this method. When shutdown() is called, ServiceDirectory cannot be used 
      * unless jvm is restarted to reload the ServiceDirectory class. 
-     *
      */
     public static void shutdown(){
         getImpl().shutdown();

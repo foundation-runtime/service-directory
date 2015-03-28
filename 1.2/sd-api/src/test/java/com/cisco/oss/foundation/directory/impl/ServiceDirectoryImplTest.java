@@ -26,21 +26,20 @@ import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectory;
 import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
 import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
-import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
-import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
 
 import static org.junit.Assert.fail;
 
 public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory {
-    interface ForTestingManagerFactory extends ServiceDirectoryManagerFactory,Stoppable{};
     @Test
     public void testSetFactory() {
+
         ServiceDirectory.getServiceDirectoryConfig().setProperty(
                 ServiceDirectoryImpl.SD_API_SERVICE_DIRECTORY_MANAGER_FACTORY_PROVIDER_PROPERTY,
                 "com.cisco.oss.foundation.directory.impl.ServiceDirectoryImplTest");
@@ -76,7 +75,7 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory 
             }
 
             @Override
-            public DirectoryServiceClient getDirectoryServiceClient() {
+            public DirectoryServiceRestfulClient getDirectoryServiceRestfulClient() {
                 return null;
             }
 
@@ -147,7 +146,7 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory 
     }
 
     @Override
-    public DirectoryServiceClient getDirectoryServiceClient() {
+    public DirectoryServiceRestfulClient getDirectoryServiceRestfulClient() {
         return null;
     }
 
@@ -159,7 +158,7 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory 
     @Override
     public void stop() {
         System.out.println("ServiceDirectoryManagerFactory stop.");
-    };
+    }
 
     class MockRegistration implements RegistrationManager{
 
@@ -198,7 +197,7 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory 
 
         }
 
-    };
+    }
 
     class MockLookup implements LookupManager{
 
