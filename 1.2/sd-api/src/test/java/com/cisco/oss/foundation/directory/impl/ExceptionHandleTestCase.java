@@ -31,8 +31,8 @@ import org.slf4j.LoggerFactory;
 
 import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectory;
-import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient.DirectoryInvoker;
-import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient.DirectoryHttpInvoker;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
@@ -68,7 +68,7 @@ public class ExceptionHandleTestCase  {
      */
     @Test
     public void testRegistrationManager() throws ServiceException {
-        final DirectoryServiceRestfulClient client = ServiceDirectoryImpl.getInstance().getDirectoryServiceRestfulClient();
+        final DirectoryServiceClient client = ServiceDirectoryImpl.getInstance().getDirectoryServiceClient();
         String serviceName = "mock-test01";
         final ProvidedServiceInstance instance = createInstance(serviceName);
 
@@ -95,7 +95,7 @@ public class ExceptionHandleTestCase  {
         };
         */
 
-        final DirectoryInvoker mockInvoker = new DirectoryInvoker() {
+        final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker() {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method) {
 

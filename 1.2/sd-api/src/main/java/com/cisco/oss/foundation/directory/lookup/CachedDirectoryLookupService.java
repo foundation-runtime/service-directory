@@ -91,13 +91,12 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     /**
      * Internal cache that maps the service name to a list of service instances.
      */
-    private final ConcurrentHashMap<String, ModelService> cache = new ConcurrentHashMap<String,ModelService>();
+    private final ConcurrentHashMap<String, ModelService> cache = new ConcurrentHashMap<>();
 
     /**
      * Internal cache that maps the metadata key name to a list of service instances.
      */
-    private final ConcurrentHashMap<String, ModelMetadataKey> metaKeyCache
-            = new ConcurrentHashMap<String, ModelMetadataKey>();
+    private final ConcurrentHashMap<String, ModelMetadataKey> metaKeyCache = new ConcurrentHashMap<>();
 
     /**
      * Mark whether component is started.
@@ -244,10 +243,10 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
      *         the ModelService List.
      */
     private List<ModelService> getAllServicesForSync(){
-        List<ModelService> allServices = new ArrayList<ModelService>();
+        List<ModelService> allServices = new ArrayList<>();
         allServices.addAll(this.cache.values());
 
-        List<ModelService> syncServices = new ArrayList<ModelService>();
+        List<ModelService> syncServices = new ArrayList<>();
         for(ModelService service : allServices){
             ModelService syncService = new ModelService(service.getName(), service.getId(), service.getCreateTime());
             syncServices.add(syncService);
@@ -264,9 +263,9 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
      *         the ModelMetadataKey List.
      */
     private List<ModelMetadataKey> getAllMetadataKeysForSync(){
-        List<ModelMetadataKey> allKeys = new ArrayList<ModelMetadataKey>();
+        List<ModelMetadataKey> allKeys = new ArrayList<>();
         allKeys.addAll(this.metaKeyCache.values());
-        List<ModelMetadataKey> syncKeys = new ArrayList<ModelMetadataKey>();
+        List<ModelMetadataKey> syncKeys = new ArrayList<>();
         for(ModelMetadataKey service : allKeys){
             ModelMetadataKey syncKey = new ModelMetadataKey(service.getName(), service.getId(), service.getModifiedTime(), service.getCreateTime());
             syncKeys.add(syncKey);
@@ -308,7 +307,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     private boolean dumpCache(){
         if (CacheDumpLogger.isDebugEnabled()) {
             try {
-                List<ModelService> services = new ArrayList<ModelService>();
+                List<ModelService> services = new ArrayList<>();
                 services.addAll(getCache().values());
                 StringBuilder sb = new StringBuilder();
                 sb.append("LookupManager dumpped Service Cache at: ").append(System.currentTimeMillis()).append("\n");
@@ -346,7 +345,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
             try{
                 List<ModelMetadataKey> keys = cachedLookupService.getAllMetadataKeysForSync();
                 if(keys.size() > 0){
-                    Map<String, ModelMetadataKey> keyMap = new HashMap<String, ModelMetadataKey>();
+                    Map<String, ModelMetadataKey> keyMap = new HashMap<>();
                     for(ModelMetadataKey key : keys){
                         keyMap.put(key.getName(), key);
                     }
@@ -379,7 +378,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
             try{
                 boolean cacheUpdated = false;
                 List<ModelService> services = cachedLookupService.getAllServicesForSync();
-                Map<String, ModelService> serviceMap = new HashMap<String, ModelService>();
+                Map<String, ModelService> serviceMap = new HashMap<>();
                 for(ModelService service : services){
                     serviceMap.put(service.getName(), service);
                 }
@@ -406,7 +405,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                     LOGGER.debug("No Service is changed.");
                 }
 
-                if (cacheUpdated || lastCacheDump == false) {
+                if (cacheUpdated || !lastCacheDump ) {
                     lastCacheDump = cachedLookupService.dumpCache();
                 }
 
@@ -445,8 +444,8 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 
                     // Loop through all instances (added, deleted, changed) and send the proper notifications
                     // Can not operate directly on newInstances or oldIntances since it will remove the item from cache
-                    List<ModelServiceInstance> newTmp = new ArrayList<ModelServiceInstance>();
-                    List<ModelServiceInstance> oldTmp = new ArrayList<ModelServiceInstance>();
+                    List<ModelServiceInstance> newTmp = new ArrayList<>();
+                    List<ModelServiceInstance> oldTmp = new ArrayList<>();
                     
                     for (ModelServiceInstance model : oldInstances) {
                         oldTmp.add(model);

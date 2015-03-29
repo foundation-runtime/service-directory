@@ -26,7 +26,7 @@ import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectory;
 import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
 import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
-import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
@@ -75,7 +75,7 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory 
             }
 
             @Override
-            public DirectoryServiceRestfulClient getDirectoryServiceRestfulClient() {
+            public DirectoryServiceClient getDirectoryServiceClient() {
                 return null;
             }
 
@@ -146,7 +146,7 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory 
     }
 
     @Override
-    public DirectoryServiceRestfulClient getDirectoryServiceRestfulClient() {
+    public DirectoryServiceClient getDirectoryServiceClient() {
         return null;
     }
 

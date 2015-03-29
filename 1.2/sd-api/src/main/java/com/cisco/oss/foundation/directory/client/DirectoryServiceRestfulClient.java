@@ -93,13 +93,13 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
     /**
      * The HTTP invoker to access remote ServiceDirectory node.
      */
-    private DirectoryInvoker invoker;
+    private DirectoryHttpInvoker invoker;
 
     /**
      * Constructor.
      */
     public DirectoryServiceRestfulClient() {
-        this.invoker = new DirectoryInvoker();
+        this.invoker = new DirectoryHttpInvoker();
     }
 
     /**
@@ -448,8 +448,8 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
     }
 
     public void setInvoker(DirectoryInvoker invoker) {
-
-        this.invoker = invoker;
+        //TODO remove the type conversion
+        this.invoker = (DirectoryHttpInvoker)invoker;
     }
 
     /**
@@ -459,7 +459,7 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
      *
      *
      */
-    public static class DirectoryInvoker {
+    public static class DirectoryHttpInvoker implements DirectoryInvoker {
 
         /* The remote ServiceDirectory node address array, in the format of http://<host>:<port> */
         public String directoryAddresses;
@@ -468,7 +468,7 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
          * Constructor.
          *
          */
-        public DirectoryInvoker() {
+        public DirectoryHttpInvoker() {
             String sdFQDN = getServiceDirectoryConfig().getString(SD_API_SD_SERVER_FQDN_PROPERTY, SD_API_SD_SERVER_FQDN_DEFAULT);
             int port = getServiceDirectoryConfig().getInt(SD_API_SD_SERVER_PORT_PROPERTY, SD_API_SD_SERVER_PORT_DEFAULT);
             this.directoryAddresses = "http://" + sdFQDN + ":" + port;

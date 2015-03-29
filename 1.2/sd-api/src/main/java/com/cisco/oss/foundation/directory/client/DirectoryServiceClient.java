@@ -54,4 +54,6 @@ public interface DirectoryServiceClient {
     Map<String, OperationResult<ModelService>> getChangedServices(Map<String, ModelService> services);
 
     Map<String, OperationResult<ModelMetadataKey>> getChangedMetadataKeys(Map<String, ModelMetadataKey> keys);
+
+    public void setInvoker(DirectoryInvoker invoker);
 }

@@ -29,7 +29,7 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient.DirectoryInvoker;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient.DirectoryHttpInvoker;
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
@@ -76,7 +76,7 @@ public class DirectoryServiceRestfulClientTest {
         };
         client.getDirectoryInvoker().setHttpUtils(utils);
         */
-        final DirectoryInvoker mockInvoker = new DirectoryInvoker(){
+        final DirectoryInvoker mockInvoker = new DirectoryHttpInvoker(){
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method) {
                 Assert.assertEquals("http://vcsdirsvc:2013/service/odrm/192.168.7.4-8901",directoryAddresses+
@@ -116,7 +116,7 @@ public class DirectoryServiceRestfulClientTest {
             }
         };
         */
-        final DirectoryInvoker mockInvoker = new DirectoryInvoker(){
+        final DirectoryInvoker mockInvoker = new DirectoryHttpInvoker(){
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method) {
                 Assert.assertEquals("http://vcsdirsvc:2013/service/odrm/192.168.7.4-8901", directoryAddresses+uri);
@@ -151,7 +151,7 @@ public class DirectoryServiceRestfulClientTest {
             }
         };
         */
-        final DirectoryInvoker mockInvoker = new DirectoryInvoker() {
+        final DirectoryInvoker mockInvoker = new DirectoryHttpInvoker() {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
                 Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName + "/" + instanceId + "/status", directoryAddresses+uri);
@@ -187,7 +187,7 @@ public class DirectoryServiceRestfulClientTest {
         };
         */
         final String encodedUri = URLEncoder.encode(uri, "UTF-8");
-        final DirectoryInvoker mockInvoker = new DirectoryInvoker() {
+        final DirectoryInvoker mockInvoker = new DirectoryHttpInvoker() {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
                 Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName + "/" + instanceId + "/uri", directoryAddresses+uri);
@@ -219,7 +219,7 @@ public class DirectoryServiceRestfulClientTest {
             }
         };
         */
-        final DirectoryInvoker mockInvoker = new DirectoryInvoker() {
+        final DirectoryInvoker mockInvoker = new DirectoryHttpInvoker() {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method) {
                 Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName + "/" + instanceId + "/true" , directoryAddresses+uri);
@@ -258,7 +258,7 @@ public class DirectoryServiceRestfulClientTest {
             }
         };
         */
-        final DirectoryInvoker mockInvoker = new DirectoryInvoker() {
+        final DirectoryInvoker mockInvoker = new DirectoryHttpInvoker() {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method) {
                 Assert.assertEquals("http://vcsdirsvc:2013/service/heartbeat", directoryAddresses+uri);
@@ -312,7 +312,7 @@ public class DirectoryServiceRestfulClientTest {
             }
         };
         */
-        final DirectoryInvoker mockInvoker = new DirectoryInvoker() {
+        final DirectoryInvoker mockInvoker = new DirectoryHttpInvoker() {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method) {
                 Assert.assertEquals("http://vcsdirsvc:2013/metadatakey/" + keyName, directoryAddresses+uri);
@@ -367,7 +367,7 @@ public class DirectoryServiceRestfulClientTest {
         };
         */
 
-        final DirectoryInvoker mockInvoker = new DirectoryInvoker() {
+        final DirectoryInvoker mockInvoker = new DirectoryHttpInvoker() {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method) {
                 Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName, directoryAddresses+uri);
@@ -428,7 +428,7 @@ public class DirectoryServiceRestfulClientTest {
             }
         };
         */
-        final DirectoryInvoker mockInvoker = new DirectoryInvoker() {
+        final DirectoryInvoker mockInvoker = new DirectoryHttpInvoker() {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method) {
                 Assert.assertEquals("http://vcsdirsvc:2013/service/changing", directoryAddresses+uri);

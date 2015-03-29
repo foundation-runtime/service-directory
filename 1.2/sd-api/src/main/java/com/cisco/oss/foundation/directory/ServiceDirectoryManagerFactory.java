@@ -15,7 +15,7 @@
  */
 package com.cisco.oss.foundation.directory;
 
-import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 
@@ -47,5 +47,5 @@ public interface ServiceDirectoryManagerFactory extends Stoppable{
      * Get the DirectoryServiceClient
      * @return DirectoryServiceClient
      */
-    public DirectoryServiceRestfulClient getDirectoryServiceRestfulClient();
+    public DirectoryServiceClient getDirectoryServiceClient();
 }

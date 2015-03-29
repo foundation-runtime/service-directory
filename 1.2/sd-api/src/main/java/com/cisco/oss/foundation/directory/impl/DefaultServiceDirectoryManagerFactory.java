@@ -22,6 +22,7 @@ package com.cisco.oss.foundation.directory.impl;
 import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient;
 import com.cisco.oss.foundation.directory.lookup.CachedDirectoryLookupService;
 import com.cisco.oss.foundation.directory.lookup.CachedLookupManagerImpl;
@@ -146,7 +147,7 @@ public class DefaultServiceDirectoryManagerFactory implements
      *         the DirectoryServiceClient.
      */
     @Override
-    public DirectoryServiceRestfulClient getDirectoryServiceRestfulClient(){
+    public DirectoryServiceClient getDirectoryServiceClient(){
         return dirSvcRestfulClient;
     }
 

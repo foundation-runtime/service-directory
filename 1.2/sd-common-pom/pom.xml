@@ -87,6 +87,7 @@
       or overridden by service-directory projects
     -->
     <!-- override versions -->
+    <junit-version>4.12</junit-version>
     <configuration-api-version>1.0.2-4</configuration-api-version>
     <configuration-lib-version>1.0.2-5</configuration-lib-version>
     
