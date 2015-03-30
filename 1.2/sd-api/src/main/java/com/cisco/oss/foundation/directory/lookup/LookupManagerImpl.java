@@ -128,7 +128,7 @@ public class LookupManagerImpl implements LookupManager, Stoppable{
         ServiceInstanceUtils.validateServiceName(serviceName);
 
         List<ModelServiceInstance> modelSvc = getLookupService().getUPModelInstances(serviceName);
-        List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
+        List<ServiceInstance> instances = new ArrayList<>();
         for (ModelServiceInstance modelInstance : modelSvc) {
             instances.add(ServiceInstanceUtils.toServiceInstance(modelInstance));
         }
@@ -169,7 +169,7 @@ public class LookupManagerImpl implements LookupManager, Stoppable{
         }
         List<ModelServiceInstance> modelSvc = getLookupService().getUPModelInstances(serviceName);
         List<ModelServiceInstance> filteredInstances = ServiceInstanceQueryHelper.filter(query, modelSvc);
-        List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
+        List<ServiceInstance> instances = new ArrayList<>();
         for (ModelServiceInstance model : filteredInstances) {
             instances.add(ServiceInstanceUtils.toServiceInstance(model));
         }
@@ -200,7 +200,7 @@ public class LookupManagerImpl implements LookupManager, Stoppable{
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
         validateServiceInstanceMetadataQuery(query);
 
-        List<ServiceInstance> instances = null;
+        List<ServiceInstance> instances;
         String keyName = null;
         if (query.getCriteria().size() > 0) {
             keyName = query.getCriteria().get(0).getMetadataKey();
@@ -211,13 +211,13 @@ public class LookupManagerImpl implements LookupManager, Stoppable{
             List<ModelServiceInstance> filteredInstances = ServiceInstanceQueryHelper
                     .filter(query, modelInstances);
 
-            instances = new ArrayList<ServiceInstance>();
+            instances = new ArrayList<>();
             for (ModelServiceInstance model : filteredInstances) {
                 instances.add(ServiceInstanceUtils.toServiceInstance(model));
             }
             return instances;
         }
-        return Collections.<ServiceInstance>emptyList();
+        return Collections.emptyList();
     }
 
     /**
@@ -250,7 +250,7 @@ public class LookupManagerImpl implements LookupManager, Stoppable{
         ServiceInstanceUtils.validateServiceName(serviceName);
 
         List<ModelServiceInstance> modelSvc = getLookupService().getModelInstances(serviceName);
-        List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
+        List<ServiceInstance> instances = new ArrayList<>();
         for (ModelServiceInstance modelInstance : modelSvc) {
             instances.add(ServiceInstanceUtils.toServiceInstance(modelInstance));
         }
@@ -274,7 +274,7 @@ public class LookupManagerImpl implements LookupManager, Stoppable{
 
         List<ModelServiceInstance> modelSvc = getLookupService().getModelInstances(serviceName);
         List<ModelServiceInstance> filteredInstances = ServiceInstanceQueryHelper.filter(query, modelSvc);
-        List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
+        List<ServiceInstance> instances = new ArrayList<>();
         for (ModelServiceInstance model : filteredInstances) {
             instances.add(ServiceInstanceUtils.toServiceInstance(model));
         }
@@ -300,13 +300,13 @@ public class LookupManagerImpl implements LookupManager, Stoppable{
                     .getModelInstancesByMetadataKey(keyName);
             List<ModelServiceInstance> filteredInstances = ServiceInstanceQueryHelper
                     .filter(query, modelInstances);
-            List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
+            List<ServiceInstance> instances = new ArrayList<>();
             for (ModelServiceInstance model : filteredInstances) {
                 instances.add(ServiceInstanceUtils.toServiceInstance(model));
             }
             return instances;
         }
-        return Collections.<ServiceInstance>emptyList();
+        return Collections.emptyList();
     }
 
     /**
@@ -320,12 +320,12 @@ public class LookupManagerImpl implements LookupManager, Stoppable{
         List<ServiceInstance> instances = null;
         List<ModelServiceInstance> allInstances = getLookupService().getAllInstances();
         for (ModelServiceInstance serviceInstance : allInstances) {
-            instances = new ArrayList<ServiceInstance>();
+            instances = new ArrayList<>();
             instances.add(ServiceInstanceUtils.toServiceInstance(serviceInstance));
         }
         
         if (instances == null) {
-            return Collections.<ServiceInstance>emptyList();
+            return Collections.emptyList();
         }
         return instances;
     }
@@ -381,7 +381,7 @@ public class LookupManagerImpl implements LookupManager, Stoppable{
                     "NotificationHandler");
         }
         
-        getLookupService().removeNotificationHandler(serviceName, handler);;
+        getLookupService().removeNotificationHandler(serviceName, handler);
     }
 
     /**
