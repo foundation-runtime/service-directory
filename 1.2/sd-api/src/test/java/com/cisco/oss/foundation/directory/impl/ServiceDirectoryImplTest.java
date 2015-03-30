@@ -282,6 +282,15 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory 
 
         }
 
+        @Override
+        public void close() throws ServiceException {
+            // do nothing
+        }
+
+        @Override
+        public boolean isStarted() throws ServiceException {
+            return false;
+        }
     }
 
 

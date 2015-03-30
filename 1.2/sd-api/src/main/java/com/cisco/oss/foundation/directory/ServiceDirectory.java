@@ -25,13 +25,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cisco.oss.foundation.configuration.ConfigurationFactory;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.impl.ServiceDirectoryImpl;
 import com.cisco.oss.foundation.directory.lookup.CachedDirectoryLookupService;
+import com.cisco.oss.foundation.directory.lookup.CachedLookupManagerImpl;
 import com.cisco.oss.foundation.directory.lookup.DirectoryLookupService;
-
-import static com.cisco.oss.foundation.directory.impl.DefaultServiceDirectoryManagerFactory.SD_API_CACHE_ENABLED_PROPERTY;
+import com.cisco.oss.foundation.directory.lookup.LookupManagerImpl;
 
 /**
  * ServiceDirectory client class.
@@ -155,18 +156,42 @@ public class ServiceDirectory {
         return ServiceDirectoryImpl.getInstance();
     }
 
+
     // ------------
     // 1.2 API
     // ------------
     public static ServiceDirectoryConfig config(){ return new ServiceDirectoryConfig(); }
     public static ServiceDirectoryConfig globeConfig(){ return ServiceDirectoryConfig.GLOBE; }
 
-
     /**
      * SD is build by SDConfig
      */
     public final static class ServiceDirectoryConfig {
-        public static final ServiceDirectoryConfig GLOBE = new ServiceDirectoryConfig(defaultConfigLoadByFoundationRuntime);
+        //TODO, move all config key here !
+        /**
+         * The LookupManager cache enabled property.
+         */
+        public static final String SD_API_CACHE_ENABLED_PROPERTY = "com.cisco.oss.foundation.directory.cache.enabled";
+
+        /**
+         * The default cache enabled property value.
+         */
+        public static final boolean SD_API_CACHE_ENABLED_DEFAULT = true;
+
+        /**
+         * The Registration heartbeat and health check enabled property name.
+         */
+        public static final String SD_API_HEARTBEAT_ENABLED_PROPERTY = "com.cisco.oss.foundation.directory.heartbeat.enabled";
+
+        /**
+         * the default value of hearbeat enabled property value.
+         */
+        public static final boolean SD_API_HEARTBEAT_ENABLED_DEFAULT = true;
+
+        public enum ClientType{
+            RESTFUL //only support 1 kind of client in 1.2
+        }
+        private static final ServiceDirectoryConfig GLOBE = new ServiceDirectoryConfig(defaultConfigLoadByFoundationRuntime);
         private final Configuration _apacheConfig;
 
         //client user should not know it
@@ -194,13 +219,15 @@ public class ServiceDirectory {
                 return GLOBE.isCacheEnabled();
             }
         }
-
+        public ClientType getClientType(){
+            return ClientType.RESTFUL; // only restful in 1.2
+        }
 
         // the builder of SD
         public ServiceDirectory build(){
             return new ServiceDirectory(this);
         }
-    };
+    }
     /*
      * SD Constructor by using SD Config
      * The constructor is protected by private, so that only
@@ -211,13 +238,25 @@ public class ServiceDirectory {
     }
 
     private final ServiceDirectoryConfig _config;
+    private static final DirectoryServiceClient _restfulClient = new DirectoryServiceRestfulClient();
 
-    public DirectoryLookupService getLookupService() throws ServiceException {
-        if (_config.isCacheEnabled()){
-            return new CachedDirectoryLookupService(new DirectoryServiceRestfulClient());
-        }else {
-            return new DirectoryLookupService(new DirectoryServiceRestfulClient());
+    DirectoryServiceClient getClient(){
+        if (_config.getClientType() == ServiceDirectoryConfig.ClientType.RESTFUL){
+            return _restfulClient;
+        }else{
+            throw new IllegalStateException("UNKNOWN Client Type "+_config.getClientType());
         }
+    }
+    public LookupManager newLookupManager() throws ServiceException {
+        if (_config.isCacheEnabled()){
+            return new CachedLookupManagerImpl(new CachedDirectoryLookupService(getClient()));
+        }else {
+            return new LookupManagerImpl(new DirectoryLookupService(getClient()));
+        }
+    }
+    public RegistrationManager newRegistrationManager() throws ServiceException {
+        //TODO
+        return null;
     }
 
 

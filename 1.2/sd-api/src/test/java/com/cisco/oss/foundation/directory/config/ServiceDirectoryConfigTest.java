@@ -18,15 +18,15 @@ package com.cisco.oss.foundation.directory.config;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.configuration.Configuration;
-import org.junit.Assert;
 import org.junit.Test;
 
+import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.ServiceDirectory;
-import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
-import com.cisco.oss.foundation.directory.lookup.DirectoryLookupService;
+import com.cisco.oss.foundation.directory.exception.ServiceException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 /**
@@ -40,11 +40,11 @@ public class ServiceDirectoryConfigTest {
         Configuration config= ServiceDirectory.getServiceDirectoryConfig();
 
         assertFalse(config.getBoolean("ddd"));
-        Assert.assertTrue(config.getDouble("notexists", 89.1) == 89.1);
+        assertTrue(config.getDouble("notexists", 89.1) == 89.1);
         try{
             config.getDouble("notexists");
         } catch(Exception e){
-            Assert.assertTrue(e instanceof NoSuchElementException);
+            assertTrue(e instanceof NoSuchElementException);
         }
 
         assertFalse(config.containsKey("not_property"));
@@ -77,15 +77,31 @@ public class ServiceDirectoryConfigTest {
     @Test
     public void testBuildByConfig(){
 
-        DirectoryLookupService lookupService = ServiceDirectory.config().build().getLookupService();
-        ((Stoppable) lookupService).stop();
+        LookupManager lookupMgr = ServiceDirectory.config().build().newLookupManager();
+        lookupMgr.close(); //explicitly close
 
-        lookupService = ServiceDirectory.config().setCacheEnabled(false).build().getLookupService();
+        try (LookupManager lookupManager2 = ServiceDirectory.config().build().newLookupManager()){
+            assertTrue(lookupManager2.isStarted()); //started
+        }
+        //Auto-close OK
+
+        lookupMgr = ServiceDirectory.config().setCacheEnabled(false).build().newLookupManager();
         try {
-            ((Stoppable) lookupService).stop();
-            fail();
-        }catch(java.lang.ClassCastException e){};
+            assertTrue(lookupMgr.isStarted()); //started
+            lookupMgr.close(); //explicitly close fail
+            fail(); //can't go here
+        }catch(ServiceException e){
+            assertEquals(true, e.getCause() instanceof ClassCastException);
+        }
 
+        try {
+            try (LookupManager lookupManager = ServiceDirectory.config().setCacheEnabled(false).build().newLookupManager()) {
+                assertFalse(lookupMgr.isStarted()); //fail to start
+            }//auto-close failed
+            fail(); //can't go there, auto-close failed
+        }catch(ServiceException e){
+            assertEquals(true, e.getCause() instanceof ClassCastException);
+        }
 
     }
 }

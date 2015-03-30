@@ -42,6 +42,7 @@ import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDire
  *
  *
  */
+@Deprecated
 public class ServiceDirectoryImpl {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(ServiceDirectoryImpl.class);

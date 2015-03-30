@@ -21,6 +21,7 @@ package com.cisco.oss.foundation.directory.impl;
 
 import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.RegistrationManager;
+import com.cisco.oss.foundation.directory.ServiceDirectory.ServiceDirectoryConfig;
 import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient;
@@ -43,28 +44,37 @@ import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDire
  *
  *
  */
+@Deprecated
 public class DefaultServiceDirectoryManagerFactory implements
         ServiceDirectoryManagerFactory {
+
     /**
      * The LookupManager cache enabled property.
+     * @deprecated replaced by {@link ServiceDirectoryConfig#SD_API_CACHE_ENABLED_PROPERTY}
      */
-    public static final String SD_API_CACHE_ENABLED_PROPERTY = "com.cisco.oss.foundation.directory.cache.enabled";
+    @Deprecated
+    public static final String SD_API_CACHE_ENABLED_PROPERTY = ServiceDirectoryConfig.SD_API_CACHE_ENABLED_PROPERTY;
 
     /**
      * The default cache enabled property value.
+     * @deprecated replaced by {@link ServiceDirectoryConfig#SD_API_CACHE_ENABLED_DEFAULT}
      */
-    public static final boolean SD_API_CACHE_ENABLED_DEFAULT = true;
+    @Deprecated
+    public static final boolean SD_API_CACHE_ENABLED_DEFAULT = ServiceDirectoryConfig.SD_API_CACHE_ENABLED_DEFAULT;
 
     /**
      * The Registration heartbeat and health check enabled property name.
+     * @deprecated replaced by {@link ServiceDirectoryConfig#SD_API_HEARTBEAT_ENABLED_PROPERTY}
      */
-    public static final String SD_API_HEARTBEAT_ENABLED_PROPERTY = "com.cisco.oss.foundation.directory.heartbeat.enabled";
+    @Deprecated
+    public static final String SD_API_HEARTBEAT_ENABLED_PROPERTY = ServiceDirectoryConfig.SD_API_HEARTBEAT_ENABLED_PROPERTY;
 
     /**
      * the default value of hearbeat enabled property value.
+     * @deprecated  replaced by {@link ServiceDirectoryConfig#SD_API_HEARTBEAT_ENABLED_PROPERTY}
      */
-    public static final boolean SD_API_HEARTBEAT_ENABLED_DEFAULT = true;
-
+    @Deprecated
+    public static final boolean SD_API_HEARTBEAT_ENABLED_DEFAULT = ServiceDirectoryConfig.SD_API_HEARTBEAT_ENABLED_DEFAULT;
 
     private static final DirectoryServiceRestfulClient dirSvcRestfulClient = new DirectoryServiceRestfulClient();
 
