@@ -17,7 +17,7 @@
 
 
 
-package com.cisco.oss.foundation.directory.impl;
+package com.cisco.oss.foundation.directory.registration;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,17 +32,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-import com.cisco.oss.foundation.directory.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.entity.OperationResult;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstanceHeartbeat;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
+import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
+
 import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
 
 /**
@@ -328,7 +330,7 @@ public class HeartbeatDirectoryRegistrationService extends
                 cachedInstance.setStatus(instance.getStatus());
             }
             
-            LOGGER.debug("update cached ProvidedServiceInstance: {}.", cachedInstance.toString());
+            LOGGER.debug("update cached ProvidedServiceInstance: {}.", cachedInstance);
 
         } finally {
             write.unlock();

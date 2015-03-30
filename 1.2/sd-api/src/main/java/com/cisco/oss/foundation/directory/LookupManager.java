@@ -32,7 +32,7 @@ import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
  *
  *
  */
-public interface LookupManager {
+public interface LookupManager extends AutoCloseable {
 
     /**
      * Look up a service instance by the service name.
@@ -199,4 +199,19 @@ public interface LookupManager {
      * @throws ServiceException
      */
     public void removeNotificationHandler(String serviceName, NotificationHandler handler) throws ServiceException ;
+
+    /**
+     * Close the Lookup
+     * The LookupManager support JDK-7 try-with-resource
+     * @throws ServiceException
+     */
+    @Override
+    void close() throws ServiceException;
+
+    /**
+     * If the Lookup Manager is started
+     * @return true if the manager is started, or false if not
+     * @throws ServiceException
+     */
+    boolean isStarted() throws ServiceException;
 }

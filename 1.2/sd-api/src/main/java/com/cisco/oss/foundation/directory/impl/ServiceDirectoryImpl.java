@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 
@@ -41,6 +42,7 @@ import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDire
  *
  *
  */
+@Deprecated
 public class ServiceDirectoryImpl {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(ServiceDirectoryImpl.class);
@@ -80,6 +82,7 @@ public class ServiceDirectoryImpl {
                 }
             }
         } catch (IOException e) {
+            LOGGER.error("Fail to get ServiceDirectory API version.",e);
         }
         _version = version;
 

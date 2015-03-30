@@ -28,13 +28,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cisco.oss.foundation.directory.ServiceDirectory;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient;
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.OperationResult;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
+import com.cisco.oss.foundation.directory.lookup.CachedDirectoryLookupService;
+import com.cisco.oss.foundation.directory.lookup.CachedLookupManagerImpl;
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
+import com.cisco.oss.foundation.directory.registration.HeartbeatDirectoryRegistrationService;
 
 public class LookupManagerImplTest {
 
@@ -51,10 +55,10 @@ public class LookupManagerImplTest {
 
         final Date date = new Date();
 
-        Map<String, String> metadata = new HashMap<String, String>();
+        Map<String, String> metadata = new HashMap<>();
         metadata.put("datacenter", "dc01");
         metadata.put("solution", "core");
-        List<ModelServiceInstance> instances = new ArrayList<ModelServiceInstance>();
+        List<ModelServiceInstance> instances = new ArrayList<>();
         ModelServiceInstance instance = new ModelServiceInstance("odrm", "192.168.2.3-8901", "192.168.2.3-8901", "http://cisco.com/vbo/odrm/setupsession",
                 OperationalStatus.UP, null, 0, date,
                 date, metadata);
@@ -87,7 +91,7 @@ public class LookupManagerImplTest {
         final AtomicInteger keyChangingInvoked = new AtomicInteger(0);
 //        final AtomicInteger unregisterInvoked = new AtomicInteger(0);
 
-        CachedLookupManagerImpl impl = new CachedLookupManagerImpl(new CachedDirectoryLookupService(new DirectoryServiceClient(){
+        CachedLookupManagerImpl impl = new CachedLookupManagerImpl(new CachedDirectoryLookupService(new DirectoryServiceRestfulClient(){
             @Override
             public ModelService lookupService(String serviceName) {
                 Assert.assertTrue(serviceName.equals("odrm"));
@@ -106,7 +110,7 @@ public class LookupManagerImplTest {
             public Map<String, OperationResult<ModelService>> getChangedServices(Map<String, ModelService> services) {
                 serviceChangingInvoked.incrementAndGet();
                 Assert.assertTrue(services.containsKey("odrm"));
-                Map<String, OperationResult<ModelService>> rr = new HashMap<String, OperationResult<ModelService>>();
+                Map<String, OperationResult<ModelService>> rr = new HashMap<>();
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -114,10 +118,10 @@ public class LookupManagerImplTest {
                     e.printStackTrace();
                 }
 
-                Map<String, String> metadata = new HashMap<String, String>();
+                Map<String, String> metadata = new HashMap<>();
                 metadata.put("datacenter", "dc02");
                 metadata.put("solution", "core02");
-                List<ModelServiceInstance> instances = new ArrayList<ModelServiceInstance>();
+                List<ModelServiceInstance> instances = new ArrayList<>();
                 ModelServiceInstance instance = new ModelServiceInstance("odrm", "192.168.2.3-8901", "192.168.2.3-8901", "http://cisco.com/vbo/odrm/setupsession/v02",
                         OperationalStatus.UP, null, 0, date,
                         date, metadata);
@@ -125,7 +129,7 @@ public class LookupManagerImplTest {
                 instances.add(instance);
                 ModelService service = new ModelService("odrm", "odrm", date);
                 service.setServiceInstances(instances);
-                rr.put("odrm", new OperationResult<ModelService>(true, service, null));
+                rr.put("odrm", new OperationResult<>(true, service, null));
                 return rr;
             }
 
@@ -133,7 +137,7 @@ public class LookupManagerImplTest {
             public Map<String, OperationResult<ModelMetadataKey>> getChangedMetadataKeys(Map<String, ModelMetadataKey> keys) {
                 keyChangingInvoked.incrementAndGet();
                 Assert.assertTrue(keys.containsKey("solution"));
-                Map<String, OperationResult<ModelMetadataKey>> rr = new HashMap<String, OperationResult<ModelMetadataKey>>();
+                Map<String, OperationResult<ModelMetadataKey>> rr = new HashMap<>();
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -141,10 +145,10 @@ public class LookupManagerImplTest {
                     e.printStackTrace();
                 }
 
-                Map<String, String> metadata = new HashMap<String, String>();
+                Map<String, String> metadata = new HashMap<>();
                 metadata.put("datacenter", "dc03");
                 metadata.put("solution", "core03");
-                List<ModelServiceInstance> instances = new ArrayList<ModelServiceInstance>();
+                List<ModelServiceInstance> instances = new ArrayList<>();
                 ModelServiceInstance instance = new ModelServiceInstance("odrm", "192.168.2.3-8901", "192.168.2.3-8901", "http://cisco.com/vbo/odrm/setupsession/v03",
                         OperationalStatus.UP, null, 0, date,
                         date, metadata);
@@ -153,7 +157,7 @@ public class LookupManagerImplTest {
                 ModelMetadataKey key = new ModelMetadataKey(keyName, keyName, date, date);
                 key.setServiceInstances(instances);
 
-                rr.put("solution", new OperationResult<ModelMetadataKey>(true, key, null));
+                rr.put("solution", new OperationResult<>(true, key, null));
                 return rr;
             }
         }));
@@ -185,7 +189,7 @@ public class LookupManagerImplTest {
         }
         LOGGER.info("finished sleep.....");
 
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         list.add("core02");
         list.add("core03");
         query = new ServiceInstanceQuery().getInQueryCriterion("solution", list);

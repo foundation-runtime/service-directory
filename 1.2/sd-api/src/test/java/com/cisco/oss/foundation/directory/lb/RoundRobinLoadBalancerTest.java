@@ -21,14 +21,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
-
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
+import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 
 public class RoundRobinLoadBalancerTest {
 

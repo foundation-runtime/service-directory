@@ -15,17 +15,12 @@
  */
 package com.cisco.oss.foundation.directory;
 
+import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
-import com.cisco.oss.foundation.directory.impl.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 
 /**
- * The ServiceDirectoryManagerFactory to initialize LookupManager and RegistrationManager.
- *
- * Two default ServiceDirectoryManagerFactory implementations are supplied:
- * DefaultServiceDirectoryManagerFactory for the production use.
- * TestServiceDirectoryManagerFactory for the integration test purpose.
- *
+ * The ServiceDirectoryManagerFactory is the factory to create LookupManager and RegistrationManager.
  *
  */
 public interface ServiceDirectoryManagerFactory extends Stoppable{

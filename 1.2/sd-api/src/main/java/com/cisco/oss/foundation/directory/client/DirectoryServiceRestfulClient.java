@@ -13,11 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
-
-
-package com.cisco.oss.foundation.directory.impl;
+package com.cisco.oss.foundation.directory.client;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -26,16 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import static java.net.HttpURLConnection.HTTP_MULT_CHOICE;
-import static java.net.HttpURLConnection.HTTP_OK;
-import static java.net.HttpURLConnection.HTTP_CREATED;
-
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
@@ -48,10 +37,16 @@ import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.utils.HttpResponse;
-import com.cisco.oss.foundation.directory.utils.HttpUtils.HttpMethod;
 import com.cisco.oss.foundation.directory.utils.HttpUtils;
-import static com.cisco.oss.foundation.directory.utils.JsonSerializer.*;
+import com.cisco.oss.foundation.directory.utils.HttpUtils.HttpMethod;
+
+import static java.net.HttpURLConnection.HTTP_CREATED;
+import static java.net.HttpURLConnection.HTTP_MULT_CHOICE;
+import static java.net.HttpURLConnection.HTTP_OK;
+
 import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
+import static com.cisco.oss.foundation.directory.utils.JsonSerializer.deserialize;
+import static com.cisco.oss.foundation.directory.utils.JsonSerializer.serialize;
 
 /**
  * This is the client object to invoke the remote service in ServiceDirectory Server Node.
@@ -61,9 +56,9 @@ import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDire
  *
  *
  */
-public class DirectoryServiceClient{
+public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
     
-    private static final Logger LOGGER = LoggerFactory.getLogger(DirectoryServiceClient.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DirectoryServiceRestfulClient.class);
 
     /**
      * The http client read timeout property.
@@ -98,13 +93,13 @@ public class DirectoryServiceClient{
     /**
      * The HTTP invoker to access remote ServiceDirectory node.
      */
-    private DirectoryInvoker invoker;
+    private DirectoryHttpInvoker invoker;
 
     /**
      * Constructor.
      */
-    public DirectoryServiceClient() {
-        this.invoker = new DirectoryInvoker();
+    public DirectoryServiceRestfulClient() {
+        this.invoker = new DirectoryHttpInvoker();
     }
 
     /**
@@ -114,6 +109,7 @@ public class DirectoryServiceClient{
      *         the ProvidedServiceInstance.
      * @throws ServiceException
      */
+    @Override
     public void registerInstance(ProvidedServiceInstance instance){
         String body = _serialize(instance);
         HttpResponse result = invoker.invoke(toInstanceUri(instance.getServiceName(), instance.getProviderId()), body,
@@ -135,6 +131,7 @@ public class DirectoryServiceClient{
      * @param instance
      *         the ProvidedServiceInstance.
      */
+    @Override
     public void updateInstance(ProvidedServiceInstance instance){
         String body = _serialize(instance);
         HttpResponse result = invoker.invoke(toInstanceUri(instance.getServiceName(),instance.getProviderId()), body,
@@ -158,6 +155,7 @@ public class DirectoryServiceClient{
      * @param isOwned
      *         whether the DirectoryAPI owns this ServiceProvider.
      */
+    @Override
     public void updateInstanceStatus(String serviceName, String instanceId, OperationalStatus status, boolean isOwned){
         String uri = toInstanceUri(serviceName, instanceId)+"/status";
 
@@ -168,7 +166,7 @@ public class DirectoryServiceClient{
             LOGGER.error("UTF-8 not supported. ", e);
         }
 
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/x-www-form-urlencoded");
         HttpResponse result = invoker.invoke(uri, body,
                 HttpMethod.PUT, headers);
@@ -193,6 +191,7 @@ public class DirectoryServiceClient{
      * @param isOwned
      *         whether the DirectoryAPI owns this ServiceProvider.
      */
+    @Override
     public void updateInstanceUri(String serviceName, String instanceId, String uri, boolean isOwned){
         String serviceUri = toInstanceUri(serviceName, instanceId) + "/uri" ;
         String body = null;
@@ -202,7 +201,7 @@ public class DirectoryServiceClient{
             LOGGER.error("UTF-8 not supported. ", e);
         }
 
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/x-www-form-urlencoded");
         HttpResponse result = invoker.invoke(serviceUri, body,
                 HttpMethod.PUT, headers);
@@ -223,6 +222,7 @@ public class DirectoryServiceClient{
      * @param isOwned
      *         whether the DirectoryAPI owns this ServiceProvider.
      */
+    @Override
     public void unregisterInstance(String serviceName, String instanceId, boolean isOwned){
         String uri = toInstanceUri(serviceName, instanceId) + "/" + isOwned;
         HttpResponse result = invoker.invoke(uri, null,
@@ -240,6 +240,7 @@ public class DirectoryServiceClient{
      * @param heartbeatMap
      *         the ServiceInstances heartbeat Map.
      */
+    @Override
     public Map<String, OperationResult<String>> sendHeartBeat(Map<String, ServiceInstanceHeartbeat> heartbeatMap){
         String body = _serialize(heartbeatMap);
         HttpResponse result = invoker.invoke("/service/heartbeat", body,
@@ -250,9 +251,8 @@ public class DirectoryServiceClient{
                     "HTTP Code is not OK, code=%s", result.getHttpCode());
         }
 
-        Map<String, OperationResult<String>> operateResult = _deserialize(
+        return _deserialize(
                 result.getRetBody(), new TypeReference<Map<String, OperationResult<String>>>(){});
-        return operateResult;
 
     }
 
@@ -264,6 +264,7 @@ public class DirectoryServiceClient{
      * @return
      *         the ModelService.
      */
+    @Override
     public ModelService lookupService(String serviceName){
         HttpResponse result = invoker.invoke("/service/" + serviceName , null, HttpMethod.GET);
 
@@ -272,8 +273,7 @@ public class DirectoryServiceClient{
                     "HTTP Code is not OK, code=%s", result.getHttpCode());
         }
 
-        ModelService service = _deserialize(result.getRetBody(), ModelService.class);
-        return service;
+        return _deserialize(result.getRetBody(), ModelService.class);
     }
 
     /**
@@ -282,6 +282,7 @@ public class DirectoryServiceClient{
      * @return
      *         the ModelServiceInstance list.
      */
+    @Override
     public List<ModelServiceInstance> getAllInstances(){
         HttpResponse result = invoker.invoke("/service" , null, HttpMethod.GET);
 
@@ -290,8 +291,7 @@ public class DirectoryServiceClient{
                     "HTTP Code is not OK, code=%s", result.getHttpCode());
         }
 
-        List<ModelServiceInstance> allInstances = _deserialize(result.getRetBody(), new TypeReference<List<ModelServiceInstance>>(){});
-        return allInstances;
+        return _deserialize(result.getRetBody(), new TypeReference<List<ModelServiceInstance>>(){});
     }
 
     /**
@@ -303,6 +303,7 @@ public class DirectoryServiceClient{
      * @return
      *         the ModelMetadataKey.
      */
+    @Override
     public ModelMetadataKey getMetadataKey(String keyName){
         HttpResponse result = invoker.invoke("/metadatakey/" + keyName , null, HttpMethod.GET);
 
@@ -311,10 +312,8 @@ public class DirectoryServiceClient{
                     "HTTP Code is not OK, code=%s", result.getHttpCode());
         }
 
-        ModelMetadataKey key = _deserialize(
+        return _deserialize(
                     result.getRetBody(), ModelMetadataKey.class);
-
-        return key;
     }
 
     /**
@@ -326,6 +325,7 @@ public class DirectoryServiceClient{
      *         the list of Services that have been changed.
      * @throws ServiceException
      */
+    @Override
     public Map<String, OperationResult<ModelService>> getChangedServices(Map<String, ModelService> services){
         String body = _serialize(services);
         HttpResponse result = invoker.invoke("/service/changing" , body, HttpMethod.POST);
@@ -335,10 +335,8 @@ public class DirectoryServiceClient{
                     "HTTP Code is not OK, code=%s", result.getHttpCode());
         }
 
-        Map<String, OperationResult<ModelService>> changedServices = _deserialize(
+        return _deserialize(
                     result.getRetBody(), new TypeReference<Map<String, OperationResult<ModelService>>>(){});
-
-        return changedServices;
     }
 
     /**
@@ -349,6 +347,7 @@ public class DirectoryServiceClient{
      * @return
      *         the list of ModelMetadataKeys that have been changed.
      */
+    @Override
     public Map<String, OperationResult<ModelMetadataKey>> getChangedMetadataKeys(Map<String, ModelMetadataKey> keys) {
         String body = _serialize(keys);
         HttpResponse result = invoker.invoke("/metadatakey/changing" , body, HttpMethod.POST);
@@ -358,10 +357,8 @@ public class DirectoryServiceClient{
                     "HTTP Code is not OK, code=%s", result.getHttpCode());
         }
 
-        Map<String, OperationResult<ModelMetadataKey>> changedKeys = _deserialize(
+        return _deserialize(
                     result.getRetBody(), new TypeReference<Map<String, OperationResult<ModelMetadataKey>>>(){});
-
-        return changedKeys;
     }
 
     /**
@@ -373,9 +370,7 @@ public class DirectoryServiceClient{
      *         the Object class name deserialized to.
      * @return
      *         the deserialized Object instance.
-     * @throws IOException
-     * @throws JsonMappingException
-     * @throws JsonParseException
+     * @throws ServiceException
      */
     <T> T _deserialize(String body, Class<T> clazz) {
         if(body == null || body.isEmpty()){
@@ -386,7 +381,7 @@ public class DirectoryServiceClient{
 
         try {
             return deserialize(body.getBytes(), clazz);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, e,
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR.getMessageTemplate(),
                     "unrecognized message, deserialize failed.");
@@ -404,9 +399,7 @@ public class DirectoryServiceClient{
      *         the generic type.
      * @return
      *         the deserialized object instance.
-     * @throws IOException
-     * @throws JsonMappingException
-     * @throws JsonParseException
+     * @throws ServiceException
      */
     <T> T _deserialize(String body, TypeReference<T> typeRef) {
         if (body == null || body.isEmpty()) {
@@ -418,7 +411,7 @@ public class DirectoryServiceClient{
 
         try {
             return deserialize(body.getBytes(), typeRef);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, e,
                     ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR.getMessageTemplate(),
                     "unrecognized message, deserialize failed.");
@@ -434,7 +427,7 @@ public class DirectoryServiceClient{
      *         the JSON String.
      */
     String _serialize(Object o) {
-        String body = null;
+        String body;
             try {
                 body = new String(serialize(o));
             } catch (IOException e) {
@@ -455,8 +448,8 @@ public class DirectoryServiceClient{
     }
 
     public void setInvoker(DirectoryInvoker invoker) {
-
-        this.invoker = invoker;
+        //TODO remove the type conversion
+        this.invoker = (DirectoryHttpInvoker)invoker;
     }
 
     /**
@@ -466,7 +459,7 @@ public class DirectoryServiceClient{
      *
      *
      */
-    public static class DirectoryInvoker {
+    public static class DirectoryHttpInvoker implements DirectoryInvoker {
 
         /* The remote ServiceDirectory node address array, in the format of http://<host>:<port> */
         public String directoryAddresses;
@@ -475,7 +468,7 @@ public class DirectoryServiceClient{
          * Constructor.
          *
          */
-        public DirectoryInvoker() {
+        public DirectoryHttpInvoker() {
             String sdFQDN = getServiceDirectoryConfig().getString(SD_API_SD_SERVER_FQDN_PROPERTY, SD_API_SD_SERVER_FQDN_DEFAULT);
             int port = getServiceDirectoryConfig().getInt(SD_API_SD_SERVER_PORT_PROPERTY, SD_API_SD_SERVER_PORT_DEFAULT);
             this.directoryAddresses = "http://" + sdFQDN + ":" + port;
@@ -508,25 +501,26 @@ public class DirectoryServiceClient{
                 throw new ServiceException(ErrorCode.HTTP_CLIENT_ERROR,e,errMsg);
             }
             // HTTP_OK 200, HTTP_MULT_CHOICE 300
-            if (result.getHttpCode() < HTTP_OK || result.getHttpCode() >= HTTP_MULT_CHOICE) {
-                String errorBody = result.getRetBody();
+            if (result != null) {
+                if (result.getHttpCode() < HTTP_OK || result.getHttpCode() >= HTTP_MULT_CHOICE) {
+                    String errorBody = result.getRetBody();
 
-                if(errorBody == null || errorBody.isEmpty()){
-                    throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
-                            ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR.getMessageTemplate(),
-                            "Error Message body is empty.");
-                }
-                //TODO, server-side support of SDError
-                ServiceDirectoryError sde = null;
-                try {
-                    sde =  deserialize(errorBody.getBytes(), ServiceDirectoryError.class);
-                } catch (IOException  e) {
-                    String errMsg = "Deserialize error body message failed";
-                    throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,e,errMsg);
-                }
+                    if(errorBody == null || errorBody.isEmpty()){
+                        throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
+                                ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR.getMessageTemplate(),
+                                "Error Message body is empty.");
+                    }
+                    ServiceDirectoryError sde;
+                    try {
+                        sde =  deserialize(errorBody.getBytes(), ServiceDirectoryError.class);
+                    } catch (IOException  e) {
+                        String errMsg = "Deserialize error body message failed";
+                        throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,e,errMsg);
+                    }
 
-                if (sde != null) {
-                    throw new ServiceException(sde.getExceptionCode(),sde.getErrorMessage());
+                    if (sde != null) {
+                        throw new ServiceException(sde.getExceptionCode(),sde.getErrorMessage());
+                    }
                 }
             }
             return result;
@@ -555,25 +549,27 @@ public class DirectoryServiceClient{
             }
 
             // HTTP_OK 200, HTTP_MULT_CHOICE 300
-            if (result.getHttpCode() < HTTP_OK || result.getHttpCode() >= 300) {
-                String errorBody = result.getRetBody();
+            if (result != null) {
+                if (result.getHttpCode() < HTTP_OK || result.getHttpCode() >= 300) {
+                    String errorBody = result.getRetBody();
 
-                if(errorBody == null || errorBody.isEmpty()) {
-                    throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
-                            ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR.getMessageTemplate(),
-                            "Error Message body is empty.");
-                }
-                ServiceDirectoryError sde = null;
-                try {
-                    sde = deserialize(errorBody.getBytes(),
-                                    ServiceDirectoryError.class);
-                } catch (IOException  e) {
-                    String errMsg = "Deserialize error body message failed";
-                    throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,e,errMsg);
-                }
+                    if(errorBody == null || errorBody.isEmpty()) {
+                        throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
+                                ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR.getMessageTemplate(),
+                                "Error Message body is empty.");
+                    }
+                    ServiceDirectoryError sde;
+                    try {
+                        sde = deserialize(errorBody.getBytes(),
+                                        ServiceDirectoryError.class);
+                    } catch (IOException  e) {
+                        String errMsg = "Deserialize error body message failed";
+                        throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,e,errMsg);
+                    }
 
-                if (sde != null) {
-                    throw new ServiceException(sde.getExceptionCode(),sde.getErrorMessage());
+                    if (sde != null) {
+                        throw new ServiceException(sde.getExceptionCode(),sde.getErrorMessage());
+                    }
                 }
             }
             return result;

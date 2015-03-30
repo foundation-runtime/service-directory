@@ -17,7 +17,7 @@
 
 
 
-package com.cisco.oss.foundation.directory.impl;
+package com.cisco.oss.foundation.directory.lookup;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cisco.oss.foundation.directory.NotificationHandler;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
@@ -52,7 +53,7 @@ public class DirectoryLookupService {
     /**
      * The Service NotificationHandler Map.
      */
-    private Map<String, List<NotificationHandler>> notificationHandlers  = new HashMap<String, List<NotificationHandler>>();
+    private final Map<String, List<NotificationHandler>> notificationHandlers  = new HashMap<>();
 
     /**
      * Constructor.
@@ -122,9 +123,9 @@ public class DirectoryLookupService {
     public List<ModelServiceInstance> getModelInstancesByMetadataKey(String keyName){
         ModelMetadataKey key = getModelMetadataKey(keyName);
         if(key == null || key.getServiceInstances().isEmpty()){
-            return Collections.<ModelServiceInstance>emptyList();
+            return Collections.emptyList();
         }else{
-            return new ArrayList<ModelServiceInstance>(key.getServiceInstances());
+            return new ArrayList<>(key.getServiceInstances());
         }
     }
 
@@ -138,7 +139,7 @@ public class DirectoryLookupService {
      *         the ModelServiceInstances that have the metadata key.
      */
     public List<ModelServiceInstance> getUPModelInstancesByMetadataKey(String keyName){
-        List<ModelServiceInstance> list = new ArrayList<ModelServiceInstance>();
+        List<ModelServiceInstance> list = new ArrayList<>();
         for (ModelServiceInstance instance : getModelInstancesByMetadataKey(keyName)){
             if(instance.getStatus().equals(OperationalStatus.UP)){
                 list.add(instance);
@@ -158,9 +159,9 @@ public class DirectoryLookupService {
     public List<ModelServiceInstance> getModelInstances(String serviceName){
         ModelService service = getModelService(serviceName);
         if(service == null || service.getServiceInstances().isEmpty()){
-            return Collections.<ModelServiceInstance>emptyList();
+            return Collections.emptyList();
         }else{
-            return new ArrayList<ModelServiceInstance>(service.getServiceInstances());
+            return new ArrayList<>(service.getServiceInstances());
         }
     }
 
@@ -183,7 +184,7 @@ public class DirectoryLookupService {
      *         the ModelServiceInstance list of the Service.
      */
     public List<ModelServiceInstance> getUPModelInstances(String serviceName){
-        List<ModelServiceInstance> list = new ArrayList<ModelServiceInstance>();
+        List<ModelServiceInstance> list = new ArrayList<>();
         for(ModelServiceInstance instance : getModelInstances(serviceName)){
             if(instance.getStatus().equals(OperationalStatus.UP)) {
                 list.add(instance);
@@ -271,7 +272,7 @@ public class DirectoryLookupService {
             return ;
         }
         String serviceName = instance.getServiceName();
-        List<NotificationHandler> handlerList = new ArrayList<NotificationHandler>();
+        List<NotificationHandler> handlerList = new ArrayList<>();
         synchronized (notificationHandlers) {
             if (notificationHandlers.containsKey(serviceName)) {
                 handlerList.addAll(notificationHandlers.get(serviceName));
@@ -290,7 +291,7 @@ public class DirectoryLookupService {
      */
     protected void onServiceInstanceChanged(ServiceInstance instance){
         String serviceName = instance.getServiceName();
-        List<NotificationHandler> handlerList = new ArrayList<NotificationHandler>();
+        List<NotificationHandler> handlerList = new ArrayList<>();
         synchronized (notificationHandlers) {
             if (notificationHandlers.containsKey(serviceName)) {
                 handlerList.addAll(notificationHandlers.get(serviceName));
@@ -309,7 +310,7 @@ public class DirectoryLookupService {
      */
     protected void onServiceInstanceAvailable(ServiceInstance instance){
         String serviceName = instance.getServiceName();
-        List<NotificationHandler> handlerList = new ArrayList<NotificationHandler>();
+        List<NotificationHandler> handlerList = new ArrayList<>();
         synchronized (notificationHandlers) {
             if (notificationHandlers.containsKey(serviceName)) {
                 handlerList.addAll(notificationHandlers.get(serviceName));

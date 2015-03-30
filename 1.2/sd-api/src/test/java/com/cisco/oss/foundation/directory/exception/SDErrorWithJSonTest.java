@@ -1,10 +1,11 @@
 package com.cisco.oss.foundation.directory.exception;
 
-import static com.cisco.oss.foundation.directory.utils.JsonSerializer.deserialize;
-import static com.cisco.oss.foundation.directory.utils.JsonSerializer.serialize;
+import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
 
-import org.junit.Test;
+import static com.cisco.oss.foundation.directory.utils.JsonSerializer.deserialize;
+import static com.cisco.oss.foundation.directory.utils.JsonSerializer.serialize;
 
 /**
  * Created by alex on 3/24/15.

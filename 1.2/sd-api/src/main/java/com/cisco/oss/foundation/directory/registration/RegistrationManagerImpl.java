@@ -17,15 +17,17 @@
 
 
 
-package com.cisco.oss.foundation.directory.impl;
+package com.cisco.oss.foundation.directory.registration;
 
-import java.util.concurrent.atomic.AtomicBoolean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
+import com.cisco.oss.foundation.directory.impl.AbstractServiceDirectoryManager;
 import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 /**
@@ -33,12 +35,9 @@ import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
  *
  *
  */
-public class RegistrationManagerImpl implements RegistrationManager, Stoppable{
+public class RegistrationManagerImpl extends AbstractServiceDirectoryManager implements RegistrationManager{
 
-   /**
-     * Mark component started or not
-     */
-    private final AtomicBoolean isStarted = new AtomicBoolean(false);
+   public static final Logger LOGGER = LoggerFactory.getLogger(RegistrationManagerImpl.class);
 
     /**
      * The DirectoryRegistrationService to do Service Registration.
@@ -58,7 +57,8 @@ public class RegistrationManagerImpl implements RegistrationManager, Stoppable{
      */
     @Override
     public void start(){
-        isStarted.set(true);
+        super.start();
+        LOGGER.info("Registration Manager @{} is started", this);
     }
 
     /**
@@ -67,9 +67,8 @@ public class RegistrationManagerImpl implements RegistrationManager, Stoppable{
      */
     @Override
     public void stop(){
-        if (isStarted.compareAndSet(true,false)) {
-            ((Stoppable) getRegistrationService()).stop();
-        }
+        ((Stoppable) getRegistrationService()).stop();
+        LOGGER.info("Registration Manager @{} is stopped", this);
     }
 
     /**

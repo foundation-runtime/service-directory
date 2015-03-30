@@ -19,10 +19,24 @@
 
 package com.cisco.oss.foundation.directory;
 
+import org.apache.commons.configuration.BaseConfiguration;
+import org.apache.commons.configuration.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.cisco.oss.foundation.configuration.ConfigurationFactory;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.impl.ServiceDirectoryImpl;
-import org.apache.commons.configuration.Configuration;
+import com.cisco.oss.foundation.directory.lookup.CachedDirectoryLookupService;
+import com.cisco.oss.foundation.directory.lookup.CachedLookupManagerImpl;
+import com.cisco.oss.foundation.directory.lookup.DirectoryLookupService;
+import com.cisco.oss.foundation.directory.lookup.LookupManagerImpl;
+import com.cisco.oss.foundation.directory.registration.DirectoryRegistrationService;
+import com.cisco.oss.foundation.directory.registration.HeartbeatDirectoryRegistrationService;
+import com.cisco.oss.foundation.directory.registration.HeartbeatRegistrationManagerImpl;
+import com.cisco.oss.foundation.directory.registration.RegistrationManagerImpl;
 
 /**
  * ServiceDirectory client class.
@@ -32,6 +46,8 @@ import org.apache.commons.configuration.Configuration;
  *
  */
 public class ServiceDirectory {
+
+    public static final Logger LOGGER = LoggerFactory.getLogger(ServiceDirectory.class);
 
     /**
      * The ServiceDirectory enabled property name, indicating whether ServiceDirectory is enabled for directory service.
@@ -43,14 +59,10 @@ public class ServiceDirectory {
      */
     public static final boolean SD_API_SERVICE_DIRECTORY_ENABLED_DEFAULT = true;
 
-
-    private static final Configuration serviceDirectoryConfig = ConfigurationFactory.getConfiguration();
-
     /**
-     * Singleton, private constructor.
+     * The default config load by foundation runtime from config.properties or configSchema.xml
      */
-    private ServiceDirectory(){
-    }
+    private static final Configuration defaultConfigLoadByFoundationRuntime = ConfigurationFactory.getConfiguration();
 
     /**
      * Get the LookupManager.
@@ -59,6 +71,7 @@ public class ServiceDirectory {
      *         the implementation instance of LookupManager.
      * @throws ServiceException
      */
+    @Deprecated
     public static LookupManager getLookupManager() throws ServiceException {
         return getImpl().getLookupManager();
     }
@@ -70,6 +83,7 @@ public class ServiceDirectory {
      *         the implementation instance of RegistrationManager.
      * @throws ServiceException
      */
+    @Deprecated
     public static RegistrationManager getRegistrationManager() throws ServiceException {
         return getImpl().getRegistrationManager();
     }
@@ -79,9 +93,11 @@ public class ServiceDirectory {
      *
      * @return
      *         the ServiceDirectoryConfig
+     * @deprecated as release 1.2. it's globe configuration
      */
+    @Deprecated
     public static Configuration getServiceDirectoryConfig() {
-        return serviceDirectoryConfig;
+        return defaultConfigLoadByFoundationRuntime;
     }
 
     /**
@@ -92,6 +108,7 @@ public class ServiceDirectory {
      * @param factory
      *         the ServiceDirectoryManagerFactory which generates LookupManager and RegistrationManager.
      */
+    @Deprecated
     public static void reinitServiceDirectoryManagerFactory(ServiceDirectoryManagerFactory factory) throws ServiceException{
         getImpl().reinitServiceDirectoryManagerFactory(factory);
     }
@@ -106,6 +123,7 @@ public class ServiceDirectory {
      * @return
      *         true if the ServiceDirectory is enabled.
      */
+    @Deprecated
     public static boolean isEnabled(){
         return getServiceDirectoryConfig().getBoolean(SD_API_SERVICE_DIRECTORY_ENABLED_PROPERTY,
                 SD_API_SERVICE_DIRECTORY_ENABLED_DEFAULT);
@@ -126,7 +144,6 @@ public class ServiceDirectory {
      *
      * Be careful to invoke this method. When shutdown() is called, ServiceDirectory cannot be used 
      * unless jvm is restarted to reload the ServiceDirectory class. 
-     *
      */
     public static void shutdown(){
         getImpl().shutdown();
@@ -138,8 +155,129 @@ public class ServiceDirectory {
      * @return
      *         the ServiceDirectoryImpl instance.
      */
+    @Deprecated
     private static ServiceDirectoryImpl getImpl() {
         return ServiceDirectoryImpl.getInstance();
+    }
+
+
+    // ------------
+    // 1.2 API
+    // ------------
+    public static ServiceDirectoryConfig config(){ return new ServiceDirectoryConfig(); }
+    public static ServiceDirectoryConfig globeConfig(){ return ServiceDirectoryConfig.GLOBE; }
+
+    /**
+     * SD is build by SDConfig
+     */
+    public final static class ServiceDirectoryConfig {
+        //TODO, move all config key here !
+        /**
+         * The LookupManager cache enabled property.
+         */
+        public static final String SD_API_CACHE_ENABLED_PROPERTY = "com.cisco.oss.foundation.directory.cache.enabled";
+
+        /**
+         * The default cache enabled property value.
+         */
+        public static final boolean SD_API_CACHE_ENABLED_DEFAULT = true;
+
+        /**
+         * The Registration heartbeat and health check enabled property name.
+         */
+        public static final String SD_API_HEARTBEAT_ENABLED_PROPERTY = "com.cisco.oss.foundation.directory.heartbeat.enabled";
+
+        /**
+         * the default value of heartbeat enabled property value.
+         */
+        public static final boolean SD_API_HEARTBEAT_ENABLED_DEFAULT = true;
+
+        public enum ClientType{
+            RESTFUL //only support 1 kind of client in 1.2
+        }
+        private static final ServiceDirectoryConfig GLOBE = new ServiceDirectoryConfig(defaultConfigLoadByFoundationRuntime);
+        private final Configuration _apacheConfig;
+
+        private ServiceDirectoryConfig(Configuration root) {
+            _apacheConfig=root;
+        }
+        private ServiceDirectoryConfig(){
+            _apacheConfig = new BaseConfiguration();
+        }
+
+        public ClientType getClientType(){
+            return ClientType.RESTFUL; // only restful in 1.2
+        }
+        public ServiceDirectoryConfig setCacheEnabled(boolean cacheEnable){
+            _set(SD_API_CACHE_ENABLED_PROPERTY, cacheEnable);
+            return this;
+        }
+        public boolean isCacheEnabled(){
+            return _checkEnable(SD_API_CACHE_ENABLED_PROPERTY);
+        }
+        public ServiceDirectoryConfig setHeartbeatEnabled(boolean heartbeatEnable){
+            _set(SD_API_HEARTBEAT_ENABLED_PROPERTY,heartbeatEnable);
+            return this;
+        }
+        public boolean isHeartBeatEnabled(){
+            return _checkEnable(SD_API_HEARTBEAT_ENABLED_PROPERTY);
+        }
+        private void _set(String key, Object value){
+            _apacheConfig.setProperty(key,value);
+            if (this == GLOBE){
+                LOGGER.warn("GLOBE ServiceDirectoryConfig changed! '{}' = '{}'",key,value);
+            }
+         }
+        private boolean _checkEnable(String key){
+            if(_apacheConfig.containsKey(key)){
+                return _apacheConfig.getBoolean(key);
+            }else{
+                if (this==GLOBE){ //not found in GLOBE,throw ex
+                    throw new IllegalArgumentException("The Key"+key+"is not defined");
+                }
+                return GLOBE._checkEnable(key);
+            }
+        }
+
+        // the builder of SD
+        public ServiceDirectory build(){
+            return new ServiceDirectory(this);
+        }
+    }
+
+    /*
+     * SD Constructor by using SD Config
+     * The constructor is protected by private, so that only
+     * builder can call it
+     */
+    private ServiceDirectory(ServiceDirectoryConfig config){
+            this._config = config;
+    }
+
+    private final ServiceDirectoryConfig _config;
+    private static final DirectoryServiceClient _restfulClient = new DirectoryServiceRestfulClient();
+
+    DirectoryServiceClient getClient(){
+        if (_config.getClientType() == ServiceDirectoryConfig.ClientType.RESTFUL){
+            return _restfulClient;
+        }else{
+            //don't support other client type now.
+            throw new IllegalStateException("UNKNOWN Client Type "+_config.getClientType());
+        }
+    }
+    public LookupManager newLookupManager() throws ServiceException {
+        if (_config.isCacheEnabled()){
+            return new CachedLookupManagerImpl(new CachedDirectoryLookupService(getClient()));
+        }else {
+            return new LookupManagerImpl(new DirectoryLookupService(getClient()));
+        }
+    }
+    public RegistrationManager newRegistrationManager() throws ServiceException {
+        if (_config.isHeartBeatEnabled()){
+            return new HeartbeatRegistrationManagerImpl(new HeartbeatDirectoryRegistrationService(getClient()));
+        }else{
+            return new RegistrationManagerImpl(new DirectoryRegistrationService(getClient()));
+        }
     }
 
 }

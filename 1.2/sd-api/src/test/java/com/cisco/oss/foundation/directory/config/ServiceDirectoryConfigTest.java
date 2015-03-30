@@ -18,10 +18,13 @@ package com.cisco.oss.foundation.directory.config;
 import java.util.NoSuchElementException;
 
 import org.apache.commons.configuration.Configuration;
-import org.junit.Assert;
 import org.junit.Test;
 
 import com.cisco.oss.foundation.directory.ServiceDirectory;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * TestCases to cover load configures from the config.properties file.
@@ -33,14 +36,66 @@ public class ServiceDirectoryConfigTest {
     public void testGetProperty(){
         Configuration config= ServiceDirectory.getServiceDirectoryConfig();
 
-        Assert.assertFalse(config.getBoolean("ddd"));
-        Assert.assertTrue(config.getDouble("notexists", 89.1) == 89.1);
+        assertFalse(config.getBoolean("ddd"));
+        assertTrue(config.getDouble("notexists", 89.1) == 89.1);
         try{
             config.getDouble("notexists");
         } catch(Exception e){
-            Assert.assertTrue(e instanceof NoSuchElementException);
+            assertTrue(e instanceof NoSuchElementException);
         }
 
-        Assert.assertFalse(config.containsKey("not_property"));
+        assertFalse(config.containsKey("not_property"));
+    }
+
+    // -----------------------
+    // New 1.2 Config tests
+    // -----------------------
+
+    @Test
+    public void testCacheConfig(){
+
+        assertEquals(true, ServiceDirectory.globeConfig().isCacheEnabled());
+        assertEquals(true, ServiceDirectory.config().isCacheEnabled());
+
+        ServiceDirectory.ServiceDirectoryConfig config = ServiceDirectory.config().setCacheEnabled(false);
+        assertEquals(false,config.isCacheEnabled());
+        assertEquals(true, ServiceDirectory.globeConfig().isCacheEnabled());
+
+        ServiceDirectory.globeConfig().setCacheEnabled(false);
+        assertEquals(false, ServiceDirectory.globeConfig().isCacheEnabled());
+        assertEquals(false, ServiceDirectory.config().isCacheEnabled());
+
+        assertEquals(false, config.isCacheEnabled());
+        ServiceDirectory.config().setCacheEnabled(true);
+        assertEquals(false, config.isCacheEnabled());
+        config.setCacheEnabled(true);
+        assertEquals(true, config.isCacheEnabled());
+        assertEquals(false, ServiceDirectory.globeConfig().isCacheEnabled());
+        ServiceDirectory.globeConfig().setCacheEnabled(true);  //need to set back, otherwise, ald 1.1 test will failed
+        assertEquals(true, ServiceDirectory.globeConfig().isCacheEnabled());
+    }
+
+    @Test
+    public void testHeartBearConfig(){
+        //heart beat is enabled by default
+        assertTrue(ServiceDirectory.config().isHeartBeatEnabled());
+        assertTrue(ServiceDirectory.globeConfig().isHeartBeatEnabled());
+
+        ServiceDirectory.ServiceDirectoryConfig config = ServiceDirectory.config();
+        config.setHeartbeatEnabled(false);
+        assertFalse(config.isHeartBeatEnabled()); //current config is false
+        assertTrue(ServiceDirectory.globeConfig().isHeartBeatEnabled()); //globe is still true;
+
+        ServiceDirectory.globeConfig().setHeartbeatEnabled(false); //set globe false
+
+        assertFalse(ServiceDirectory.globeConfig().isHeartBeatEnabled()); //globe is false;
+        assertFalse(ServiceDirectory.config().isHeartBeatEnabled());  //new config is false now;
+
+        ServiceDirectory.globeConfig().setHeartbeatEnabled(true); //set globe back to true
+    }
+
+    @Test
+    public void testSDBuildByConfig(){
+        ServiceDirectory.config().build();
     }
 }
