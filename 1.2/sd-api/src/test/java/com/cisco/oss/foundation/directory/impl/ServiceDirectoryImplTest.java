@@ -197,6 +197,11 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory 
 
         }
 
+        @Override
+        public void close() throws ServiceException {
+
+        }
+
     }
 
     class MockLookup implements LookupManager{

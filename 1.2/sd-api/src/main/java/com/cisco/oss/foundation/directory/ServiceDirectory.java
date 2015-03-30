@@ -33,6 +33,10 @@ import com.cisco.oss.foundation.directory.lookup.CachedDirectoryLookupService;
 import com.cisco.oss.foundation.directory.lookup.CachedLookupManagerImpl;
 import com.cisco.oss.foundation.directory.lookup.DirectoryLookupService;
 import com.cisco.oss.foundation.directory.lookup.LookupManagerImpl;
+import com.cisco.oss.foundation.directory.registration.DirectoryRegistrationService;
+import com.cisco.oss.foundation.directory.registration.HeartbeatDirectoryRegistrationService;
+import com.cisco.oss.foundation.directory.registration.HeartbeatRegistrationManagerImpl;
+import com.cisco.oss.foundation.directory.registration.RegistrationManagerImpl;
 
 /**
  * ServiceDirectory client class.
@@ -184,7 +188,7 @@ public class ServiceDirectory {
         public static final String SD_API_HEARTBEAT_ENABLED_PROPERTY = "com.cisco.oss.foundation.directory.heartbeat.enabled";
 
         /**
-         * the default value of hearbeat enabled property value.
+         * the default value of heartbeat enabled property value.
          */
         public static final boolean SD_API_HEARTBEAT_ENABLED_DEFAULT = true;
 
@@ -194,7 +198,6 @@ public class ServiceDirectory {
         private static final ServiceDirectoryConfig GLOBE = new ServiceDirectoryConfig(defaultConfigLoadByFoundationRuntime);
         private final Configuration _apacheConfig;
 
-        //client user should not know it
         private ServiceDirectoryConfig(Configuration root) {
             _apacheConfig=root;
         }
@@ -202,25 +205,38 @@ public class ServiceDirectory {
             _apacheConfig = new BaseConfiguration();
         }
 
+        public ClientType getClientType(){
+            return ClientType.RESTFUL; // only restful in 1.2
+        }
         public ServiceDirectoryConfig setCacheEnabled(boolean cacheEnable){
             _set(SD_API_CACHE_ENABLED_PROPERTY, cacheEnable);
             return this;
         }
-        private void _set(String key, Object value){
-            if (this == GLOBE){
-                LOGGER.warn("GLOBE ServiceDirectoryConfig changed! '{}' => '{}'",key,value);
-            }
-            _apacheConfig.setProperty(key,value);
-        }
         public boolean isCacheEnabled(){
-            if (_apacheConfig.containsKey(SD_API_CACHE_ENABLED_PROPERTY)){
-                return _apacheConfig.getBoolean(SD_API_CACHE_ENABLED_PROPERTY);
-            }else{
-                return GLOBE.isCacheEnabled();
-            }
+            return _checkEnable(SD_API_CACHE_ENABLED_PROPERTY);
         }
-        public ClientType getClientType(){
-            return ClientType.RESTFUL; // only restful in 1.2
+        public ServiceDirectoryConfig setHeartbeatEnabled(boolean heartbeatEnable){
+            _set(SD_API_HEARTBEAT_ENABLED_PROPERTY,heartbeatEnable);
+            return this;
+        }
+        public boolean isHeartBeatEnabled(){
+            return _checkEnable(SD_API_HEARTBEAT_ENABLED_PROPERTY);
+        }
+        private void _set(String key, Object value){
+            _apacheConfig.setProperty(key,value);
+            if (this == GLOBE){
+                LOGGER.warn("GLOBE ServiceDirectoryConfig changed! '{}' = '{}'",key,value);
+            }
+         }
+        private boolean _checkEnable(String key){
+            if(_apacheConfig.containsKey(key)){
+                return _apacheConfig.getBoolean(key);
+            }else{
+                if (this==GLOBE){ //not found in GLOBE,throw ex
+                    throw new IllegalArgumentException("The Key"+key+"is not defined");
+                }
+                return GLOBE._checkEnable(key);
+            }
         }
 
         // the builder of SD
@@ -228,6 +244,7 @@ public class ServiceDirectory {
             return new ServiceDirectory(this);
         }
     }
+
     /*
      * SD Constructor by using SD Config
      * The constructor is protected by private, so that only
@@ -244,6 +261,7 @@ public class ServiceDirectory {
         if (_config.getClientType() == ServiceDirectoryConfig.ClientType.RESTFUL){
             return _restfulClient;
         }else{
+            //don't support other client type now.
             throw new IllegalStateException("UNKNOWN Client Type "+_config.getClientType());
         }
     }
@@ -255,9 +273,11 @@ public class ServiceDirectory {
         }
     }
     public RegistrationManager newRegistrationManager() throws ServiceException {
-        //TODO
-        return null;
+        if (_config.isHeartBeatEnabled()){
+            return new HeartbeatRegistrationManagerImpl(new HeartbeatDirectoryRegistrationService(getClient()));
+        }else{
+            return new RegistrationManagerImpl(new DirectoryRegistrationService(getClient()));
+        }
     }
-
 
 }

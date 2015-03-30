@@ -19,7 +19,15 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
+import com.cisco.oss.foundation.directory.LookupManager;
+import com.cisco.oss.foundation.directory.RegistrationManager;
+import com.cisco.oss.foundation.directory.ServiceDirectory;
+import com.cisco.oss.foundation.directory.exception.ServiceException;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Test for JDK 7 try-with-resource, so that we close resource
@@ -81,5 +89,46 @@ public class AutoCloseTest {
             myService.close();
         }
         assertEquals(4,invokerCount.get()); //closed after finally called
+    }
+
+
+    @Test
+    public void testAutoCloseForLookupManager(){
+
+        LookupManager lookupMgr = ServiceDirectory.config().build().newLookupManager();
+        lookupMgr.close(); //explicitly close
+
+        try (LookupManager lookupManager2 = ServiceDirectory.config().build().newLookupManager()){
+            assertTrue(lookupManager2.isStarted()); //started
+        }
+        //Auto-close OK
+
+        lookupMgr = ServiceDirectory.config().setCacheEnabled(false).build().newLookupManager();
+        try {
+            assertTrue(lookupMgr.isStarted()); //started
+            lookupMgr.close(); //explicitly close fail
+            fail(); //can't go here
+        }catch(ServiceException e){
+            assertEquals(true, e.getCause() instanceof ClassCastException);
+        }
+        assertFalse(lookupMgr.isStarted());
+
+        try {
+            try (LookupManager lookupManager = ServiceDirectory.config().setCacheEnabled(false).build().newLookupManager()) {
+                assertTrue(lookupManager.isStarted()); //started
+            }//auto-close failed
+            fail(); //can't go there, auto-close failed
+        }catch(ServiceException e){
+            assertEquals(true, e.getCause() instanceof ClassCastException);
+
+        }
+
+
+    }
+
+    @Test
+    public void testAutoCloseForRegistrationManager(){
+        RegistrationManager rMgr = ServiceDirectory.config().build().newRegistrationManager();
+        rMgr.close();
     }
 }

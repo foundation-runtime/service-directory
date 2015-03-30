@@ -22,7 +22,6 @@ package com.cisco.oss.foundation.directory.lookup;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +33,7 @@ import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
+import com.cisco.oss.foundation.directory.impl.AbstractServiceDirectoryManager;
 import com.cisco.oss.foundation.directory.impl.ServiceInstanceQueryHelper;
 import com.cisco.oss.foundation.directory.lb.LoadBalancerManager;
 import com.cisco.oss.foundation.directory.lb.ServiceInstanceLoadBalancer;
@@ -50,7 +50,7 @@ import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
  *
  *
  */
-public class LookupManagerImpl implements LookupManager, Stoppable{
+public class LookupManagerImpl extends AbstractServiceDirectoryManager implements LookupManager{
 
     public static final Logger LOGGER = LoggerFactory.getLogger(LookupManagerImpl.class);
 
@@ -64,17 +64,6 @@ public class LookupManagerImpl implements LookupManager, Stoppable{
      */
     private final DirectoryLookupService lookupService;
 
-    /**
-     * Mark component started or not
-     */
-    private final AtomicBoolean isStarted = new AtomicBoolean(false);
-
-    /**
-     * Mark the Manager is closed, when it closed, the manager can't use again.
-     */
-    private final AtomicBoolean isClosed = new AtomicBoolean(false);
-
-
     public LookupManagerImpl(DirectoryLookupService lookupService){
         this.lbManager = new LoadBalancerManager();
         this.lookupService = lookupService;
@@ -86,8 +75,8 @@ public class LookupManagerImpl implements LookupManager, Stoppable{
      */
     @Override
     public void start(){
-        isStarted.set(true);
-        LOGGER.info("Lookup Manager @{} is started", Integer.toHexString(hashCode()));
+        super.start();
+        LOGGER.info("Lookup Manager @{} is started", this);
     }
 
     /**
@@ -97,10 +86,9 @@ public class LookupManagerImpl implements LookupManager, Stoppable{
      */
     @Override
     public void stop(){
-        if (isStarted.compareAndSet(true, false)) {
-           ((Stoppable) getLookupService()).stop();
-           LOGGER.info("Lookup Manager @{} is stopped",Integer.toHexString(hashCode()));
-        }
+        super.stop();
+        ((Stoppable) getLookupService()).stop();
+        LOGGER.info("Lookup Manager @{} is stopped", this);
     }
 
     /**
@@ -423,21 +411,7 @@ public class LookupManagerImpl implements LookupManager, Stoppable{
     }
 
 
-    @Override
-    public void close() throws ServiceException {
-        try {
-            stop();
-        }catch(Throwable cause){
-            //TODO, close should have an ERROR Code
-            LOGGER.error("Lookup Manager @{} is failed to close", Integer.toHexString(hashCode()));
-            throw new ServiceException(ErrorCode.GENERAL_ERROR,cause,"STOP ERROR when try to close LookupManger %s",Integer.toHexString(hashCode()));
-        }
-        isClosed.set(true);
-        LOGGER.info("Lookup Manager @{} is closed",Integer.toHexString(hashCode()));
-    }
 
-    @Override
-    public boolean isStarted() throws ServiceException {
-        return isStarted.get();
-    }
+
+
 }

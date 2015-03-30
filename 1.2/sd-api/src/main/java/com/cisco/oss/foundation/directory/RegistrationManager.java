@@ -30,7 +30,7 @@ import com.cisco.oss.foundation.directory.exception.ServiceException;
  *
  *
  */
-public interface RegistrationManager {
+public interface RegistrationManager extends AutoCloseable {
 
     /**
      * Register a new ProvidedServiceInstance.
@@ -101,4 +101,11 @@ public interface RegistrationManager {
      * @throws ServiceException
      */
     public void unregisterService(String serviceName, String providerId) throws ServiceException;
+
+    /**
+     * close the registration Manager, This method is invoked automatically if using JDK7 try-with-resource
+     * @throws ServiceException when problem to close resource
+     */
+    @Override
+    void close() throws ServiceException;
 }

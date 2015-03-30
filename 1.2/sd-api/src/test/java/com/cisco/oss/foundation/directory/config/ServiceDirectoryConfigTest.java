@@ -20,14 +20,11 @@ import java.util.NoSuchElementException;
 import org.apache.commons.configuration.Configuration;
 import org.junit.Test;
 
-import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.ServiceDirectory;
-import com.cisco.oss.foundation.directory.exception.ServiceException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * TestCases to cover load configures from the config.properties file.
@@ -50,8 +47,12 @@ public class ServiceDirectoryConfigTest {
         assertFalse(config.containsKey("not_property"));
     }
 
+    // -----------------------
+    // New 1.2 Config tests
+    // -----------------------
+
     @Test
-    public void testNew12Config(){
+    public void testCacheConfig(){
 
         assertEquals(true, ServiceDirectory.globeConfig().isCacheEnabled());
         assertEquals(true, ServiceDirectory.config().isCacheEnabled());
@@ -70,38 +71,31 @@ public class ServiceDirectoryConfigTest {
         config.setCacheEnabled(true);
         assertEquals(true, config.isCacheEnabled());
         assertEquals(false, ServiceDirectory.globeConfig().isCacheEnabled());
-        ServiceDirectory.globeConfig().setCacheEnabled(true);
+        ServiceDirectory.globeConfig().setCacheEnabled(true);  //need to set back, otherwise, ald 1.1 test will failed
         assertEquals(true, ServiceDirectory.globeConfig().isCacheEnabled());
     }
 
     @Test
-    public void testBuildByConfig(){
+    public void testHeartBearConfig(){
+        //heart beat is enabled by default
+        assertTrue(ServiceDirectory.config().isHeartBeatEnabled());
+        assertTrue(ServiceDirectory.globeConfig().isHeartBeatEnabled());
 
-        LookupManager lookupMgr = ServiceDirectory.config().build().newLookupManager();
-        lookupMgr.close(); //explicitly close
+        ServiceDirectory.ServiceDirectoryConfig config = ServiceDirectory.config();
+        config.setHeartbeatEnabled(false);
+        assertFalse(config.isHeartBeatEnabled()); //current config is false
+        assertTrue(ServiceDirectory.globeConfig().isHeartBeatEnabled()); //globe is still true;
 
-        try (LookupManager lookupManager2 = ServiceDirectory.config().build().newLookupManager()){
-            assertTrue(lookupManager2.isStarted()); //started
-        }
-        //Auto-close OK
+        ServiceDirectory.globeConfig().setHeartbeatEnabled(false); //set globe false
 
-        lookupMgr = ServiceDirectory.config().setCacheEnabled(false).build().newLookupManager();
-        try {
-            assertTrue(lookupMgr.isStarted()); //started
-            lookupMgr.close(); //explicitly close fail
-            fail(); //can't go here
-        }catch(ServiceException e){
-            assertEquals(true, e.getCause() instanceof ClassCastException);
-        }
+        assertFalse(ServiceDirectory.globeConfig().isHeartBeatEnabled()); //globe is false;
+        assertFalse(ServiceDirectory.config().isHeartBeatEnabled());  //new config is false now;
 
-        try {
-            try (LookupManager lookupManager = ServiceDirectory.config().setCacheEnabled(false).build().newLookupManager()) {
-                assertFalse(lookupMgr.isStarted()); //fail to start
-            }//auto-close failed
-            fail(); //can't go there, auto-close failed
-        }catch(ServiceException e){
-            assertEquals(true, e.getCause() instanceof ClassCastException);
-        }
+        ServiceDirectory.globeConfig().setHeartbeatEnabled(true); //set globe back to true
+    }
 
+    @Test
+    public void testSDBuildByConfig(){
+        ServiceDirectory.config().build();
     }
 }
