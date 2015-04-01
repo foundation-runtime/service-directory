@@ -98,4 +98,16 @@ public class ServiceDirectoryConfigTest {
     public void testSDBuildByConfig(){
         ServiceDirectory.config().build();
     }
+
+    @Test
+    public void testClientType(){
+        //Default is restful
+        assertEquals(ServiceDirectory.ServiceDirectoryConfig.ClientType.RESTFUL,ServiceDirectory.config().getClientType());
+
+        //set to mock
+        ServiceDirectory.ServiceDirectoryConfig config = ServiceDirectory.config();
+        config.setClientType(ServiceDirectory.ServiceDirectoryConfig.ClientType.MOCK);
+        assertEquals(ServiceDirectory.ServiceDirectoryConfig.ClientType.MOCK,config.getClientType());
+
+    }
 }

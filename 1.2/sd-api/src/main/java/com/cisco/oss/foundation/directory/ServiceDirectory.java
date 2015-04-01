@@ -19,6 +19,9 @@
 
 package com.cisco.oss.foundation.directory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
 import org.slf4j.Logger;
@@ -26,9 +29,13 @@ import org.slf4j.LoggerFactory;
 
 import com.cisco.oss.foundation.configuration.ConfigurationFactory;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceMockClient;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
+import com.cisco.oss.foundation.directory.impl.AbstractServiceDirectoryManager;
+import com.cisco.oss.foundation.directory.impl.CloseListener;
 import com.cisco.oss.foundation.directory.impl.ServiceDirectoryImpl;
+import com.cisco.oss.foundation.directory.impl.ServiceDirectoryService;
 import com.cisco.oss.foundation.directory.lookup.CachedDirectoryLookupService;
 import com.cisco.oss.foundation.directory.lookup.CachedLookupManagerImpl;
 import com.cisco.oss.foundation.directory.lookup.DirectoryLookupService;
@@ -164,8 +171,11 @@ public class ServiceDirectory {
     // ------------
     // 1.2 API
     // ------------
+
     public static ServiceDirectoryConfig config(){ return new ServiceDirectoryConfig(); }
     public static ServiceDirectoryConfig globeConfig(){ return ServiceDirectoryConfig.GLOBE; }
+
+
 
     /**
      * SD is build by SDConfig
@@ -192,8 +202,20 @@ public class ServiceDirectory {
          */
         public static final boolean SD_API_HEARTBEAT_ENABLED_DEFAULT = true;
 
-        public enum ClientType{
-            RESTFUL //only support 1 kind of client in 1.2
+        /**
+         * The Client type property name
+         *
+         */
+        public static final String SD_API_CLIENT_TYPE_PROPERTY = "com.cisco.oss.foundation.directory.client.type";
+
+        /**
+         * The default value of Client type : RESTFUL
+         */
+        public static final String SD_API_CLIENT_TYPE_PROPERTY_DEFAULT = ClientType.RESTFUL.name();
+
+        public static enum ClientType{
+            RESTFUL, //only support 1 kind of client in 1.2
+            MOCK  //its used for unitTest, so that no actual request is send to server side
         }
         private static final ServiceDirectoryConfig GLOBE = new ServiceDirectoryConfig(defaultConfigLoadByFoundationRuntime);
         private final Configuration _apacheConfig;
@@ -206,7 +228,15 @@ public class ServiceDirectory {
         }
 
         public ClientType getClientType(){
-            return ClientType.RESTFUL; // only restful in 1.2
+            try {
+                return ClientType.valueOf(_get(SD_API_CLIENT_TYPE_PROPERTY));
+            }catch (Exception e){
+                throw new IllegalArgumentException("Unknown Client type");
+            }
+        }
+        public ServiceDirectoryConfig setClientType(ClientType clientType){
+            _set(SD_API_CLIENT_TYPE_PROPERTY,clientType.name());
+            return this;
         }
         public ServiceDirectoryConfig setCacheEnabled(boolean cacheEnable){
             _set(SD_API_CACHE_ENABLED_PROPERTY, cacheEnable);
@@ -227,15 +257,24 @@ public class ServiceDirectory {
             if (this == GLOBE){
                 LOGGER.warn("GLOBE ServiceDirectoryConfig changed! '{}' = '{}'",key,value);
             }
-         }
-        private boolean _checkEnable(String key){
-            if(_apacheConfig.containsKey(key)){
-                return _apacheConfig.getBoolean(key);
+        }
+        private String _get(String key){
+            if (_apacheConfig.containsKey(key)){
+                return _apacheConfig.getProperty(key).toString();
             }else{
-                if (this==GLOBE){ //not found in GLOBE,throw ex
-                    throw new IllegalArgumentException("The Key"+key+"is not defined");
+                if (this==GLOBE){ // not found in GLOBE, throw ex
+                    throw new IllegalArgumentException("Unknown Service Directory configuration key '"+key+"'");
+
                 }
-                return GLOBE._checkEnable(key);
+                return GLOBE._get(key);
+            }
+        }
+        private boolean _checkEnable(String key){
+            String value = _get(key); //not null guaranteed
+            if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) { //protector of Boolean.valuesOf/parseBoolean
+                return Boolean.valueOf(value);
+            } else {
+                throw new IllegalArgumentException("The Service Directory configuration key '" + key + "'="+value+" is not boolean type");
             }
         }
 
@@ -252,24 +291,79 @@ public class ServiceDirectory {
      */
     private ServiceDirectory(ServiceDirectoryConfig config){
             this._config = config;
+            if (_config.isCacheEnabled()){
+                this._lookUpService = new CachedDirectoryLookupService(getClient());
+            }else{
+                this._lookUpService = new DirectoryLookupService(getClient());
+            }
+
     }
 
+    private final List<LookupManager> lookupManagerReferences = new ArrayList<>();
+    private final List<RegistrationManager> RegistrationManagerReferences = new ArrayList<>();
+
+    private final CloseListener managerCloseListener = new CloseListener(){
+        @Override
+        public void fireServiceClose(ServiceDirectoryService service) {
+            service.stop();
+        }
+        @Override
+        public void onManagerClose(AbstractServiceDirectoryManager manager) {
+            if (manager instanceof LookupManager) {
+                synchronized (lookupManagerReferences) {
+                    if (lookupManagerReferences.contains(manager)) {
+                        lookupManagerReferences.remove(manager);
+                        manager.stop();
+                    }
+                    if (lookupManagerReferences.size() == 0) {
+                        // when all lookup manager closed, fire service close
+                        fireServiceClose(manager.getService());
+                    }
+                }
+            }else if (manager instanceof RegistrationManager){
+                //TODO, handle Registration Mangers
+            }else{
+                throw new IllegalStateException("Unknown manager "+manager);
+            }
+        }
+
+    };
+
     private final ServiceDirectoryConfig _config;
+    private final DirectoryLookupService _lookUpService;
     private static final DirectoryServiceClient _restfulClient = new DirectoryServiceRestfulClient();
+    private static final DirectoryServiceClient _mockClient = new DirectoryServiceMockClient();
 
     DirectoryServiceClient getClient(){
-        if (_config.getClientType() == ServiceDirectoryConfig.ClientType.RESTFUL){
-            return _restfulClient;
-        }else{
-            //don't support other client type now.
-            throw new IllegalStateException("UNKNOWN Client Type "+_config.getClientType());
+        DirectoryServiceClient client;
+        switch (_config.getClientType()) {
+            case RESTFUL:
+                client=_restfulClient;
+                break;
+            case MOCK:
+                client=_mockClient;
+                break;
+            default:
+                //don't support other client type now.
+                throw new IllegalStateException("UNKNOWN Client Type "+_config.getClientType());
         }
+        return client;
+    }
+    DirectoryLookupService getLookupService(){
+        return this._lookUpService;
     }
     public LookupManager newLookupManager() throws ServiceException {
         if (_config.isCacheEnabled()){
-            return new CachedLookupManagerImpl(new CachedDirectoryLookupService(getClient()));
+            //TODO, fix the force conversion
+            CachedLookupManagerImpl cachedMgr = new CachedLookupManagerImpl((CachedDirectoryLookupService)getLookupService());
+            cachedMgr.setCloseListener(managerCloseListener);
+            lookupManagerReferences.add(cachedMgr);
+            return cachedMgr;
         }else {
-            return new LookupManagerImpl(new DirectoryLookupService(getClient()));
+            LookupManagerImpl mgr =  new LookupManagerImpl(getLookupService());
+            mgr.setCloseListener(managerCloseListener);
+            lookupManagerReferences.add(mgr);
+            return mgr;
         }
     }
     public RegistrationManager newRegistrationManager() throws ServiceException {

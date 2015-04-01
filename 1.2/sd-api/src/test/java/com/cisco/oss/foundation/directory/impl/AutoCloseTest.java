@@ -15,6 +15,7 @@
  */
 package com.cisco.oss.foundation.directory.impl;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
@@ -28,6 +29,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
+
+import static com.cisco.oss.foundation.directory.ServiceDirectory.ServiceDirectoryConfig.ClientType.MOCK;
 
 /**
  * Test for JDK 7 try-with-resource, so that we close resource
@@ -91,38 +94,62 @@ public class AutoCloseTest {
         assertEquals(4,invokerCount.get()); //closed after finally called
     }
 
+    @Test
+    public void testAutoCloseForLookupMangerNoCache(){
+        LookupManager lookupMgr = ServiceDirectory.config().setCacheEnabled(false).build().newLookupManager();
+        assertTrue(lookupMgr.isStarted()); //started
+        lookupMgr.close(); //explicitly close fail
+        assertFalse(lookupMgr.isStarted());
+
+
+        try (LookupManager lookupManager = ServiceDirectory.config().setCacheEnabled(false).build().newLookupManager()) {
+            assertTrue(lookupManager.isStarted()); //started
+        }//auto-closed
+
+    }
 
     @Test
-    public void testAutoCloseForLookupManager(){
+    public void testAutoCloseForCachedLookupManagerSingle() throws Exception {
 
-        LookupManager lookupMgr = ServiceDirectory.config().build().newLookupManager();
+        LookupManager lookupMgr = ServiceDirectory.config().setClientType(MOCK).build().newLookupManager();
+        TimeUnit.SECONDS.sleep(3L);
         lookupMgr.close(); //explicitly close
 
-        try (LookupManager lookupManager2 = ServiceDirectory.config().build().newLookupManager()){
+        try (LookupManager lookupManager2 = ServiceDirectory.config().setClientType(MOCK).build().newLookupManager()) {
+            TimeUnit.SECONDS.sleep(3L);
             assertTrue(lookupManager2.isStarted()); //started
         }
         //Auto-close OK
 
-        lookupMgr = ServiceDirectory.config().setCacheEnabled(false).build().newLookupManager();
-        try {
-            assertTrue(lookupMgr.isStarted()); //started
-            lookupMgr.close(); //explicitly close fail
-            fail(); //can't go here
-        }catch(ServiceException e){
-            assertEquals(true, e.getCause() instanceof ClassCastException);
+        //Use the same SD instance
+    }
+    @Test
+    public void testAutoCloseForCachedLookupManagerMultiple() throws Exception{
+
+        ServiceDirectory instance = ServiceDirectory.config().setClientType(MOCK).build();
+        try(LookupManager mgr1 = instance.newLookupManager(); LookupManager mgr2 = instance.newLookupManager()){
+            TimeUnit.SECONDS.sleep(3L);
+            assertTrue(mgr1.isStarted());
+            assertTrue(mgr2.isStarted());
         }
-        assertFalse(lookupMgr.isStarted());
+        // cache service is stopped only when all mgrs closed
 
-        try {
-            try (LookupManager lookupManager = ServiceDirectory.config().setCacheEnabled(false).build().newLookupManager()) {
-                assertTrue(lookupManager.isStarted()); //started
-            }//auto-close failed
-            fail(); //can't go there, auto-close failed
-        }catch(ServiceException e){
-            assertEquals(true, e.getCause() instanceof ClassCastException);
+        ServiceDirectory instance2 = ServiceDirectory.config().setClientType(MOCK).build();
+        TimeUnit.SECONDS.sleep(3L);
+        assertTrue(instance2.newLookupManager().isStarted());
+        assertTrue(instance2.newLookupManager().isStarted());
+        // cache service shutdown is not called
 
-        }
 
+        ServiceDirectory instance3 = ServiceDirectory.config().setClientType(MOCK).build();
+        TimeUnit.SECONDS.sleep(3L);
+        LookupManager m1 =  instance3.newLookupManager();
+        LookupManager m2 =  instance3.newLookupManager();
+        assertTrue(m1.isStarted());
+        assertTrue(m2.isStarted());
+        m1.close();
+        m2.close();
+        // cache service is shutdown if all mgr are explicitly closed()
 
     }
 
@@ -130,5 +157,17 @@ public class AutoCloseTest {
     public void testAutoCloseForRegistrationManager(){
         RegistrationManager rMgr = ServiceDirectory.config().build().newRegistrationManager();
         rMgr.close();
+
+        try (RegistrationManager regMgr = ServiceDirectory.config().build().newRegistrationManager()){
+            regMgr.updateServiceUri("foo","foo","foo"); //error
+            fail(); //can't go here
+        }catch(ServiceException e){};
+        //resource auto-released
+
+        try (RegistrationManager noHeartBeatRegMgr = ServiceDirectory.config().setHeartbeatEnabled(false)
+                .build().newRegistrationManager()){
+            noHeartBeatRegMgr.updateServiceUri("foo", "foo", "foo"); //error
+            fail();
+        }catch(ServiceException e){};
     }
 }

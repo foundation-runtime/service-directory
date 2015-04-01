@@ -34,6 +34,7 @@ import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
+import com.cisco.oss.foundation.directory.impl.ServiceDirectoryService;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 
 /**
@@ -43,7 +44,7 @@ import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
  *
  *
  */
-public class DirectoryLookupService {
+public class DirectoryLookupService extends ServiceDirectoryService {
 
     /**
      * The DirectoryServiceClientManager to get the DirectoryServiceClient.

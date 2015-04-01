@@ -148,7 +148,9 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     @Override
     public void stop(){
         if (isStarted.compareAndSet(true,false)) {
+            // if you shutdown it, it can not be use anymore
             this.syncService.shutdown();
+            LOGGER.info("Cache sync Service is shutdown");
             getCache().clear();
             getMetadataKeyCache().clear();
         }
@@ -208,6 +210,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 
         syncService.scheduleWithFixedDelay(new CacheSyncTask(),
                 delay, interval, TimeUnit.SECONDS);
+        LOGGER.info("Cache sync Service is started");
     }
 
     /**

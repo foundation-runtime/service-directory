@@ -41,6 +41,12 @@ public abstract class AbstractServiceDirectoryManager implements Stoppable, Auto
      */
     protected final AtomicBoolean isClosed = new AtomicBoolean(false);
 
+    private CloseListener _listener;
+
+    public synchronized void setCloseListener(CloseListener listener){
+        this._listener = listener;
+    }
+
     @Override
     public void start() {
         isStarted.set(true);
@@ -58,7 +64,7 @@ public abstract class AbstractServiceDirectoryManager implements Stoppable, Auto
     @Override
     public void close() throws ServiceException {
         try {
-            stop();
+            fireClose();
         }catch(Throwable cause){
             //TODO, close should have an ERROR Code
             LOGGER.error("{} is failed to close", this);
@@ -68,8 +74,16 @@ public abstract class AbstractServiceDirectoryManager implements Stoppable, Auto
         LOGGER.info("{} is closed",this);
     }
 
+    protected void fireClose() {
+        if (_listener!=null) {
+            _listener.onManagerClose(this);
+        }
+    }
+
     @Override
     public String toString() {
         return getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
     }
+
+    public abstract ServiceDirectoryService getService();
 }

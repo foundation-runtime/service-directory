@@ -28,7 +28,7 @@ import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.impl.AbstractServiceDirectoryManager;
-import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
+import com.cisco.oss.foundation.directory.impl.ServiceDirectoryService;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 /**
  * The RegistrationManager implementation.
@@ -50,6 +50,7 @@ public class RegistrationManagerImpl extends AbstractServiceDirectoryManager imp
      */
     public RegistrationManagerImpl(DirectoryRegistrationService service) {
         this.registrationService = service;
+        start();
     }
 
     /**
@@ -67,8 +68,14 @@ public class RegistrationManagerImpl extends AbstractServiceDirectoryManager imp
      */
     @Override
     public void stop(){
-        ((Stoppable) getRegistrationService()).stop();
+        //TODO, don't stop service here, use new closeListener
+        getRegistrationService().stop();
         LOGGER.info("Registration Manager @{} is stopped", this);
+    }
+
+    @Override
+    public ServiceDirectoryService getService() {
+        return getRegistrationService();
     }
 
     /**

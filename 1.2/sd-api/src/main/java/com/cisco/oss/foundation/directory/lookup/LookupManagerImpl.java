@@ -13,10 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-
-
-
 package com.cisco.oss.foundation.directory.lookup;
 
 import java.util.ArrayList;
@@ -34,10 +30,10 @@ import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.impl.AbstractServiceDirectoryManager;
+import com.cisco.oss.foundation.directory.impl.ServiceDirectoryService;
 import com.cisco.oss.foundation.directory.impl.ServiceInstanceQueryHelper;
 import com.cisco.oss.foundation.directory.lb.LoadBalancerManager;
 import com.cisco.oss.foundation.directory.lb.ServiceInstanceLoadBalancer;
-import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 import com.cisco.oss.foundation.directory.query.QueryCriterion;
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery.ContainQueryCriterion;
@@ -64,6 +60,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
      */
     private final DirectoryLookupService lookupService;
 
+
     public LookupManagerImpl(DirectoryLookupService lookupService){
         this.lbManager = new LoadBalancerManager();
         this.lookupService = lookupService;
@@ -87,8 +84,12 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
     @Override
     public void stop(){
         super.stop();
-        ((Stoppable) getLookupService()).stop();
         LOGGER.info("Lookup Manager @{} is stopped", this);
+    }
+
+    @Override
+    public ServiceDirectoryService getService() {
+        return getLookupService();
     }
 
     /**
@@ -409,9 +410,5 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
             }
         }
     }
-
-
-
-
 
 }

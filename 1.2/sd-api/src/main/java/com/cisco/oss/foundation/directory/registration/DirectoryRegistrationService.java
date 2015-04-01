@@ -25,6 +25,7 @@ import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
+import com.cisco.oss.foundation.directory.impl.ServiceDirectoryService;
 
 import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
 
@@ -35,7 +36,7 @@ import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDire
  *
  *
  */
-public class DirectoryRegistrationService {
+public class DirectoryRegistrationService extends ServiceDirectoryService{
 
     /**
      * The property to disable the ILLEGAL_SERVICE_INSTANCE_OWNER_ERROR error in the Directory tool.
@@ -102,7 +103,7 @@ public class DirectoryRegistrationService {
      */
     public void registerService(ProvidedServiceInstance serviceInstance, ServiceInstanceHealth registryHealth) {
         // Monitor disabled ProvidedServiceInstance should not have the ServiceInstanceHealth.
-        if(serviceInstance.isMonitorEnabled()== false){
+        if(!serviceInstance.isMonitorEnabled()){
             throw new ServiceException(ErrorCode.SERVICE_INSTANCE_HEALTH_ERROR);
         }
         registerService(serviceInstance);
