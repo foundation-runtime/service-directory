@@ -19,8 +19,10 @@
 
 package com.cisco.oss.foundation.directory;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.configuration.BaseConfiguration;
 import org.apache.commons.configuration.Configuration;
@@ -29,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import com.cisco.oss.foundation.configuration.ConfigurationFactory;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceClientProvider;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceMockClient;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
@@ -215,7 +218,8 @@ public class ServiceDirectory {
 
         public static enum ClientType{
             RESTFUL, //only support 1 kind of client in 1.2
-            MOCK  //its used for unitTest, so that no actual request is send to server side
+            MOCK,  //its used for unitTest, so that no actual request is send to server side
+            PROVIDED, //user will supply a customized Client by using ClientProvider interface.
         }
         private static final ServiceDirectoryConfig GLOBE = new ServiceDirectoryConfig(defaultConfigLoadByFoundationRuntime);
         private final Configuration _apacheConfig;
@@ -331,9 +335,20 @@ public class ServiceDirectory {
 
     private final ServiceDirectoryConfig _config;
     private final DirectoryLookupService _lookUpService;
+
+    // ----------------------
+    // DirectoryServiceClient
+    // ----------------------
     private static final DirectoryServiceClient _restfulClient = new DirectoryServiceRestfulClient();
     private static final DirectoryServiceClient _mockClient = new DirectoryServiceMockClient();
-
+    private static final AtomicReference<DirectoryServiceClientProvider> _clientProvider =
+            new AtomicReference<>();
+    public static void setClientProvider(DirectoryServiceClientProvider provider){
+        if (provider==null){
+            throw new IllegalArgumentException("DirectoryServiceClientProvider can't be null");
+        }
+        _clientProvider.set(provider);
+    }
     DirectoryServiceClient getClient(){
         DirectoryServiceClient client;
         switch (_config.getClientType()) {
@@ -342,6 +357,14 @@ public class ServiceDirectory {
                 break;
             case MOCK:
                 client=_mockClient;
+                break;
+            case PROVIDED:
+                DirectoryServiceClientProvider provider = _clientProvider.get();
+                if (provider!=null){
+                    client=provider.getClient();
+                }else{
+                    throw new IllegalStateException("No DirectoryServiceClientProvider is set up for Client Type PROVIDED");
+                }
                 break;
             default:
                 //don't support other client type now.
@@ -352,6 +375,7 @@ public class ServiceDirectory {
     DirectoryLookupService getLookupService(){
         return this._lookUpService;
     }
+
     public LookupManager newLookupManager() throws ServiceException {
         if (_config.isCacheEnabled()){
             //TODO, fix the force conversion
