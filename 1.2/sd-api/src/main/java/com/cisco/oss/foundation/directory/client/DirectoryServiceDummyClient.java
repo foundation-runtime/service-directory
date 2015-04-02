@@ -18,9 +18,9 @@ import com.cisco.oss.foundation.directory.entity.ServiceInstanceHeartbeat;
 /**
  * The Client is useful for unit-testing propose. The calling of the API will be logged
  */
-public class DirectoryServiceMockClient implements DirectoryServiceClient {
+public class DirectoryServiceDummyClient implements DirectoryServiceClient {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(DirectoryServiceMockClient.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(DirectoryServiceDummyClient.class);
 
     @Override
     public void registerInstance(ProvidedServiceInstance instance) {

@@ -8,8 +8,7 @@ import org.junit.Test;
 import com.cisco.oss.foundation.directory.ServiceDirectory;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceClientProvider;
-import com.cisco.oss.foundation.directory.client.DirectoryServiceMockClient;
-import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceDummyClient;
 import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.OperationResult;
 
@@ -21,7 +20,7 @@ import static com.cisco.oss.foundation.directory.ServiceDirectory.ServiceDirecto
  */
 public class NotificationTest {
 
-    private static final DirectoryServiceMockClient notificationTestMockClient = new DirectoryServiceMockClient(){
+    private static final DirectoryServiceDummyClient notificationTestMockClient = new DirectoryServiceDummyClient(){
         @Override
         public Map<String, OperationResult<ModelService>> getChangedServices(Map<String, ModelService> services) {
             //TODO: implements of logic which can used for unit-test

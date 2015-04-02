@@ -30,7 +30,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import static com.cisco.oss.foundation.directory.ServiceDirectory.ServiceDirectoryConfig.ClientType.MOCK;
+import static com.cisco.oss.foundation.directory.ServiceDirectory.ServiceDirectoryConfig.ClientType.DUMMY;
 
 /**
  * Test for JDK 7 try-with-resource, so that we close resource
@@ -111,11 +111,11 @@ public class AutoCloseTest {
     @Test
     public void testAutoCloseForCachedLookupManagerSingle() throws Exception {
 
-        LookupManager lookupMgr = ServiceDirectory.config().setClientType(MOCK).build().newLookupManager();
+        LookupManager lookupMgr = ServiceDirectory.config().setClientType(DUMMY).build().newLookupManager();
         TimeUnit.SECONDS.sleep(3L);
         lookupMgr.close(); //explicitly close
 
-        try (LookupManager lookupManager2 = ServiceDirectory.config().setClientType(MOCK).build().newLookupManager()) {
+        try (LookupManager lookupManager2 = ServiceDirectory.config().setClientType(DUMMY).build().newLookupManager()) {
             TimeUnit.SECONDS.sleep(3L);
             assertTrue(lookupManager2.isStarted()); //started
         }
@@ -126,7 +126,7 @@ public class AutoCloseTest {
     @Test
     public void testAutoCloseForCachedLookupManagerMultiple() throws Exception{
 
-        ServiceDirectory instance = ServiceDirectory.config().setClientType(MOCK).build();
+        ServiceDirectory instance = ServiceDirectory.config().setClientType(DUMMY).build();
         try(LookupManager mgr1 = instance.newLookupManager(); LookupManager mgr2 = instance.newLookupManager()){
             TimeUnit.SECONDS.sleep(3L);
             assertTrue(mgr1.isStarted());
@@ -134,14 +134,14 @@ public class AutoCloseTest {
         }
         // cache service is stopped only when all mgrs closed
 
-        ServiceDirectory instance2 = ServiceDirectory.config().setClientType(MOCK).build();
+        ServiceDirectory instance2 = ServiceDirectory.config().setClientType(DUMMY).build();
         TimeUnit.SECONDS.sleep(3L);
         assertTrue(instance2.newLookupManager().isStarted());
         assertTrue(instance2.newLookupManager().isStarted());
         // cache service shutdown is not called
 
 
-        ServiceDirectory instance3 = ServiceDirectory.config().setClientType(MOCK).build();
+        ServiceDirectory instance3 = ServiceDirectory.config().setClientType(DUMMY).build();
         TimeUnit.SECONDS.sleep(3L);
         LookupManager m1 =  instance3.newLookupManager();
         LookupManager m2 =  instance3.newLookupManager();

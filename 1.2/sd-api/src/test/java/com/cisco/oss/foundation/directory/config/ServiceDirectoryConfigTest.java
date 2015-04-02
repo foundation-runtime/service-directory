@@ -106,8 +106,8 @@ public class ServiceDirectoryConfigTest {
 
         //set to mock
         ServiceDirectory.ServiceDirectoryConfig config = ServiceDirectory.config();
-        config.setClientType(ServiceDirectory.ServiceDirectoryConfig.ClientType.MOCK);
-        assertEquals(ServiceDirectory.ServiceDirectoryConfig.ClientType.MOCK,config.getClientType());
+        config.setClientType(ServiceDirectory.ServiceDirectoryConfig.ClientType.DUMMY);
+        assertEquals(ServiceDirectory.ServiceDirectoryConfig.ClientType.DUMMY,config.getClientType());
 
     }
 }

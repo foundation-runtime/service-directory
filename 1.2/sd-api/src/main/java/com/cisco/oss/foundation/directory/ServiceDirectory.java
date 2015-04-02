@@ -19,7 +19,6 @@
 
 package com.cisco.oss.foundation.directory;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -32,7 +31,7 @@ import org.slf4j.LoggerFactory;
 import com.cisco.oss.foundation.configuration.ConfigurationFactory;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceClientProvider;
-import com.cisco.oss.foundation.directory.client.DirectoryServiceMockClient;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceDummyClient;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.impl.AbstractServiceDirectoryManager;
@@ -218,7 +217,7 @@ public class ServiceDirectory {
 
         public static enum ClientType{
             RESTFUL, //only support 1 kind of client in 1.2
-            MOCK,  //its used for unitTest, so that no actual request is send to server side
+            DUMMY,  //its used for unitTest, so that no actual request is send to server side
             PROVIDED, //user will supply a customized Client by using ClientProvider interface.
         }
         private static final ServiceDirectoryConfig GLOBE = new ServiceDirectoryConfig(defaultConfigLoadByFoundationRuntime);
@@ -336,11 +335,17 @@ public class ServiceDirectory {
     private final ServiceDirectoryConfig _config;
     private final DirectoryLookupService _lookUpService;
 
-    // ----------------------
+    // -----------------------
     // DirectoryServiceClient
-    // ----------------------
+    // -----------------------
+
+    /** restful (http) client */
     private static final DirectoryServiceClient _restfulClient = new DirectoryServiceRestfulClient();
-    private static final DirectoryServiceClient _mockClient = new DirectoryServiceMockClient();
+
+    /** dummy client */
+    private static final DirectoryServiceClient _dummyClient = new DirectoryServiceDummyClient();
+
+    /** provided client */
     private static final AtomicReference<DirectoryServiceClientProvider> _clientProvider =
             new AtomicReference<>();
     public static void setClientProvider(DirectoryServiceClientProvider provider){
@@ -349,14 +354,15 @@ public class ServiceDirectory {
         }
         _clientProvider.set(provider);
     }
+
     DirectoryServiceClient getClient(){
         DirectoryServiceClient client;
         switch (_config.getClientType()) {
             case RESTFUL:
                 client=_restfulClient;
                 break;
-            case MOCK:
-                client=_mockClient;
+            case DUMMY:
+                client= _dummyClient;
                 break;
             case PROVIDED:
                 DirectoryServiceClientProvider provider = _clientProvider.get();
@@ -372,6 +378,7 @@ public class ServiceDirectory {
         }
         return client;
     }
+
     DirectoryLookupService getLookupService(){
         return this._lookUpService;
     }
