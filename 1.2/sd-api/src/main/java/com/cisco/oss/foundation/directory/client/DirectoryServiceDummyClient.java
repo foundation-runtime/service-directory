@@ -20,7 +20,7 @@ import com.cisco.oss.foundation.directory.entity.ServiceInstanceHeartbeat;
  */
 public class DirectoryServiceDummyClient implements DirectoryServiceClient {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(DirectoryServiceDummyClient.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DirectoryServiceDummyClient.class);
 
     @Override
     public void registerInstance(ProvidedServiceInstance instance) {
@@ -50,7 +50,7 @@ public class DirectoryServiceDummyClient implements DirectoryServiceClient {
     @Override
     public Map<String, OperationResult<String>> sendHeartBeat(Map<String, ServiceInstanceHeartbeat> heartbeatMap) {
         LOGGER.info("sendHeartBeat {}",heartbeatMap);
-        return Collections.EMPTY_MAP;
+        return Collections.emptyMap();
     }
 
     @Override
@@ -62,7 +62,7 @@ public class DirectoryServiceDummyClient implements DirectoryServiceClient {
     @Override
     public List<ModelServiceInstance> getAllInstances() {
         LOGGER.info("getAllInstances");
-        return Collections.EMPTY_LIST;
+        return Collections.emptyList();
     }
 
     @Override
@@ -74,13 +74,13 @@ public class DirectoryServiceDummyClient implements DirectoryServiceClient {
     @Override
     public Map<String, OperationResult<ModelService>> getChangedServices(Map<String, ModelService> services) {
         LOGGER.info("getChangedServices {}",services);
-        return Collections.EMPTY_MAP;
+        return Collections.emptyMap();
     }
 
     @Override
     public Map<String, OperationResult<ModelMetadataKey>> getChangedMetadataKeys(Map<String, ModelMetadataKey> keys) {
         LOGGER.info("getChangedMetadataKeys {}",keys);
-        return Collections.EMPTY_MAP;
+        return Collections.emptyMap();
     }
 
     @Override
