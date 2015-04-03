@@ -369,10 +369,10 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                             }
                         }
                     } else {
-                        LOGGER.info("No MetadataKey is changed.");
+                        LOGGER.debug("No MetadataKey is changed.");
                     }
                 } else {
-                    LOGGER.info("No MetadataKey in the cache, skip cache sync.");
+                    LOGGER.debug("No MetadataKey in the cache, skip cache sync.");
                 }
             }catch(Exception e){
                 LOGGER.error("Sync ModelMetadataKey cache from ServiceDirectory Server failed. ", e);

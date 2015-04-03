@@ -310,16 +310,12 @@ public class LookupManagerImpl implements LookupManager, Stoppable {
         
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
 
-        List<ServiceInstance> instances = null;
+        List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
         List<ModelServiceInstance> allInstances = getLookupService().getAllInstances();
         for (ModelServiceInstance serviceInstance : allInstances) {
-            instances = new ArrayList<ServiceInstance>();
             instances.add(ServiceInstanceUtils.toServiceInstance(serviceInstance));
         }
         
-        if (instances == null) {
-            return Collections.<ServiceInstance>emptyList();
-        }
         return instances;
     }
 
