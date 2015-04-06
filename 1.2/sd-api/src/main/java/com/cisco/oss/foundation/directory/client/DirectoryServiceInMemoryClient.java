@@ -7,8 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.concurrent.ConcurrentMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,11 +37,8 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
      * in-memory registry store
      * K1 -> Service Name , K2 -> ProviderId
      */
-    private final ConcurrentHashMap<String, Map<String, ModelServiceInstance>> inMemoryRegistry = new
+    private final ConcurrentMap<String, ConcurrentMap<String, ModelServiceInstance>> inMemoryRegistry = new
             ConcurrentHashMap<>();
-    private final ReentrantReadWriteLock readWriteLock = new ReentrantReadWriteLock();
-    private final Lock read = readWriteLock.readLock();
-    private final Lock write = readWriteLock.writeLock();
 
     // ----------------------
     //  internal helper methods to convert between model-instance and provided-instance
@@ -51,16 +47,17 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
     //TODO refactor ModelService/ModelServiceInstance itself
     //TODO merge the instance/modelInstance conversion methods when we refactor model.
     //for now, use the internal methods created here
-    private static ModelService _newModelService(String serviceName){
+    private static ModelService _newModelService(String serviceName) {
         // TODO might changed in the future
         // in current sd-service implementation, the 'id' equals 'serviceName'
         // so we keep the pattern,
         // TODO the create/modify time for service are redundancies, in instance level will do
         // use 0L 1970-Jun-01 as created time. (should not depends on it)
-        return new ModelService(serviceName,serviceName,new Date(0L));
+        return new ModelService(serviceName, serviceName, new Date(0L));
 
     }
-    private static ModelServiceInstance _newModelInstanceFrom(ProvidedServiceInstance instance){
+
+    private static ModelServiceInstance _newModelInstanceFrom(ProvidedServiceInstance instance) {
 
         ModelServiceInstance mInstance = new ModelServiceInstance();
 
@@ -94,59 +91,58 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
 
         return mInstance;
     }
-    private ProvidedServiceInstance _toProvidedInstance(ModelServiceInstance mInstance){
-        return new ProvidedServiceInstance(mInstance.getServiceName(),mInstance.getAddress(),
-                mInstance.getPort(),mInstance.getUri(),mInstance.getStatus(),
+
+    private ProvidedServiceInstance _toProvidedInstance(ModelServiceInstance mInstance) {
+        return new ProvidedServiceInstance(mInstance.getServiceName(), mInstance.getAddress(),
+                mInstance.getPort(), mInstance.getUri(), mInstance.getStatus(),
                 //TODO, do not support metadata for now
-                Collections.<String,String>emptyMap());
+                Collections.<String, String>emptyMap());
     }
 
+    private static String objHashStr(Object o) {
+        return o.getClass().getSimpleName() + "@" + Integer.toHexString(o.hashCode());
+    }
 
     @Override
     public void registerInstance(ProvidedServiceInstance instance) {
-        try {
-            read.lock();
-            String serviceName = instance.getServiceName();
-            inMemoryRegistry.putIfAbsent(serviceName, new HashMap<String, ModelServiceInstance>());
-            Map<String, ModelServiceInstance> iMap = inMemoryRegistry.get(serviceName);
-            if (iMap.containsKey(instance.getProviderId())) {
-                //already exist
-                LOGGER.warn("ModelServiceInstance id {} already exist", instance.getProviderId());
-            } else {
-                iMap.put(instance.getProviderId(),_newModelInstanceFrom(instance));
-            }
-        } finally {
-            read.unlock();
+        String serviceName = instance.getServiceName();
+        ConcurrentMap<String, ModelServiceInstance> previousMap = inMemoryRegistry.putIfAbsent(serviceName, new ConcurrentHashMap<String, ModelServiceInstance>());
+        if (previousMap==null){
+            LOGGER.debug("new service Map is created for {}",serviceName);
+        }
+        ConcurrentMap<String, ModelServiceInstance> iMap = inMemoryRegistry.get(serviceName);
+        ModelServiceInstance newInstance = _newModelInstanceFrom(instance);
+        ModelServiceInstance previous = iMap.putIfAbsent(instance.getProviderId(), newInstance);
+        if (previous != null) {
+            LOGGER.debug("ModelServiceInstance id {} already registered by {} ", instance.getProviderId(), objHashStr(previous));
+        } else {
+            LOGGER.debug("Registered new ModelServiceInstance {} with id {} ", objHashStr(newInstance), instance.getProviderId());
         }
 
     }
 
     @Override
     public void updateInstance(ProvidedServiceInstance instance) {
-        try {
-            read.lock();
-            String serviceName = instance.getServiceName();
-            Map<String, ModelServiceInstance> iMap = inMemoryRegistry.get(serviceName);
-            if (iMap == null) {
-                LOGGER.warn("Service {} not exist", serviceName);
+        String serviceName = instance.getServiceName();
+        Map<String, ModelServiceInstance> iMap = inMemoryRegistry.get(serviceName);
+        if (iMap == null) {
+            LOGGER.debug("Service {} not exist", serviceName);
+        } else {
+            ModelServiceInstance mInstance = iMap.get(instance.getProviderId());
+            if (mInstance == null) {
+                LOGGER.debug("ModelServiceInstance is not found by {}", instance.getProviderId());
             } else {
-                ModelServiceInstance mInstance = iMap.get(instance.getProviderId());
-                if (mInstance == null) {
-                    LOGGER.warn("ModelServiceInstance is not found by {}", instance.getProviderId());
-                } else {
-                    mInstance.setServiceName(instance.getServiceName());
-                    mInstance.setAddress(instance.getAddress());
-                    mInstance.setPort(instance.getPort());
-                    mInstance.setStatus(instance.getStatus());
-                    mInstance.setUri(instance.getUri());
-                    mInstance.setId(instance.getProviderId());
-                    mInstance.setInstanceId(instance.getProviderId());
-                    mInstance.setModifiedTime(new Date());
-                    mInstance.setMetadata(instance.getMetadata());
-                }
+                mInstance.setServiceName(instance.getServiceName());
+                mInstance.setAddress(instance.getAddress());
+                mInstance.setPort(instance.getPort());
+                mInstance.setStatus(instance.getStatus());
+                mInstance.setUri(instance.getUri());
+                mInstance.setId(instance.getProviderId());
+                mInstance.setInstanceId(instance.getProviderId());
+                mInstance.setModifiedTime(new Date());
+                mInstance.setMetadata(instance.getMetadata());
+                LOGGER.debug("ModelServiceInstance {} is update by {}", objHashStr(mInstance), objHashStr(instance));
             }
-        } finally {
-            read.unlock();
         }
     }
 
@@ -160,139 +156,115 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
 
     @Override
     public void updateInstanceStatus(String serviceName, String instanceId, OperationalStatus status, boolean isOwned) {
-        try {
-            read.lock();
-            ModelServiceInstance mInstance = _getInstance(serviceName, instanceId);
-            if (mInstance != null) {
-                if (!isOwned) {
-                    //IN this imple, we allow update don't care of if the service instance is owned by user
-                    LOGGER.warn("do updateInstanceStatus even when isOwned is false");
-                }
-                mInstance.setStatus(status);
-                mInstance.setModifiedTime(new Date());
-            } else {
-                LOGGER.warn("no service instance exist for {} {}", serviceName, instanceId);
+        ModelServiceInstance mInstance = _getInstance(serviceName, instanceId);
+        if (mInstance != null) {
+            if (!isOwned) {
+                //IN this imple, we allow update don't care of if the service instance is owned by user
+                LOGGER.warn("do updateInstanceStatus even when isOwned is false");
             }
-        } finally {
-            read.unlock();
+            mInstance.setStatus(status);
+            mInstance.setModifiedTime(new Date());
+        } else {
+            LOGGER.warn("no service instance exist for {} {}", serviceName, instanceId);
         }
-
     }
 
     @Override
     public void updateInstanceUri(String serviceName, String instanceId, String uri, boolean isOwned) {
-        try {
-            read.lock();
-            ModelServiceInstance mInstance = _getInstance(serviceName, instanceId);
-            if (mInstance != null) {
-                if (!isOwned) {
-                    //IN this imple, we allow update don't care of if the service instance is owned by user
-                    LOGGER.warn("do updateInstanceUri even when isOwned is false");
-                }
-                mInstance.setUri(uri);
-                mInstance.setModifiedTime(new Date());
-            } else {
-                LOGGER.warn("no service instance exist for {} {}", serviceName, instanceId);
+        ModelServiceInstance mInstance = _getInstance(serviceName, instanceId);
+        if (mInstance != null) {
+            if (!isOwned) {
+                //IN this imple, we allow update don't care of if the service instance is owned by user
+                LOGGER.debug("do updateInstanceUri even when isOwned is false");
             }
-        } finally {
-            read.unlock();
+            mInstance.setUri(uri);
+            mInstance.setModifiedTime(new Date());
+        } else {
+            LOGGER.debug("no service instance exist for {} {}", serviceName, instanceId);
         }
-
     }
 
     @Override
     public void unregisterInstance(String serviceName, String instanceId, boolean isOwned) {
-        try {
-            read.lock();
-            Map<String, ModelServiceInstance> iMap = inMemoryRegistry.get(serviceName);
-            if (iMap == null) {
-                LOGGER.warn("Service {} not exist", serviceName);
+        ConcurrentMap<String, ModelServiceInstance> iMap = inMemoryRegistry.get(serviceName);
+        if (iMap == null) {
+            LOGGER.warn("Service {} not exist", serviceName);
+        } else {
+            ModelServiceInstance previousInstance = iMap.remove(instanceId);
+            if (previousInstance != null) {
+                LOGGER.debug("service instance {} removed by name : {} , id : {}", previousInstance, serviceName, instanceId);
             } else {
-                if (iMap.containsKey(instanceId)) {
-                    iMap.remove(instanceId);
-                } else {
-                    LOGGER.warn("no service instance exist for {} {}", serviceName, instanceId);
-                }
+                LOGGER.debug("no service instance exist for {} {}", serviceName, instanceId);
             }
-
-        } finally {
-            read.unlock();
         }
-
     }
 
     @Override
     public Map<String, OperationResult<String>> sendHeartBeat(Map<String, ServiceInstanceHeartbeat> heartbeatMap) {
         HashMap<String, OperationResult<String>> result = new HashMap<>();
-        try {
-            read.lock();
-            for (Map.Entry<String, ServiceInstanceHeartbeat> entry : heartbeatMap.entrySet()) {
-                String id = entry.getKey(); //What's Id means?
-                ServiceInstanceHeartbeat heartbeat = entry.getValue();
-                String serviceName = heartbeat.getServiceName();
-                String providedId = heartbeat.getServiceName();
-                ModelServiceInstance instance = _getInstance(serviceName, providedId);
-                if (instance != null) {
-                    //TODO, refactoring model
-                    final long now = System.currentTimeMillis();
-                    instance.setHeartbeatTime(new Date(now));
-                    instance.setModifiedTime(new Date(now));
-                    //TODO, refactor OperationResult structure
-                    result.put(id, new OperationResult<String>(true, null, null));
-                } else {
-                    LOGGER.warn("no service instance exist for {} {}", serviceName, providedId);
-                    result.put(id, new OperationResult<String>(false, null, new ServiceDirectoryError(ErrorCode.SERVICE_INSTANCE_NOT_EXIST, id)));
-                }
+        for (Map.Entry<String, ServiceInstanceHeartbeat> entry : heartbeatMap.entrySet()) {
+            String id = entry.getKey(); //What's Id means?
+            ServiceInstanceHeartbeat heartbeat = entry.getValue();
+            String serviceName = heartbeat.getServiceName();
+            String providedId = heartbeat.getServiceName();
+            ModelServiceInstance instance = _getInstance(serviceName, providedId);
+            if (instance != null) {
+                //TODO, refactoring model
+                final long now = System.currentTimeMillis();
+                instance.setHeartbeatTime(new Date(now));
+                instance.setModifiedTime(new Date(now));
+                //TODO, refactor OperationResult structure
+                result.put(id, new OperationResult<String>(true, null, null));
+                LOGGER.debug("heart beat send ok for {}", instance);
+            } else {
+                LOGGER.debug("no service instance exist for {} {}", serviceName, providedId);
+                result.put(id, new OperationResult<String>(false, null, new ServiceDirectoryError(ErrorCode.SERVICE_INSTANCE_NOT_EXIST, id)));
             }
-        } finally {
-            read.unlock();
         }
         return result;
     }
 
     @Override
     public ModelService lookupService(String serviceName) {
-        try {
-            write.lock();
-            Map<String, ModelServiceInstance> iMap = inMemoryRegistry.get(serviceName);
-            if (iMap!=null){
-                ModelService service = _newModelService(serviceName);
-                if (!iMap.isEmpty()) {
-                    List<ModelServiceInstance> instanceList = new ArrayList<>(iMap.entrySet().size());
-                    List<Long> modifiedTimes = new ArrayList<>(instanceList.size());
-                    for (Map.Entry<String, ModelServiceInstance> entry : iMap.entrySet()) {
-                        ModelServiceInstance mInstance = entry.getValue();
-                        instanceList.add(mInstance);
-                        modifiedTimes.add(mInstance.getModifiedTime().getTime());
-                    }
-                    service.setServiceInstances(instanceList);
-                    // the latest modify time
-                    Collections.sort(modifiedTimes, Collections.reverseOrder());
-                    service.setModifiedTime(new Date(modifiedTimes.get(0)));
+        Map<String, ModelServiceInstance> iMap = inMemoryRegistry.get(serviceName);
+        if (iMap != null) {
+            ModelService service = _newModelService(serviceName);
+            if (!iMap.isEmpty()) {
+                List<ModelServiceInstance> instanceList = new ArrayList<>(iMap.entrySet().size());
+                List<Long> modifiedTimes = new ArrayList<>(instanceList.size());
+                for (Map.Entry<String, ModelServiceInstance> entry : iMap.entrySet()) {
+                    ModelServiceInstance mInstance = entry.getValue();
+                    instanceList.add(mInstance);
+                    modifiedTimes.add(mInstance.getModifiedTime().getTime());
                 }
-                return service;
-            }else{
-                LOGGER.warn("Service {} not exist", serviceName);
-                return null;
+                service.setServiceInstances(instanceList);
+                // the latest modify time
+                Collections.sort(modifiedTimes, Collections.reverseOrder());
+                service.setModifiedTime(new Date(modifiedTimes.get(0)));
             }
-
-        } finally {
-            write.unlock();
+            return service;
+        } else {
+            LOGGER.debug("Service {} not exist", serviceName);
+            return null;
         }
+
     }
 
     @Override
     public List<ModelServiceInstance> getAllInstances() {
-        try {
-            write.lock();
-            List<ModelServiceInstance> instanceList = new ArrayList<>();
-            for (Map<String,ModelServiceInstance> entry : inMemoryRegistry.values()){
-                instanceList.addAll(entry.values());
+        List<ModelServiceInstance> instanceList = new ArrayList<>();
+        for (Map<String, ModelServiceInstance> entry : inMemoryRegistry.values()) {
+            instanceList.addAll(entry.values());
+            /*
+            try {
+                TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-            return instanceList;
-        }finally {
-            write.unlock();
+            */
         }
+        return Collections.unmodifiableList(instanceList);
+
     }
 
     @Override
@@ -301,15 +273,15 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
     //TODO, refactor logic
     public Map<String, OperationResult<ModelService>> getChangedServices(Map<String, ModelService> services) {
         Map<String, OperationResult<ModelService>> map = new HashMap<>();
-        for (Map.Entry<String,ModelService> entry : services.entrySet()){
+        for (Map.Entry<String, ModelService> entry : services.entrySet()) {
             //TODO, refactor model, key in map is service name, redundancy with ModelService.serviceName
             String serviceName = entry.getKey();
             ModelService oldService = entry.getValue();
             ModelService latestService = lookupService(serviceName);
-            if (latestService.getModifiedTime().getTime() > oldService.getModifiedTime().getTime()){
-                map.put(serviceName,new OperationResult<>(true,latestService,null));
-            }else{
-                map.put(serviceName,new OperationResult<>(false,oldService,null));
+            if (latestService.getModifiedTime().getTime() > oldService.getModifiedTime().getTime()) {
+                map.put(serviceName, new OperationResult<>(true, latestService, null));
+            } else {
+                map.put(serviceName, new OperationResult<>(false, oldService, null));
             }
         }
         return null;
