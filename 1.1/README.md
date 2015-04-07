@@ -1,16 +1,12 @@
-Service Directory API
-=====================
+Service Directory API v1.1
+========================
 Service Directory API is the client API to communicate with the back-end directory server.
 
 SD API v1.1 is compatible with the JDK6 or greater.
-SD API v1.2 is compatible with the JDK7 only.
 
-SD API v1.x communicates with directory server v1.x or v2.0 via RESTful service.
-SD API v2.0 communicates with directory server v2.0 only, via both RESTful and WebSocket services.
-
-SD API v1.1 is the most recent stable version.
+v1.1.0-6 is the most recent stable version.
  
-You can read the v1.x user guide in [ Wiki](../../wiki/Home).
+You can read the user guide in [ Wiki](../../../wiki/Home).
 
 Following is the list of release references to the libraries managed under this repository:
 
