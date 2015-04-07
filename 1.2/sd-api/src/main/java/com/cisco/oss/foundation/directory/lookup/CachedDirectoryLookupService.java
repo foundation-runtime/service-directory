@@ -320,10 +320,8 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                 CacheDumpLogger.debug(sb.toString());
             } catch (Exception e) {
                 LOGGER.warn("Dump Service Cache failed. Set Logger {} to INFO to disable this message.",
-                            CacheDumpLogger.getName());
-                if (LOGGER.isTraceEnabled()) {
-                    LOGGER.trace("Dump Service Cache failed. ", e);
-                }
+                            CacheDumpLogger.getName());                
+                LOGGER.trace("Dump Service Cache failed. ", e);             
                 return false;
             }
             return true;
@@ -369,10 +367,10 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                             }
                         }
                     } else {
-                        LOGGER.info("No MetadataKey is changed.");
+                        LOGGER.debug("No MetadataKey is changed.");
                     }
                 } else {
-                    LOGGER.info("No MetadataKey in the cache, skip cache sync.");
+                    LOGGER.debug("No MetadataKey in the cache, skip cache sync.");
                 }
             }catch(Exception e){
                 LOGGER.error("Sync ModelMetadataKey cache from ServiceDirectory Server failed. ", e);

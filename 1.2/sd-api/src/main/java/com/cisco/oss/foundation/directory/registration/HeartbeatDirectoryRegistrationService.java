@@ -302,9 +302,8 @@ public class HeartbeatDirectoryRegistrationService extends
                 getCacheServiceInstances().put(id, cachedInstance);
 
             }
-            if(LOGGER.isDebugEnabled()){
-                LOGGER.debug("add cached ProvidedServiceInstance: {}.", cachedInstance.toString());
-            }
+            
+            LOGGER.debug("add cached ProvidedServiceInstance: {}.", cachedInstance.toString());
             cachedInstance.setServiceInstanceHealth(registryHealth);
         } finally {
             write.unlock();

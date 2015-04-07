@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +65,7 @@ public class ServiceDirectoryImpl {
 
     private boolean isShutdown = false;
 
-    private final String _version;
+    private final String version;
 
     // Singleton, private the constructor.
     private ServiceDirectoryImpl() {
@@ -84,12 +85,12 @@ public class ServiceDirectoryImpl {
         } catch (IOException e) {
             LOGGER.error("Fail to get ServiceDirectory API version.",e);
         }
-        _version = version;
+        this.version = version;
 
         String custProvider = getServiceDirectoryConfig()
                 .getString(SD_API_SERVICE_DIRECTORY_MANAGER_FACTORY_PROVIDER_PROPERTY);
 
-        if (custProvider != null && !custProvider.isEmpty()) {
+        if (!StringUtils.isEmpty(custProvider)) {
             try {
                 Class<?> provider = Class.forName(custProvider);
                 if (ServiceDirectoryManagerFactory.class
@@ -155,7 +156,7 @@ public class ServiceDirectoryImpl {
      *        the Service Directory API version 
      */
     public String getVersion() {
-        return this._version;
+        return this.version;
     }
 
     /**
