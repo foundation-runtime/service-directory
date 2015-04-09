@@ -44,7 +44,6 @@ import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDire
  *
  *
  */
-@Deprecated
 public class DefaultServiceDirectoryManagerFactory implements
         ServiceDirectoryManagerFactory {
 

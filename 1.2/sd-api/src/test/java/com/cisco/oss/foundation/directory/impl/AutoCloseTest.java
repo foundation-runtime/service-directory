@@ -96,13 +96,13 @@ public class AutoCloseTest {
 
     @Test
     public void testAutoCloseForLookupMangerNoCache(){
-        LookupManager lookupMgr = ServiceDirectory.config().setCacheEnabled(false).build().newLookupManager();
+        LookupManager lookupMgr = ServiceDirectory.config().setCacheEnabled(false).build().getLookupManager();
         assertTrue(lookupMgr.isStarted()); //started
         lookupMgr.close(); //explicitly close fail
         assertFalse(lookupMgr.isStarted());
 
 
-        try (LookupManager lookupManager = ServiceDirectory.config().setCacheEnabled(false).build().newLookupManager()) {
+        try (LookupManager lookupManager = ServiceDirectory.config().setCacheEnabled(false).build().getLookupManager()) {
             assertTrue(lookupManager.isStarted()); //started
         }//auto-closed
 
@@ -111,11 +111,11 @@ public class AutoCloseTest {
     @Test
     public void testAutoCloseForCachedLookupManagerSingle() throws Exception {
 
-        LookupManager lookupMgr = ServiceDirectory.config().setClientType(DUMMY).build().newLookupManager();
+        LookupManager lookupMgr = ServiceDirectory.config().setClientType(DUMMY).build().getLookupManager();
         TimeUnit.SECONDS.sleep(3L);
         lookupMgr.close(); //explicitly close
 
-        try (LookupManager lookupManager2 = ServiceDirectory.config().setClientType(DUMMY).build().newLookupManager()) {
+        try (LookupManager lookupManager2 = ServiceDirectory.config().setClientType(DUMMY).build().getLookupManager()) {
             TimeUnit.SECONDS.sleep(3L);
             assertTrue(lookupManager2.isStarted()); //started
         }
@@ -126,25 +126,25 @@ public class AutoCloseTest {
     @Test
     public void testAutoCloseForCachedLookupManagerMultiple() throws Exception{
 
-        ServiceDirectory instance = ServiceDirectory.config().setClientType(DUMMY).build();
-        try(LookupManager mgr1 = instance.newLookupManager(); LookupManager mgr2 = instance.newLookupManager()){
+        ConfigurableServiceDirectoryManagerFactory instance = ServiceDirectory.config().setClientType(DUMMY).build();
+        try(LookupManager mgr1 = instance.getLookupManager(); LookupManager mgr2 = instance.getLookupManager()){
             TimeUnit.SECONDS.sleep(3L);
             assertTrue(mgr1.isStarted());
             assertTrue(mgr2.isStarted());
         }
         // cache service is stopped only when all mgrs closed
 
-        ServiceDirectory instance2 = ServiceDirectory.config().setClientType(DUMMY).build();
+        ConfigurableServiceDirectoryManagerFactory instance2 = ServiceDirectory.config().setClientType(DUMMY).build();
         TimeUnit.SECONDS.sleep(3L);
-        assertTrue(instance2.newLookupManager().isStarted());
-        assertTrue(instance2.newLookupManager().isStarted());
+        assertTrue(instance2.getLookupManager().isStarted());
+        assertTrue(instance2.getLookupManager().isStarted());
         // cache service shutdown is not called
 
 
-        ServiceDirectory instance3 = ServiceDirectory.config().setClientType(DUMMY).build();
+        ConfigurableServiceDirectoryManagerFactory instance3 = ServiceDirectory.config().setClientType(DUMMY).build();
         TimeUnit.SECONDS.sleep(3L);
-        LookupManager m1 =  instance3.newLookupManager();
-        LookupManager m2 =  instance3.newLookupManager();
+        LookupManager m1 =  instance3.getLookupManager();
+        LookupManager m2 =  instance3.getLookupManager();
         assertTrue(m1.isStarted());
         assertTrue(m2.isStarted());
         m1.close();
@@ -155,17 +155,17 @@ public class AutoCloseTest {
 
     @Test
     public void testAutoCloseForRegistrationManager(){
-        RegistrationManager rMgr = ServiceDirectory.config().build().newRegistrationManager();
+        RegistrationManager rMgr = ServiceDirectory.config().build().getRegistrationManager();
         rMgr.close();
 
-        try (RegistrationManager regMgr = ServiceDirectory.config().build().newRegistrationManager()){
+        try (RegistrationManager regMgr = ServiceDirectory.config().build().getRegistrationManager()){
             regMgr.updateServiceUri("foo","foo","foo"); //error
             fail(); //can't go here
         }catch(ServiceException e){};
         //resource auto-released
 
         try (RegistrationManager noHeartBeatRegMgr = ServiceDirectory.config().setHeartbeatEnabled(false)
-                .build().newRegistrationManager()){
+                .build().getRegistrationManager()){
             noHeartBeatRegMgr.updateServiceUri("foo", "foo", "foo"); //error
             fail();
         }catch(ServiceException e){};

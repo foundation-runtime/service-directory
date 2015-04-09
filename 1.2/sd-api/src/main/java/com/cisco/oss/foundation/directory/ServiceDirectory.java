@@ -19,8 +19,6 @@
 
 package com.cisco.oss.foundation.directory;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.configuration.BaseConfiguration;
@@ -29,23 +27,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cisco.oss.foundation.configuration.ConfigurationFactory;
-import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
-import com.cisco.oss.foundation.directory.client.DirectoryServiceClientProvider;
-import com.cisco.oss.foundation.directory.client.DirectoryServiceDummyClient;
-import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
-import com.cisco.oss.foundation.directory.impl.AbstractServiceDirectoryManager;
-import com.cisco.oss.foundation.directory.impl.CloseListener;
+import com.cisco.oss.foundation.directory.impl.ConfigurableServiceDirectoryManagerFactory;
 import com.cisco.oss.foundation.directory.impl.ServiceDirectoryImpl;
-import com.cisco.oss.foundation.directory.impl.ServiceDirectoryService;
-import com.cisco.oss.foundation.directory.lookup.CachedDirectoryLookupService;
-import com.cisco.oss.foundation.directory.lookup.CachedLookupManagerImpl;
-import com.cisco.oss.foundation.directory.lookup.DirectoryLookupService;
-import com.cisco.oss.foundation.directory.lookup.LookupManagerImpl;
-import com.cisco.oss.foundation.directory.registration.DirectoryRegistrationService;
-import com.cisco.oss.foundation.directory.registration.HeartbeatDirectoryRegistrationService;
-import com.cisco.oss.foundation.directory.registration.HeartbeatRegistrationManagerImpl;
-import com.cisco.oss.foundation.directory.registration.RegistrationManagerImpl;
 
 /**
  * ServiceDirectory client class.
@@ -74,13 +58,19 @@ public class ServiceDirectory {
     private static final Configuration defaultConfigLoadByFoundationRuntime = ConfigurationFactory.getConfiguration();
 
     /**
+     * The static reference to ServiceDirectoryImpl
+     */
+    private static final AtomicReference<ServiceDirectoryImpl> sdImplRef = new AtomicReference<>();
+
+
+
+    /**
      * Get the LookupManager.
      *
      * @return
      *         the implementation instance of LookupManager.
      * @throws ServiceException
      */
-    @Deprecated
     public static LookupManager getLookupManager() throws ServiceException {
         return getImpl().getLookupManager();
     }
@@ -92,7 +82,6 @@ public class ServiceDirectory {
      *         the implementation instance of RegistrationManager.
      * @throws ServiceException
      */
-    @Deprecated
     public static RegistrationManager getRegistrationManager() throws ServiceException {
         return getImpl().getRegistrationManager();
     }
@@ -152,7 +141,8 @@ public class ServiceDirectory {
      * Shut down the ServiceDirectory.
      *
      * Be careful to invoke this method. When shutdown() is called, ServiceDirectory cannot be used 
-     * unless jvm is restarted to reload the ServiceDirectory class. 
+     * unless reset() method is called.
+     *
      */
     public static void shutdown(){
         getImpl().shutdown();
@@ -164,24 +154,30 @@ public class ServiceDirectory {
      * @return
      *         the ServiceDirectoryImpl instance.
      */
-    @Deprecated
     private static ServiceDirectoryImpl getImpl() {
-        return ServiceDirectoryImpl.getInstance();
+        sdImplRef.compareAndSet(null,ServiceDirectoryImpl.getInstance());
+        return sdImplRef.get();
     }
-
 
     // ------------
     // 1.2 API
     // ------------
 
+    /**
+     * reset the ServiceDirectory
+     */
+    public static void reset(){
+        //TODO, currently the background thread is can NOT be restarted in Singleton mode.
+        // consider to fix issue by either:
+        //    1.) do not shutdown the ScheduledExecutorService in shutdown() method. instead by using future.cancel()
+        // or 2.) replace the old one with new ScheduledExecutorService when restart
+        getImpl().restart();
+    }
+
+
     public static ServiceDirectoryConfig config(){ return new ServiceDirectoryConfig(); }
     public static ServiceDirectoryConfig globeConfig(){ return ServiceDirectoryConfig.GLOBE; }
 
-
-
-    /**
-     * SD is build by SDConfig
-     */
     public final static class ServiceDirectoryConfig {
         //TODO, move all config key here !
         /**
@@ -215,7 +211,7 @@ public class ServiceDirectory {
          */
         public static final String SD_API_CLIENT_TYPE_PROPERTY_DEFAULT = ClientType.RESTFUL.name();
 
-        public static enum ClientType{
+        public enum ClientType{
             RESTFUL, //only support 1 kind of client in 1.2
             DUMMY,  //its used for unitTest, so that no actual request is send to server side
             PROVIDED, //user will supply a customized Client by using ClientProvider interface.
@@ -281,128 +277,11 @@ public class ServiceDirectory {
             }
         }
 
-        // the builder of SD
-        public ServiceDirectory build(){
-            return new ServiceDirectory(this);
+        public ConfigurableServiceDirectoryManagerFactory build(){
+            return new ConfigurableServiceDirectoryManagerFactory(this);
         }
     }
 
-    /*
-     * SD Constructor by using SD Config
-     * The constructor is protected by private, so that only
-     * builder can call it
-     */
-    private ServiceDirectory(ServiceDirectoryConfig config){
-            this._config = config;
-            if (_config.isCacheEnabled()){
-                this._lookUpService = new CachedDirectoryLookupService(getClient());
-            }else{
-                this._lookUpService = new DirectoryLookupService(getClient());
-            }
 
-    }
-
-    private final List<LookupManager> lookupManagerReferences = new ArrayList<>();
-    private final List<RegistrationManager> RegistrationManagerReferences = new ArrayList<>();
-
-    private final CloseListener managerCloseListener = new CloseListener(){
-        @Override
-        public void fireServiceClose(ServiceDirectoryService service) {
-            service.stop();
-        }
-        @Override
-        public void onManagerClose(AbstractServiceDirectoryManager manager) {
-            if (manager instanceof LookupManager) {
-                synchronized (lookupManagerReferences) {
-                    if (lookupManagerReferences.contains(manager)) {
-                        lookupManagerReferences.remove(manager);
-                        manager.stop();
-                    }
-                    if (lookupManagerReferences.size() == 0) {
-                        // when all lookup manager closed, fire service close
-                        fireServiceClose(manager.getService());
-                    }
-                }
-            }else if (manager instanceof RegistrationManager){
-                //TODO, handle Registration Mangers
-            }else{
-                throw new IllegalStateException("Unknown manager "+manager);
-            }
-        }
-
-    };
-
-    private final ServiceDirectoryConfig _config;
-    private final DirectoryLookupService _lookUpService;
-
-    // -----------------------
-    // DirectoryServiceClient
-    // -----------------------
-
-    /** restful (http) client */
-    private static final DirectoryServiceClient _restfulClient = new DirectoryServiceRestfulClient();
-
-    /** dummy client */
-    private static final DirectoryServiceClient _dummyClient = new DirectoryServiceDummyClient();
-
-    /** provided client */
-    private static final AtomicReference<DirectoryServiceClientProvider> _clientProvider =
-            new AtomicReference<>();
-    public static void setClientProvider(DirectoryServiceClientProvider provider){
-        if (provider==null){
-            throw new IllegalArgumentException("DirectoryServiceClientProvider can't be null");
-        }
-        _clientProvider.set(provider);
-    }
-
-    DirectoryServiceClient getClient(){
-        DirectoryServiceClient client;
-        switch (_config.getClientType()) {
-            case RESTFUL:
-                client=_restfulClient;
-                break;
-            case DUMMY:
-                client= _dummyClient;
-                break;
-            case PROVIDED:
-                DirectoryServiceClientProvider provider = _clientProvider.get();
-                if (provider!=null){
-                    client=provider.getClient();
-                }else{
-                    throw new IllegalStateException("No DirectoryServiceClientProvider is set up for Client Type PROVIDED");
-                }
-                break;
-            default:
-                //don't support other client type now.
-                throw new IllegalStateException("UNKNOWN Client Type "+_config.getClientType());
-        }
-        return client;
-    }
-
-    DirectoryLookupService getLookupService(){
-        return this._lookUpService;
-    }
-
-    public LookupManager newLookupManager() throws ServiceException {
-        if (_config.isCacheEnabled()){
-            //TODO, fix the force conversion
-            CachedLookupManagerImpl cachedMgr = new CachedLookupManagerImpl((CachedDirectoryLookupService)getLookupService());
-            cachedMgr.setCloseListener(managerCloseListener);
-            lookupManagerReferences.add(cachedMgr);
-            return cachedMgr;
-        }else {
-            LookupManagerImpl mgr =  new LookupManagerImpl(getLookupService());
-            mgr.setCloseListener(managerCloseListener);
-            lookupManagerReferences.add(mgr);
-            return mgr;
-        }
-    }
-    public RegistrationManager newRegistrationManager() throws ServiceException {
-        if (_config.isHeartBeatEnabled()){
-            return new HeartbeatRegistrationManagerImpl(new HeartbeatDirectoryRegistrationService(getClient()));
-        }else{
-            return new RegistrationManagerImpl(new DirectoryRegistrationService(getClient()));
-        }
-    }
 
 }

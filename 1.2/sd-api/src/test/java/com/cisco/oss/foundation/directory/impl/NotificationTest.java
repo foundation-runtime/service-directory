@@ -31,7 +31,7 @@ public class NotificationTest {
     @BeforeClass
     public static void setUpTestingClient(){
         ServiceDirectory.globeConfig().setClientType(PROVIDED);
-        ServiceDirectory.setClientProvider(new DirectoryServiceClientProvider() {
+        ConfigurableServiceDirectoryManagerFactory.setClientProvider(new DirectoryServiceClientProvider() {
             @Override
             public DirectoryServiceClient getClient() {
                 return notificationTestMockClient;
