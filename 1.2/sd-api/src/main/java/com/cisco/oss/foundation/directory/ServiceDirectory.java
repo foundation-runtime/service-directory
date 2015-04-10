@@ -167,7 +167,7 @@ public class ServiceDirectory {
      * reset the ServiceDirectory
      */
     public static void reset(){
-        //TODO, currently the background thread is can NOT be restarted in Singleton mode.
+        //TODO, currently the background thread can NOT be restarted in Singleton mode.
         // consider to fix issue by either:
         //    1.) do not shutdown the ScheduledExecutorService in shutdown() method. instead by using future.cancel()
         // or 2.) replace the old one with new ScheduledExecutorService when restart
