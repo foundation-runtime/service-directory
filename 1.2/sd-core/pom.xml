@@ -117,11 +117,5 @@
     </plugins>
   </reporting>
 
- <dependencies>
-   <dependency>
-      <groupId>org.jboss.resteasy</groupId>
-      <artifactId>jaxrs-api</artifactId>
-      <version>3.0.4.Final</version>
-    </dependency>
-  </dependencies>
+ <dependencies/>
 </project>
