@@ -244,10 +244,15 @@ public class DirectoryLookupService extends ServiceDirectoryService {
                 List<NotificationHandler> list = notificationHandlers.get(serviceName);
                 if(list.contains(handler)){
                     list.remove(handler);
+                }else{
+                    //TODO, might a specified error code for handler not found.
+                    throw new ServiceException(ErrorCode.GENERAL_ERROR,"NotificationHandler not exist, It may has been removed or has not been registered before.");
                 }
                 if(list.isEmpty()){
                     notificationHandlers.remove(serviceName);
                 }
+            }else{
+                throw new ServiceException(ErrorCode.SERVICE_NOT_EXIST,ErrorCode.SERVICE_NOT_EXIST.getMessageTemplate(),serviceName);
             }
         }
     }

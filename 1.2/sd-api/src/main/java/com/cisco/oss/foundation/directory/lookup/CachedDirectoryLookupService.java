@@ -171,8 +171,11 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     protected ModelService getModelService(String serviceName){
         ModelService service = getCache().get(serviceName);
         if (service == null) {
-            getCache().putIfAbsent(serviceName, super.getModelService(serviceName));
-            service = getCache().get(serviceName);
+            ModelService lookup = super.getModelService(serviceName);
+            if (lookup!=null) {
+                getCache().putIfAbsent(serviceName, lookup);
+                service = getCache().get(serviceName);
+            }
         }
         return service;
     }
