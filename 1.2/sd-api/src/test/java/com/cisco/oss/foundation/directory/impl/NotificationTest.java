@@ -1,11 +1,9 @@
 package com.cisco.oss.foundation.directory.impl;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -19,7 +17,6 @@ import com.cisco.oss.foundation.directory.client.DirectoryServiceClientProvider;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceDummyClient;
 import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.OperationResult;
-import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 
