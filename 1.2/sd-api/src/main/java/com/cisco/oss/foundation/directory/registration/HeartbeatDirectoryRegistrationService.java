@@ -303,7 +303,7 @@ public class HeartbeatDirectoryRegistrationService extends
 
             }
             
-            LOGGER.debug("add cached ProvidedServiceInstance: {}.", cachedInstance.toString());
+            LOGGER.debug("add cached ProvidedServiceInstance: {}.", cachedInstance);
             cachedInstance.setServiceInstanceHealth(registryHealth);
         } finally {
             write.unlock();
@@ -350,13 +350,10 @@ public class HeartbeatDirectoryRegistrationService extends
      */
     private CachedProviderServiceInstance getCachedServiceInstance(
             String serviceName, String providerId) {
-        try {
-            read.lock();
-            ServiceInstanceId id = new ServiceInstanceId(serviceName, providerId);
-            return getCacheServiceInstances().get(id);
-        } finally {
-            read.unlock();
-        }
+        
+		ServiceInstanceId id = new ServiceInstanceId(serviceName, providerId);
+		return getCacheServiceInstances().get(id);
+       
     }
 
     /**
@@ -467,12 +464,14 @@ public class HeartbeatDirectoryRegistrationService extends
 
         @Override
         public void run() {
+        
+            LOGGER.debug("Kick off the heartbeat thread");
+            List<ServiceInstanceHeartbeat> serviceHBList = new ArrayList<ServiceInstanceHeartbeat>();
+            
             read.lock();
             try {
-                LOGGER.debug("Kick off the heartbeat thread");
-                List<ServiceInstanceHeartbeat> serviceHBList = new ArrayList<ServiceInstanceHeartbeat>();
                 for (CachedProviderServiceInstance cachedInstance : getCacheServiceInstances().values()) {
-                    LOGGER.debug("Service instance: {}.", cachedInstance.toString());
+                    LOGGER.debug("Service instance: {}.", cachedInstance);
                     if (cachedInstance.monitorEnabled && OperationalStatus.UP.equals(cachedInstance.status)
                             && cachedInstance.isHealth) {
                         ServiceInstanceHeartbeat hb = new ServiceInstanceHeartbeat(
@@ -481,14 +480,21 @@ public class HeartbeatDirectoryRegistrationService extends
                         serviceHBList.add(hb);
                     }
                 }
-
-                LOGGER.debug(
-                        "Send heartbeat for ServiceInstances, ServiceInstanceNumber={}.",
-                        serviceHBList.size());
-                if (serviceHBList.isEmpty()) {
-                    return;
-                }
-
+            } catch (Exception e) {
+                LOGGER.error("Failed to add services to serviceHBList.", e);
+            } finally {
+            	read.unlock();
+            }
+                
+            if (serviceHBList.isEmpty()) {
+                return;
+            }
+            
+            LOGGER.debug(
+                      "Send heartbeat for ServiceInstances, ServiceInstanceNumber={}.",
+                      serviceHBList.size());
+        
+            try {
                 Map<String, ServiceInstanceHeartbeat> heartbeatMap = new HashMap<String, ServiceInstanceHeartbeat>();
                 for (ServiceInstanceHeartbeat instance : serviceHBList) {
                     String id = instance.getServiceName() + "-"
@@ -518,8 +524,6 @@ public class HeartbeatDirectoryRegistrationService extends
                 }
             } catch (Exception e) {
                 LOGGER.error("Send heartbeat failed.", e);
-            } finally{
-                read.unlock();
             }
         }
 
