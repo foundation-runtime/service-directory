@@ -27,6 +27,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,7 +87,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     /**
      * ScheduledExecutorService to sync cache.
      */
-    private final ScheduledExecutorService syncService;
+    private final AtomicReference<ScheduledExecutorService> syncService = new AtomicReference<>();
 
     /**
      * Internal cache that maps the service name to a list of service instances.
@@ -111,9 +112,13 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
      */
     public CachedDirectoryLookupService(DirectoryServiceClient directoryServiceClient) {
         super(directoryServiceClient);
-        syncService = Executors
-                .newSingleThreadScheduledExecutor(new ThreadFactory() {
+        syncService.set(newSyncService());
 
+    }
+
+    private ScheduledExecutorService newSyncService(){
+        return Executors
+                .newSingleThreadScheduledExecutor(new ThreadFactory() {
                     @Override
                     public Thread newThread(Runnable r) {
                         Thread t = new Thread(r);
@@ -123,7 +128,6 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                     }
 
                 });
-
     }
 
     /**
@@ -149,7 +153,8 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     public void stop(){
         if (isStarted.compareAndSet(true,false)) {
             // if you shutdown it, it can not be use anymore
-            this.syncService.shutdown();
+            ScheduledExecutorService service = this.syncService.getAndSet(newSyncService());
+            service.shutdown();
             LOGGER.info("Cache sync Service is shutdown");
             getCache().clear();
             getMetadataKeyCache().clear();
@@ -211,7 +216,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                 SD_API_CACHE_SYNC_INTERVAL_PROPERTY,
                 SD_API_CACHE_SYNC_INTERVAL_DEFAULT);
 
-        syncService.scheduleWithFixedDelay(new CacheSyncTask(),
+        syncService.get().scheduleWithFixedDelay(new CacheSyncTask(),
                 delay, interval, TimeUnit.SECONDS);
         LOGGER.info("Cache sync Service is started");
     }

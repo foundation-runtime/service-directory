@@ -242,6 +242,7 @@ public class ServiceInstanceUtils {
     // TODO, we don't need a AtomicBoolean here, it really need to extract a static methods here?
     public static void validateManagerIsStarted(AtomicBoolean isStarted) throws ServiceException {
         if (!isStarted.get()) {
+            //TODO, the error code should more specified to manger is closed.
             throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
         }
     }

@@ -42,30 +42,37 @@ public final class ServiceDirectoryConfig {
     public static final String SD_API_CLIENT_TYPE_PROPERTY = "com.cisco.oss.foundation.directory.client.type";
 
     /**
-     * The default value of Client type : RESTFUL
+     * Client Types
      */
-    public static final String SD_API_CLIENT_TYPE_PROPERTY_DEFAULT = ClientType.RESTFUL.name();
-
-    public static ServiceDirectoryConfig config(){ return new ServiceDirectoryConfig(); }
-
-    public static ServiceDirectoryConfig globeConfig(){ return GLOBE; }
-
     public enum ClientType {
         RESTFUL, //only support 1 kind of client in 1.2
-        DUMMY,  //its used for unitTest, so that no actual request is send to server side
+        DUMMY,    //its used for unitTest, so that no actual request is send to server side
+        IN_MEMORY, //also used in unit-test. so that all r/w into memory, without require a real sd-server.
         PROVIDED, //user will supply a customized Client by using ClientProvider interface.
     }
 
-    public static final ServiceDirectoryConfig GLOBE = new ServiceDirectoryConfig(ServiceDirectory.getServiceDirectoryConfig());
+    /**
+     * The private static singleton which hold the reference of Configuration which
+     * is load by foundation runtime from config.properties or configSchema.xml
+     */
+    private static final ServiceDirectoryConfig GLOBE = new ServiceDirectoryConfig(ServiceDirectory.getServiceDirectoryConfig());
+
+    /**
+     * The public accessor to Globe configuration
+     * @return the static singleton ServiceDirectoryConfig hold the reference to configuration load by foundation runtime.
+     */
+    public static ServiceDirectoryConfig globeConfig(){ return GLOBE; }
+
+    /**
+     * Factory method to create a new ServiceDirectoryConfig instance
+     * @return a new ServiceDirectoryConfig instance
+     */
+    public static ServiceDirectoryConfig config(){ return new ServiceDirectoryConfig(new BaseConfiguration()); }
 
     private final Configuration _apacheConfig;
 
     private ServiceDirectoryConfig(Configuration root) {
         _apacheConfig = root;
-    }
-
-    public ServiceDirectoryConfig() {
-        _apacheConfig = new BaseConfiguration();
     }
 
     public ClientType getClientType() {

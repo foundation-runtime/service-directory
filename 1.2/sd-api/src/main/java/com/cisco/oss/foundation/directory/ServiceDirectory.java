@@ -118,7 +118,6 @@ public class ServiceDirectory {
      * @return
      *         true if the ServiceDirectory is enabled.
      */
-    @Deprecated
     public static boolean isEnabled(){
         return getServiceDirectoryConfig().getBoolean(SD_API_SERVICE_DIRECTORY_ENABLED_PROPERTY,
                 SD_API_SERVICE_DIRECTORY_ENABLED_DEFAULT);
@@ -139,6 +138,8 @@ public class ServiceDirectory {
      *
      * Be careful to invoke this method. When shutdown() is called, ServiceDirectory cannot be used 
      * unless reset() method is called.
+     *
+     * @see #reset()
      *
      */
     public static void shutdown(){
@@ -161,13 +162,11 @@ public class ServiceDirectory {
     // ------------
 
     /**
-     * reset the ServiceDirectory
+     * Reset the ServiceDirectory
+     *
+     * @since 1.2
      */
     public static void reset(){
-        //TODO, currently the background thread can NOT be restarted in Singleton mode.
-        // consider to fix issue by either:
-        //    1.) do not shutdown the ScheduledExecutorService in shutdown() method. instead by using future.cancel()
-        // or 2.) replace the old one with new ScheduledExecutorService when restart
         getImpl().restart();
     }
 

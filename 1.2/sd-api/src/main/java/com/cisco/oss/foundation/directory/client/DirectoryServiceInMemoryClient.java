@@ -263,6 +263,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
             }
             */
         }
+        LOGGER.debug("getAllInstances() {}",instanceList);
         return Collections.unmodifiableList(instanceList);
 
     }
