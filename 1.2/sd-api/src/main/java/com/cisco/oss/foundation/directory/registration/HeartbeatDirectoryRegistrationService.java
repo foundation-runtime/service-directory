@@ -517,15 +517,14 @@ public class HeartbeatDirectoryRegistrationService extends
                     for (Entry<String, OperationResult<String>> entry : operateResult
                             .entrySet()) {
                         boolean result = entry.getValue().getResult();
-                        if (result == false) {
+                        if (!result) {
                             ServiceInstanceHeartbeat instance = heartbeatMap
                                     .get(entry.getKey());
                             LOGGER.error(
                                     "Send heartbeat failed, serviceName={}, providerId={}. {}.",
-                                    new Object[] {
                                             instance.getServiceName(),
                                             instance.getProviderId(),
-                                            entry.getValue().getError().getErrorMessage() });
+                                            entry.getValue().getError().getErrorMessage());
                   }
                     }
                 } else {
