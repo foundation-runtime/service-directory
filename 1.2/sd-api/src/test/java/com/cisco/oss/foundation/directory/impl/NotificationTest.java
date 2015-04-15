@@ -11,7 +11,6 @@ import org.junit.Test;
 
 import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.NotificationHandler;
-import com.cisco.oss.foundation.directory.ServiceDirectory;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceClientProvider;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceDummyClient;
@@ -25,7 +24,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
-import static com.cisco.oss.foundation.directory.ServiceDirectory.ServiceDirectoryConfig.ClientType.PROVIDED;
+import static com.cisco.oss.foundation.directory.impl.ServiceDirectoryConfig.ClientType.PROVIDED;
 
 /**
  * Test for notification handler in lookup
@@ -62,7 +61,7 @@ public class NotificationTest {
 
     @Before
     public void setUp(){
-        factory = ServiceDirectory.config().setClientType(PROVIDED).build();
+        factory = ServiceDirectoryConfig.config().setClientType(PROVIDED).build();
         assertTrue(factory.getDirectoryServiceClient() == notificationTestMockClient);
         assertTrue(map == factory.getDirectoryServiceClient().getChangedServices(new HashMap<String, ModelService>()));
     }

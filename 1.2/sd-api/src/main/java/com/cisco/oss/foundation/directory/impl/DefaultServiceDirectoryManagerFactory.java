@@ -21,7 +21,6 @@ package com.cisco.oss.foundation.directory.impl;
 
 import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.RegistrationManager;
-import com.cisco.oss.foundation.directory.ServiceDirectory.ServiceDirectoryConfig;
 import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient;

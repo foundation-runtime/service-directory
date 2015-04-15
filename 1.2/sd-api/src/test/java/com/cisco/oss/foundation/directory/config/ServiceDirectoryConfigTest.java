@@ -21,6 +21,7 @@ import org.apache.commons.configuration.Configuration;
 import org.junit.Test;
 
 import com.cisco.oss.foundation.directory.ServiceDirectory;
+import com.cisco.oss.foundation.directory.impl.ServiceDirectoryConfig;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -54,60 +55,60 @@ public class ServiceDirectoryConfigTest {
     @Test
     public void testCacheConfig(){
 
-        assertEquals(true, ServiceDirectory.globeConfig().isCacheEnabled());
-        assertEquals(true, ServiceDirectory.config().isCacheEnabled());
+        assertEquals(true, ServiceDirectoryConfig.globeConfig().isCacheEnabled());
+        assertEquals(true, ServiceDirectoryConfig.config().isCacheEnabled());
 
-        ServiceDirectory.ServiceDirectoryConfig config = ServiceDirectory.config().setCacheEnabled(false);
+        ServiceDirectoryConfig config = ServiceDirectoryConfig.config().setCacheEnabled(false);
         assertEquals(false,config.isCacheEnabled());
-        assertEquals(true, ServiceDirectory.globeConfig().isCacheEnabled());
+        assertEquals(true, ServiceDirectoryConfig.globeConfig().isCacheEnabled());
 
-        ServiceDirectory.globeConfig().setCacheEnabled(false);
-        assertEquals(false, ServiceDirectory.globeConfig().isCacheEnabled());
-        assertEquals(false, ServiceDirectory.config().isCacheEnabled());
+        ServiceDirectoryConfig.globeConfig().setCacheEnabled(false);
+        assertEquals(false, ServiceDirectoryConfig.globeConfig().isCacheEnabled());
+        assertEquals(false, ServiceDirectoryConfig.config().isCacheEnabled());
 
         assertEquals(false, config.isCacheEnabled());
-        ServiceDirectory.config().setCacheEnabled(true);
+        ServiceDirectoryConfig.config().setCacheEnabled(true);
         assertEquals(false, config.isCacheEnabled());
         config.setCacheEnabled(true);
         assertEquals(true, config.isCacheEnabled());
-        assertEquals(false, ServiceDirectory.globeConfig().isCacheEnabled());
-        ServiceDirectory.globeConfig().setCacheEnabled(true);  //need to set back, otherwise, ald 1.1 test will failed
-        assertEquals(true, ServiceDirectory.globeConfig().isCacheEnabled());
+        assertEquals(false, ServiceDirectoryConfig.globeConfig().isCacheEnabled());
+        ServiceDirectoryConfig.globeConfig().setCacheEnabled(true);  //need to set back, otherwise, ald 1.1 test will failed
+        assertEquals(true, ServiceDirectoryConfig.globeConfig().isCacheEnabled());
     }
 
     @Test
     public void testHeartBearConfig(){
         //heart beat is enabled by default
-        assertTrue(ServiceDirectory.config().isHeartBeatEnabled());
-        assertTrue(ServiceDirectory.globeConfig().isHeartBeatEnabled());
+        assertTrue(ServiceDirectoryConfig.config().isHeartBeatEnabled());
+        assertTrue(ServiceDirectoryConfig.globeConfig().isHeartBeatEnabled());
 
-        ServiceDirectory.ServiceDirectoryConfig config = ServiceDirectory.config();
+        ServiceDirectoryConfig config = ServiceDirectoryConfig.config();
         config.setHeartbeatEnabled(false);
         assertFalse(config.isHeartBeatEnabled()); //current config is false
-        assertTrue(ServiceDirectory.globeConfig().isHeartBeatEnabled()); //globe is still true;
+        assertTrue(ServiceDirectoryConfig.globeConfig().isHeartBeatEnabled()); //globe is still true;
 
-        ServiceDirectory.globeConfig().setHeartbeatEnabled(false); //set globe false
+        ServiceDirectoryConfig.globeConfig().setHeartbeatEnabled(false); //set globe false
 
-        assertFalse(ServiceDirectory.globeConfig().isHeartBeatEnabled()); //globe is false;
-        assertFalse(ServiceDirectory.config().isHeartBeatEnabled());  //new config is false now;
+        assertFalse(ServiceDirectoryConfig.globeConfig().isHeartBeatEnabled()); //globe is false;
+        assertFalse(ServiceDirectoryConfig.config().isHeartBeatEnabled());  //new config is false now;
 
-        ServiceDirectory.globeConfig().setHeartbeatEnabled(true); //set globe back to true
+        ServiceDirectoryConfig.globeConfig().setHeartbeatEnabled(true); //set globe back to true
     }
 
     @Test
     public void testSDBuildByConfig(){
-        ServiceDirectory.config().build();
+        ServiceDirectoryConfig.config().build();
     }
 
     @Test
     public void testClientType(){
         //Default is restful
-        assertEquals(ServiceDirectory.ServiceDirectoryConfig.ClientType.RESTFUL,ServiceDirectory.config().getClientType());
+        assertEquals(ServiceDirectoryConfig.ClientType.RESTFUL, ServiceDirectoryConfig.config().getClientType());
 
         //set to mock
-        ServiceDirectory.ServiceDirectoryConfig config = ServiceDirectory.config();
-        config.setClientType(ServiceDirectory.ServiceDirectoryConfig.ClientType.DUMMY);
-        assertEquals(ServiceDirectory.ServiceDirectoryConfig.ClientType.DUMMY,config.getClientType());
+        ServiceDirectoryConfig config = ServiceDirectoryConfig.config();
+        config.setClientType(ServiceDirectoryConfig.ClientType.DUMMY);
+        assertEquals(ServiceDirectoryConfig.ClientType.DUMMY,config.getClientType());
 
     }
 }

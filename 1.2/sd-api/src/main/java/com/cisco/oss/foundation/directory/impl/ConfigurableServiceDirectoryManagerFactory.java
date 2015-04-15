@@ -6,7 +6,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.RegistrationManager;
-import com.cisco.oss.foundation.directory.ServiceDirectory;
 import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceClientProvider;
@@ -32,7 +31,7 @@ public class ConfigurableServiceDirectoryManagerFactory implements ServiceDirect
  * The constructor is protected by private, so that only
  * builder can call it
  */
-    public ConfigurableServiceDirectoryManagerFactory(ServiceDirectory.ServiceDirectoryConfig config){
+    public ConfigurableServiceDirectoryManagerFactory(ServiceDirectoryConfig config){
         this._config = config;
         if (_config.isCacheEnabled()){
             this._lookUpService = new CachedDirectoryLookupService(getDirectoryServiceClient());
@@ -77,7 +76,7 @@ public class ConfigurableServiceDirectoryManagerFactory implements ServiceDirect
 
     };
 
-    private final ServiceDirectory.ServiceDirectoryConfig _config;
+    private final ServiceDirectoryConfig _config;
     private final DirectoryLookupService _lookUpService;
     private final DirectoryRegistrationService _registerService;
 
