@@ -13,6 +13,7 @@ import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.OperationResult;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
+import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstanceHeartbeat;
 
 /**
@@ -86,5 +87,20 @@ public class DirectoryServiceDummyClient implements DirectoryServiceClient {
     @Override
     public void setInvoker(DirectoryInvoker invoker) {
         //do NOTHING for NOW
+    }
+
+    @Override
+    public long getLastChangedTimeMills(String serviceName) {
+        throw new UnsupportedOperationException("not support now for 1.2 api");
+    }
+
+    @Override
+    public List<ServiceInstance> lookUpChangedServiceInstancesSince(String serviceName, long since) {
+        throw new UnsupportedOperationException("not support now for 1.2 api");
+    }
+
+    @Override
+    public List<InstanceChange<ServiceInstance>> lookupChangesSince(String serviceName, long since) {
+        throw new UnsupportedOperationException("not support now for 1.2 api");
     }
 }

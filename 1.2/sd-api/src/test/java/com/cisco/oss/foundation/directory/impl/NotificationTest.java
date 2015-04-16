@@ -1,72 +1,42 @@
 package com.cisco.oss.foundation.directory.impl;
 
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.NotificationHandler;
-import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
-import com.cisco.oss.foundation.directory.client.DirectoryServiceClientProvider;
-import com.cisco.oss.foundation.directory.client.DirectoryServiceDummyClient;
-import com.cisco.oss.foundation.directory.entity.ModelService;
-import com.cisco.oss.foundation.directory.entity.OperationResult;
+import com.cisco.oss.foundation.directory.RegistrationManager;
+import com.cisco.oss.foundation.directory.entity.OperationalStatus;
+import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
+import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
-import static com.cisco.oss.foundation.directory.impl.ServiceDirectoryConfig.ClientType.PROVIDED;
+import static com.cisco.oss.foundation.directory.impl.ServiceDirectoryConfig.ClientType.IN_MEMORY;
 
 /**
  * Test for notification handler in lookup
  *
  */
 public class NotificationTest {
-    final static ModelService mockService = new ModelService("foo","192.168.0.1",new Date());
-    final static Map<String, OperationResult<ModelService>> map = Collections.singletonMap(
-            mockService.getName(),new OperationResult<>(true,mockService,null)
-    );
-    private static final DirectoryServiceDummyClient notificationTestMockClient = new DirectoryServiceDummyClient(){
-        @Override
-        public ModelService lookupService(String serviceName) {
-            return  (mockService.getName().equals(serviceName)) ? mockService : null;
-        }
-
-        @Override
-        public Map<String, OperationResult<ModelService>> getChangedServices(Map<String, ModelService> services) {
-            //Always return mockService for now
-            mockService.setModifiedTime(new Date());
-            return map;
-        }
-    };
 
     @BeforeClass
-    public static void setUpTestingClient(){
-        ConfigurableServiceDirectoryManagerFactory.setClientProvider(new DirectoryServiceClientProvider() {
-            @Override
-            public DirectoryServiceClient getClient() {
-                return notificationTestMockClient;
-            }
-        });
+    public static void setUp(){
+        factory = ServiceDirectoryConfig.config().setClientType(IN_MEMORY).build();
+        final ProvidedServiceInstance fooInstance = new ProvidedServiceInstance("foo","192.168.1.1",1234);
+        fooInstance.setUri("http://foo/service");
+        fooInstance.setStatus(OperationalStatus.DOWN);
+        factory.getRegistrationManager().registerService(fooInstance);
     }
 
-    @Before
-    public void setUp(){
-        factory = ServiceDirectoryConfig.config().setClientType(PROVIDED).build();
-        assertTrue(factory.getDirectoryServiceClient() == notificationTestMockClient);
-        assertTrue(map == factory.getDirectoryServiceClient().getChangedServices(new HashMap<String, ModelService>()));
-    }
-
-    private ConfigurableServiceDirectoryManagerFactory factory;
+    private static ConfigurableServiceDirectoryManagerFactory factory;
 
     @Test
     public void testAddNotification() {
@@ -95,6 +65,35 @@ public class NotificationTest {
                 //TODO, might a specified error code for handler not found.
                 assertEquals(ErrorCode.GENERAL_ERROR,e.getErrorCode());
             }
+        }
+    }
+
+    @Test
+    public void testNotifyOnAvailable() throws InterruptedException {
+        final CountDownLatch countDown = new CountDownLatch(1);
+        NotificationHandler myHandler = new NotificationHandler() {
+            @Override
+            public void serviceInstanceAvailable(ServiceInstance service) {
+                System.out.printf("serviceInstance %s is %s now",service,service.getStatus());
+                countDown.countDown();
+            }
+
+            @Override
+            public void serviceInstanceUnavailable(ServiceInstance service) {
+
+            }
+
+            @Override
+            public void serviceInstanceChange(ServiceInstance service) {
+
+            }
+        };
+        try (LookupManager lookup = factory.getLookupManager();RegistrationManager reg = factory.getRegistrationManager()){
+            lookup.addNotificationHandler("foo",myHandler);
+            reg.updateServiceOperationalStatus("foo", "192.168.1.1-1234", OperationalStatus.UP);
+            assertEquals(OperationalStatus.UP,lookup.lookupInstance("foo").getStatus());
+            //TODO, not work now
+            countDown.await(5,TimeUnit.SECONDS);
         }
     }
 }

@@ -24,6 +24,7 @@ import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.OperationResult;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
+import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstanceHeartbeat;
 
 /**
@@ -35,6 +36,7 @@ public interface DirectoryServiceClient {
 
     void registerInstance(ProvidedServiceInstance instance);
 
+    @Deprecated /* should not support anymore */
     void updateInstance(ProvidedServiceInstance instance);
 
     void updateInstanceStatus(String serviceName, String instanceId, OperationalStatus status, boolean isOwned);
@@ -45,15 +47,75 @@ public interface DirectoryServiceClient {
 
     Map<String, OperationResult<String>> sendHeartBeat(Map<String, ServiceInstanceHeartbeat> heartbeatMap);
 
+    @Deprecated /*why I need to expose ModelService */
     ModelService lookupService(String serviceName);
 
+    @Deprecated /*why I need to expose ModelServiceInstances */
     List<ModelServiceInstance> getAllInstances();
 
-    ModelMetadataKey getMetadataKey(String keyName);
-
+    @Deprecated /*why I need to expose ModelService */
     Map<String, OperationResult<ModelService>> getChangedServices(Map<String, ModelService> services);
 
+    /* TODO metadata refactoring in future */
+    ModelMetadataKey getMetadataKey(String keyName);
     Map<String, OperationResult<ModelMetadataKey>> getChangedMetadataKeys(Map<String, ModelMetadataKey> keys);
 
+    /* TODO the invoker is for http only. can be eliminated from the interface */
     public void setInvoker(DirectoryInvoker invoker);
+
+    /**
+     * 1.2 API
+     */
+    //List<ServiceInstance> lookupService2(String serviceName);
+
+    // serviceName -> serviceInstanceList
+    // Map<String,List<ServiceInstance>> getAllServices();
+
+    /*
+     * Get the timeMills of the latest changed of service
+     */
+    long getLastChangedTimeMills(String serviceName);
+
+    /**
+     * Return a list of modified service instances since the provided timeMillis
+     * usually client will provided a last changed time.
+     * @param serviceName
+     * @param since the time millis in long
+     * @return
+     */
+    List<ServiceInstance> lookUpChangedServiceInstancesSince(String serviceName, long since);
+
+    List<InstanceChange<ServiceInstance>> lookupChangesSince(String serviceName,long since);
+
+    class InstanceChange<T> {
+        enum ChangeType{
+            Status,
+            URL
+        }
+        public final long changedTimeMills;
+        public final ChangeType changeType;
+        public final T source;
+        public final String from;
+        public final String to;
+        InstanceChange(long time, T instance, ChangeType type,String from,String to){
+            this.changedTimeMills = time;
+            this.changeType = type;
+            this.source = instance;
+            this.from = from;
+            this.to = to;
+        }
+        @Override
+        public String toString() {
+            return "ServiceInstanceChange{" +
+                    "changedTimeMills=" + changedTimeMills +
+                    ", changeType=" + changeType +
+                    ", source=" + source +
+                    ", from='" + from + '\'' +
+                    ", to='" + to + '\'' +
+                    '}';
+        }
+    }
+
+
+
 }

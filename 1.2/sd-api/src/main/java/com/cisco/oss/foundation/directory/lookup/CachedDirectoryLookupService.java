@@ -260,6 +260,11 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
         List<ModelService> syncServices = new ArrayList<>();
         for(ModelService service : allServices){
             ModelService syncService = new ModelService(service.getName(), service.getId(), service.getCreateTime());
+            //NOTE: here the original impl use null as modifiedTime
+            // and service-side impl will always return service as changed if the modifiedTime is null
+            // (see line#269 ServiceDirectoryServiceImpl.java in 'sd-service')
+            // so that all call of getChangedServices() will always return a list of services by the service names.
+            // The getChangedServices() actually lookupServicesByServiceNames
             syncServices.add(syncService);
         }
         return syncServices;

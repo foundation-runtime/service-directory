@@ -39,6 +39,7 @@ public class ConfigurableServiceDirectoryManagerFactory implements ServiceDirect
      */
     public ConfigurableServiceDirectoryManagerFactory(ServiceDirectoryConfig config) {
         this._config = config;
+        _client = _decideClient();
         if (_config.isCacheEnabled()) {
             this._lookUpService = new CachedDirectoryLookupService(getDirectoryServiceClient());
         } else {
@@ -83,6 +84,7 @@ public class ConfigurableServiceDirectoryManagerFactory implements ServiceDirect
 
     };
 
+    private final DirectoryServiceClient _client;
     private final ServiceDirectoryConfig _config;
     private final DirectoryLookupService _lookUpService;
     private final DirectoryRegistrationService _registerService;
@@ -92,19 +94,15 @@ public class ConfigurableServiceDirectoryManagerFactory implements ServiceDirect
     // -----------------------
 
     /**
-     * restful (http) client
+     * restful (http) client. it's not state, so that we can keep it singleton
      */
     private static final DirectoryServiceClient _restfulClient = new DirectoryServiceRestfulClient();
 
     /**
-     * dummy client
+     * dummy client, it's not state, so that we can keep it singleton
      */
     private static final DirectoryServiceClient _dummyClient = new DirectoryServiceDummyClient();
 
-    /**
-     * In-Memory Client
-     */
-    private static final DirectoryServiceClient _inMemoryClient = new DirectoryServiceInMemoryClient();
 
     /**
      * provided client
@@ -119,8 +117,16 @@ public class ConfigurableServiceDirectoryManagerFactory implements ServiceDirect
         _clientProvider.set(provider);
     }
 
+
     @Override
     public DirectoryServiceClient getDirectoryServiceClient() {
+        return _client;
+    }
+
+    /*
+      use in constructor to decided which client should use by configurtion.
+     */
+    private DirectoryServiceClient _decideClient(){
         DirectoryServiceClient client;
         switch (_config.getClientType()) {
             case RESTFUL:
@@ -130,7 +136,7 @@ public class ConfigurableServiceDirectoryManagerFactory implements ServiceDirect
                 client = _dummyClient;
                 break;
             case IN_MEMORY:
-                client = _inMemoryClient;
+                client = new DirectoryServiceInMemoryClient();
                 break;
             case PROVIDED:
                 DirectoryServiceClientProvider provider = _clientProvider.get();
