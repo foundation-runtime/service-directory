@@ -16,6 +16,7 @@ import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 
@@ -82,7 +83,7 @@ public class NotificationTest {
             @Override
             public void serviceInstanceUnavailable(ServiceInstance service) {
                 System.out.printf("serviceInstance %s is %s now \n",service,service.getStatus());
-                //countDown.countDown();
+                countDown.countDown();
 
             }
 
@@ -101,7 +102,7 @@ public class NotificationTest {
             reg.updateServiceOperationalStatus("foo", "192.168.1.1-1234", OperationalStatus.UP);
             assertEquals(OperationalStatus.UP, lookup.lookupInstance("foo").getStatus());
 
-            countDown.await();
+            assertTrue(countDown.await(5,TimeUnit.SECONDS)); //should not more than 5 sec
         }
     }
 }

@@ -127,21 +127,18 @@ public class AutoCloseTest {
 
         ConfigurableServiceDirectoryManagerFactory instance = ServiceDirectoryConfig.config().setClientType(DUMMY).build();
         try(LookupManager mgr1 = instance.getLookupManager(); LookupManager mgr2 = instance.getLookupManager()){
-            TimeUnit.SECONDS.sleep(3L);
             assertTrue(mgr1.isStarted());
             assertTrue(mgr2.isStarted());
         }
         // cache service is stopped only when all mgrs closed
 
         ConfigurableServiceDirectoryManagerFactory instance2 = ServiceDirectoryConfig.config().setClientType(DUMMY).build();
-        TimeUnit.SECONDS.sleep(3L);
         assertTrue(instance2.getLookupManager().isStarted());
         assertTrue(instance2.getLookupManager().isStarted());
         // cache service shutdown is not called
 
 
         ConfigurableServiceDirectoryManagerFactory instance3 = ServiceDirectoryConfig.config().setClientType(DUMMY).build();
-        TimeUnit.SECONDS.sleep(3L);
         LookupManager m1 =  instance3.getLookupManager();
         LookupManager m2 =  instance3.getLookupManager();
         assertTrue(m1.isStarted());
