@@ -64,6 +64,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
     public LookupManagerImpl(DirectoryLookupService lookupService){
         this.lbManager = new LoadBalancerManager();
         this.lookupService = lookupService;
+        lookupService.start();
         this.start();
     }
 

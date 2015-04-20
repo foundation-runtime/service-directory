@@ -1,5 +1,6 @@
 package com.cisco.oss.foundation.directory.client;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
@@ -30,15 +31,17 @@ public class LookUpModifiedServicesTest {
 
     private final static Logger LOG = LoggerFactory.getLogger(LookUpModifiedServicesTest.class);
     private DirectoryServiceInMemoryClient sharedMemoryClient;
+    private final static long INIT_TIME = System.currentTimeMillis();
 
 
     @Before
-    public void setUp(){
+    public void setUp() throws InterruptedException {
         sharedMemoryClient = new DirectoryServiceInMemoryClient();
         final ProvidedServiceInstance instance1 = new ProvidedServiceInstance("myService","192.168.0.1",1111);
         final ProvidedServiceInstance instance2 = new ProvidedServiceInstance("myService","192.168.0.2",2222);
         final ProvidedServiceInstance instance3 = new ProvidedServiceInstance("myService","192.168.0.3",3333);
         sharedMemoryClient.registerInstance(instance1);
+        TimeUnit.MILLISECONDS.sleep(1L);
         sharedMemoryClient.registerInstance(instance2);
         sharedMemoryClient.registerInstance(instance3);
     }
@@ -104,6 +107,22 @@ public class LookUpModifiedServicesTest {
     }
 
     @Test
+    public void testForComparatorInstanceChange() throws InterruptedException{
+        TimeUnit.MILLISECONDS.sleep(1L);
+        List<InstanceChange<ServiceInstance>> changes = sharedMemoryClient.lookupChangesSince("myService", INIT_TIME);
+        assertEquals(3, changes.size());
+
+        Collections.sort(changes, InstanceChange.Comparator);
+        //old first
+        assertTrue(changes.get(0).changedTimeMills < changes.get(2).changedTimeMills);
+
+        Collections.sort(changes, InstanceChange.ReverseComparator);
+        //latest first
+        assertTrue(changes.get(0).changedTimeMills > changes.get(2).changedTimeMills);
+
+    }
+
+    @Test
     public void testAddAnotherServiceForLookupChanges() throws InterruptedException {
         final long now = System.currentTimeMillis();
         //make sure register operation is happen-after now
@@ -120,6 +139,5 @@ public class LookUpModifiedServicesTest {
         assertEquals(2, sharedMemoryClient.lookupChangesSince("newService", now).size());
         assertEquals(1, sharedMemoryClient.lookupChangesSince("newService", sinceCreated).size());
         assertEquals(Status,sharedMemoryClient.lookupChangesSince("newService",sinceCreated).get(0).changeType);
-
     }
 }

@@ -15,6 +15,7 @@
  */
 package com.cisco.oss.foundation.directory.client;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -89,16 +90,15 @@ public interface DirectoryServiceClient {
     List<InstanceChange<ServiceInstance>> lookupChangesSince(String serviceName,long since);
 
     class InstanceChange<T> {
-        enum ChangeType{
+        public enum ChangeType{
             Create,
             Remove,
             Status,
             URL
-
         }
         public final long changedTimeMills;
         public final ChangeType changeType;
-        public final T source;
+        public final T changed;
         public final String from;
         public final String to;
         InstanceChange(long time, T instance, ChangeType type,String from,String to){
@@ -106,7 +106,7 @@ public interface DirectoryServiceClient {
             Objects.requireNonNull(instance);
             this.changedTimeMills = time;
             this.changeType = type;
-            this.source = instance;
+            this.changed = instance;
             this.from = from;
             this.to = to;
         }
@@ -115,11 +115,31 @@ public interface DirectoryServiceClient {
             return "ServiceInstanceChange{" +
                     "changedTimeMills=" + changedTimeMills +
                     ", changeType=" + changeType +
-                    ", source=" + source +
+                    ", changed=" + changed +
                     ", from='" + from + '\'' +
                     ", to='" + to + '\'' +
                     '}';
         }
+
+        /**
+         * Order by changedTimeMills. oldest first
+         */
+        public static final Comparator<InstanceChange> Comparator = new Comparator<InstanceChange>() {
+            @Override
+            public int compare(InstanceChange o1, InstanceChange o2) {
+                return Long.compare(o1.changedTimeMills,o2.changedTimeMills);
+            }
+        };
+
+        /**
+         * latest first
+         */
+        public static final Comparator<InstanceChange> ReverseComparator = new Comparator<InstanceChange>() {
+            @Override
+            public int compare(InstanceChange o1, InstanceChange o2) {
+                return Comparator.compare(o2,o1);
+            }
+        };
     }
 
 

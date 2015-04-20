@@ -425,7 +425,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
             for (int i=index; i<all.length; i++){
                 if (all[i]==null) break; //no more items. in the case
                 //check if the instance belongs to serviceName
-                ModelServiceInstance instance = all[i].source;
+                ModelServiceInstance instance = all[i].changed;
                 ConcurrentMap<String, ModelServiceInstance> instances = inMemoryRegistry.get(serviceName);
                 if(instances!=null&& instances.containsValue(instance)){
                     LOGGER.debug("build change {} to result list",all[i]);

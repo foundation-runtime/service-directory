@@ -29,11 +29,12 @@ public class NotificationTest {
 
     @BeforeClass
     public static void setUp(){
-        factory = ServiceDirectoryConfig.config().setClientType(IN_MEMORY).build();
+        factory = ServiceDirectoryConfig.config().setCacheEnabled(false).setClientType(IN_MEMORY).build();
         final ProvidedServiceInstance fooInstance = new ProvidedServiceInstance("foo","192.168.1.1",1234);
         fooInstance.setUri("http://foo/service");
         fooInstance.setStatus(OperationalStatus.DOWN);
         factory.getRegistrationManager().registerService(fooInstance);
+        factory.start();
     }
 
     private static ConfigurableServiceDirectoryManagerFactory factory;
@@ -74,12 +75,14 @@ public class NotificationTest {
         NotificationHandler myHandler = new NotificationHandler() {
             @Override
             public void serviceInstanceAvailable(ServiceInstance service) {
-                System.out.printf("serviceInstance %s is %s now",service,service.getStatus());
+                System.out.printf("serviceInstance %s is %s now \n",service,service.getStatus());
                 countDown.countDown();
             }
 
             @Override
             public void serviceInstanceUnavailable(ServiceInstance service) {
+                System.out.printf("serviceInstance %s is %s now \n",service,service.getStatus());
+                //countDown.countDown();
 
             }
 
@@ -91,9 +94,14 @@ public class NotificationTest {
         try (LookupManager lookup = factory.getLookupManager();RegistrationManager reg = factory.getRegistrationManager()){
             lookup.addNotificationHandler("foo",myHandler);
             reg.updateServiceOperationalStatus("foo", "192.168.1.1-1234", OperationalStatus.UP);
-            assertEquals(OperationalStatus.UP,lookup.lookupInstance("foo").getStatus());
-            //TODO, not work now
-            countDown.await(5,TimeUnit.SECONDS);
+            assertEquals(OperationalStatus.UP, lookup.lookupInstance("foo").getStatus());
+            reg.updateServiceOperationalStatus("foo", "192.168.1.1-1234", OperationalStatus.DOWN);
+            // you can never find a DOWN
+            //assertEquals(OperationalStatus.DOWN, lookup.lookupInstance("foo").getStatus());
+            reg.updateServiceOperationalStatus("foo", "192.168.1.1-1234", OperationalStatus.UP);
+            assertEquals(OperationalStatus.UP, lookup.lookupInstance("foo").getStatus());
+
+            countDown.await();
         }
     }
 }
