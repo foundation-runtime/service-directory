@@ -1,6 +1,9 @@
 package com.cisco.oss.foundation.directory.client;
 
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +18,10 @@ import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
+
+import static com.cisco.oss.foundation.directory.client.DirectoryServiceClient.InstanceChange.ChangeType.Status;
 
 /**
  * test for new changed look up methods
@@ -65,7 +71,7 @@ public class LookUpModifiedServicesTest {
 
         List<InstanceChange<ServiceInstance>> changes = sharedMemoryClient.lookupChangesSince("myService", now);
         assertEquals(1, changes.size());
-        assertEquals(InstanceChange.ChangeType.Status, changes.get(0).changeType);
+        assertEquals(Status, changes.get(0).changeType);
         assertEquals("UP", changes.get(0).to);
         sharedMemoryClient.updateInstanceStatus("myService", "192.168.0.1-1111", OperationalStatus.DOWN, true);
 
@@ -76,5 +82,44 @@ public class LookUpModifiedServicesTest {
 
         changes = sharedMemoryClient.lookupChangesSince("myService", now);
         assertEquals(0, changes.size());
+    }
+
+    @Test
+    public void testGetLastChangedTimeMills(){
+        assertNotNull(sharedMemoryClient.getLastChangedTimeMills("not_exist"));
+        assertEquals(-1L, sharedMemoryClient.getLastChangedTimeMills("not_exist"));
+        assertEquals(-1L, new Date(-1L).getTime());
+
+        // default timezone is china (Asia/Shanghai, Etc/GMT+8), switch to UTC, so that the -1,0 is shown as its defined
+        TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
+        System.out.printf("%1tc \n",new Date(-1L)); //no different than default, notice the printf for date need to use
+        System.out.printf("%s \n",new Date(-2L));
+        System.out.printf("%s \n", new Date(0L));
+        System.out.printf("%s \n", new Date(1L));
+
+        final long now = System.currentTimeMillis();
+        // happen before now
+        assertTrue(now > sharedMemoryClient.getLastChangedTimeMills("myService"));
+
+    }
+
+    @Test
+    public void testAddAnotherServiceForLookupChanges() throws InterruptedException {
+        final long now = System.currentTimeMillis();
+        //make sure register operation is happen-after now
+        TimeUnit.MILLISECONDS.sleep(1L);
+        //add a new service
+        final ProvidedServiceInstance newService = new ProvidedServiceInstance("newService","192.168.1.1",5555);
+        sharedMemoryClient.registerInstance(newService);
+        List<InstanceChange<ServiceInstance>> changes = sharedMemoryClient.lookupChangesSince("newService", now);
+        assertEquals(1, changes.size());
+        final long sinceCreated = System.currentTimeMillis();
+        //make sure update operation is happen-after 'sinceCreated'
+        TimeUnit.MILLISECONDS.sleep(1L);
+        sharedMemoryClient.updateInstanceStatus("newService", "192.168.1.1-5555", OperationalStatus.UP, true);
+        assertEquals(2, sharedMemoryClient.lookupChangesSince("newService", now).size());
+        assertEquals(1, sharedMemoryClient.lookupChangesSince("newService", sinceCreated).size());
+        assertEquals(Status,sharedMemoryClient.lookupChangesSince("newService",sinceCreated).get(0).changeType);
+
     }
 }

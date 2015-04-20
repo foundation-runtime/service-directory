@@ -17,6 +17,7 @@ package com.cisco.oss.foundation.directory.client;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
@@ -61,7 +62,7 @@ public interface DirectoryServiceClient {
     Map<String, OperationResult<ModelMetadataKey>> getChangedMetadataKeys(Map<String, ModelMetadataKey> keys);
 
     /* TODO the invoker is for http only. can be eliminated from the interface */
-    public void setInvoker(DirectoryInvoker invoker);
+    void setInvoker(DirectoryInvoker invoker);
 
     /**
      * 1.2 API
@@ -79,9 +80,9 @@ public interface DirectoryServiceClient {
     /**
      * Return a list of modified service instances since the provided timeMillis
      * usually client will provided a last changed time.
-     * @param serviceName
+     * @param serviceName name of service
      * @param since the time millis in long
-     * @return
+     * @return a list of changed service instances
      */
     List<ServiceInstance> lookUpChangedServiceInstancesSince(String serviceName, long since);
 
@@ -89,8 +90,11 @@ public interface DirectoryServiceClient {
 
     class InstanceChange<T> {
         enum ChangeType{
+            Create,
+            Remove,
             Status,
             URL
+
         }
         public final long changedTimeMills;
         public final ChangeType changeType;
@@ -98,6 +102,8 @@ public interface DirectoryServiceClient {
         public final String from;
         public final String to;
         InstanceChange(long time, T instance, ChangeType type,String from,String to){
+            Objects.requireNonNull(time);
+            Objects.requireNonNull(instance);
             this.changedTimeMills = time;
             this.changeType = type;
             this.source = instance;

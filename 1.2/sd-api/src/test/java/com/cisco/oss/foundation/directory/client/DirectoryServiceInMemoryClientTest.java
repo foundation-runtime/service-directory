@@ -100,8 +100,15 @@ public class DirectoryServiceInMemoryClientTest {
 
         @Override
         public T call() throws Exception {
-            T result = doCalling();
-            countDown();
+            T result = null;
+            try {
+                result = doCalling();
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            finally {
+                countDown();
+            }
             return result;
         }
     }
@@ -149,7 +156,8 @@ public class DirectoryServiceInMemoryClientTest {
 
         @Override
         public Boolean doCalling() {
-            sharedMemoryClient.updateInstance(instanceToUpdate);
+            sharedMemoryClient.updateInstanceStatus(instanceToUpdate.getServiceName(),instanceToUpdate.getProviderId(),
+                    OperationalStatus.UP,true);
             return true;
         }
     }

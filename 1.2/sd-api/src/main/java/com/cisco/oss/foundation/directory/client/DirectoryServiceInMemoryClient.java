@@ -10,7 +10,6 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,12 +48,12 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
 
     private final BlockingQueue<InstanceChange<ModelServiceInstance>> changeHistory =
             new ArrayBlockingQueue<>(MAX_CHARGES_HISTORY_SIZE);
-    private final AtomicInteger changeCount = new AtomicInteger(0);
 
     private void addToHistory(InstanceChange<ModelServiceInstance> change){
         if (change == null) {
             throw new IllegalArgumentException("ServiceInstanceChange should not be null");
         }
+        //if history is full, remove the oldest one, because FIFO queue, so that take() will remove the oldest
         if (0 == changeHistory.remainingCapacity()){
             try {
                 changeHistory.take();
@@ -146,13 +145,22 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
         if (previous != null) {
             LOGGER.debug("ModelServiceInstance id {} already registered by {} ", instance.getProviderId(), objHashStr(previous));
         } else {
+            addToHistory(new InstanceChange<>(newInstance.getModifiedTime().getTime(),
+                    newInstance,
+                    InstanceChange.ChangeType.Create,
+                    "null", //
+                    newInstance.toString()
+            ));
             LOGGER.debug("Registered new ModelServiceInstance {} with id {} ", objHashStr(newInstance), instance.getProviderId());
         }
 
     }
 
+    @Deprecated
     @Override
     public void updateInstance(ProvidedServiceInstance instance) {
+        throw new UnsupportedOperationException("updateInstance(ProvidedServiceInstance instance) not supported since 1.2");
+        /*
         String serviceName = instance.getServiceName();
         Map<String, ModelServiceInstance> iMap = inMemoryRegistry.get(serviceName);
         if (iMap == null) {
@@ -174,6 +182,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
                 LOGGER.debug("ModelServiceInstance {} is update by {}", objHashStr(mInstance), objHashStr(instance));
             }
         }
+        */
     }
 
     private ModelServiceInstance _getInstance(String serviceName, String instanceId) {
@@ -238,7 +247,10 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
             ModelServiceInstance previousInstance = iMap.remove(instanceId);
             if (previousInstance != null) {
                 LOGGER.debug("service instance {} removed by name : {} , id : {}", previousInstance, serviceName, instanceId);
-                previousInstance = null;
+                addToHistory(new InstanceChange<>(previousInstance.getModifiedTime().getTime(),
+                        previousInstance,
+                        InstanceChange.ChangeType.Remove,
+                        previousInstance.toString(), "null"));
             } else {
                 LOGGER.debug("no service instance exist for {} {}", serviceName, instanceId);
             }
@@ -371,7 +383,8 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
 
     @Override
     public long getLastChangedTimeMills(String serviceName) {
-        return lookupService(serviceName).getModifiedTime().getTime();
+        ModelService service = lookupService(serviceName);
+        return service == null ? -1L : lookupService(serviceName).getModifiedTime().getTime();
     }
 
     /**
@@ -396,7 +409,8 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
 
     @Override
     public List<InstanceChange<ServiceInstance>> lookupChangesSince(String serviceName, long since) {
-        InstanceChange<ModelServiceInstance>[] all = changeHistory.toArray((InstanceChange<ModelServiceInstance>[]) new InstanceChange[MAX_CHARGES_HISTORY_SIZE]);
+
+        InstanceChange<ModelServiceInstance>[] all = changeHistory.toArray((InstanceChange<ModelServiceInstance>[]) new InstanceChange[changeHistory.size()]);
         int index = -1;
         for (int i = 0; i < all.length; i++) {
             if (all[i].changedTimeMills > since) {
