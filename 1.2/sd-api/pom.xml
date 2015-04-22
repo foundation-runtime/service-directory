@@ -81,6 +81,7 @@
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
     <org.jboss.resteasy.version>3.0.11.Final</org.jboss.resteasy.version>
     <org.mockito.version>1.10.19</org.mockito.version>
+    <sd.module.dir>/opt/jboss-as/modules/system/layers/base/com/cisco/oss/foundation/directory/main</sd.module.dir>
   </properties>
 
   <build>
@@ -118,6 +119,26 @@
               <goal>jar</goal>
             </goals>
             <phase>package</phase>
+          </execution>
+        </executions>
+      </plugin>
+      
+      <plugin>
+        <artifactId>exec-maven-plugin</artifactId>
+        <groupId>org.codehaus.mojo</groupId>
+        <executions>
+          <execution>
+            <id>Generate SD Jboss Module</id>
+            <phase>package</phase>
+            <goals>
+              <goal>exec</goal>
+            </goals>
+            <configuration>
+              <executable>${basedir}/scripts/generateModule.sh</executable>
+              <arguments>
+                <argument>${project.build.directory}</argument>
+              </arguments>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -248,6 +269,48 @@
 
       <plugin>
         <artifactId>maven-site-plugin</artifactId>
+      </plugin>
+    
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>rpm-maven-plugin</artifactId>
+        <version>2.1.3</version>
+        <executions>
+          <execution>
+            <id>generate-rpm</id>
+            <goals>
+              <goal>attached-rpm</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <copyright>2015, Cisco</copyright>
+          <group>Application/System</group>
+          <packager>Cisco Systems, Inc</packager>
+          <name>${project.artifactId}</name>
+          <version>${project.version}</version>
+          <targetOS>linux</targetOS>
+          <needarch>noarch</needarch>
+    
+          <defineStatements>
+            <defineStatement>_unpackaged_files_terminate_build 0</defineStatement>
+            <defineStatement>_tmppath /tmp</defineStatement>
+          </defineStatements>
+    
+          <mappings>
+            <mapping>
+              <directory>${sd.module.dir}</directory>
+              <filemode>644</filemode>
+              <username>jboss</username>
+              <groupname>jboss</groupname>
+              <sources>
+                <source>
+                  <location>${project.build.directory}/modules</location>
+                </source>
+              </sources>
+            </mapping>
+          </mappings>
+        </configuration>
       </plugin>
     </plugins>
   </build>
