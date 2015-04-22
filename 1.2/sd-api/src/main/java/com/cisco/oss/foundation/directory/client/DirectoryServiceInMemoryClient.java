@@ -349,32 +349,9 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
     }
 
     @Override
-    //TODO, refactor upper interface.
-    // the input parameter map stands for all services, don't know why the interface is defined like this?
-    //TODO, refactor logic
+    @Deprecated /* use lookUpChangedServiceInstancesSince() instead */
     public Map<String, OperationResult<ModelService>> getChangedServices(Map<String, ModelService> services) {
-        Map<String, OperationResult<ModelService>> map = new HashMap<>();
-        for (Map.Entry<String, ModelService> entry : services.entrySet()) {
-            //TODO, refactor model, key in map is service name, redundancy with ModelService.serviceName
-            String serviceName = entry.getKey();
-            ModelService oldService = entry.getValue();
-            LOGGER.debug("check for {} -> {}", serviceName, oldService);
-            ModelService latestService = lookupService(serviceName);
-            if (latestService != null) {
-                LOGGER.debug("the latest service instance is {}", latestService);
-                if (oldService.getModifiedTime() == null) {
-                    oldService.setModifiedTime(new Date(0L)); // null means never changed. so we set up to oldest
-                }
-                LOGGER.debug("new modifyTime {} vs. old modifiedTime {}", latestService.getModifiedTime().getTime(), oldService.getModifiedTime().getTime());
-                if (latestService.getModifiedTime().getTime() > oldService.getModifiedTime().getTime()) {
-                    map.put(serviceName, new OperationResult<>(true, latestService, null));
-                } else {
-                    map.put(serviceName, new OperationResult<ModelService>(false, null, new ServiceDirectoryError(ErrorCode.GENERAL_ERROR)));
-                }
-            }
-
-        }
-        return map;
+       throw new UnsupportedOperationException("not support the 1.1 method in DirectoryServiceInMemoryClient");
     }
 
 
