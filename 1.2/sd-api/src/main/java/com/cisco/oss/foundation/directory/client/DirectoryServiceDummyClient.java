@@ -90,16 +90,6 @@ public class DirectoryServiceDummyClient implements DirectoryServiceClient {
     }
 
     @Override
-    public long getLastChangedTimeMills(String serviceName) {
-        throw new UnsupportedOperationException("not support now for 1.2 api");
-    }
-
-    @Override
-    public List<ServiceInstance> lookUpChangedServiceInstancesSince(String serviceName, long since) {
-        throw new UnsupportedOperationException("not support now for 1.2 api");
-    }
-
-    @Override
     public List<InstanceChange<ServiceInstance>> lookupChangesSince(String serviceName, long since) {
         throw new UnsupportedOperationException("not support now for 1.2 api");
     }

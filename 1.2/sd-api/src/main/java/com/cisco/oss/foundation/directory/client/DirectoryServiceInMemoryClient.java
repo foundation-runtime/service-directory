@@ -381,7 +381,6 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
     // 1.2 API
     //-------------------------------
 
-    @Override
     public long getLastChangedTimeMills(String serviceName) {
         ModelService service = lookupService(serviceName);
         return service == null ? -1L : lookupService(serviceName).getModifiedTime().getTime();

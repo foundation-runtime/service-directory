@@ -75,8 +75,8 @@ public interface DirectoryServiceClient {
 
     /*
      * Get the timeMills of the latest changed of service
-     */
     long getLastChangedTimeMills(String serviceName);
+     */
 
     /**
      * Return a list of modified service instances since the provided timeMillis
@@ -84,8 +84,8 @@ public interface DirectoryServiceClient {
      * @param serviceName name of service
      * @param since the time millis in long
      * @return a list of changed service instances
-     */
     List<ServiceInstance> lookUpChangedServiceInstancesSince(String serviceName, long since);
+     */
 
     List<InstanceChange<ServiceInstance>> lookupChangesSince(String serviceName,long since);
 
