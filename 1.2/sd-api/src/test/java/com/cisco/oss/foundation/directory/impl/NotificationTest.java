@@ -72,23 +72,25 @@ public class NotificationTest {
 
     @Test
     public void testNotifyOnAvailable() throws InterruptedException {
-        final CountDownLatch countDown = new CountDownLatch(1);
+        final CountDownLatch countDown = new CountDownLatch(6);
         NotificationHandler myHandler = new NotificationHandler() {
             @Override
             public void serviceInstanceAvailable(ServiceInstance service) {
-                System.out.printf("serviceInstance %s is %s now \n",service,service.getStatus());
-                countDown.countDown();
+                System.out.printf("serviceInstance %s is Available. Status is %s \n",service,service.getStatus());
+                countDown.countDown(); //Inst1=UP, Inst2-UP
             }
 
             @Override
             public void serviceInstanceUnavailable(ServiceInstance service) {
-                System.out.printf("serviceInstance %s is %s now \n",service,service.getStatus());
-                countDown.countDown();
+                System.out.printf("serviceInstance %s is Unavailable. Status is %s \n",service,service.getStatus());
+                countDown.countDown(); //1-DOWN,2-DOWN
 
             }
 
             @Override
             public void serviceInstanceChange(ServiceInstance service) {
+                System.out.printf("serviceInstance %s is changed \n",service);
+                countDown.countDown(); //2-add and 2-delete
 
             }
         };
@@ -102,7 +104,12 @@ public class NotificationTest {
             reg.updateServiceOperationalStatus("foo", "192.168.1.1-1234", OperationalStatus.UP);
             assertEquals(OperationalStatus.UP, lookup.lookupInstance("foo").getStatus());
 
-            assertTrue(countDown.await(5,TimeUnit.SECONDS)); //should not more than 5 sec
+            reg.registerService(new ProvidedServiceInstance("foo", "192.168.1.2", 2222, "http://cisco.com/foo/2",
+                    OperationalStatus.DOWN, null));
+            TimeUnit.SECONDS.sleep(2L);
+            reg.updateServiceOperationalStatus("foo", "192.168.1.2-2222", OperationalStatus.UP);
+            reg.unregisterService("foo", "192.168.1.2-2222");
+            assertTrue(countDown.await(5, TimeUnit.SECONDS)); //should not more than 5 sec
         }
     }
 }

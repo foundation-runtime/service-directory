@@ -62,6 +62,7 @@ public class ServiceInstanceUtils {
      */
     public static ServiceInstance toServiceInstance(
             ModelServiceInstance modelInstance) {
+        if (modelInstance==null) throw new NullPointerException();
         Map<String, String> meta = new HashMap<String, String>();
         if (modelInstance.getMetadata() != null) {
             for (Entry<String, String> en : modelInstance.getMetadata()

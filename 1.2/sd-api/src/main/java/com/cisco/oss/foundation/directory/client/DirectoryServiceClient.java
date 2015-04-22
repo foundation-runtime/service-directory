@@ -98,15 +98,15 @@ public interface DirectoryServiceClient {
         }
         public final long changedTimeMills;
         public final ChangeType changeType;
-        public final T changed;
-        public final String from;
-        public final String to;
-        InstanceChange(long time, T instance, ChangeType type,String from,String to){
+        public final T instance; //ref to current
+        public final T from;
+        public final T to;
+        InstanceChange(long time, T instance, ChangeType type,T from,T to){
             Objects.requireNonNull(time);
             Objects.requireNonNull(instance);
             this.changedTimeMills = time;
             this.changeType = type;
-            this.changed = instance;
+            this.instance = instance;
             this.from = from;
             this.to = to;
         }
@@ -115,7 +115,6 @@ public interface DirectoryServiceClient {
             return "ServiceInstanceChange{" +
                     "changedTimeMills=" + changedTimeMills +
                     ", changeType=" + changeType +
-                    ", changed=" + changed +
                     ", from='" + from + '\'' +
                     ", to='" + to + '\'' +
                     '}';

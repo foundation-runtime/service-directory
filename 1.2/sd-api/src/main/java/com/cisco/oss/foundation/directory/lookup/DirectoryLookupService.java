@@ -162,37 +162,28 @@ public class DirectoryLookupService extends ServiceDirectoryService {
                             .lookupChangesSince(service, lastChangedTimeMills.get(service).longValue());
                     //has changes
                     if (!changes.isEmpty()) {
-                        List<InstanceChange<ServiceInstance>> statusChanges = new ArrayList<>();
-                        List<InstanceChange<ServiceInstance>> othersChanges = new ArrayList<>();
-
+                        //oldest first
+                        Collections.sort(changes, InstanceChange.Comparator);
                         for (InstanceChange<ServiceInstance> c : changes) {
-                            if (c.changeType== Status){
-                                statusChanges.add(c);
-                            }else{
-                                othersChanges.add(c);
-                            }
-                        }
-                        // for status switching, only care the latest one
-                        if (!statusChanges.isEmpty()){
-                            //latest first
-                            Collections.sort(statusChanges, InstanceChange.ReverseComparator);
-                            InstanceChange<ServiceInstance> latest = statusChanges.get(0);
-                            if (latest.to == OperationalStatus.UP.name()) {
-                                onServiceInstanceAvailable(latest.changed);
-                            }else if (latest.to == OperationalStatus.DOWN.name()) {
-                                onServiceInstanceUnavailable(latest.changed);
-                            }
-                        }
-                        // for others, handle from the oldest changes one by one
-                        if(!othersChanges.isEmpty()){
-                            //oldest first
-                            Collections.sort(othersChanges, InstanceChange.Comparator);
-                            for(InstanceChange<ServiceInstance> change: othersChanges){
-                                onServiceInstanceChanged(change.changed);
+                            if (c.changeType == Status) {
+                                //not null grantee
+                                if (c.to.getStatus() == OperationalStatus.UP) {
+                                    onServiceInstanceAvailable(c.to);
+                                } else if (c.to.getStatus() == OperationalStatus.DOWN) {
+                                    onServiceInstanceUnavailable(c.to);
+                                }
+                            } else {
+                                //TODO, according to the current interface
+                                //      can't notify the unregister change.
+                                if (c.to!=null){
+                                    onServiceInstanceChanged(c.to);
+                                }else{
+                                    onServiceInstanceChanged(c.from); //the unregister
+                                }
                             }
                         }
                         Collections.sort(changes,InstanceChange.ReverseComparator);
-                        //latest change time
+                        //update latest change time
                         lastChangedTimeMills.get(service).set(changes.get(0).changedTimeMills);
                     }
                 } catch (Throwable t) {

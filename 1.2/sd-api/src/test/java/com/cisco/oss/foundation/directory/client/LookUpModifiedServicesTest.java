@@ -75,7 +75,7 @@ public class LookUpModifiedServicesTest {
         List<InstanceChange<ServiceInstance>> changes = sharedMemoryClient.lookupChangesSince("myService", now);
         assertEquals(1, changes.size());
         assertEquals(Status, changes.get(0).changeType);
-        assertEquals("UP", changes.get(0).to);
+        assertEquals(OperationalStatus.UP, changes.get(0).to.getStatus());
         sharedMemoryClient.updateInstanceStatus("myService", "192.168.0.1-1111", OperationalStatus.DOWN, true);
 
         changes = sharedMemoryClient.lookupChangesSince("myService", now);
