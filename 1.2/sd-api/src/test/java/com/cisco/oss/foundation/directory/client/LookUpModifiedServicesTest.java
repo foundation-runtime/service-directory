@@ -84,7 +84,7 @@ public class LookUpModifiedServicesTest {
         sharedMemoryClient.unregisterInstance("myService", "192.168.0.1-1111", true);
 
         changes = sharedMemoryClient.lookupChangesSince("myService", now);
-        assertEquals(0, changes.size());
+        assertEquals(3, changes.size()); //it's should be 3, because now we add one record for the delete!
     }
 
     @Test
