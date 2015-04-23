@@ -423,7 +423,6 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
                 assert instance!=null;
                 //check if the instance is the service looked up for
                 if (instance.getServiceName()==serviceName) {
-                    //it's a record of a instance had unregistered
                     LOGGER.debug("build change {} to result list", all[i]);
                     result.add(new InstanceChange<ServiceInstance>(
                             all[i].changedTimeMills,
