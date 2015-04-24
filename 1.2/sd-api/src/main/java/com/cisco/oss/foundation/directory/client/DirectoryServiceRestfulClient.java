@@ -26,6 +26,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cisco.oss.foundation.directory.ServiceDirectory;
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
@@ -113,8 +114,9 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
     @Override
     public void registerInstance(ProvidedServiceInstance instance) {
         String body = _serialize(instance);
-        HttpResponse result = invoker.invoke(toInstanceUri(instance.getServiceName(), instance.getProviderId()), body,
-                HttpMethod.POST);
+
+        HttpResponse result = invoker.invoke(toInstanceUri(instance.getServiceName(), instance.getProviderId()), body, 
+                HttpMethod.POST, addHeader());
 
         if (result.getHttpCode() != HTTP_CREATED) {
             throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
@@ -135,8 +137,9 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
     @Override
     public void updateInstance(ProvidedServiceInstance instance) {
         String body = _serialize(instance);
+
         HttpResponse result = invoker.invoke(toInstanceUri(instance.getServiceName(), instance.getProviderId()), body,
-                HttpMethod.PUT);
+                HttpMethod.PUT, addHeader());
 
         if (result.getHttpCode() != HTTP_CREATED) {
             throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
@@ -169,6 +172,8 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
 
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/x-www-form-urlencoded");
+        headers.put("api-version", ServiceDirectory.getAPIVersion());
+
         HttpResponse result = invoker.invoke(uri, body,
                 HttpMethod.PUT, headers);
 
@@ -203,6 +208,7 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
 
         Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/x-www-form-urlencoded");
+        headers.put("api-version", ServiceDirectory.getAPIVersion());
         HttpResponse result = invoker.invoke(serviceUri, body,
                 HttpMethod.PUT, headers);
 
@@ -225,8 +231,9 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
     @Override
     public void unregisterInstance(String serviceName, String instanceId, boolean isOwned) {
         String uri = toInstanceUri(serviceName, instanceId) + "/" + isOwned;
+
         HttpResponse result = invoker.invoke(uri, null,
-                HttpMethod.DELETE);
+                HttpMethod.DELETE, addHeader());
 
         if (result.getHttpCode() != HTTP_OK) {
             throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
@@ -243,8 +250,9 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
     @Override
     public Map<String, OperationResult<String>> sendHeartBeat(Map<String, ServiceInstanceHeartbeat> heartbeatMap) {
         String body = _serialize(heartbeatMap);
+
         HttpResponse result = invoker.invoke("/service/heartbeat", body,
-                HttpMethod.PUT);
+                HttpMethod.PUT, addHeader());
 
         if (result.getHttpCode() != HTTP_OK) {
             throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
@@ -267,7 +275,7 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
      */
     @Override
     public ModelService lookupService(String serviceName) {
-        HttpResponse result = invoker.invoke("/service/" + serviceName, null, HttpMethod.GET);
+        HttpResponse result = invoker.invoke("/service/" + serviceName, null, HttpMethod.GET, addHeader());
 
         if (result.getHttpCode() != HTTP_OK) {
             throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
@@ -285,7 +293,7 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
      */
     @Override
     public List<ModelServiceInstance> getAllInstances() {
-        HttpResponse result = invoker.invoke("/service", null, HttpMethod.GET);
+        HttpResponse result = invoker.invoke("/service", null, HttpMethod.GET, addHeader());
 
         if (result.getHttpCode() != HTTP_OK) {
             throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
@@ -307,7 +315,7 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
      */
     @Override
     public ModelMetadataKey getMetadataKey(String keyName) {
-        HttpResponse result = invoker.invoke("/metadatakey/" + keyName, null, HttpMethod.GET);
+        HttpResponse result = invoker.invoke("/metadatakey/" + keyName, null, HttpMethod.GET, addHeader());
 
         if (result.getHttpCode() != HTTP_OK) {
             throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
@@ -330,7 +338,8 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
     @Override
     public Map<String, OperationResult<ModelService>> getChangedServices(Map<String, ModelService> services) {
         String body = _serialize(services);
-        HttpResponse result = invoker.invoke("/service/changing", body, HttpMethod.POST);
+
+        HttpResponse result = invoker.invoke("/service/changing", body, HttpMethod.POST, addHeader());
 
         if (result.getHttpCode() != HTTP_OK) {
             throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
@@ -353,7 +362,8 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
     @Override
     public Map<String, OperationResult<ModelMetadataKey>> getChangedMetadataKeys(Map<String, ModelMetadataKey> keys) {
         String body = _serialize(keys);
-        HttpResponse result = invoker.invoke("/metadatakey/changing", body, HttpMethod.POST);
+
+        HttpResponse result = invoker.invoke("/metadatakey/changing", body, HttpMethod.POST, addHeader());
 
         if (result.getHttpCode() != HTTP_OK) {
             throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
@@ -544,17 +554,22 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
             HttpResponse result = null;
             String url = directoryAddresses + uri;
             try {
-                if (method == HttpMethod.PUT) {
+                if (method == null || method == HttpMethod.GET) {
+                    result = HttpUtils.getJson(url, headers);
+                } else if (method == HttpMethod.POST) {
+                    result = HttpUtils.postJson(url, payload, headers);
+                } else if (method == HttpMethod.PUT) {
                     result = HttpUtils.put(url, payload, headers);
+                } else if (method == HttpMethod.DELETE) {
+                    result = HttpUtils.deleteJson(url, headers);
                 }
             } catch (IOException e) {
                 String errMsg = "Send HTTP Request to remote Directory Server failed";
                 throw new ServiceException(ErrorCode.HTTP_CLIENT_ERROR, e, errMsg);
             }
-
             // HTTP_OK 200, HTTP_MULT_CHOICE 300
             if (result != null) {
-                if (result.getHttpCode() < HTTP_OK || result.getHttpCode() >= 300) {
+                if (result.getHttpCode() < HTTP_OK || result.getHttpCode() >= HTTP_MULT_CHOICE) {
                     String errorBody = result.getRetBody();
 
                     if (errorBody == null || errorBody.isEmpty()) {
@@ -564,8 +579,7 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
                     }
                     ServiceDirectoryError sde;
                     try {
-                        sde = deserialize(errorBody.getBytes(),
-                                ServiceDirectoryError.class);
+                        sde = deserialize(errorBody.getBytes(), ServiceDirectoryError.class);
                     } catch (IOException e) {
                         String errMsg = "Deserialize error body message failed";
                         throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, e, errMsg);
@@ -583,6 +597,12 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
     @Override
     public List<InstanceChange<ServiceInstance>> lookupChangesSince(String serviceName, long since) {
         throw new UnsupportedOperationException("not support now for 1.2 api");
+    }
+    
+    private Map<String, String>addHeader() {
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("api-version", ServiceDirectory.getAPIVersion());
+        return headers;
     }
 }
 

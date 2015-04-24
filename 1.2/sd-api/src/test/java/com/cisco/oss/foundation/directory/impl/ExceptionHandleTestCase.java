@@ -97,7 +97,7 @@ public class ExceptionHandleTestCase  {
 
         final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker() {
             @Override
-            public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method) {
+            public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String>headers) {
 
                 Assert.assertEquals("http://vcsdirsvc:2013/service/mock-test01/" + instance.getProviderId(), directoryAddresses+uri);
                 throw new ServiceException(error.get().getExceptionCode(),error.get().getErrorMessage());

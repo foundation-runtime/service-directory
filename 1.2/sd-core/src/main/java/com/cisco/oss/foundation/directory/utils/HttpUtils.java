@@ -81,6 +81,42 @@ public final class HttpUtils {
     }
 
     /**
+     * Invoke REST Service using POST method.
+     *
+     * @param urlStr
+     *            the REST service URL String
+     * @param body
+     *            the Http Body String.
+     * @param headers
+     *            the Http header Map.
+     * @return the HttpResponse.
+     * @throws IOException
+     */
+    public static HttpResponse postJson(String urlStr, String body, Map<String, String> headers) throws IOException {
+
+        URL url = new URL(urlStr);
+        HttpURLConnection urlConnection = (HttpURLConnection) url
+                .openConnection();
+        urlConnection.addRequestProperty("Accept", "application/json");
+
+        urlConnection.setRequestMethod("POST");
+
+        addCustomHeaders(urlConnection, headers);
+
+        urlConnection.addRequestProperty("Content-Type", "application/json");
+        urlConnection.addRequestProperty("Content-Length",
+                Integer.toString(body.length()));
+        urlConnection.setDoOutput(true);
+        urlConnection.setDoInput(true);
+        urlConnection.setUseCaches(false);
+
+        OutputStream out = urlConnection.getOutputStream();
+        out.write(body.getBytes());
+        ByteStreams.copy(new ByteArrayInputStream(body.getBytes()), out);
+        return getHttpResponse(urlConnection);
+    }
+    
+    /**
      * Invoke REST Service using PUT method.
      *
      * @param urlStr
@@ -118,12 +154,7 @@ public final class HttpUtils {
         urlConnection.addRequestProperty("Accept", "application/json");
 
         urlConnection.setRequestMethod("PUT");
-        if (headers != null) {
-            for (Entry<String, String> entry : headers.entrySet()) {
-                urlConnection.addRequestProperty(entry.getKey(),
-                        entry.getValue());
-            }
-        }
+        addCustomHeaders(urlConnection, headers);
 
         if (body != null && body.length() > 0)
             urlConnection.addRequestProperty("Content-Length",
@@ -158,6 +189,25 @@ public final class HttpUtils {
     }
 
     /**
+     * Invoke REST Service using GET method.
+     *
+     * @param urlStr
+     *            the REST service URL String.
+     * @param headers
+     *            the Http header Map.
+     * @return the HttpResponse.
+     * @throws IOException
+     */
+    public static HttpResponse getJson(String urlStr, Map<String, String> headers) throws IOException {
+        URL url = new URL(urlStr);
+        HttpURLConnection urlConnection = (HttpURLConnection) url
+                .openConnection();
+        urlConnection.addRequestProperty("Accept", "application/json");
+        addCustomHeaders(urlConnection, headers);
+
+        return getHttpResponse(urlConnection);
+    }
+    /**
      * Invoke REST Service using DELETE method.
      *
      * @param urlStr
@@ -176,6 +226,27 @@ public final class HttpUtils {
         return getHttpResponse(urlConnection);
     }
 
+    /**
+     * Invoke REST Service using DELETE method.
+     *
+     * @param urlStr
+     *            the REST URL String.    
+     * @param headers
+     *            the Http header Map.
+     * @return the HttpResponse.
+     * @throws IOException
+     */
+    public static HttpResponse deleteJson(String urlStr, Map<String, String> headers) throws IOException {
+        URL url = new URL(urlStr);
+        HttpURLConnection urlConnection = (HttpURLConnection) url
+                .openConnection();
+        urlConnection.addRequestProperty("Accept", "application/json");
+        addCustomHeaders(urlConnection, headers);
+
+        urlConnection.setRequestMethod("DELETE");
+
+        return getHttpResponse(urlConnection);
+    }
     private static HttpResponse getHttpResponse(HttpURLConnection urlConnection) throws IOException {
         BufferedReader in = null;
         try {
@@ -202,4 +273,16 @@ public final class HttpUtils {
             }
         }
     }
+    
+    private static void addCustomHeaders(HttpURLConnection urlConnection,
+            Map<String, String> headers) {
+
+        if (headers != null) {
+            for (Entry<String, String> entry : headers.entrySet()) {
+                urlConnection.addRequestProperty(entry.getKey(),
+                        entry.getValue());
+            }
+        }
+    }
+
 }
