@@ -36,6 +36,31 @@ import com.cisco.oss.foundation.directory.entity.ServiceInstanceHeartbeat;
  */
 public interface DirectoryServiceClient {
 
+
+    /**
+     * use {@link DirectoryServiceRestfulClient#SD_API_SD_SERVER_FQDN_PROPERTY}
+     */
+    @Deprecated
+    String SD_API_SD_SERVER_FQDN_PROPERTY = DirectoryServiceRestfulClient.SD_API_SD_SERVER_FQDN_PROPERTY;
+
+    /**
+     * use {@link DirectoryServiceRestfulClient#SD_API_SD_SERVER_FQDN_DEFAULT}
+     */
+    @Deprecated
+    String SD_API_SD_SERVER_FQDN_DEFAULT = DirectoryServiceRestfulClient.SD_API_SD_SERVER_FQDN_DEFAULT;
+
+    /**
+     * use {@link DirectoryServiceRestfulClient#SD_API_SD_SERVER_PORT_PROPERTY}
+     */
+    @Deprecated
+    String SD_API_SD_SERVER_PORT_PROPERTY = DirectoryServiceRestfulClient.SD_API_SD_SERVER_PORT_PROPERTY;
+
+    /**
+     * use {@link DirectoryServiceRestfulClient#SD_API_SD_SERVER_PORT_DEFAULT}
+     */
+    @Deprecated
+    int SD_API_SD_SERVER_PORT_DEFAULT = DirectoryServiceRestfulClient.SD_API_SD_SERVER_PORT_DEFAULT;
+
     void registerInstance(ProvidedServiceInstance instance);
 
     @Deprecated /* should not support anymore */
