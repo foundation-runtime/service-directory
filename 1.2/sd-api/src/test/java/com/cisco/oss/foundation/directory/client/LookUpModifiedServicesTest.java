@@ -43,12 +43,15 @@ public class LookUpModifiedServicesTest {
         sharedMemoryClient.registerInstance(instance1);
         TimeUnit.MILLISECONDS.sleep(1L);
         sharedMemoryClient.registerInstance(instance2);
+        TimeUnit.MILLISECONDS.sleep(1L);
         sharedMemoryClient.registerInstance(instance3);
+        TimeUnit.MILLISECONDS.sleep(1L);
     }
 
     @Test
-    public void testLookUpForChange(){
+    public void testLookUpForChange() throws InterruptedException{
         final long sinceStarted = System.currentTimeMillis();
+        TimeUnit.MILLISECONDS.sleep(1L);
         List<ModelServiceInstance> all = sharedMemoryClient.getAllInstances();
         assertEquals(3,all.size());
         for (ModelServiceInstance instance : all){
@@ -63,7 +66,8 @@ public class LookUpModifiedServicesTest {
         // no one changed now
         assertEquals(0, result.size());
 
-        final long now = System.currentTimeMillis()-1;//sub to 1 ms so that make sure update happened
+        final long now = System.currentTimeMillis();
+        TimeUnit.MILLISECONDS.sleep(1L); //wait for 1 ms so that make sure update happened
         List<ServiceInstance> result2 = sharedMemoryClient.lookUpChangedServiceInstancesSince("myService", now);
         // still no one changed till now
         assertEquals(0,result2.size());
