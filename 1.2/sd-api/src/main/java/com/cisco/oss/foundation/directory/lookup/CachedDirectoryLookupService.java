@@ -404,12 +404,10 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                         OperationResult<ModelService> result = deltaService.getValue();
                         if(result.getResult()){
                             ModelService newService = result.getobject();
-                            ModelService oldService = cachedLookupService.getCache().get(serviceName);
                             if(newService != null){
                                 cachedLookupService.getCache().put(serviceName, newService);
                                 LOGGER.info("Update the ModelService in cache, serviceName={}.", serviceName );
                             }
-                            onServiceChanged(newService, oldService);
                         } else {
                             LOGGER.error("Cache sync ModelService failed, serviceName={}. {}.",
                                             serviceName, result.getError().getErrorMessage());
@@ -425,90 +423,6 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 
             }catch(Exception e){
                 LOGGER.error("Sync ModelService cache from ServiceDirectory Server failed. ", e);
-            }
-        }
-        
-
-        private void onServiceChanged(ModelService newService, ModelService oldService){
-            if(newService == null || oldService == null || newService == oldService){
-                return;
-            }
-
-            List<ModelServiceInstance> oldInstances = oldService.getServiceInstances();
-            List<ModelServiceInstance> newInstances = newService.getServiceInstances();
-
-            if(newInstances == null || newInstances.size() == 0){
-                if(oldInstances != null){
-                    for(ModelServiceInstance model : oldInstances){
-                        if (model.getStatus().equals(OperationalStatus.UP)) {
-                            //Change the status to DOWN before the notification when unregistering a running instance
-                            model.setStatus(OperationalStatus.DOWN);
-                            cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.toServiceInstance(model));
-                        }
-                    }
-                }
-            } else {
-                if(oldInstances == null || oldInstances.size() == 0){
-                    for(ModelServiceInstance model : newInstances){
-                        if (model.getStatus().equals(OperationalStatus.UP)) {
-                            cachedLookupService.onServiceInstanceAvailable(ServiceInstanceUtils.toServiceInstance(model));
-                        }
-                    }
-                } else {
-
-                    // Loop through all instances (added, deleted, changed) and send the proper notifications
-                    // Can not operate directly on newInstances or oldIntances since it will remove the item from cache
-                    List<ModelServiceInstance> newTmp = new ArrayList<>();
-                    List<ModelServiceInstance> oldTmp = new ArrayList<>();
-                    
-                    for (ModelServiceInstance model : oldInstances) {
-                        oldTmp.add(model);
-                    }
-                    for (ModelServiceInstance model : newInstances) {
-                        newTmp.add(model);
-                    }
-                    
-                    Iterator<ModelServiceInstance> itnew = newTmp.iterator();
-                    Iterator<ModelServiceInstance> itold = oldTmp.iterator();
-                    
-                    while (itnew.hasNext()) {
-                        while (itold.hasNext()) {
-                            ModelServiceInstance curnew = itnew.next();
-                            ModelServiceInstance curold = itold.next();
-                    
-                            if (curnew.getInstanceId().equals(curold.getInstanceId())) {
-                                
-                                if(curnew.getStatus().equals(OperationalStatus.UP) && curold.getStatus().equals(OperationalStatus.DOWN)) { 
-                                    cachedLookupService.onServiceInstanceAvailable(ServiceInstanceUtils.toServiceInstance(curnew));
-                                } 
-                                if (curnew.getStatus().equals(OperationalStatus.DOWN) && curold.getStatus().equals(OperationalStatus.UP)) {
-                                    cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.toServiceInstance(curnew));
-                                }
-                                // Check if the service instance metadata has been changed
-                                if (curnew.getMetadata() != null && curold.getMetadata() != null && !curnew.getMetadata().equals(curold.getMetadata())) {
-                                    cachedLookupService.onServiceInstanceChanged(ServiceInstanceUtils.toServiceInstance(curnew));
-                                }
-                                
-                                itnew.remove();
-                                itold.remove();
-                            }
-                        }
-                    }
-                    
-                    for (ModelServiceInstance model : oldTmp) {
-                        if (model.getStatus().equals(OperationalStatus.UP)) {
-                            //Change the status to DOWN before the notification when unregistering a running instance
-                            model.setStatus(OperationalStatus.DOWN);
-                            cachedLookupService.onServiceInstanceUnavailable(ServiceInstanceUtils.toServiceInstance(model));
-                        }
-                    }
-                    
-                    for (ModelServiceInstance model : newTmp) {
-                        if (model.getStatus().equals(OperationalStatus.UP)) {
-                            cachedLookupService.onServiceInstanceAvailable(ServiceInstanceUtils.toServiceInstance(model));
-                        }
-                    }
-                }
             }
         }
 

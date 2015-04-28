@@ -59,6 +59,8 @@ public interface DirectoryServiceClient {
 
     /* TODO metadata refactoring in future */
     ModelMetadataKey getMetadataKey(String keyName);
+
+    @Deprecated /* replaced by lookupChangesSince */
     Map<String, OperationResult<ModelMetadataKey>> getChangedMetadataKeys(Map<String, ModelMetadataKey> keys);
 
     /* TODO the invoker is for http only. can be eliminated from the interface */
