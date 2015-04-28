@@ -26,7 +26,6 @@ import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.OperationResult;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
-import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstanceHeartbeat;
 
 /**
@@ -78,15 +77,15 @@ public interface DirectoryServiceClient {
         }
         public final long changedTimeMills;
         public final ChangeType changeType;
-        public final T instance; //ref to current
+        public final String serviceName;
         public final T from;
         public final T to;
-        InstanceChange(long time, T instance, ChangeType type,T from,T to){
+        InstanceChange(long time, String serviceName, ChangeType type,T from,T to){
             Objects.requireNonNull(time);
-            Objects.requireNonNull(instance);
+            Objects.requireNonNull(serviceName);
             this.changedTimeMills = time;
             this.changeType = type;
-            this.instance = instance;
+            this.serviceName = serviceName;
             this.from = from;
             this.to = to;
         }

@@ -166,7 +166,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
             LOGGER.debug("ModelServiceInstance id {} already registered by {} ", instance.getProviderId(), objHashStr(previous));
         } else {
             addToHistory(new InstanceChange<>(newInstance.getModifiedTime().getTime(),
-                    newInstance,
+                    newInstance.getServiceName(),
                     InstanceChange.ChangeType.Create,
                     null,
                     _copyModelInstFrom(newInstance)
@@ -228,7 +228,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
             mInstance.setStatus(status);
             mInstance.setModifiedTime(new Date());
             addToHistory(new InstanceChange<>(mInstance.getModifiedTime().getTime(),
-                    mInstance,
+                    mInstance.getServiceName(),
                     InstanceChange.ChangeType.Status,
                     old,
                     _copyModelInstFrom(mInstance)
@@ -252,7 +252,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
             mInstance.setModifiedTime(new Date());
 
             addToHistory(new InstanceChange<>(mInstance.getModifiedTime().getTime(),
-                    mInstance,
+                    mInstance.getServiceName(),
                     InstanceChange.ChangeType.URL,
                     old, _copyModelInstFrom(mInstance)));
         } else {
@@ -270,7 +270,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
             if (previousInstance != null) {
                 LOGGER.debug("service instance {} removed by name : {} , id : {}", previousInstance, serviceName, instanceId);
                 addToHistory(new InstanceChange<>(previousInstance.getModifiedTime().getTime(),
-                        previousInstance,
+                        previousInstance.getServiceName(),
                         InstanceChange.ChangeType.Remove,
                         _copyModelInstFrom(previousInstance), null));
             } else {
@@ -419,14 +419,12 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
             List<InstanceChange<ModelServiceInstance>> result = new ArrayList<>(newLength);
             for (int i = index; i < all.length; i++) {
                 if (all[i] == null) break; //no more items. in the case
-                ModelServiceInstance instance = all[i].instance;
-                assert instance!=null;
                 //check if the instance is the service looked up for
-                if (instance.getServiceName()==serviceName) {
+                if (serviceName.equals(all[i].serviceName)) {
                     LOGGER.debug("build change {} to result list", all[i]);
                     result.add(new InstanceChange<ModelServiceInstance>(
                             all[i].changedTimeMills,
-                            instance,
+                            all[i].serviceName,
                             all[i].changeType,
                             all[i].from == null ? null :all[i].from,
                             all[i].to == null ? null : all[i].to));
