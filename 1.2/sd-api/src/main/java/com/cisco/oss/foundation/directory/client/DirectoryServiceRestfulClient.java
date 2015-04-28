@@ -152,7 +152,7 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
     }
 
     /**
-     * Update the ServiceInstance OperationalStatus by serviceName and instanceId.
+     * Update the ServiceInstance OperationalStatus by serviceName and instanceAddress.
      *
      * @param serviceName
      *         the service name.

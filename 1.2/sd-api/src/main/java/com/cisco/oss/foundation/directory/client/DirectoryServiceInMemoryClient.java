@@ -214,11 +214,11 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
     }
 
     @Override
-    public void updateInstanceStatus(String serviceName, String instanceId, OperationalStatus status, boolean isOwned) {
+    public void updateInstanceStatus(String serviceName, String instanceAddress, OperationalStatus status, boolean isOwned) {
         if (status == null) {
             throw new NullPointerException("status is null");
         }
-        ModelServiceInstance mInstance = _getInstance(serviceName, instanceId);
+        ModelServiceInstance mInstance = _getInstance(serviceName, instanceAddress);
         if (mInstance != null) {
             if (!isOwned) {
                 //IN this imple, we allow update don't care of if the service instance is owned by user
@@ -234,13 +234,13 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
                     _copyModelInstFrom(mInstance)
             ));
         } else {
-            LOGGER.warn("no service instance exist for {} {}", serviceName, instanceId);
+            LOGGER.warn("no service instance exist for {} {}", serviceName, instanceAddress);
         }
     }
 
     @Override
-    public void updateInstanceUri(String serviceName, String instanceId, String uri, boolean isOwned) {
-        ModelServiceInstance mInstance = _getInstance(serviceName, instanceId);
+    public void updateInstanceUri(String serviceName, String instanceAddress, String uri, boolean isOwned) {
+        ModelServiceInstance mInstance = _getInstance(serviceName, instanceAddress);
         if (mInstance != null) {
             if (!isOwned) {
                 //IN this imple, we allow update don't care of if the service instance is owned by user
@@ -256,13 +256,13 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
                     InstanceChange.ChangeType.URL,
                     old, _copyModelInstFrom(mInstance)));
         } else {
-            LOGGER.debug("no service instance exist for {} {}", serviceName, instanceId);
+            LOGGER.debug("no service instance exist for {} {}", serviceName, instanceAddress);
         }
     }
 
     @Override
-    public void updateInstanceMetadata(String serviceName, String instanceId, Map<String, String> metadata, boolean isOwned) {
-        ModelServiceInstance mInstance = _getInstance(serviceName, instanceId);
+    public void updateInstanceMetadata(String serviceName, String instanceAddress, Map<String, String> metadata, boolean isOwned) {
+        ModelServiceInstance mInstance = _getInstance(serviceName, instanceAddress);
         if (mInstance != null) {
             if (!isOwned) {
                 //IN this imple, we allow update don't care of if the service instance is owned by user
@@ -278,25 +278,25 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
                     InstanceChange.ChangeType.URL,
                     old, _copyModelInstFrom(mInstance)));
         } else {
-            LOGGER.debug("no service instance exist for {} {}", serviceName, instanceId);
+            LOGGER.debug("no service instance exist for {} {}", serviceName, instanceAddress);
         }
     }
     
     @Override
-    public void unregisterInstance(String serviceName, String instanceId, boolean isOwned) {
+    public void unregisterInstance(String serviceName, String instanceAddress, boolean isOwned) {
         ConcurrentMap<String, ModelServiceInstance> iMap = inMemoryRegistry.get(serviceName);
         if (iMap == null) {
             LOGGER.warn("Service {} not exist", serviceName);
         } else {
-            ModelServiceInstance previousInstance = iMap.remove(instanceId);
+            ModelServiceInstance previousInstance = iMap.remove(instanceAddress);
             if (previousInstance != null) {
-                LOGGER.debug("service instance {} removed by name : {} , id : {}", previousInstance, serviceName, instanceId);
+                LOGGER.debug("service instance {} removed by name : {} , address : {}", previousInstance, serviceName, instanceAddress);
                 addToHistory(new InstanceChange<>(previousInstance.getModifiedTime().getTime(),
                         previousInstance.getServiceName(),
                         InstanceChange.ChangeType.Remove,
                         _copyModelInstFrom(previousInstance), null));
             } else {
-                LOGGER.debug("no service instance exist for {} {}", serviceName, instanceId);
+                LOGGER.debug("no service instance exist for {} {}", serviceName, instanceAddress);
             }
         }
     }
@@ -308,8 +308,8 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
             String id = entry.getKey(); //What's Id means?
             ServiceInstanceHeartbeat heartbeat = entry.getValue();
             String serviceName = heartbeat.getServiceName();
-            String providedId = heartbeat.getServiceName();
-            ModelServiceInstance instance = _getInstance(serviceName, providedId);
+            String providedAddress = heartbeat.getProviderAddress();
+            ModelServiceInstance instance = _getInstance(serviceName, providedAddress);
             if (instance != null) {
                 //TODO, refactoring model
                 final long now = System.currentTimeMillis();
@@ -319,7 +319,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
                 result.put(id, new OperationResult<String>(true, null, null));
                 LOGGER.debug("heart beat send ok for {}", instance);
             } else {
-                LOGGER.debug("no service instance exist for {} {}", serviceName, providedId);
+                LOGGER.debug("no service instance exist for {} {}", serviceName, providedAddress);
                 result.put(id, new OperationResult<String>(false, null, new ServiceDirectoryError(ErrorCode.SERVICE_INSTANCE_NOT_EXIST, id)));
             }
         }
