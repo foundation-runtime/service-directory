@@ -390,4 +390,22 @@ public class ModelServiceInstance {
     public int hashCode() {
         return Objects.hash(id, instanceId, uri, status, monitorEnabled, createTime, modifiedTime, heartbeatTime, metadata, serviceName, address, port);
     }
+
+    @Override
+    public String toString() {
+        return "ModelServiceInstance{" +
+                "id='" + id + '\'' +
+                ", instanceId='" + instanceId + '\'' +
+                ", uri='" + uri + '\'' +
+                ", status=" + status +
+                ", monitorEnabled=" + monitorEnabled +
+                ", createTime=" + createTime.getTime() +
+                ", modifiedTime=" + modifiedTime.getTime() +
+                ", heartbeatTime=" + heartbeatTime.getTime() +
+                ", metadata=" + metadata +
+                ", serviceName='" + serviceName + '\'' +
+                ", address='" + address + '\'' +
+                ", port=" + port +
+                '}';
+    }
 }

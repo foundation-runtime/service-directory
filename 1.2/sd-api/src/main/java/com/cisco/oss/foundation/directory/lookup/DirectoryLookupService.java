@@ -158,27 +158,27 @@ public class DirectoryLookupService extends ServiceDirectoryService {
             for (String service : serviceList) {
                 lastChangedTimeMills.putIfAbsent(service, new AtomicLong(INIT_TIME_MILLS));
                 try {
-                    List<InstanceChange<ServiceInstance>> changes = getDirectoryServiceClient()
+                    List<InstanceChange<ModelServiceInstance>> changes = getDirectoryServiceClient()
                             .lookupChangesSince(service, lastChangedTimeMills.get(service).longValue());
                     //has changes
                     if (!changes.isEmpty()) {
                         //oldest first
                         Collections.sort(changes, InstanceChange.Comparator);
-                        for (InstanceChange<ServiceInstance> c : changes) {
+                        for (InstanceChange<ModelServiceInstance> c : changes) {
                             if (c.changeType == Status) {
                                 //not null grantee
                                 if (c.to.getStatus() == OperationalStatus.UP) {
-                                    onServiceInstanceAvailable(c.to);
+                                    onServiceInstanceAvailable(ServiceInstanceUtils.toServiceInstance(c.to));
                                 } else if (c.to.getStatus() == OperationalStatus.DOWN) {
-                                    onServiceInstanceUnavailable(c.to);
+                                    onServiceInstanceUnavailable(ServiceInstanceUtils.toServiceInstance(c.to));
                                 }
                             } else {
                                 //TODO, according to the current interface
                                 //      can't notify the unregister change.
                                 if (c.to!=null){
-                                    onServiceInstanceChanged(c.to);
+                                    onServiceInstanceChanged(ServiceInstanceUtils.toServiceInstance(c.to));
                                 }else{
-                                    onServiceInstanceChanged(c.from); //the unregister
+                                    onServiceInstanceChanged(ServiceInstanceUtils.toServiceInstance(c.from)); //the unregister
                                 }
                             }
                         }

@@ -49,13 +49,11 @@ public interface DirectoryServiceClient {
 
     Map<String, OperationResult<String>> sendHeartBeat(Map<String, ServiceInstanceHeartbeat> heartbeatMap);
 
-    @Deprecated /*why I need to expose ModelService */
     ModelService lookupService(String serviceName);
 
-    @Deprecated /*why I need to expose ModelServiceInstances */
     List<ModelServiceInstance> getAllInstances();
 
-    @Deprecated /*why I need to expose ModelService */
+    @Deprecated /* replaced by lookupChangesSince */
     Map<String, OperationResult<ModelService>> getChangedServices(Map<String, ModelService> services);
 
     /* TODO metadata refactoring in future */
@@ -68,26 +66,8 @@ public interface DirectoryServiceClient {
     /**
      * 1.2 API
      */
-    //List<ServiceInstance> lookupService2(String serviceName);
 
-    // serviceName -> serviceInstanceList
-    // Map<String,List<ServiceInstance>> getAllServices();
-
-    /*
-     * Get the timeMills of the latest changed of service
-    long getLastChangedTimeMills(String serviceName);
-     */
-
-    /**
-     * Return a list of modified service instances since the provided timeMillis
-     * usually client will provided a last changed time.
-     * @param serviceName name of service
-     * @param since the time millis in long
-     * @return a list of changed service instances
-    List<ServiceInstance> lookUpChangedServiceInstancesSince(String serviceName, long since);
-     */
-
-    List<InstanceChange<ServiceInstance>> lookupChangesSince(String serviceName,long since);
+    List<InstanceChange<ModelServiceInstance>> lookupChangesSince(String serviceName,long since);
 
     class InstanceChange<T> {
         public enum ChangeType{

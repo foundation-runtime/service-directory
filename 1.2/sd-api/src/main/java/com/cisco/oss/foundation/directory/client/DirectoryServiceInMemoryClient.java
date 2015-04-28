@@ -403,7 +403,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
     }
 
     @Override
-    public List<InstanceChange<ServiceInstance>> lookupChangesSince(String serviceName, long since) {
+    public List<InstanceChange<ModelServiceInstance>> lookupChangesSince(String serviceName, long since) {
 
         InstanceChange<ModelServiceInstance>[] all = changeHistory.toArray((InstanceChange<ModelServiceInstance>[]) new InstanceChange[changeHistory.size()]);
         int index = -1;
@@ -416,7 +416,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
         }
         if (index >= 0) {
             final int newLength = all.length - index;
-            List<InstanceChange<ServiceInstance>> result = new ArrayList<>(newLength);
+            List<InstanceChange<ModelServiceInstance>> result = new ArrayList<>(newLength);
             for (int i = index; i < all.length; i++) {
                 if (all[i] == null) break; //no more items. in the case
                 ModelServiceInstance instance = all[i].instance;
@@ -424,12 +424,12 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
                 //check if the instance is the service looked up for
                 if (instance.getServiceName()==serviceName) {
                     LOGGER.debug("build change {} to result list", all[i]);
-                    result.add(new InstanceChange<ServiceInstance>(
+                    result.add(new InstanceChange<ModelServiceInstance>(
                             all[i].changedTimeMills,
-                            ServiceInstanceUtils.toServiceInstance(instance),
+                            instance,
                             all[i].changeType,
-                            all[i].from == null ? null : ServiceInstanceUtils.toServiceInstance(all[i].from),
-                            all[i].to == null ? null : ServiceInstanceUtils.toServiceInstance(all[i].to)));
+                            all[i].from == null ? null :all[i].from,
+                            all[i].to == null ? null : all[i].to));
                 }
             }
             return result;

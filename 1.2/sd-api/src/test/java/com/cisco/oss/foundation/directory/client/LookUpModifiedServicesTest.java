@@ -76,7 +76,7 @@ public class LookUpModifiedServicesTest {
         List<ServiceInstance> result3 = sharedMemoryClient.lookUpChangedServiceInstancesSince("myService", now);
         assertEquals(1, result3.size());
 
-        List<InstanceChange<ServiceInstance>> changes = sharedMemoryClient.lookupChangesSince("myService", now);
+        List<InstanceChange<ModelServiceInstance>> changes = sharedMemoryClient.lookupChangesSince("myService", now);
         assertEquals(1, changes.size());
         assertEquals(Status, changes.get(0).changeType);
         assertEquals(OperationalStatus.UP, changes.get(0).to.getStatus());
@@ -113,7 +113,7 @@ public class LookUpModifiedServicesTest {
     @Test
     public void testForComparatorInstanceChange() throws InterruptedException{
         TimeUnit.MILLISECONDS.sleep(1L);
-        List<InstanceChange<ServiceInstance>> changes = sharedMemoryClient.lookupChangesSince("myService", INIT_TIME);
+        List<InstanceChange<ModelServiceInstance>> changes = sharedMemoryClient.lookupChangesSince("myService", INIT_TIME);
         assertEquals(3, changes.size());
 
         Collections.sort(changes, InstanceChange.Comparator);
@@ -134,7 +134,7 @@ public class LookUpModifiedServicesTest {
         //add a new service
         final ProvidedServiceInstance newService = new ProvidedServiceInstance("newService","192.168.1.1",5555);
         sharedMemoryClient.registerInstance(newService);
-        List<InstanceChange<ServiceInstance>> changes = sharedMemoryClient.lookupChangesSince("newService", now);
+        List<InstanceChange<ModelServiceInstance>> changes = sharedMemoryClient.lookupChangesSince("newService", now);
         assertEquals(1, changes.size());
         final long sinceCreated = System.currentTimeMillis();
         //make sure update operation is happen-after 'sinceCreated'
