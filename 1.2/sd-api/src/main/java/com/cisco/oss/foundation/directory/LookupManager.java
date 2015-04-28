@@ -118,6 +118,7 @@ public interface LookupManager extends AutoCloseable {
      *         the ServiceInstance.
      * @throws ServiceException
      */
+    @Deprecated
     public ServiceInstance getInstance(String serviceName, String instanceId) throws ServiceException;
 
     /**

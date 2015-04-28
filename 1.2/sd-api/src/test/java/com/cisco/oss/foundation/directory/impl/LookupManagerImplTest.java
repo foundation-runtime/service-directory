@@ -50,7 +50,7 @@ public class LookupManagerImplTest {
         ServiceDirectory.getServiceDirectoryConfig().setProperty(CachedDirectoryLookupService.SD_API_CACHE_SYNC_INTERVAL_PROPERTY, 1);
 
         final String serviceName = "odrm";
-        final String instanceId = "192.168.2.3-8901";
+        final String instanceAddress = "192.168.2.3";
         final String keyName = "solution";
 
         final Date date = new Date();
@@ -59,8 +59,8 @@ public class LookupManagerImplTest {
         metadata.put("datacenter", "dc01");
         metadata.put("solution", "core");
         List<ModelServiceInstance> instances = new ArrayList<>();
-        ModelServiceInstance instance = new ModelServiceInstance("odrm", "192.168.2.3-8901", "192.168.2.3-8901", "http://cisco.com/vbo/odrm/setupsession",
-                OperationalStatus.UP, null, 0, date,
+        ModelServiceInstance instance = new ModelServiceInstance("odrm", "192.168.2.3", "192.168.2.3", "http://cisco.com/vbo/odrm/setupsession",
+                OperationalStatus.UP, "192.168.2.3", 8901, date,
                 date, metadata);
         instance.setHeartbeatTime(date);
         instances.add(instance);
@@ -122,8 +122,8 @@ public class LookupManagerImplTest {
                 metadata.put("datacenter", "dc02");
                 metadata.put("solution", "core02");
                 List<ModelServiceInstance> instances = new ArrayList<>();
-                ModelServiceInstance instance = new ModelServiceInstance("odrm", "192.168.2.3-8901", "192.168.2.3-8901", "http://cisco.com/vbo/odrm/setupsession/v02",
-                        OperationalStatus.UP, null, 0, date,
+                ModelServiceInstance instance = new ModelServiceInstance("odrm", "192.168.2.3", "192.168.2.3", "http://cisco.com/vbo/odrm/setupsession/v02",
+                        OperationalStatus.UP, "192.168.2.3", 8901, date,
                         date, metadata);
                 instance.setHeartbeatTime(date);
                 instances.add(instance);
@@ -149,8 +149,8 @@ public class LookupManagerImplTest {
                 metadata.put("datacenter", "dc03");
                 metadata.put("solution", "core03");
                 List<ModelServiceInstance> instances = new ArrayList<>();
-                ModelServiceInstance instance = new ModelServiceInstance("odrm", "192.168.2.3-8901", "192.168.2.3-8901", "http://cisco.com/vbo/odrm/setupsession/v03",
-                        OperationalStatus.UP, null, 0, date,
+                ModelServiceInstance instance = new ModelServiceInstance("odrm", "192.168.2.3", "192.168.2.3", "http://cisco.com/vbo/odrm/setupsession/v03",
+                        OperationalStatus.UP, "192.168.2.3", 8901, date,
                         date, metadata);
                 instance.setHeartbeatTime(date);
                 instances.add(instance);
@@ -167,10 +167,9 @@ public class LookupManagerImplTest {
 
         ServiceInstanceQuery query = new ServiceInstanceQuery().getEqualQueryCriterion("solution", "core");
         try {
-            Assert.assertEquals(impl.getAllInstances(serviceName).get(0).getInstanceId(), instanceId);
-            Assert.assertTrue(impl.getAllInstances(serviceName, query).get(0).getInstanceId().equals(instanceId));
-            Assert.assertTrue(impl.getAllInstancesByMetadataKey(query).get(0).getInstanceId().equals(instanceId));
-            Assert.assertTrue(impl.getInstance(serviceName, instanceId).getInstanceId().equals(instanceId));
+            Assert.assertEquals(impl.getAllInstances(serviceName).get(0).getAddress(), instanceAddress);
+            Assert.assertTrue(impl.getAllInstances(serviceName, query).get(0).getAddress().equals(instanceAddress));
+            Assert.assertTrue(impl.getAllInstancesByMetadataKey(query).get(0).getAddress().equals(instanceAddress));
         } catch (ServiceException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -194,12 +193,10 @@ public class LookupManagerImplTest {
         list.add("core03");
         query = new ServiceInstanceQuery().getInQueryCriterion("solution", list);
         try {
-            Assert.assertEquals(impl.getAllInstances(serviceName).get(0).getInstanceId(), instanceId);
+            Assert.assertEquals(impl.getAllInstances(serviceName).get(0).getAddress(), instanceAddress);
             Assert.assertTrue(impl.getAllInstances(serviceName, query).get(0).getUri().equals("http://cisco.com/vbo/odrm/setupsession/v02"));
-            Assert.assertTrue(impl.getAllInstancesByMetadataKey(query).get(0).getInstanceId().equals(instanceId));
+            Assert.assertTrue(impl.getAllInstancesByMetadataKey(query).get(0).getAddress().equals(instanceAddress));
             Assert.assertTrue(impl.getAllInstancesByMetadataKey(query).get(0).getUri().equals("http://cisco.com/vbo/odrm/setupsession/v03"));
-            Assert.assertTrue(impl.getInstance(serviceName, instanceId).getInstanceId().equals(instanceId));
-            Assert.assertTrue(impl.getInstance(serviceName, instanceId).getMetadata().get("solution").equals("core02"));
         } catch (ServiceException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

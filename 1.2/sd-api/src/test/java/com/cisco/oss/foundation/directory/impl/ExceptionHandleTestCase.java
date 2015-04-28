@@ -99,7 +99,7 @@ public class ExceptionHandleTestCase  {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String>headers) {
 
-                Assert.assertEquals("http://vcsdirsvc:2013/service/mock-test01/" + instance.getProviderId(), directoryAddresses+uri);
+                Assert.assertEquals("http://vcsdirsvc:2013/service/mock-test01/" + instance.getAddress(), directoryAddresses+uri);
                 throw new ServiceException(error.get().getExceptionCode(),error.get().getErrorMessage());
             }
         };
@@ -177,7 +177,7 @@ public class ExceptionHandleTestCase  {
         String address = "127.0.0.1";
         int port = 8990;
         ProvidedServiceInstance si = new ProvidedServiceInstance(serviceName,
-                address, port);
+                address);
         si.setUri("http://www.sina.com.cn");
         Map<String, String> pair = new HashMap<>();
         pair.put("meta1", "value1");

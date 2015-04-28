@@ -19,6 +19,8 @@
 
 package com.cisco.oss.foundation.directory;
 
+import java.util.Map;
+
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
@@ -61,11 +63,11 @@ public interface RegistrationManager extends AutoCloseable {
      * It is a convenient method to update the OperationalStatus of the ProvidedServiceInstance.
      *
      * @param serviceName   The name of the service.
-     * @param providerId    The providerId of the ProvidedServiceInstance.
+     * @param providerAddress    The IP address or FQDN that the instance is running on.
      * @param status        The OperationalStatus of the ProvidedServiceInstance.
      * @throws ServiceException
      */
-    public void updateServiceOperationalStatus(String serviceName, String providerId, OperationalStatus status) throws ServiceException;
+    public void updateServiceOperationalStatus(String serviceName, String providerAddress, OperationalStatus status) throws ServiceException;
 
     /**
      * Update the uri attribute of the ProvidedServiceInstance.
@@ -73,22 +75,36 @@ public interface RegistrationManager extends AutoCloseable {
      * It is a convenient method to update the uri attribute of the ProvidedServiceInstance.
      *
      * @param serviceName   The name of the service.
-     * @param providerId    The providerId of the ProvidedServiceInstance.
+     * @param providerAddress    The IP address or FQDN that the instance is running on.
      * @param uri           The URI of the ProvidedServiceInstance.
      * @throws ServiceException
      */
-    public void updateServiceUri(String serviceName, String providerId, String uri) throws ServiceException;
+    public void updateServiceUri(String serviceName, String providerAddress, String uri) throws ServiceException;
 
+    /**
+     * Update the metadata of the ProvidedServiceInstance.
+     *
+     * It is a convenient method to update the metadata attribute of the ProvidedServiceInstance.
+     *
+     * @param serviceName   The name of the service.
+     * @param providerAddress    The IP address or FQDN that the instance is running on.
+     * @param metadata           The metadata map of the ProvidedServiceInstance.
+     * @throws ServiceException
+     */
+    public void updateServiceMetadata(String serviceName, String providerAddress, Map<String, String> metadata) throws ServiceException;
 
     /**
      * Update the ProvidedServiceInstance.
      *
      * Update the existing ProvidedServiceInstance.
      * The metadata Map in the ProvidedServiceInstance will not be updated when it is null.
+     * 
+     * Replaced by {@link #updateServiceMetadata}
      *
      * @param serviceInstance    The ProvidedServiceInstance.
      * @throws ServiceException
      */
+    @Deprecated
     public void updateService(ProvidedServiceInstance serviceInstance) throws ServiceException;
 
     /**
@@ -97,10 +113,10 @@ public interface RegistrationManager extends AutoCloseable {
      * Unregister an existing ProvidedServiceInstance in the directory server.
      *
      * @param serviceName    The name of the Service.
-     * @param providerId     The providerId of ProvidedServiceInstance.
+     * @param providerAddress    The IP address or FQDN that the instance is running on.
      * @throws ServiceException
      */
-    public void unregisterService(String serviceName, String providerId) throws ServiceException;
+    public void unregisterService(String serviceName, String providerAddress) throws ServiceException;
 
     /**
      * close the registration Manager, This method is invoked automatically if using JDK7 try-with-resource

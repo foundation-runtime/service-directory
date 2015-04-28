@@ -22,7 +22,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -115,7 +118,7 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
     public void registerInstance(ProvidedServiceInstance instance) {
         String body = _serialize(instance);
 
-        HttpResponse result = invoker.invoke(toInstanceUri(instance.getServiceName(), instance.getProviderId()), body, 
+        HttpResponse result = invoker.invoke(toInstanceUri(instance.getServiceName(), instance.getAddress()), body, 
                 HttpMethod.POST, addHeader());
 
         if (result.getHttpCode() != HTTP_CREATED) {
@@ -124,8 +127,8 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
         }
     }
 
-    private String toInstanceUri(String serviceName, String providerId) {
-        return "/service/" + serviceName + "/" + providerId;
+    private String toInstanceUri(String serviceName, String providerAddress) {
+        return "/service/" + serviceName + "/" + providerAddress;
     }
 
     /**
@@ -134,6 +137,7 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
      * @param instance
      *         the ProvidedServiceInstance.
      */
+    @Deprecated
     @Override
     public void updateInstance(ProvidedServiceInstance instance) {
         String body = _serialize(instance);
@@ -152,16 +156,16 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
      *
      * @param serviceName
      *         the service name.
-     * @param instanceId
-     *         the instance id.
+     * @param instanceAddress
+     *         The IP address or FQDN that the instance is running on.
      * @param status
      *         the ServiceInstance OperationalStatus.
      * @param isOwned
      *         whether the DirectoryAPI owns this ServiceProvider.
      */
     @Override
-    public void updateInstanceStatus(String serviceName, String instanceId, OperationalStatus status, boolean isOwned) {
-        String uri = toInstanceUri(serviceName, instanceId) + "/status";
+    public void updateInstanceStatus(String serviceName, String instanceAddress, OperationalStatus status, boolean isOwned) {
+        String uri = toInstanceUri(serviceName, instanceAddress) + "/status";
 
         String body = null;
         try {
@@ -189,16 +193,16 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
      *
      * @param serviceName
      *         the service name.
-     * @param instanceId
-     *         the instance id.
+     * @param instanceAddress
+     *         The IP address or FQDN that the instance is running on.
      * @param uri
      *         the ServiceInstance URI.
      * @param isOwned
      *         whether the DirectoryAPI owns this ServiceProvider.
      */
     @Override
-    public void updateInstanceUri(String serviceName, String instanceId, String uri, boolean isOwned) {
-        String serviceUri = toInstanceUri(serviceName, instanceId) + "/uri";
+    public void updateInstanceUri(String serviceName, String instanceAddress, String uri, boolean isOwned) {
+        String serviceUri = toInstanceUri(serviceName, instanceAddress) + "/uri";
         String body = null;
         try {
             body = "uri=" + URLEncoder.encode(uri, "UTF-8") + "&isOwned=" + isOwned;
@@ -218,19 +222,55 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
         }
     }
 
+    
+
+    /**
+     * Update the ServiceInstance metadata.
+     *
+     * @param serviceName
+     *         the service name.
+     * @param instanceAddress
+     *         The IP address or FQDN that the instance is running on.
+     * @param metadata
+     *         the ServiceInstance metadata.
+     * @param isOwned
+     *         whether the DirectoryAPI owns this ServiceProvider.
+     */
+    @Override
+    public void updateInstanceMetadata(String serviceName, String instanceAddress, Map<String, String> metadata, boolean isOwned) {
+        String serviceUri = toInstanceUri(serviceName, instanceAddress) + "/metadata";
+        String body = null;
+        try {
+            String meta = new ObjectMapper().writeValueAsString(metadata);
+            body = "metadata=" + URLEncoder.encode(meta, "UTF-8") + "&isOwned=" + isOwned;
+        } catch (JsonProcessingException | UnsupportedEncodingException e) {
+                LOGGER.error("Exception converting map to JSON: ", e);
+        }
+
+        Map<String, String> headers = new HashMap<String, String>();
+        headers.put("Content-Type", "application/x-www-form-urlencoded");
+        headers.put("api-version", ServiceDirectory.getAPIVersion());
+        HttpResponse result = invoker.invoke(serviceUri, body,
+                HttpMethod.PUT, headers);
+
+        if (result.getHttpCode() != HTTP_OK) {
+            throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
+                    "HTTP Code is not OK, code=%s", result.getHttpCode());
+        }
+    }
     /**
      * Unregister a ServiceInstance.
      *
      * @param serviceName
      *         service name.
-     * @param instanceId
-     *         the instance id.
+     * @param instanceAddress
+     *         The IP address or FQDN that the instance is running on.
      * @param isOwned
      *         whether the DirectoryAPI owns this ServiceProvider.
      */
     @Override
-    public void unregisterInstance(String serviceName, String instanceId, boolean isOwned) {
-        String uri = toInstanceUri(serviceName, instanceId) + "/" + isOwned;
+    public void unregisterInstance(String serviceName, String instanceAddress, boolean isOwned) {
+        String uri = toInstanceUri(serviceName, instanceAddress) + "/" + isOwned;
 
         HttpResponse result = invoker.invoke(uri, null,
                 HttpMethod.DELETE, addHeader());

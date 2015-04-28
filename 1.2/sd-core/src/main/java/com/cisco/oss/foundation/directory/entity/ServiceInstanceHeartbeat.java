@@ -31,9 +31,9 @@ public class ServiceInstanceHeartbeat {
     private String serviceName;
 
     /**
-     * The providerId id.
+     * The provider Address.
      */
-    private String providerId;
+    private String providerAddress;
 
     /**
      * Constructor.
@@ -50,9 +50,9 @@ public class ServiceInstanceHeartbeat {
      * @param providerId
      *            the provider id.
      */
-    public ServiceInstanceHeartbeat(String serviceName, String providerId) {
+    public ServiceInstanceHeartbeat(String serviceName, String providerAddress) {
         this.serviceName = serviceName;
-        this.providerId = providerId;
+        this.providerAddress = providerAddress;
     }
 
     /**
@@ -65,12 +65,12 @@ public class ServiceInstanceHeartbeat {
     }
 
     /**
-     * Get the providerId.
+     * Get the providerAddress.
      *
-     * @return the providerId.
+     * @return the providerAddress.
      */
-    public String getProviderId() {
-        return providerId;
+    public String getProviderAddress() {
+        return providerAddress;
     }
 
     /**
@@ -84,13 +84,13 @@ public class ServiceInstanceHeartbeat {
     }
 
     /**
-     * Set the providerId.
+     * Set the providerAddress.
      *
-     * @param providerId
-     *            the providerId.
+     * @param providerAddress
+     *            the providerAddress.
      */
-    public void setProviderId(String providerId) {
-        this.providerId = providerId;
+    public void setProviderAddress(String providerAddress) {
+        this.providerAddress = providerAddress;
     }
 
     /**
@@ -98,7 +98,7 @@ public class ServiceInstanceHeartbeat {
      */
     @Override
     public String toString() {
-        return "serviceName=" + serviceName + ", providerId=" + providerId;
+        return "serviceName=" + serviceName + ", providerAddress=" + providerAddress;
     }
 
     /**
@@ -108,8 +108,8 @@ public class ServiceInstanceHeartbeat {
     public boolean equals(Object obj) {
         if (obj != null && obj instanceof ServiceInstanceHeartbeat) {
             ServiceInstanceHeartbeat hb = (ServiceInstanceHeartbeat) obj;
-            return (serviceName.equals(hb.getServiceName()) && providerId
-                    .equals(hb.getProviderId()));
+            return (serviceName.equals(hb.getServiceName()) && providerAddress
+                    .equals(hb.getProviderAddress()));
         }
         return false;
     }
@@ -119,7 +119,7 @@ public class ServiceInstanceHeartbeat {
      */
     @Override
     public int hashCode() {
-        int result = providerId != null ? providerId.hashCode() : 0;
+        int result = providerAddress != null ? providerAddress.hashCode() : 0;
         result = 31 * result + serviceName != null ? serviceName.hashCode() : 0;
         return result;
     }

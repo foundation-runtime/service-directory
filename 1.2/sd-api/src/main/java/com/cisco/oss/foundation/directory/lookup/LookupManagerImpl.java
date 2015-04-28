@@ -214,6 +214,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
      * {@inheritDoc}
      */
     @Override
+    @Deprecated
     public ServiceInstance getInstance(String serviceName, String instanceId)
             throws ServiceException {
 

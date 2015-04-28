@@ -159,6 +159,7 @@ public class ServiceInstanceUtils {
      *            the id String
      * @throws ServiceException
      */
+    @Deprecated
     public static void validateServiceInstanceID(String id) throws ServiceException {
         if (!validateRequiredField(id, idRegEx)) {
             throw new ServiceException(
@@ -225,7 +226,7 @@ public class ServiceInstanceUtils {
         validateURI(serviceInstance.getUri());
         validatePort(serviceInstance.getPort());
         validateAddress(serviceInstance.getAddress());
-        validateServiceInstanceID(serviceInstance.getProviderId());
+        
         if (serviceInstance.getMetadata()!=null) { //allow metadata as null
             validateMetadata(serviceInstance.getMetadata());
         }

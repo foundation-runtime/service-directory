@@ -21,17 +21,17 @@ public class DefaultNotificationHandler implements NotificationHandler {
 
     @Override
     public void serviceInstanceAvailable(ServiceInstance service) {
-        System.out.println("[" + service.getServiceName()+"] - "+service.getInstanceId() +": created!");
+        System.out.println("[" + service.getServiceName()+"] - "+service.getAddress() +": created!");
     }
 
     @Override
     public void serviceInstanceUnavailable(ServiceInstance service) {
-        System.out.println("[" + service.getServiceName()+"] - "+service.getInstanceId() +": unavailable!");
+        System.out.println("[" + service.getServiceName()+"] - "+service.getAddress() +": unavailable!");
     }
 
     @Override
     public void serviceInstanceChange(ServiceInstance service) {
-        System.out.println("[" + service.getServiceName()+"] - "+service.getInstanceId() +": change!");
+        System.out.println("[" + service.getServiceName()+"] - "+service.getAddress() +": change!");
     }
 
 }

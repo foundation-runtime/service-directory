@@ -40,11 +40,13 @@ public interface DirectoryServiceClient {
     @Deprecated /* should not support anymore */
     void updateInstance(ProvidedServiceInstance instance);
 
-    void updateInstanceStatus(String serviceName, String instanceId, OperationalStatus status, boolean isOwned);
+    void updateInstanceStatus(String serviceName, String instanceAddress, OperationalStatus status, boolean isOwned);
 
-    void updateInstanceUri(String serviceName, String instanceId, String uri, boolean isOwned);
+    void updateInstanceUri(String serviceName, String instanceAddress, String uri, boolean isOwned);
+    
+    void updateInstanceMetadata(String serviceName, String instanceAddress, Map<String, String> metadata, boolean isOwned);
 
-    void unregisterInstance(String serviceName, String instanceId, boolean isOwned);
+    void unregisterInstance(String serviceName, String instanceAddress, boolean isOwned);
 
     Map<String, OperationResult<String>> sendHeartBeat(Map<String, ServiceInstanceHeartbeat> heartbeatMap);
 
@@ -73,7 +75,8 @@ public interface DirectoryServiceClient {
             Create,
             Remove,
             Status,
-            URL
+            URL,
+            META
         }
         public final long changedTimeMills;
         public final ChangeType changeType;

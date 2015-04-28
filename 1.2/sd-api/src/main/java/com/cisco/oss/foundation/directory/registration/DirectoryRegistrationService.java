@@ -19,6 +19,8 @@
 
 package com.cisco.oss.foundation.directory.registration;
 
+import java.util.Map;
+
 import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
@@ -111,38 +113,58 @@ public class DirectoryRegistrationService extends ServiceDirectoryService{
 
     /**
      * Update the uri attribute of the ProvidedServiceInstance
-     * The ProvidedServiceInstance is uniquely identified by serviceName and providerId
+     * The ProvidedServiceInstance is uniquely identified by serviceName and providerAddress
      *
      * @param serviceName
      *         the serviceName of the ProvidedServiceInstance.
-     * @param providerId
-     *         the providerId of the ProvidedServiceInstance.
+     * @param providerAddress
+     *         the providerAddress of the ProvidedServiceInstance.
      * @param uri
      *         the new uri.
      */
-    public void updateServiceUri(String serviceName, String providerId,
+    public void updateServiceUri(String serviceName, String providerAddress,
             String uri) {
-        getServiceDirectoryClient().updateInstanceUri(serviceName, providerId,
+        getServiceDirectoryClient().updateInstanceUri(serviceName, providerAddress,
                 uri, disableOwnerError);
     }
 
     /**
      * Update the OperationalStatus of the ProvidedServiceInstance
-     * The ProvidedServiceInstance is uniquely identified by serviceName and providerId
+     * The ProvidedServiceInstance is uniquely identified by serviceName and providerAddress
      *
      * @param serviceName
      *         the serviceName of the ProvidedServiceInstance.
-     * @param providerId
-     *         the providerId of the ProvidedServiceInstance.
+     * @param providerAddress
+     *         the providerAddress of the ProvidedServiceInstance.
      * @param status
      *         the new OperationalStatus of the ProvidedServiceInstance.
      */
     public void updateServiceOperationalStatus(String serviceName,
-            String providerId, OperationalStatus status) {
+            String providerAddress, OperationalStatus status) {
         getServiceDirectoryClient().updateInstanceStatus(serviceName,
-                providerId, status, disableOwnerError);
+                providerAddress, status, disableOwnerError);
 
     }
+    
+    
+
+    /**
+     * Update the metadata attribute of the ProvidedServiceInstance
+     * The ProvidedServiceInstance is uniquely identified by serviceName and providerAddress
+     *
+     * @param serviceName
+     *         the serviceName of the ProvidedServiceInstance.
+     * @param providerAddress
+     *         The IP address or FQDN that the instance is running on.
+     * @param uri
+     *         the new uri.
+     */
+    public void updateServiceMetadata(String serviceName, String providerAddress,
+            Map<String, String> metadata) {
+        getServiceDirectoryClient().updateInstanceMetadata(serviceName, providerAddress,
+                metadata, disableOwnerError);
+    }
+
 
     /**
      * Update the ProvidedServiceInstance.
@@ -150,6 +172,7 @@ public class DirectoryRegistrationService extends ServiceDirectoryService{
      * @param serviceInstance
      *         the ProvidedServiceInstance.
      */
+    @Deprecated
     public void updateService(ProvidedServiceInstance serviceInstance) {
         getServiceDirectoryClient().updateInstance(serviceInstance);
 
@@ -157,15 +180,15 @@ public class DirectoryRegistrationService extends ServiceDirectoryService{
 
     /**
      * Unregister a ProvidedServiceInstance
-     * The ProvidedServiceInstance is uniquely identified by serviceName and providerId
+     * The ProvidedServiceInstance is uniquely identified by serviceName and providerAddress
      *
      * @param serviceName
      *         the serviceName of ProvidedServiceInstance.
-     * @param providerId
-     *         the provierId of ProvidedServiceInstance.
+     * @param providerAddress
+     *         the provierAddress of ProvidedServiceInstance.
      */
-    public void unregisterService(String serviceName, String providerId) {
-        getServiceDirectoryClient().unregisterInstance(serviceName, providerId, disableOwnerError);
+    public void unregisterService(String serviceName, String providerAddress) {
+        getServiceDirectoryClient().unregisterInstance(serviceName, providerAddress, disableOwnerError);
     }
 
     /**

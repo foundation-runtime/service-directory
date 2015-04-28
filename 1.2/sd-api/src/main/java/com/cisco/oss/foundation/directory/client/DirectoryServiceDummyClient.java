@@ -29,23 +29,29 @@ public class DirectoryServiceDummyClient implements DirectoryServiceClient {
     }
 
     @Override
+    @Deprecated
     public void updateInstance(ProvidedServiceInstance instance) {
         LOGGER.info("updateInstance {}",instance);
     }
 
     @Override
-    public void updateInstanceStatus(String serviceName, String instanceId, OperationalStatus status, boolean isOwned) {
-        LOGGER.info("updateInstanceStatus {},{},{},{}",serviceName,instanceId,status,isOwned);
+    public void updateInstanceStatus(String serviceName, String instanceAddress, OperationalStatus status, boolean isOwned) {
+        LOGGER.info("updateInstanceStatus {},{},{},{}",serviceName,instanceAddress,status,isOwned);
     }
 
     @Override
-    public void updateInstanceUri(String serviceName, String instanceId, String uri, boolean isOwned) {
-        LOGGER.info("updateInstanceUri {},{},{},{}",serviceName,instanceId,uri,isOwned);
+    public void updateInstanceUri(String serviceName, String instanceAddress, String uri, boolean isOwned) {
+        LOGGER.info("updateInstanceUri {},{},{},{}",serviceName,instanceAddress,uri,isOwned);
     }
 
     @Override
-    public void unregisterInstance(String serviceName, String instanceId, boolean isOwned) {
-        LOGGER.info("unregisterInstance {},{},{}",serviceName,instanceId,isOwned);
+    public void updateInstanceMetadata(String serviceName, String instanceAddress, Map<String, String> metadata, boolean isOwned) {
+        LOGGER.info("updateInstanceMetadata {},{},{},{}",serviceName,instanceAddress,metadata,isOwned);
+    }
+    
+    @Override
+    public void unregisterInstance(String serviceName, String instanceAddress, boolean isOwned) {
+        LOGGER.info("unregisterInstance {},{},{}",serviceName,instanceAddress,isOwned);
     }
 
     @Override

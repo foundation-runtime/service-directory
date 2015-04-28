@@ -82,6 +82,8 @@ public class ProvidedServiceInstance {
     /**
      * Constructor.
      *
+     * Replaced by {@link #ProvidedServiceInstance(String, String)}
+     *
      * @param serviceName
      *            the service name.
      * @param address
@@ -89,8 +91,22 @@ public class ProvidedServiceInstance {
      * @param port
      *            the port.
      */
+    @Deprecated
     public ProvidedServiceInstance(String serviceName, String address, int port) {
         this(serviceName, address, port, null, null,null);
+
+    }
+    
+    /**
+     * Constructor.
+     *
+     * @param serviceName
+     *            the service name.
+     * @param address
+     *            the address that the instance is running on
+     */
+    public ProvidedServiceInstance(String serviceName, String address) {
+        this(serviceName, address, 1, null, null,null);
 
     }
 
@@ -255,6 +271,7 @@ public class ProvidedServiceInstance {
      *
      * @return the provider id.
      */
+    @Deprecated
     public String getProviderId() {
         return this.address + "-" + String.valueOf(this.port);
     }

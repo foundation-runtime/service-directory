@@ -46,7 +46,7 @@ public class RegistrationManagerImplTest {
         ServiceDirectory.getServiceDirectoryConfig().setProperty(HeartbeatDirectoryRegistrationService.SD_API_HEARTBEAT_INTERVAL_PROPERTY, 1);
         ServiceDirectory.getServiceDirectoryConfig().setProperty(HeartbeatDirectoryRegistrationService.SD_API_REGISTRY_HEALTH_CHECK_INTERVAL_PROPERTY, 1);
 
-        final ProvidedServiceInstance instance = new ProvidedServiceInstance("odrm", "192.168.7.4", 8901);
+        final ProvidedServiceInstance instance = new ProvidedServiceInstance("odrm", "192.168.7.4");
         instance.setMonitorEnabled(true);
         instance.setStatus(OperationalStatus.UP);
         instance.setUri("http://cisco.com/vbo/odrm/setupsession");
@@ -55,7 +55,7 @@ public class RegistrationManagerImplTest {
         metadata.put("solution", "core");
         instance.setMetadata(metadata);
 
-        final ProvidedServiceInstance instance2 = new ProvidedServiceInstance("odrm", "192.168.7.4", 8902);
+        final ProvidedServiceInstance instance2 = new ProvidedServiceInstance("odrm", "192.168.7.5");
         instance2.setMonitorEnabled(false);
         instance2.setStatus(OperationalStatus.UP);
         instance2.setUri("http://cisco.com/vbo/odrm/setupsession");
@@ -78,27 +78,27 @@ public class RegistrationManagerImplTest {
             public Map<String, OperationResult<String>> sendHeartBeat(Map<String, ServiceInstanceHeartbeat> heartbeatMap) {
 
                 Assert.assertEquals(heartbeatMap.size(), 1);
-                Assert.assertTrue(heartbeatMap.containsKey("odrm-192.168.7.4-8901"));
+                Assert.assertTrue(heartbeatMap.containsKey("odrm-192.168.7.4"));
                 Map<String, OperationResult<String>> result = new HashMap<>();
-                result.put("odrm-192.168.7.4-8901", new OperationResult<>(true, "it is OK", null));
+                result.put("odrm-192.168.7.4", new OperationResult<>(true, "it is OK", null));
                 hbInvoked.incrementAndGet();
                 return result;
             }
 
             @Override
-            public void updateInstanceStatus(String serviceName, String instanceId, OperationalStatus status, boolean isOwned) {
+            public void updateInstanceStatus(String serviceName, String instanceAddress, OperationalStatus status, boolean isOwned) {
                 statusInvoked.incrementAndGet();
                 Assert.assertEquals(serviceName, "odrm");
-                Assert.assertEquals(instanceId, "192.168.7.4-8901");
+                Assert.assertEquals(instanceAddress, "192.168.7.4");
                 Assert.assertEquals(OperationalStatus.DOWN, status);
                 Assert.assertTrue(isOwned);
             }
 
             @Override
-            public void unregisterInstance(String serviceName, String instanceId, boolean isOwned) {
+            public void unregisterInstance(String serviceName, String instanceAddress, boolean isOwned) {
                 unregisterInvoked.incrementAndGet();
                 Assert.assertEquals(serviceName, "odrm");
-                Assert.assertEquals(instanceId, "192.168.7.4-8901");
+                Assert.assertEquals(instanceAddress, "192.168.7.4");
                 Assert.assertTrue(isOwned);
             }
         }));
@@ -175,7 +175,7 @@ public class RegistrationManagerImplTest {
         Assert.assertTrue(hbInvoked.get()>0);
 
         try {
-            impl.unregisterService(instance.getServiceName(), instance.getProviderId());
+            impl.unregisterService(instance.getServiceName(), instance.getAddress());
         } catch (ServiceException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -198,7 +198,7 @@ public class RegistrationManagerImplTest {
         ServiceDirectory.getServiceDirectoryConfig().setProperty(HeartbeatDirectoryRegistrationService.SD_API_HEARTBEAT_INTERVAL_PROPERTY, 1);
         ServiceDirectory.getServiceDirectoryConfig().setProperty(HeartbeatDirectoryRegistrationService.SD_API_REGISTRY_HEALTH_CHECK_INTERVAL_PROPERTY, 1);
 
-        final ProvidedServiceInstance instance = new ProvidedServiceInstance("odrm", "192.168.7.4", 8901);
+        final ProvidedServiceInstance instance = new ProvidedServiceInstance("odrm", "192.168.7.4");
         instance.setMonitorEnabled(true);
         instance.setStatus(OperationalStatus.UP);
         instance.setUri("http://cisco.com/vbo/odrm/setupsession");
@@ -222,9 +222,9 @@ public class RegistrationManagerImplTest {
             public Map<String, OperationResult<String>> sendHeartBeat(Map<String, ServiceInstanceHeartbeat> heartbeatMap) {
 
                 Assert.assertEquals(heartbeatMap.size(), 1);
-                Assert.assertTrue(heartbeatMap.containsKey("odrm-192.168.7.4-8901"));
+                Assert.assertTrue(heartbeatMap.containsKey("odrm-192.168.7.4"));
                 Map<String, OperationResult<String>> result = new HashMap<>();
-                result.put("odrm-192.168.7.4-8901", new OperationResult<>(true, "it is OK", null));
+                result.put("odrm-192.168.7.4", new OperationResult<>(true, "it is OK", null));
                 hbInvoked.incrementAndGet();
                 return result;
             }
@@ -236,27 +236,27 @@ public class RegistrationManagerImplTest {
             }
 
             @Override
-            public void updateInstanceStatus(String serviceName, String instanceId, OperationalStatus status, boolean isOwned) {
+            public void updateInstanceStatus(String serviceName, String instanceAddress, OperationalStatus status, boolean isOwned) {
                 statusInvoked.incrementAndGet();
                 Assert.assertEquals(serviceName, "odrm");
-                Assert.assertEquals(instanceId, "192.168.7.4-8901");
+                Assert.assertEquals(instanceAddress, "192.168.7.4");
                 Assert.assertEquals(OperationalStatus.DOWN, status);
                 Assert.assertTrue(isOwned);
             }
 
             @Override
-            public void updateInstanceUri(String serviceName, String instanceId, String uri, boolean isOwned) {
+            public void updateInstanceUri(String serviceName, String instanceAddress, String uri, boolean isOwned) {
                 uriInvoked.incrementAndGet();
                 Assert.assertEquals(serviceName, "odrm");
-                Assert.assertEquals(instanceId, "192.168.7.4-8901");
+                Assert.assertEquals(instanceAddress, "192.168.7.4");
                 Assert.assertEquals("new", uri);
                 Assert.assertTrue(isOwned);
             }
 
             @Override
-            public void unregisterInstance(String serviceName, String instanceId, boolean isOwned) {
+            public void unregisterInstance(String serviceName, String instanceAddress, boolean isOwned) {
                 Assert.assertEquals(serviceName, "odrm");
-                Assert.assertEquals(instanceId, "192.168.7.4-8901");
+                Assert.assertEquals(instanceAddress, "192.168.7.4");
                 Assert.assertTrue(isOwned);
             }
 
@@ -266,8 +266,8 @@ public class RegistrationManagerImplTest {
         try {
             impl.registerService(instance);
             impl.updateService(instance);
-            impl.updateServiceOperationalStatus("odrm", "192.168.7.4-8901", OperationalStatus.DOWN);
-            impl.updateServiceUri("odrm", "192.168.7.4-8901", "new");
+            impl.updateServiceOperationalStatus("odrm", "192.168.7.4", OperationalStatus.DOWN);
+            impl.updateServiceUri("odrm", "192.168.7.4", "new");
         } catch (ServiceException e) {
             e.printStackTrace();
         }
@@ -298,7 +298,7 @@ public class RegistrationManagerImplTest {
         Assert.assertTrue(hbInvoked.get() ==0);
 
         try {
-            impl.unregisterService(instance.getServiceName(), instance.getProviderId());
+            impl.unregisterService(instance.getServiceName(), instance.getAddress());
         } catch (ServiceException e) {
             e.printStackTrace();
             fail("unregisterService failed.");

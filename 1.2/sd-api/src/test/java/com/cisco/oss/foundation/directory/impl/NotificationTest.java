@@ -31,7 +31,7 @@ public class NotificationTest {
     @BeforeClass
     public static void setUp(){
         factory = ServiceDirectoryConfig.config().setCacheEnabled(false).setClientType(IN_MEMORY).build();
-        final ProvidedServiceInstance fooInstance = new ProvidedServiceInstance("foo","192.168.1.1",1234);
+        final ProvidedServiceInstance fooInstance = new ProvidedServiceInstance("foo","192.168.1.1");
         fooInstance.setUri("http://foo/service");
         fooInstance.setStatus(OperationalStatus.DOWN);
         factory.getRegistrationManager().registerService(fooInstance);
@@ -96,19 +96,19 @@ public class NotificationTest {
         };
         try (LookupManager lookup = factory.getLookupManager();RegistrationManager reg = factory.getRegistrationManager()){
             lookup.addNotificationHandler("foo",myHandler);
-            reg.updateServiceOperationalStatus("foo", "192.168.1.1-1234", OperationalStatus.UP);
+            reg.updateServiceOperationalStatus("foo", "192.168.1.1", OperationalStatus.UP);
             assertEquals(OperationalStatus.UP, lookup.lookupInstance("foo").getStatus());
-            reg.updateServiceOperationalStatus("foo", "192.168.1.1-1234", OperationalStatus.DOWN);
+            reg.updateServiceOperationalStatus("foo", "192.168.1.1", OperationalStatus.DOWN);
             // you can never find a DOWN
             //assertEquals(OperationalStatus.DOWN, lookup.lookupInstance("foo").getStatus());
-            reg.updateServiceOperationalStatus("foo", "192.168.1.1-1234", OperationalStatus.UP);
+            reg.updateServiceOperationalStatus("foo", "192.168.1.1", OperationalStatus.UP);
             assertEquals(OperationalStatus.UP, lookup.lookupInstance("foo").getStatus());
 
             reg.registerService(new ProvidedServiceInstance("foo", "192.168.1.2", 2222, "http://cisco.com/foo/2",
                     OperationalStatus.DOWN, null));
             TimeUnit.SECONDS.sleep(2L);
-            reg.updateServiceOperationalStatus("foo", "192.168.1.2-2222", OperationalStatus.UP);
-            reg.unregisterService("foo", "192.168.1.2-2222");
+            reg.updateServiceOperationalStatus("foo", "192.168.1.2", OperationalStatus.UP);
+            reg.unregisterService("foo", "192.168.1.2");
             assertTrue(countDown.await(5, TimeUnit.SECONDS)); //should not more than 5 sec
         }
     }

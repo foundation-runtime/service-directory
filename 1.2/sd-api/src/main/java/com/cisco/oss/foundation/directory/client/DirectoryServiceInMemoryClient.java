@@ -117,8 +117,8 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
         mInstance.setUri(instance.getUri());
 
         //TODO, refactor the model, the current implementation 'id' and 'instanceId' both => providerId
-        mInstance.setId(instance.getProviderId());
-        mInstance.setInstanceId(instance.getProviderId());
+        mInstance.setId(instance.getAddress());
+        mInstance.setInstanceId(instance.getAddress());
 
         //TODO, refactor the model, now use the monitor enabled by default
         mInstance.setMonitorEnabled(true);
@@ -161,9 +161,9 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
         }
         ConcurrentMap<String, ModelServiceInstance> iMap = inMemoryRegistry.get(serviceName);
         ModelServiceInstance newInstance = _newModelInstFromProvidedInst(instance);
-        ModelServiceInstance previous = iMap.putIfAbsent(instance.getProviderId(), newInstance);
+        ModelServiceInstance previous = iMap.putIfAbsent(instance.getAddress(), newInstance);
         if (previous != null) {
-            LOGGER.debug("ModelServiceInstance id {} already registered by {} ", instance.getProviderId(), objHashStr(previous));
+            LOGGER.debug("ModelServiceInstance id {} already registered by {} ", instance.getAddress(), objHashStr(previous));
         } else {
             addToHistory(new InstanceChange<>(newInstance.getModifiedTime().getTime(),
                     newInstance.getServiceName(),
@@ -171,7 +171,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
                     null,
                     _copyModelInstFrom(newInstance)
             ));
-            LOGGER.debug("Registered new ModelServiceInstance {} with id {} ", objHashStr(newInstance), instance.getProviderId());
+            LOGGER.debug("Registered new ModelServiceInstance {} with id {} ", objHashStr(newInstance), instance.getAddress());
         }
 
     }
@@ -260,6 +260,28 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
         }
     }
 
+    @Override
+    public void updateInstanceMetadata(String serviceName, String instanceId, Map<String, String> metadata, boolean isOwned) {
+        ModelServiceInstance mInstance = _getInstance(serviceName, instanceId);
+        if (mInstance != null) {
+            if (!isOwned) {
+                //IN this imple, we allow update don't care of if the service instance is owned by user
+                LOGGER.debug("do updateInstanceMetadata even when isOwned is false");
+            }
+            final ModelServiceInstance old = _copyModelInstFrom(mInstance);
+
+            mInstance.setMetadata(metadata);
+            mInstance.setModifiedTime(new Date());
+
+            addToHistory(new InstanceChange<>(mInstance.getModifiedTime().getTime(),
+                    mInstance.getServiceName(),
+                    InstanceChange.ChangeType.URL,
+                    old, _copyModelInstFrom(mInstance)));
+        } else {
+            LOGGER.debug("no service instance exist for {} {}", serviceName, instanceId);
+        }
+    }
+    
     @Override
     public void unregisterInstance(String serviceName, String instanceId, boolean isOwned) {
         ConcurrentMap<String, ModelServiceInstance> iMap = inMemoryRegistry.get(serviceName);

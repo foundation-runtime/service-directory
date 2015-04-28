@@ -101,6 +101,7 @@ public class ServiceInstance {
      *
      * @return the instance id.
      */
+    @Deprecated
     public String getInstanceId() {
         return instanceId;
     }
@@ -173,7 +174,7 @@ public class ServiceInstance {
      */
     @Override
     public String toString() {
-        return "{serviceName:" + serviceName + ",clientId:" + instanceId + "}";
+        return "{serviceName:" + serviceName + ", serviceAddress:" + address + "}";
     }
 
     /**
@@ -183,10 +184,10 @@ public class ServiceInstance {
     public boolean equals(Object obj) {
         if (obj instanceof ServiceInstance) {
             ServiceInstance si = (ServiceInstance) obj;
-            if (instanceId == null || serviceName == null) {
+            if (address == null || serviceName == null) {
                 return false;
             }
-            return instanceId.equals(si.getInstanceId())
+            return address.equals(si.getAddress())
                     && serviceName.equals(si.getServiceName());
         }
         return false;
@@ -197,7 +198,7 @@ public class ServiceInstance {
      */
     @Override
     public int hashCode() {
-        int result = instanceId != null ? instanceId.hashCode() : 0;
+        int result = address != null ? address.hashCode() : 0;
         result = 31 * result + serviceName != null ? serviceName.hashCode() : 0;
         return result;
     }

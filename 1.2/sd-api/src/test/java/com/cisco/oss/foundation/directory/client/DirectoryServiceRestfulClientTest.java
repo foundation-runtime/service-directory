@@ -54,7 +54,7 @@ public class DirectoryServiceRestfulClientTest {
     public void testRegisterInstance() throws Exception{
         final DirectoryServiceRestfulClient client = new DirectoryServiceRestfulClient();
 
-        final ProvidedServiceInstance instance = new ProvidedServiceInstance("odrm", "192.168.7.4", 8901);
+        final ProvidedServiceInstance instance = new ProvidedServiceInstance("odrm", "192.168.7.4");
         instance.setMonitorEnabled(true);
         instance.setStatus(OperationalStatus.UP);
         instance.setUri("http://cisco.com/vbo/odrm/setupsession");
@@ -79,7 +79,7 @@ public class DirectoryServiceRestfulClientTest {
         final DirectoryInvoker mockInvoker = new DirectoryHttpInvoker(){
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
-                Assert.assertEquals("http://vcsdirsvc:2013/service/odrm/192.168.7.4-8901",directoryAddresses+
+                Assert.assertEquals("http://vcsdirsvc:2013/service/odrm/192.168.7.4",directoryAddresses+
                         uri);
                 ProvidedServiceInstance instance2 = client._deserialize(payload, ProvidedServiceInstance.class);
                 compareProvidedServiceInstance(instance, instance2);
@@ -94,7 +94,7 @@ public class DirectoryServiceRestfulClientTest {
     public void testUpdateInstance() throws ServiceException{
         final DirectoryServiceRestfulClient client = new DirectoryServiceRestfulClient();
 
-        final ProvidedServiceInstance instance = new ProvidedServiceInstance("odrm", "192.168.7.4", 8901);
+        final ProvidedServiceInstance instance = new ProvidedServiceInstance("odrm", "192.168.7.4");
         instance.setMonitorEnabled(true);
         instance.setStatus(OperationalStatus.UP);
         instance.setUri("http://cisco.com/vbo/odrm/setupsession");
@@ -119,7 +119,7 @@ public class DirectoryServiceRestfulClientTest {
         final DirectoryInvoker mockInvoker = new DirectoryHttpInvoker(){
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
-                Assert.assertEquals("http://vcsdirsvc:2013/service/odrm/192.168.7.4-8901", directoryAddresses+uri);
+                Assert.assertEquals("http://vcsdirsvc:2013/service/odrm/192.168.7.4-1", directoryAddresses+uri);
                 ProvidedServiceInstance instance2 = client._deserialize(payload, ProvidedServiceInstance.class);
                 compareProvidedServiceInstance(instance, instance2);
                 return new HttpResponse(201, null);
@@ -135,7 +135,7 @@ public class DirectoryServiceRestfulClientTest {
 
 
         final String serviceName = "odrm";
-        final String instanceId = "192.168.7.4-8901";
+        final String instanceId = "192.168.7.4";
         final OperationalStatus status = OperationalStatus.DOWN;
 
         /*
@@ -170,7 +170,7 @@ public class DirectoryServiceRestfulClientTest {
 
 
         final String serviceName = "odrm";
-        final String instanceId = "192.168.7.4-8901";
+        final String instanceId = "192.168.7.4";
         final String uri = "http://cisco.com/vbo/odrm/setupsession";
 
         /*
@@ -206,7 +206,7 @@ public class DirectoryServiceRestfulClientTest {
 
 
         final String serviceName = "odrm";
-        final String instanceId = "192.168.7.4-8901";
+        final String instanceAddress = "192.168.7.4";
         /*
         HttpUtils utils = new HttpUtils(){
             @Override
@@ -222,13 +222,13 @@ public class DirectoryServiceRestfulClientTest {
         final DirectoryInvoker mockInvoker = new DirectoryHttpInvoker() {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
-                Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName + "/" + instanceId + "/true" , directoryAddresses+uri);
+                Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName + "/" + instanceAddress + "/true" , directoryAddresses+uri);
                 return new HttpResponse(200, null);
             }
         };
         client.setInvoker(mockInvoker);
 
-        client.unregisterInstance(serviceName, instanceId, true);
+        client.unregisterInstance(serviceName, instanceAddress, true);
     }
 
     @Test
@@ -237,10 +237,10 @@ public class DirectoryServiceRestfulClientTest {
 
         final Map<String, ServiceInstanceHeartbeat> heartbeatMap = new HashMap<>();
 
-        heartbeatMap.put("odrm/192.168.2.3-8901", new ServiceInstanceHeartbeat("odrm", "192.168.2.3-8901"));
+        heartbeatMap.put("odrm/192.168.2.3", new ServiceInstanceHeartbeat("odrm", "192.168.2.3"));
 
         final Map<String, OperationResult<String>> result = new HashMap<>();
-        result.put("odrm/192.168.2.3-8901", new OperationResult<>(true, "it is OK", null));
+        result.put("odrm/192.168.2.3", new OperationResult<>(true, "it is OK", null));
         /*
         HttpUtils utils = new HttpUtils(){
             @Override
@@ -265,8 +265,8 @@ public class DirectoryServiceRestfulClientTest {
                 Map<String, ServiceInstanceHeartbeat> hbs = client._deserialize(payload, new TypeReference<Map<String, ServiceInstanceHeartbeat>>() {
                 });
                 Assert.assertEquals(hbs.size(), 1);
-                Assert.assertEquals(hbs.get("odrm/192.168.2.3-8901").getServiceName(), "odrm");
-                Assert.assertEquals(hbs.get("odrm/192.168.2.3-8901").getProviderId(), "192.168.2.3-8901");
+                Assert.assertEquals(hbs.get("odrm/192.168.2.3").getServiceName(), "odrm");
+                Assert.assertEquals(hbs.get("odrm/192.168.2.3").getProviderAddress(), "192.168.2.3");
                 return new HttpResponse(200, client._serialize(result));
             }
         };
@@ -288,7 +288,7 @@ public class DirectoryServiceRestfulClientTest {
         metadata.put("datacenter", "dc01");
         metadata.put("solution", "core");
         List<ModelServiceInstance> instances = new ArrayList<>();
-        ModelServiceInstance instance = new ModelServiceInstance("odrm", "192.168.2.3-8901", "192.168.2.3-8901", "http://cisco.com/vbo/odrm/setupsession",
+        ModelServiceInstance instance = new ModelServiceInstance("odrm", "192.168.2.3", "192.168.2.3", "http://cisco.com/vbo/odrm/setupsession",
                 OperationalStatus.UP, null, 0, date,
                 date, metadata);
         instance.setHeartbeatTime(date);
@@ -345,7 +345,7 @@ public class DirectoryServiceRestfulClientTest {
         metadata.put("datacenter", "dc01");
         metadata.put("solution", "core");
         List<ModelServiceInstance> instances = new ArrayList<>();
-        ModelServiceInstance instance = new ModelServiceInstance("odrm", "192.168.2.3-8901", "192.168.2.3-8901", "http://cisco.com/vbo/odrm/setupsession",
+        ModelServiceInstance instance = new ModelServiceInstance("odrm", "192.168.2.3", "192.168.2.3", "http://cisco.com/vbo/odrm/setupsession",
                 OperationalStatus.UP, null, 0, date,
                 date, metadata);
         instance.setHeartbeatTime(date);
@@ -399,7 +399,7 @@ public class DirectoryServiceRestfulClientTest {
         metadata.put("datacenter", "dc01");
         metadata.put("solution", "core");
         List<ModelServiceInstance> instances = new ArrayList<>();
-        ModelServiceInstance instance = new ModelServiceInstance("odrm", "192.168.2.3-8901", "192.168.2.3-8901", "http://cisco.com/vbo/odrm/setupsession",
+        ModelServiceInstance instance = new ModelServiceInstance("odrm", "192.168.2.3", "192.168.2.3", "http://cisco.com/vbo/odrm/setupsession",
                 OperationalStatus.UP, null, 0, date,
                 date, metadata);
         instance.setHeartbeatTime(date);
@@ -467,7 +467,7 @@ public class DirectoryServiceRestfulClientTest {
         Assert.assertNotNull(instance1);
         Assert.assertNotNull(instance2);
         Assert.assertEquals(instance1.getServiceName(), instance2.getServiceName());
-        Assert.assertEquals(instance1.getProviderId(), instance2.getProviderId());
+        Assert.assertEquals(instance1.getAddress(), instance2.getAddress());
         Assert.assertEquals(instance1.getUri(), instance2.getUri());
         Assert.assertEquals(instance1.getStatus(), instance2.getStatus());
         Map<String, String> metadata1 = instance1.getMetadata();

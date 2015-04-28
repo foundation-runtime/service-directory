@@ -16,6 +16,7 @@
 package com.cisco.oss.foundation.directory.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -176,13 +177,19 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory 
 
         @Override
         public void updateServiceOperationalStatus(String serviceName,
-                String providerId, OperationalStatus status)
+                String providerAddress, OperationalStatus status)
                 throws ServiceException {
         }
 
         @Override
-        public void updateServiceUri(String serviceName, String providerId,
+        public void updateServiceUri(String serviceName, String providerAddress,
                 String uri) throws ServiceException {
+        }
+        
+        @Override
+        public void updateServiceMetadata(String serviceName,
+                String providerAddress, Map<String, String> metadata)
+                throws ServiceException {
         }
 
         @Override
@@ -192,7 +199,7 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory 
         }
 
         @Override
-        public void unregisterService(String serviceName, String providerId)
+        public void unregisterService(String serviceName, String providerAddress)
                 throws ServiceException {
 
         }

@@ -27,14 +27,14 @@ public class DirectoryServiceInMemoryClientTest {
     @Test
     public void testRegisterInstanceExist() throws InterruptedException, ExecutionException {
         final long start = System.currentTimeMillis();
-        final ProvidedServiceInstance instance = new ProvidedServiceInstance("fooService", "192.168.1.1", 8080);
+        final ProvidedServiceInstance instance = new ProvidedServiceInstance("fooService", "192.168.1.1");
         instance.setMonitorEnabled(true);
         instance.setStatus(OperationalStatus.UP);
 
-        final ProvidedServiceInstance instance2 = new ProvidedServiceInstance("fooService", "192.168.1.2", 8080);
-        final ProvidedServiceInstance instance3 = new ProvidedServiceInstance("fooService2", "192.168.1.3", 8080);
-        final ProvidedServiceInstance instance4 = new ProvidedServiceInstance("fooService2", "192.168.1.4", 8080);
-        final ProvidedServiceInstance instance5 = new ProvidedServiceInstance("fooService2", "192.168.1.5", 8080);
+        final ProvidedServiceInstance instance2 = new ProvidedServiceInstance("fooService", "192.168.1.2");
+        final ProvidedServiceInstance instance3 = new ProvidedServiceInstance("fooService2", "192.168.1.3");
+        final ProvidedServiceInstance instance4 = new ProvidedServiceInstance("fooService2", "192.168.1.4");
+        final ProvidedServiceInstance instance5 = new ProvidedServiceInstance("fooService2", "192.168.1.5");
         ExecutorService exec = Executors.newFixedThreadPool(10);
         CountDownLatch regCountDown = new CountDownLatch(5 * 5);
         CountDownLatch fdAllCountDown = new CountDownLatch(5*3);
@@ -142,7 +142,7 @@ public class DirectoryServiceInMemoryClientTest {
     }
 
     class Update extends CountDownCall {
-        public ProvidedServiceInstance instanceToUpdate = new ProvidedServiceInstance("fooService", null, -1);
+        public ProvidedServiceInstance instanceToUpdate = new ProvidedServiceInstance("fooService", null);
 
         Update(CountDownLatch countDown) {
             super(countDown);
@@ -156,7 +156,7 @@ public class DirectoryServiceInMemoryClientTest {
 
         @Override
         public Boolean doCalling() {
-            sharedMemoryClient.updateInstanceStatus(instanceToUpdate.getServiceName(),instanceToUpdate.getProviderId(),
+            sharedMemoryClient.updateInstanceStatus(instanceToUpdate.getServiceName(),instanceToUpdate.getAddress(),
                     OperationalStatus.UP,true);
             return true;
         }
@@ -172,7 +172,7 @@ public class DirectoryServiceInMemoryClientTest {
 
         @Override
         public Boolean doCalling() {
-            sharedMemoryClient.unregisterInstance(instance.getServiceName(), instance.getProviderId(), true);
+            sharedMemoryClient.unregisterInstance(instance.getServiceName(), instance.getAddress(), true);
             return true;
         }
     }

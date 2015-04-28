@@ -37,9 +37,9 @@ public class LookUpModifiedServicesTest {
     @Before
     public void setUp() throws InterruptedException {
         sharedMemoryClient = new DirectoryServiceInMemoryClient();
-        final ProvidedServiceInstance instance1 = new ProvidedServiceInstance("myService","192.168.0.1",1111);
-        final ProvidedServiceInstance instance2 = new ProvidedServiceInstance("myService","192.168.0.2",2222);
-        final ProvidedServiceInstance instance3 = new ProvidedServiceInstance("myService","192.168.0.3",3333);
+        final ProvidedServiceInstance instance1 = new ProvidedServiceInstance("myService","192.168.0.1");
+        final ProvidedServiceInstance instance2 = new ProvidedServiceInstance("myService","192.168.0.2");
+        final ProvidedServiceInstance instance3 = new ProvidedServiceInstance("myService","192.168.0.3");
         sharedMemoryClient.registerInstance(instance1);
         TimeUnit.MILLISECONDS.sleep(1L);
         sharedMemoryClient.registerInstance(instance2);
@@ -72,7 +72,7 @@ public class LookUpModifiedServicesTest {
         // still no one changed till now
         assertEquals(0,result2.size());
         // now change it
-        sharedMemoryClient.updateInstanceStatus("myService", "192.168.0.1-1111", OperationalStatus.UP, true);
+        sharedMemoryClient.updateInstanceStatus("myService", "192.168.0.1", OperationalStatus.UP, true);
         List<ServiceInstance> result3 = sharedMemoryClient.lookUpChangedServiceInstancesSince("myService", now);
         assertEquals(1, result3.size());
 
@@ -80,12 +80,12 @@ public class LookUpModifiedServicesTest {
         assertEquals(1, changes.size());
         assertEquals(Status, changes.get(0).changeType);
         assertEquals(OperationalStatus.UP, changes.get(0).to.getStatus());
-        sharedMemoryClient.updateInstanceStatus("myService", "192.168.0.1-1111", OperationalStatus.DOWN, true);
+        sharedMemoryClient.updateInstanceStatus("myService", "192.168.0.1", OperationalStatus.DOWN, true);
 
         changes = sharedMemoryClient.lookupChangesSince("myService", now);
         assertEquals(2, changes.size());
         //remove the one
-        sharedMemoryClient.unregisterInstance("myService", "192.168.0.1-1111", true);
+        sharedMemoryClient.unregisterInstance("myService", "192.168.0.1", true);
 
         changes = sharedMemoryClient.lookupChangesSince("myService", now);
         assertEquals(3, changes.size()); //it's should be 3, because now we add one record for the delete!
@@ -132,14 +132,14 @@ public class LookUpModifiedServicesTest {
         //make sure register operation is happen-after now
         TimeUnit.MILLISECONDS.sleep(1L);
         //add a new service
-        final ProvidedServiceInstance newService = new ProvidedServiceInstance("newService","192.168.1.1",5555);
+        final ProvidedServiceInstance newService = new ProvidedServiceInstance("newService","192.168.1.1");
         sharedMemoryClient.registerInstance(newService);
         List<InstanceChange<ModelServiceInstance>> changes = sharedMemoryClient.lookupChangesSince("newService", now);
         assertEquals(1, changes.size());
         final long sinceCreated = System.currentTimeMillis();
         //make sure update operation is happen-after 'sinceCreated'
         TimeUnit.MILLISECONDS.sleep(1L);
-        sharedMemoryClient.updateInstanceStatus("newService", "192.168.1.1-5555", OperationalStatus.UP, true);
+        sharedMemoryClient.updateInstanceStatus("newService", "192.168.1.1", OperationalStatus.UP, true);
         assertEquals(2, sharedMemoryClient.lookupChangesSince("newService", now).size());
         assertEquals(1, sharedMemoryClient.lookupChangesSince("newService", sinceCreated).size());
         assertEquals(Status,sharedMemoryClient.lookupChangesSince("newService",sinceCreated).get(0).changeType);

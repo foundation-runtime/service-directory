@@ -37,10 +37,10 @@ public class RoundRobinLoadBalancerTest {
         Map<String, String> metadata = new HashMap<String, String>();
         metadata.put("node", "n1");
         List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
-        ModelServiceInstance instance1 = new ModelServiceInstance("odrm", "192.168.1.1-8901", "192.168.1.1-8901", "http://cisco.com/",
-                OperationalStatus.UP, null, 0, date, date,  metadata);
-        ModelServiceInstance instance2 = new ModelServiceInstance("odrm", "192.168.1.1-8902", "192.168.1.1-8902", "http://cisco.com/",
-                OperationalStatus.UP, null, 0, date, date,  metadata);
+        ModelServiceInstance instance1 = new ModelServiceInstance("odrm", "192.168.1.1", "192.168.1.1", "http://cisco.com/",
+                OperationalStatus.UP, "192.168.1.1", 8091, date, date,  metadata);
+        ModelServiceInstance instance2 = new ModelServiceInstance("odrm", "192.168.1.2", "192.168.1.2", "http://cisco.com/",
+                OperationalStatus.UP, "192.168.1.2", 8091, date, date,  metadata);
 
         instances.add(ServiceInstanceUtils.toServiceInstance(instance2));
         instances.add(ServiceInstanceUtils.toServiceInstance(instance1));
@@ -48,18 +48,18 @@ public class RoundRobinLoadBalancerTest {
         MockLB lb = new MockLB();
 
         Map<String, Integer> count = new HashMap<String, Integer>();
-        count.put("192.168.1.1-8901", 0);
-        count.put("192.168.1.1-8902", 0);
+        count.put("192.168.1.1", 0);
+        count.put("192.168.1.2", 0);
 
         int i = 0;
         while(i < 100){
             ServiceInstance inst = lb.vote(instances);
-            int v = count.get(inst.getInstanceId()) + 1;
-            count.put(inst.getInstanceId(), v);
+            int v = count.get(inst.getAddress()) + 1;
+            count.put(inst.getAddress(), v);
             i ++;
         }
-        Assert.assertTrue(count.get("192.168.1.1-8901") == 50);
-        Assert.assertTrue(count.get("192.168.1.1-8902")== 50);
+        Assert.assertTrue(count.get("192.168.1.1") == 50);
+        Assert.assertTrue(count.get("192.168.1.2")== 50);
 
     }
 

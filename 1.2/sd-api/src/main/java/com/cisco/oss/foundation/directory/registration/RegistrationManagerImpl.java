@@ -19,6 +19,8 @@
 
 package com.cisco.oss.foundation.directory.registration;
 
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -108,14 +110,14 @@ public class RegistrationManagerImpl extends AbstractServiceDirectoryManager imp
      */
     @Override
     public void updateServiceUri(String serviceName,
-            String providerId, String uri) throws ServiceException {
+            String providerAddress, String uri) throws ServiceException {
 
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
         ServiceInstanceUtils.validateServiceName(serviceName);
-        ServiceInstanceUtils.validateServiceInstanceID(providerId);
+        ServiceInstanceUtils.validateAddress(providerAddress);
         ServiceInstanceUtils.validateURI(uri);
 
-        getRegistrationService().updateServiceUri(serviceName, providerId, uri);
+        getRegistrationService().updateServiceUri(serviceName, providerAddress, uri);
     }
 
     /**
@@ -123,19 +125,33 @@ public class RegistrationManagerImpl extends AbstractServiceDirectoryManager imp
      */
     @Override
     public void updateServiceOperationalStatus(String serviceName,
-            String providerId, OperationalStatus status) throws ServiceException {
+            String providerAddress, OperationalStatus status) throws ServiceException {
 
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
         ServiceInstanceUtils.validateServiceName(serviceName);
-        ServiceInstanceUtils.validateServiceInstanceID(providerId);
+        ServiceInstanceUtils.validateAddress(providerAddress);
 
-        getRegistrationService().updateServiceOperationalStatus(serviceName, providerId, status);
+        getRegistrationService().updateServiceOperationalStatus(serviceName, providerAddress, status);
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void updateServiceMetadata(String serviceName, String providerAddress, Map<String, String> metadata) throws ServiceException {
+
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateServiceName(serviceName);
+        ServiceInstanceUtils.validateAddress(providerAddress);
+
+        getRegistrationService().updateServiceMetadata(serviceName, providerAddress, metadata);
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
+    @Deprecated
     public void updateService(ProvidedServiceInstance serviceInstance)
             throws ServiceException {
      
@@ -149,14 +165,14 @@ public class RegistrationManagerImpl extends AbstractServiceDirectoryManager imp
      * {@inheritDoc}
      */
     @Override
-    public void unregisterService(String serviceName, String providerId)
+    public void unregisterService(String serviceName, String providerAddress)
             throws ServiceException {
        
         ServiceInstanceUtils.validateManagerIsStarted(isStarted);
         ServiceInstanceUtils.validateServiceName(serviceName);
-        ServiceInstanceUtils.validateServiceInstanceID(providerId);
+        ServiceInstanceUtils.validateAddress(providerAddress);
         
-        getRegistrationService().unregisterService(serviceName, providerId);
+        getRegistrationService().unregisterService(serviceName, providerAddress);
     }
 
     private DirectoryRegistrationService getRegistrationService(){
