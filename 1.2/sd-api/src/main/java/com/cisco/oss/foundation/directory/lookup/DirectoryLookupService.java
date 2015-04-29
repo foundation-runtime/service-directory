@@ -239,6 +239,7 @@ public class DirectoryLookupService extends ServiceDirectoryService {
      * @return
      *         the ModelServiceInstance.
      */
+    @Deprecated
     public ModelServiceInstance getModelServiceInstance(String serviceName, String instanceId) {
         ModelService service = getModelService(serviceName);
         if (service != null && service.getServiceInstances() != null) {

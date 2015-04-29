@@ -26,7 +26,8 @@ public class ServiceInstance {
     /**
      * ServiceInstance id, unique in Service.
      */
-    private final String instanceId;
+    @Deprecated
+    private String instanceId;
 
     /**
      * the Service Name of the ServiceInstance
@@ -49,9 +50,9 @@ public class ServiceInstance {
     private boolean monitorEnabled = true;
 
     /**
-     * The real address of the instance, it can be real IP or host name
+     * The real address of the instance, it can be real IP or host name, unique for a service.
      */
-    private String address;
+    private final String address;
 
     /**
      * The real port of the instance.
@@ -80,6 +81,7 @@ public class ServiceInstance {
      * @param metadata
      *            the metadata Map.
      */
+    @Deprecated
     public ServiceInstance(String serviceName, String instanceId, String uri,
             boolean monitor, OperationalStatus status, String address,
             int port, Map<String, String> metadata) {
@@ -95,7 +97,37 @@ public class ServiceInstance {
             this.metadata.putAll(metadata);
         }
     }
-
+ 
+    
+    /**
+     * Constructor.
+     *
+     * @param serviceName
+     *            the service name.
+     * @param uri
+     *            the uri.
+     * @param address
+     *            The real address of the instance, it can be real IP or host
+     *            name.
+     * @param port
+     *            The real port of the instance.
+     * @param metadata
+     *            the metadata Map.
+     */
+    public ServiceInstance(String serviceName, String uri,
+            boolean monitor, OperationalStatus status, String address,
+            int port, Map<String, String> metadata) {
+        this.serviceName = serviceName;
+        this.uri = uri;
+        this.monitorEnabled = monitor;
+        this.status = status;
+        this.address = address;
+        this.port = port;
+        this.metadata = new HashMap<String, String>();
+        if (metadata != null && metadata.size() != 0) {
+            this.metadata.putAll(metadata);
+        }
+    }
     /**
      * Get the instance id.
      *

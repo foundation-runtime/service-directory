@@ -71,7 +71,7 @@ public class ServiceInstanceUtils {
             }
         }
         return new ServiceInstance(modelInstance.getServiceName(),
-                modelInstance.getInstanceId(), modelInstance.getUri(),
+                modelInstance.getUri(),
                 modelInstance.isMonitorEnabled(), modelInstance.getStatus(),
                 modelInstance.getAddress(), modelInstance.getPort(), meta);
     }
