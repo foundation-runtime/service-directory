@@ -4,7 +4,7 @@ Service Directory API is the client API to communicate with the back-end directo
 
 SD API v1.1 is compatible with the JDK6 or greater.
 
-v1.1.0-6 is the most recent stable version.
+v1.1.0-7 is the most recent stable version.
  
 You can read the user guide in [ Wiki](../../../wiki/Home).
 
