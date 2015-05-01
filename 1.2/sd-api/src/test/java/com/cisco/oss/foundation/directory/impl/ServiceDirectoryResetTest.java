@@ -30,7 +30,7 @@ public class ServiceDirectoryResetTest {
         ConfigurableServiceDirectoryManagerFactory myFactory = ServiceDirectoryConfig.config().setClientType(IN_MEMORY).build();
         ServiceDirectoryImpl.getInstance().reinitServiceDirectoryManagerFactory(myFactory);
         assertSame(myFactory, ServiceDirectoryImpl.getInstance().getServiceDirectoryManagerFactory());
-        ProvidedServiceInstance fooInstance = new ProvidedServiceInstance("foo","192.168.1.1",8080);
+        ProvidedServiceInstance fooInstance = new ProvidedServiceInstance("foo","192.168.1.1");
         fooInstance.setStatus(OperationalStatus.UP);
         fooInstance.setUri("http://cisco/foo");
         ServiceDirectory.getRegistrationManager().registerService(fooInstance);
