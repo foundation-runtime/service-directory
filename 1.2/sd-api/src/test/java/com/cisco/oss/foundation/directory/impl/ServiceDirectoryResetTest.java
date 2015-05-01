@@ -78,6 +78,5 @@ public class ServiceDirectoryResetTest {
     private void verifyInstance(ServiceInstance instance){
         assertEquals("foo",instance.getServiceName());
         assertEquals("192.168.1.1",instance.getAddress());
-        assertEquals(8080,instance.getPort());
     }
 }
