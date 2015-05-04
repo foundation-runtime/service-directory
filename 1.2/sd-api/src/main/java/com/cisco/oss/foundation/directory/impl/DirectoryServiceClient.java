@@ -12,24 +12,24 @@ public class DirectoryServiceClient {
      * use {@link DirectoryServiceRestfulClient#SD_API_SD_SERVER_FQDN_PROPERTY}
      */
     @Deprecated
-    public static String SD_API_SD_SERVER_FQDN_PROPERTY = DirectoryServiceRestfulClient.SD_API_SD_SERVER_FQDN_PROPERTY;
+    public static final String SD_API_SD_SERVER_FQDN_PROPERTY = DirectoryServiceRestfulClient.SD_API_SD_SERVER_FQDN_PROPERTY;
 
     /**
      * use {@link DirectoryServiceRestfulClient#SD_API_SD_SERVER_FQDN_DEFAULT}
      */
     @Deprecated
-    public static String SD_API_SD_SERVER_FQDN_DEFAULT = DirectoryServiceRestfulClient.SD_API_SD_SERVER_FQDN_DEFAULT;
+    public static final String SD_API_SD_SERVER_FQDN_DEFAULT = DirectoryServiceRestfulClient.SD_API_SD_SERVER_FQDN_DEFAULT;
 
     /**
      * use {@link DirectoryServiceRestfulClient#SD_API_SD_SERVER_PORT_PROPERTY}
      */
     @Deprecated
-    public static String SD_API_SD_SERVER_PORT_PROPERTY = DirectoryServiceRestfulClient.SD_API_SD_SERVER_PORT_PROPERTY;
+    public static final String SD_API_SD_SERVER_PORT_PROPERTY = DirectoryServiceRestfulClient.SD_API_SD_SERVER_PORT_PROPERTY;
 
     /**
      * use {@link DirectoryServiceRestfulClient#SD_API_SD_SERVER_PORT_DEFAULT}
      */
     @Deprecated
-    public static int SD_API_SD_SERVER_PORT_DEFAULT = DirectoryServiceRestfulClient.SD_API_SD_SERVER_PORT_DEFAULT;
+    public static final int SD_API_SD_SERVER_PORT_DEFAULT = DirectoryServiceRestfulClient.SD_API_SD_SERVER_PORT_DEFAULT;
 
 }

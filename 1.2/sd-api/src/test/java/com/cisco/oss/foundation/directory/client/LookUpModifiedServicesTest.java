@@ -11,7 +11,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cisco.oss.foundation.directory.client.DirectoryServiceClient.InstanceChange;
+import com.cisco.oss.foundation.directory.entity.InstanceChange;
 import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import static com.cisco.oss.foundation.directory.client.DirectoryServiceClient.InstanceChange.ChangeType.Status;
+import static com.cisco.oss.foundation.directory.entity.InstanceChange.ChangeType.Status;
 
 /**
  * test for new changed look up methods

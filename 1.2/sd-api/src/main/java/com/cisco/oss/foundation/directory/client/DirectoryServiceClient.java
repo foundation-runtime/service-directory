@@ -15,11 +15,10 @@
  */
 package com.cisco.oss.foundation.directory.client;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
+import com.cisco.oss.foundation.directory.entity.InstanceChange;
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
@@ -71,60 +70,6 @@ public interface DirectoryServiceClient {
      */
 
     List<InstanceChange<ModelServiceInstance>> lookupChangesSince(String serviceName,long since);
-
-    class InstanceChange<T> {
-        public enum ChangeType{
-            Create,
-            Remove,
-            Status,
-            URL,
-            META
-        }
-        public final long changedTimeMills;
-        public final ChangeType changeType;
-        public final String serviceName;
-        public final T from;
-        public final T to;
-        InstanceChange(long time, String serviceName, ChangeType type,T from,T to){
-            Objects.requireNonNull(time);
-            Objects.requireNonNull(serviceName);
-            this.changedTimeMills = time;
-            this.changeType = type;
-            this.serviceName = serviceName;
-            this.from = from;
-            this.to = to;
-        }
-        @Override
-        public String toString() {
-            return "ServiceInstanceChange{" +
-                    "changedTimeMills=" + changedTimeMills +
-                    ", changeType=" + changeType +
-                    ", from='" + from + '\'' +
-                    ", to='" + to + '\'' +
-                    '}';
-        }
-
-        /**
-         * Order by changedTimeMills. oldest first
-         */
-        public static final Comparator<InstanceChange> Comparator = new Comparator<InstanceChange>() {
-            @Override
-            public int compare(InstanceChange o1, InstanceChange o2) {
-                return Long.compare(o1.changedTimeMills,o2.changedTimeMills);
-            }
-        };
-
-        /**
-         * latest first
-         */
-        public static final Comparator<InstanceChange> ReverseComparator = new Comparator<InstanceChange>() {
-            @Override
-            public int compare(InstanceChange o1, InstanceChange o2) {
-                return Comparator.compare(o2,o1);
-            }
-        };
-    }
-
 
 
 }

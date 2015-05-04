@@ -15,6 +15,8 @@
  */
 package com.cisco.oss.foundation.directory.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 /**
  * The heartbeat info of the ServiceInstance.
  *
@@ -47,8 +49,8 @@ public class ServiceInstanceHeartbeat {
      *
      * @param serviceName
      *            the service name.
-     * @param providerId
-     *            the provider id.
+     * @param providerAddress
+     *            the provider address.
      */
     public ServiceInstanceHeartbeat(String serviceName, String providerAddress) {
         this.serviceName = serviceName;
@@ -71,6 +73,16 @@ public class ServiceInstanceHeartbeat {
      */
     public String getProviderAddress() {
         return providerAddress;
+    }
+
+    /**
+     * Get the providerId
+     * @deprecated use {@link #getProviderAddress()}
+     */
+    @Deprecated
+    @JsonIgnore
+    public String getProviderId(){
+        return getProviderAddress();
     }
 
     /**

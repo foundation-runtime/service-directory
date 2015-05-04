@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import com.cisco.oss.foundation.directory.NotificationHandler;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
-import com.cisco.oss.foundation.directory.client.DirectoryServiceClient.InstanceChange;
+import com.cisco.oss.foundation.directory.entity.InstanceChange;
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
@@ -47,7 +47,7 @@ import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.impl.ServiceDirectoryService;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 
-import static com.cisco.oss.foundation.directory.client.DirectoryServiceClient.InstanceChange.ChangeType.Status;
+import static com.cisco.oss.foundation.directory.entity.InstanceChange.ChangeType.Status;
 
 /**
  * It is the Directory LookupService to perform the lookup functionality.
