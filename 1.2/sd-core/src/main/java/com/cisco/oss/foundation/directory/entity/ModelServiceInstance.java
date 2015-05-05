@@ -399,9 +399,9 @@ public class ModelServiceInstance {
                 ", uri='" + uri + '\'' +
                 ", status=" + status +
                 ", monitorEnabled=" + monitorEnabled +
-                ", createTime=" + createTime==null?"null":createTime.getTime() +
-                ", modifiedTime=" + modifiedTime==null?"null":modifiedTime.getTime() +
-                ", heartbeatTime=" + heartbeatTime==null?"null":heartbeatTime.getTime() +
+                ", createTime=" + (createTime==null?"null":createTime.getTime()) +
+                ", modifiedTime=" + (modifiedTime==null?"null":modifiedTime.getTime()) +
+                ", heartbeatTime=" + (heartbeatTime==null?"null":heartbeatTime.getTime()) +
                 ", metadata=" + metadata +
                 ", serviceName='" + serviceName + '\'' +
                 ", address='" + address + '\'' +
