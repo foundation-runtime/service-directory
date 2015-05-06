@@ -25,11 +25,11 @@ import static org.junit.Assert.assertTrue;
 import static com.cisco.oss.foundation.directory.entity.InstanceChange.ChangeType.Status;
 
 /**
- * test for new changed look up methods
+ * test for new changed look up methods by using InMemory client
  */
-public class LookUpModifiedServicesTest {
+public class LookupChangesTestByInMemoryClient {
 
-    private final static Logger LOG = LoggerFactory.getLogger(LookUpModifiedServicesTest.class);
+    private final static Logger LOG = LoggerFactory.getLogger(LookupChangesTestByInMemoryClient.class);
     private DirectoryServiceInMemoryClient sharedMemoryClient;
     private final static long INIT_TIME = System.currentTimeMillis();
 

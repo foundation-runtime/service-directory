@@ -636,7 +636,15 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
 
     @Override
     public List<InstanceChange<ModelServiceInstance>> lookupChangesSince(String serviceName, long since) {
-        throw new UnsupportedOperationException("not support now for 1.2 api");
+        HttpResponse result = invoker.invoke("/v1.2/service/changes/" + serviceName+ "/"+since, null, HttpMethod.GET, addHeader());
+
+        if (result.getHttpCode() != HTTP_OK) {
+            throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
+                    "HTTP Code is not OK, code=%s", result.getHttpCode());
+        }
+
+        return _deserialize(result.getRetBody(), new TypeReference<List<InstanceChange<ModelServiceInstance>>>() {
+        });
     }
     
     private Map<String, String>addHeader() {

@@ -3,6 +3,9 @@ package com.cisco.oss.foundation.directory.entity;
 import java.util.Comparator;
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * The class record the service instance change in Service Directory..
  */
@@ -21,7 +24,12 @@ public class InstanceChange<T> {
     public final T from;
     public final T to;
 
-    public InstanceChange(long time, String serviceName, ChangeType type, T from, T to) {
+    @JsonCreator
+    public InstanceChange(@JsonProperty("changedTimeMills")long time,
+                          @JsonProperty("serviceName")String serviceName,
+                          @JsonProperty("changeType")ChangeType type,
+                          @JsonProperty("from")T from,
+                          @JsonProperty("to")T to) {
         Objects.requireNonNull(time);
         Objects.requireNonNull(serviceName);
         this.changedTimeMills = time;

@@ -109,7 +109,7 @@ public class NotificationTest {
             TimeUnit.SECONDS.sleep(2L);
             reg.updateServiceOperationalStatus("foo", "192.168.1.2", OperationalStatus.UP);
             reg.unregisterService("foo", "192.168.1.2");
-            assertTrue(countDown.await(5, TimeUnit.SECONDS)); //should not more than 5 sec
+            assertTrue("Shouldn't wait more than 5 sec",countDown.await(5, TimeUnit.SECONDS)); //
         }
     }
 }
