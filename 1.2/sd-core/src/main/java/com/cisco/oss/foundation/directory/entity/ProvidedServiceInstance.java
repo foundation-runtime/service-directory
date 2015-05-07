@@ -273,7 +273,7 @@ public class ProvidedServiceInstance {
      */
     @Deprecated
     public String getProviderId() {
-        return this.address + "-" + String.valueOf(this.port);
+        return getAddress();
     }
 
 }

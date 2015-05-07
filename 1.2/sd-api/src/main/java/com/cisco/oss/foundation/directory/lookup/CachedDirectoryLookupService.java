@@ -139,6 +139,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     @Override
     public void start(){
         if (isStarted.compareAndSet(false,true)){
+            super.start();
             initCacheSyncTask();
         }
     }
@@ -153,6 +154,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     public void stop(){
         if (isStarted.compareAndSet(true,false)) {
             // if you shutdown it, it can not be use anymore
+            super.stop();
             ScheduledExecutorService service = this.syncService.getAndSet(newSyncService());
             service.shutdown();
             LOGGER.info("Cache sync Service is shutdown");

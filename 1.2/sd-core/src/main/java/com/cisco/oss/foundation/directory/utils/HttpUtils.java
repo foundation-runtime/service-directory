@@ -156,6 +156,7 @@ public final class HttpUtils {
         urlConnection.setRequestMethod("PUT");
         addCustomHeaders(urlConnection, headers);
 
+        urlConnection.addRequestProperty("Content-Type", "application/json");
         if (body != null && body.length() > 0)
             urlConnection.addRequestProperty("Content-Length",
                     Integer.toString(body.length()));
