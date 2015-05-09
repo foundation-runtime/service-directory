@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import com.cisco.oss.foundation.directory.LookupManager;
 import com.cisco.oss.foundation.directory.NotificationHandler;
+import com.cisco.oss.foundation.directory.ServiceInstanceChangeListener;
 import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
@@ -371,6 +372,16 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
         getLookupService().removeNotificationHandler(serviceName, handler);
     }
 
+    @Override
+    public void addInstanceChangeListener(String serviceName, ServiceInstanceChangeListener listener) throws ServiceException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void removeInstanceChangeListener(String serviceName, ServiceInstanceChangeListener listener) throws ServiceException {
+        throw new UnsupportedOperationException();
+    }
+
     /**
      * Get the DirectoryLookupService to do the lookup.
      *
@@ -408,5 +419,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
             }
         }
     }
+
+
 
 }

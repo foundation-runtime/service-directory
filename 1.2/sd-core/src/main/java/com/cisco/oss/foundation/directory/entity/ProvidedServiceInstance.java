@@ -269,11 +269,12 @@ public class ProvidedServiceInstance {
      * The address always be the real ip address or hostname of the machine that 
      * provides the service.
      *
+     * @deprecated the provider id should not be used anymore. replaced by {@link #getAddress()}
      * @return the provider id.
      */
     @Deprecated
     public String getProviderId() {
-        return getAddress();
+        return this.address + "-" + String.valueOf(this.port);
     }
 
 }

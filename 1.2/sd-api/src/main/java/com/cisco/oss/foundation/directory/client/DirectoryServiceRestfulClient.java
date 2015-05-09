@@ -142,7 +142,7 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
     public void updateInstance(ProvidedServiceInstance instance) {
         String body = _serialize(instance);
 
-        HttpResponse result = invoker.invoke(toInstanceUri(instance.getServiceName(), instance.getProviderId()), body,
+        HttpResponse result = invoker.invoke(toInstanceUri(instance.getServiceName(), instance.getAddress()), body,
                 HttpMethod.PUT, addHeader());
 
         if (result.getHttpCode() != HTTP_CREATED) {

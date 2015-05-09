@@ -75,25 +75,6 @@ public class ExceptionHandleTestCase  {
         ServiceDirectoryError sde1 = new ServiceDirectoryError(ErrorCode.SERVICE_INSTANCE_NOT_EXIST);
         final AtomicReference<ServiceDirectoryError> error = new AtomicReference<>();
         error.set(sde1);
-        /*
-        HttpUtils utils = new HttpUtils(){
-            @Override
-            public HttpResponse postJson(String urlStr, String body)
-                    throws IOException {
-
-                Assert.assertEquals("http://vcsdirsvc:2013/service/mock-test01/" + instance.getProviderId(), urlStr);
-
-                return new HttpResponse(500, new String(serialize(error.get())));
-
-            }
-
-            @Override
-            public HttpResponse putJson(String urlStr, String body)
-                    throws IOException {
-                return new HttpResponse(500, new String(serialize(error.get())));
-            }
-        };
-        */
 
         final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker() {
             @Override

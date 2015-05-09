@@ -187,17 +187,17 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
         if (iMap == null) {
             LOGGER.debug("Service {} not exist", serviceName);
         } else {
-            ModelServiceInstance mInstance = iMap.get(instance.getProviderId());
+            ModelServiceInstance mInstance = iMap.get(instance.getAddress());
             if (mInstance == null) {
-                LOGGER.debug("ModelServiceInstance is not found by {}", instance.getProviderId());
+                LOGGER.debug("ModelServiceInstance is not found by {}", instance.getAddress());
             } else {
                 mInstance.setServiceName(instance.getServiceName());
                 mInstance.setAddress(instance.getAddress());
                 mInstance.setPort(instance.getPort());
                 mInstance.setStatus(instance.getStatus());
                 mInstance.setUri(instance.getUri());
-                mInstance.setId(instance.getProviderId());
-                mInstance.setInstanceId(instance.getProviderId());
+                mInstance.setId(instance.getAddress());
+                mInstance.setInstanceId(instance.getAddress());
                 mInstance.setModifiedTime(new Date());
                 mInstance.setMetadata(instance.getMetadata());
                 LOGGER.debug("ModelServiceInstance {} is update by {}", objHashStr(mInstance), objHashStr(instance));
@@ -222,7 +222,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
         ModelServiceInstance mInstance = _getInstance(serviceName, instanceAddress);
         if (mInstance != null) {
             if (!isOwned) {
-                //IN this imple, we allow update don't care of if the service instance is owned by user
+                //IN this implementation, update don't care of if the service instance is owned by user
                 LOGGER.warn("do updateInstanceStatus even when isOwned is false");
             }
             final ModelServiceInstance old = _copyModelInstFrom(mInstance);
@@ -244,7 +244,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
         ModelServiceInstance mInstance = _getInstance(serviceName, instanceAddress);
         if (mInstance != null) {
             if (!isOwned) {
-                //IN this imple, we allow update don't care of if the service instance is owned by user
+                //IN this implementation, we allow update don't care of if the service instance is owned by user
                 LOGGER.debug("do updateInstanceUri even when isOwned is false");
             }
             final ModelServiceInstance old = _copyModelInstFrom(mInstance);
@@ -266,7 +266,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
         ModelServiceInstance mInstance = _getInstance(serviceName, instanceAddress);
         if (mInstance != null) {
             if (!isOwned) {
-                //IN this imple, we allow update don't care of if the service instance is owned by user
+                //IN this implementation, we allow update don't care of if the service instance is owned by user
                 LOGGER.debug("do updateInstanceMetadata even when isOwned is false");
             }
             final ModelServiceInstance old = _copyModelInstFrom(mInstance);

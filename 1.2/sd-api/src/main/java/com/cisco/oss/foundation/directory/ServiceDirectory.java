@@ -29,6 +29,7 @@ import com.cisco.oss.foundation.configuration.ConfigurationFactory;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.impl.ServiceDirectoryConfig;
 import com.cisco.oss.foundation.directory.impl.ServiceDirectoryImpl;
+import com.cisco.oss.foundation.directory.impl.ServiceDirectoryVersion;
 
 /**
  * ServiceDirectory client class.
@@ -130,7 +131,7 @@ public class ServiceDirectory {
      *        the Service Directory API version 
      */
     public static String getAPIVersion() {
-        return getImpl().getVersion();
+        return ServiceDirectoryVersion.getVersion();
     }
     
     /**

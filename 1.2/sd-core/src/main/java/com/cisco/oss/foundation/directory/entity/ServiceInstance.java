@@ -15,6 +15,7 @@
  */
 package com.cisco.oss.foundation.directory.entity;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,9 +26,10 @@ public class ServiceInstance {
 
     /**
      * ServiceInstance id, unique in Service.
+     * @deprecated for backward compatible only, use {@link #getAddress()} for ubiquity
      */
-    @Deprecated
-    private String instanceId;
+    private final String instanceId;
+
 
     /**
      * the Service Name of the ServiceInstance
@@ -42,12 +44,12 @@ public class ServiceInstance {
     /**
      * The instance OperationalStatus
      */
-    private OperationalStatus status;
+    private final OperationalStatus status;
 
     /**
      * Whether the instance enabled Monitor in Service Directory.
      */
-    private boolean monitorEnabled = true;
+    private final boolean monitorEnabled;
 
     /**
      * The real address of the instance, it can be real IP or host name, unique for a service.
@@ -57,7 +59,7 @@ public class ServiceInstance {
     /**
      * The real port of the instance.
      */
-    private int port = 0;
+    private final int port;
 
     /**
      * ServiceInstance metadata
@@ -80,6 +82,8 @@ public class ServiceInstance {
      *            The real port of the instance.
      * @param metadata
      *            the metadata Map.
+     *
+     * @deprecated only for backward compatible.
      */
     @Deprecated
     public ServiceInstance(String serviceName, String instanceId, String uri,
@@ -92,11 +96,14 @@ public class ServiceInstance {
         this.status = status;
         this.address = address;
         this.port = port;
-        this.metadata = new HashMap<String, String>();
+        this.metadata = new HashMap<>();
         if (metadata != null && metadata.size() != 0) {
             this.metadata.putAll(metadata);
         }
+
     }
+
+
  
     
     /**
@@ -117,25 +124,18 @@ public class ServiceInstance {
     public ServiceInstance(String serviceName, String uri,
             boolean monitor, OperationalStatus status, String address,
             int port, Map<String, String> metadata) {
-        this.serviceName = serviceName;
-        this.uri = uri;
-        this.monitorEnabled = monitor;
-        this.status = status;
-        this.address = address;
-        this.port = port;
-        this.metadata = new HashMap<String, String>();
-        if (metadata != null && metadata.size() != 0) {
-            this.metadata.putAll(metadata);
-        }
+        this(serviceName,"",uri,monitor,status,address,port,metadata);
     }
+
     /**
      * Get the instance id.
      *
      * @return the instance id.
+     * @deprecated only for backward compatible
      */
     @Deprecated
     public String getInstanceId() {
-        return instanceId;
+        return this.instanceId;
     }
 
     /**
@@ -198,7 +198,7 @@ public class ServiceInstance {
      * @return the metadata Map.
      */
     public Map<String, String> getMetadata() {
-        return new HashMap<String, String>(this.metadata);
+        return Collections.unmodifiableMap(this.metadata);
     }
 
     /**
@@ -209,29 +209,4 @@ public class ServiceInstance {
         return "{serviceName:" + serviceName + ", serviceAddress:" + address + "}";
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof ServiceInstance) {
-            ServiceInstance si = (ServiceInstance) obj;
-            if (address == null || serviceName == null) {
-                return false;
-            }
-            return address.equals(si.getAddress())
-                    && serviceName.equals(si.getServiceName());
-        }
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        int result = address != null ? address.hashCode() : 0;
-        result = 31 * result + serviceName != null ? serviceName.hashCode() : 0;
-        return result;
-    }
 }

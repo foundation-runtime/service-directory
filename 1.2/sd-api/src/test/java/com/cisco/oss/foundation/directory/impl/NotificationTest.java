@@ -29,12 +29,13 @@ import static com.cisco.oss.foundation.directory.impl.ServiceDirectoryConfig.Cli
 public class NotificationTest {
 
     @BeforeClass
-    public static void setUp(){
+    public static void setUp() throws Exception {
         factory = ServiceDirectoryConfig.config().setCacheEnabled(false).setClientType(IN_MEMORY).build();
         final ProvidedServiceInstance fooInstance = new ProvidedServiceInstance("foo","192.168.1.1");
         fooInstance.setUri("http://foo/service");
         fooInstance.setStatus(OperationalStatus.DOWN);
         factory.getRegistrationManager().registerService(fooInstance);
+        TimeUnit.MILLISECONDS.sleep(1L); //make sure change check start time is later than registration.
         factory.start();
     }
 

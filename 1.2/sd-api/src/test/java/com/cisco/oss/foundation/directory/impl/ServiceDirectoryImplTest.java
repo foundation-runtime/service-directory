@@ -26,6 +26,7 @@ import com.cisco.oss.foundation.directory.NotificationHandler;
 import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectory;
 import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
+import com.cisco.oss.foundation.directory.ServiceInstanceChangeListener;
 import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
@@ -291,6 +292,16 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory 
         public void removeNotificationHandler(String serviceName,
                 NotificationHandler handler) throws ServiceException {
             // TODO Auto-generated method stub
+
+        }
+
+        @Override
+        public void addInstanceChangeListener(String serviceName, ServiceInstanceChangeListener listener) throws ServiceException {
+
+        }
+
+        @Override
+        public void removeInstanceChangeListener(String serviceName, ServiceInstanceChangeListener listener) throws ServiceException {
 
         }
 

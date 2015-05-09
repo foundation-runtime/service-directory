@@ -201,6 +201,10 @@ public interface LookupManager extends AutoCloseable {
      */
     public void removeNotificationHandler(String serviceName, NotificationHandler handler) throws ServiceException ;
 
+    void addInstanceChangeListener(String serviceName, ServiceInstanceChangeListener listener) throws ServiceException;
+    void removeInstanceChangeListener(String serviceName, ServiceInstanceChangeListener listener) throws ServiceException;
+
+
     /**
      * Close the Lookup
      * The LookupManager support JDK-7 try-with-resource

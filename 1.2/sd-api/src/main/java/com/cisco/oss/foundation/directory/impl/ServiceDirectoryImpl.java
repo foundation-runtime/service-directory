@@ -64,27 +64,8 @@ public class ServiceDirectoryImpl {
 
     private boolean isShutdown = false;
 
-    private final String version;
-
     // Singleton, private the constructor.
     private ServiceDirectoryImpl() {
-        String version = "Unknown";
-        try {
-            InputStream input = ServiceDirectoryImpl.class.getClassLoader()
-                    .getResourceAsStream("version.txt");
-            if (input != null) {
-                Properties prop = new Properties();
-                prop.load(input);
-                input.close();
-
-                if (prop.containsKey("version")) {
-                    version = prop.getProperty("version");
-                }
-            }
-        } catch (IOException e) {
-            LOGGER.error("Fail to get ServiceDirectory API version.",e);
-        }
-        this.version = version;
 
         String custProvider = getServiceDirectoryConfig()
                 .getString(SD_API_SERVICE_DIRECTORY_MANAGER_FACTORY_PROVIDER_PROPERTY);
@@ -145,17 +126,6 @@ public class ServiceDirectoryImpl {
      */
     public LookupManager getLookupManager() throws ServiceException{
         return getServiceDirectoryManagerFactory().getLookupManager();
-    }
-
-
-    /**
-     * Get the Service Directory API version
-     * 
-     * @return
-     *        the Service Directory API version 
-     */
-    public String getVersion() {
-        return this.version;
     }
 
     /**

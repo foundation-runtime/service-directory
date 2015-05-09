@@ -241,23 +241,7 @@ public class DirectoryServiceRestfulClientTest {
 
         final Map<String, OperationResult<String>> result = new HashMap<>();
         result.put("odrm/192.168.2.3", new OperationResult<>(true, "it is OK", null));
-        /*
-        HttpUtils utils = new HttpUtils(){
-            @Override
-            public HttpResponse putJson(String urlStr, String body)
-                    throws IOException {
 
-                Assert.assertEquals("http://vcsdirsvc:2013/service/heartbeat", urlStr);
-                Map<String, ServiceInstanceHeartbeat> hbs = deserialize(body.getBytes(), new TypeReference<Map<String, ServiceInstanceHeartbeat>>(){});
-                Assert.assertEquals(hbs.size(), 1);
-                Assert.assertEquals(hbs.get("odrm/192.168.2.3-8901").getServiceName(), "odrm");
-                Assert.assertEquals(hbs.get("odrm/192.168.2.3-8901").getProviderId(), "192.168.2.3-8901");
-
-                return new HttpResponse(200, new String(serialize(result)));
-
-            }
-        };
-        */
         final DirectoryInvoker mockInvoker = new DirectoryHttpInvoker() {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
