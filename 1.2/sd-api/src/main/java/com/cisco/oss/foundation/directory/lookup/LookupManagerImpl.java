@@ -141,7 +141,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
                     "ServiceInstanceQuery");
         }
         ServiceInstanceLoadBalancer lb = lbManager.getDefaultLoadBalancer();
-        return lb.vote(queryInstancesByName(serviceName,query));
+        return lb.vote(queryInstancesByName(serviceName, query));
     }
 
     /**
@@ -331,6 +331,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
      *         the service name.
      * @param handler
      *         the NotificationHandler for the service.
+     * @deprecated
      */
     @Override
     public void addNotificationHandler(String serviceName, NotificationHandler handler) throws ServiceException {
@@ -357,6 +358,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
      *         the service name.
      * @param handler
      *         the NotificationHandler for the service.
+     * @deprecated
      */
     @Override
     public void removeNotificationHandler(String serviceName, NotificationHandler handler) throws ServiceException {
@@ -372,14 +374,57 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
         getLookupService().removeNotificationHandler(serviceName, handler);
     }
 
+    /**
+     * Add a ServiceInstanceChangeListener to the Service.
+     *
+     * This method will check the duplicated listener for the serviceName, if the listener
+     * already exists for the serviceName, do nothing.
+     *
+     * Throws IllegalArgumentException if serviceName or listener is null.
+     *
+     * @param serviceName
+     *          the service name
+     * @param listener
+     *          the ServiceInstanceChangeListener for the service
+     * @throws ServiceException
+     */
     @Override
     public void addInstanceChangeListener(String serviceName, ServiceInstanceChangeListener listener) throws ServiceException {
-        throw new UnsupportedOperationException();
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateServiceName(serviceName);
+        if (listener == null) {
+            throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
+                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR.getMessageTemplate(),
+                    "ServiceInstanceChangeListener");
+        }
+        ModelService service = getLookupService().getModelService(serviceName);
+        if (service == null) {
+            throw new ServiceException(ErrorCode.SERVICE_NOT_EXIST,ErrorCode.SERVICE_NOT_EXIST.getMessageTemplate(),serviceName);
+        }
+        getLookupService().addInstanceChangeListener(serviceName, listener);
     }
 
+    /**
+     * Remove a ServiceInstanceChangeListener from the Service.
+     *
+     * Throws IllegalArgumentException if serviceName or listener is null.
+     * @param serviceName
+     *          the service name
+     * @param listener
+     *          the ServiceInstanceChangeListener for the service
+     * @throws ServiceException
+     */
     @Override
     public void removeInstanceChangeListener(String serviceName, ServiceInstanceChangeListener listener) throws ServiceException {
-        throw new UnsupportedOperationException();
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateServiceName(serviceName);
+        if (listener == null) {
+            throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
+                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR.getMessageTemplate(),
+                    "ServiceInstanceChangeListener");
+        }
+
+        getLookupService().removeInstanceChangeListener(serviceName, listener);
     }
 
     /**

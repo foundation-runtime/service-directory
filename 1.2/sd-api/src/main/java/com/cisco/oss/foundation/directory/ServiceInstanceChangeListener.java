@@ -10,6 +10,8 @@ import static com.cisco.oss.foundation.directory.entity.InstanceChange.*;
  *
  * @see InstanceChange
  * @see InstanceChange.ChangeType
+ *
+ * @since 1.2
  */
 public interface ServiceInstanceChangeListener {
    /**

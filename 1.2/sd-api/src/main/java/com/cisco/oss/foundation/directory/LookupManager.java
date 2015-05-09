@@ -201,7 +201,32 @@ public interface LookupManager extends AutoCloseable {
      */
     public void removeNotificationHandler(String serviceName, NotificationHandler handler) throws ServiceException ;
 
+    /**
+     * Add a ServiceInstanceChangeListener to the Service.
+     *
+     * This method will check the duplicated listener for the serviceName, if the listener
+     * already exists for the serviceName, do nothing.
+     *
+     * Throws IllegalArgumentException if serviceName or listener is null.
+     *
+     * @param serviceName
+     *          the service name
+     * @param listener
+     *          the ServiceInstanceChangeListener for the service
+     * @throws ServiceException
+     */
     void addInstanceChangeListener(String serviceName, ServiceInstanceChangeListener listener) throws ServiceException;
+
+    /**
+     * Remove a ServiceInstanceChangeListener from the Service.
+     *
+     * Throws IllegalArgumentException if serviceName or listener is null.
+     * @param serviceName
+     *          the service name
+     * @param listener
+     *          the ServiceInstanceChangeListener for the service
+     * @throws ServiceException
+     */
     void removeInstanceChangeListener(String serviceName, ServiceInstanceChangeListener listener) throws ServiceException;
 
 

@@ -35,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.cisco.oss.foundation.directory.NotificationHandler;
+import com.cisco.oss.foundation.directory.ServiceInstanceChangeListener;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.entity.InstanceChange;
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
@@ -44,10 +45,12 @@ import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
+import com.cisco.oss.foundation.directory.impl.InstanceChangeAdapter;
 import com.cisco.oss.foundation.directory.impl.ServiceDirectoryService;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 
 import static com.cisco.oss.foundation.directory.entity.InstanceChange.ChangeType.Status;
+import static com.cisco.oss.foundation.directory.entity.InstanceChange.toServiceInstanceChange;
 
 /**
  * It is the Directory LookupService to perform the lookup functionality.
@@ -66,9 +69,9 @@ public class DirectoryLookupService extends ServiceDirectoryService {
     private final DirectoryServiceClient directoryServiceClient;
 
     /**
-     * The Service NotificationHandler Map.
+     * The Service Instance changes listeners Map.
      */
-    private final Map<String, List<NotificationHandler>> notificationHandlers = new HashMap<>();
+    private final Map<String, List<ServiceInstanceChangeListener>> changeListeners = new HashMap<>();
 
 
     /**
@@ -119,6 +122,9 @@ public class DirectoryLookupService extends ServiceDirectoryService {
         LOGGER.info("Service Instances Changes Checking Task is started");
     }
 
+
+
+
     private class ChangesCheckTask implements Runnable {
         // the time-mills when the task is initialized
         private final long INIT_TIME_MILLS;
@@ -147,8 +153,8 @@ public class DirectoryLookupService extends ServiceDirectoryService {
         @Override
         public void run() {
             List<String> serviceList = new ArrayList<>();
-            synchronized (notificationHandlers) {
-                serviceList.addAll(notificationHandlers.keySet());
+            synchronized (changeListeners) {
+                serviceList.addAll(changeListeners.keySet());
             }
 
             //check if has service name need to be removed in last changed time map
@@ -165,21 +171,14 @@ public class DirectoryLookupService extends ServiceDirectoryService {
                         //oldest first
                         Collections.sort(changes, InstanceChange.Comparator);
                         for (InstanceChange<ModelServiceInstance> c : changes) {
-                            if (c.changeType == Status) {
-                                //not null grantee
-                                if (c.to.getStatus() == OperationalStatus.UP) {
-                                    onServiceInstanceAvailable(ServiceInstanceUtils.toServiceInstance(c.to));
-                                } else if (c.to.getStatus() == OperationalStatus.DOWN) {
-                                    onServiceInstanceUnavailable(ServiceInstanceUtils.toServiceInstance(c.to));
+                            List<ServiceInstanceChangeListener> listenerList = new ArrayList<>();
+                            synchronized (changeListeners) {
+                                if (changeListeners.containsKey(c.serviceName)) {
+                                    listenerList.addAll(changeListeners.get(c.serviceName));
                                 }
-                            } else {
-                                //TODO, according to the current interface
-                                //      can't notify the unregister change.
-                                if (c.to!=null){
-                                    onServiceInstanceChanged(ServiceInstanceUtils.toServiceInstance(c.to));
-                                }else{
-                                    onServiceInstanceChanged(ServiceInstanceUtils.toServiceInstance(c.from)); //the unregister
-                                }
+                            }
+                            for (ServiceInstanceChangeListener l : listenerList) {
+                                l.onChange(c.changeType,toServiceInstanceChange(c));
                             }
                         }
                         Collections.sort(changes,InstanceChange.ReverseComparator);
@@ -217,7 +216,7 @@ public class DirectoryLookupService extends ServiceDirectoryService {
     }
 
     /**
-     * Get ModelMetadataKey, which is an object holding a list of service instances that 
+     * Get ModelMetadataKey, which is an object holding a list of service instances that
      * contain the key name in the service metadata.
      *
      * @param keyName
@@ -353,11 +352,54 @@ public class DirectoryLookupService extends ServiceDirectoryService {
                     "NotificationHandler");
         }
 
-        synchronized (notificationHandlers) {
-            if (!notificationHandlers.containsKey(serviceName)) {
-                notificationHandlers.put(serviceName, new ArrayList<NotificationHandler>());
+        synchronized (changeListeners) {
+            if (!changeListeners.containsKey(serviceName)) {
+                changeListeners.put(serviceName, new ArrayList<ServiceInstanceChangeListener>());
             }
-            notificationHandlers.get(serviceName).add(handler);
+            List<ServiceInstanceChangeListener> listeners = changeListeners.get(serviceName);
+            if (!listeners.isEmpty()){
+                for(ServiceInstanceChangeListener listener : listeners){
+                    if (listener instanceof InstanceChangeAdapter
+                            && ((InstanceChangeAdapter)listener).getHandler()==handler){
+                            //exist, log error and return
+                            LOGGER.error("Try to register a handler {} that has already been registered.",handler);
+                            return;
+                    }
+
+                }
+            }
+            changeListeners.get(serviceName).add(new InstanceChangeAdapter(handler));
+        }
+
+    }
+
+    /**
+     * Add a ServiceInstanceChangeListener to the Service.
+     *
+     * This method will check the duplicated listener for the serviceName, if the listener
+     * already exists for the serviceName, do nothing.
+     *
+     * Throws IllegalArgumentException if serviceName or listener is null.
+     *
+     * @param serviceName
+     *          the service name
+     * @param listener
+     *          the ServiceInstanceChangeListener for the service
+     */
+    public void addInstanceChangeListener(String serviceName, ServiceInstanceChangeListener listener) {
+        ServiceInstanceUtils.validateServiceName(serviceName);
+        if (listener == null) {
+            throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
+                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR.getMessageTemplate(),
+                    "ServiceInstanceChangeListener");
+        }
+        synchronized (changeListeners) {
+            if (!changeListeners.containsKey(serviceName)) {
+                changeListeners.put(serviceName, new ArrayList<ServiceInstanceChangeListener>());
+            }
+            if (!changeListeners.get(serviceName).contains(listener)) {
+                changeListeners.get(serviceName).add(listener);
+            }
         }
     }
 
@@ -378,17 +420,58 @@ public class DirectoryLookupService extends ServiceDirectoryService {
                     "NotificationHandler");
         }
 
-        synchronized (notificationHandlers) {
-            if (notificationHandlers.containsKey(serviceName)) {
-                List<NotificationHandler> list = notificationHandlers.get(serviceName);
-                if (list.contains(handler)) {
-                    list.remove(handler);
-                } else {
+        synchronized (changeListeners) {
+            if (changeListeners.containsKey(serviceName)) {
+                List<ServiceInstanceChangeListener> list = changeListeners.get(serviceName);
+                boolean found = false;
+                for (ServiceInstanceChangeListener listener : list){
+                   if (listener instanceof InstanceChangeAdapter
+                           && ((InstanceChangeAdapter)listener).getHandler()==handler) {
+                       list.remove(listener);
+                       found = true;
+                       break;
+                   }
+                }
+                if (!found){
                     //TODO, might a specified error code for handler not found.
                     throw new ServiceException(ErrorCode.GENERAL_ERROR, "NotificationHandler not exist, It may has been removed or has not been registered before.");
                 }
                 if (list.isEmpty()) {
-                    notificationHandlers.remove(serviceName);
+                    changeListeners.remove(serviceName);
+                }
+            } else {
+                throw new ServiceException(ErrorCode.SERVICE_NOT_EXIST, ErrorCode.SERVICE_NOT_EXIST.getMessageTemplate(), serviceName);
+            }
+        }
+    }
+
+
+    /**
+     * Remove a ServiceInstanceChangeListener from the Service.
+     *
+     * Throws IllegalArgumentException if serviceName or listener is null.
+     * @param serviceName
+     *          the service name
+     * @param listener
+     *          the ServiceInstanceChangeListener for the service
+     */
+    public void removeInstanceChangeListener(String serviceName, ServiceInstanceChangeListener listener) {
+        ServiceInstanceUtils.validateServiceName(serviceName);
+        if (listener == null) {
+            throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
+                    ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR.getMessageTemplate(),
+                    "ServiceInstanceChangeListener");
+        }
+        synchronized (changeListeners) {
+            if (changeListeners.containsKey(serviceName)) {
+                List<ServiceInstanceChangeListener> list = changeListeners.get(serviceName);
+                if (list.contains(listener)){
+                    list.remove(listener);
+                }else{
+                    throw new ServiceException(ErrorCode.GENERAL_ERROR, "ServiceInstanceChangeListener not exist, It may has been removed or has not been registered before.");
+                }
+                if (list.isEmpty()) {
+                    changeListeners.remove(serviceName);
                 }
             } else {
                 throw new ServiceException(ErrorCode.SERVICE_NOT_EXIST, ErrorCode.SERVICE_NOT_EXIST.getMessageTemplate(), serviceName);
@@ -406,63 +489,4 @@ public class DirectoryLookupService extends ServiceDirectoryService {
         return this.directoryServiceClient;
     }
 
-    /**
-     * Invoke the serviceInstanceUnavailable of the NotificationHandler.
-     *
-     * @param instance
-     *         the ServiceInstance.
-     */
-    protected void onServiceInstanceUnavailable(ServiceInstance instance) {
-        if (instance == null) {
-            return;
-        }
-        String serviceName = instance.getServiceName();
-        List<NotificationHandler> handlerList = new ArrayList<>();
-        synchronized (notificationHandlers) {
-            if (notificationHandlers.containsKey(serviceName)) {
-                handlerList.addAll(notificationHandlers.get(serviceName));
-            }
-        }
-        for (NotificationHandler h : handlerList) {
-            h.serviceInstanceUnavailable(instance);
-        }
-    }
-
-    /**
-     * Invoke the serviceInstanceChange of the NotificationHandler.
-     *
-     * @param instance
-     *         the ServiceInstance.
-     */
-    protected void onServiceInstanceChanged(ServiceInstance instance) {
-        String serviceName = instance.getServiceName();
-        List<NotificationHandler> handlerList = new ArrayList<>();
-        synchronized (notificationHandlers) {
-            if (notificationHandlers.containsKey(serviceName)) {
-                handlerList.addAll(notificationHandlers.get(serviceName));
-            }
-        }
-        for (NotificationHandler h : handlerList) {
-            h.serviceInstanceChange(instance);
-        }
-    }
-
-    /**
-     * Invoke the serviceInstanceAvailable of the NotificationHandler.
-     *
-     * @param instance
-     *         the ServiceInstance.
-     */
-    protected void onServiceInstanceAvailable(ServiceInstance instance) {
-        String serviceName = instance.getServiceName();
-        List<NotificationHandler> handlerList = new ArrayList<>();
-        synchronized (notificationHandlers) {
-            if (notificationHandlers.containsKey(serviceName)) {
-                handlerList.addAll(notificationHandlers.get(serviceName));
-            }
-        }
-        for (NotificationHandler h : handlerList) {
-            h.serviceInstanceAvailable(instance);
-        }
-    }
 }

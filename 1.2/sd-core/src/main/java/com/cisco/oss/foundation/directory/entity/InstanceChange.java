@@ -6,8 +6,12 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import static com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils.toServiceInstance;
+
 /**
- * The class record the service instance change in Service Directory..
+ * The class record the service instance change in Service Directory.
+ *
+ * @since 1.2
  */
 public class InstanceChange<T> {
     public enum ChangeType {
@@ -68,4 +72,13 @@ public class InstanceChange<T> {
             return Comparator.compare(o2, o1);
         }
     };
+
+    public static InstanceChange<ServiceInstance> toServiceInstanceChange(InstanceChange<ModelServiceInstance> modelInstanceChange){
+        Objects.requireNonNull(modelInstanceChange);
+        return new InstanceChange<ServiceInstance>(modelInstanceChange.changedTimeMills,
+                modelInstanceChange.serviceName,
+                modelInstanceChange.changeType,
+                modelInstanceChange.from==null?null:toServiceInstance(modelInstanceChange.from),
+                modelInstanceChange.to==null?null:toServiceInstance(modelInstanceChange.to));
+    }
 }

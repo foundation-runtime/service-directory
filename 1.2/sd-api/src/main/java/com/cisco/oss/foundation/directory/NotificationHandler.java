@@ -24,8 +24,9 @@ import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 /**
  * The callback interface when the service instance status is changed.
  *
- *
+ * @deprecated replaced by {@link ServiceInstanceChangeListener}
  */
+@Deprecated
 public interface NotificationHandler {
     /**
      * A service instance is available
