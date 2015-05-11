@@ -15,7 +15,13 @@
  */
 package com.cisco.oss.foundation.directory.entity;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * The heartbeat info of the ServiceInstance.
@@ -24,8 +30,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  * ServiceInstanceHeartbeat to ServiceDirectory server to update the heartbeat
  * of the ServiceInstance.
  *
- *
  */
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ServiceInstanceHeartbeat {
     /**
      * The service name of the Instance.
@@ -37,11 +44,18 @@ public class ServiceInstanceHeartbeat {
      */
     private String providerAddress;
 
+
+    /**
+     * The providerId (for backward compatible)
+     */
+    @Deprecated
+    @JsonProperty("providerId")
+    private String providerId;
+
     /**
      * Constructor.
      */
     public ServiceInstanceHeartbeat() {
-
     }
 
     /**
@@ -52,9 +66,11 @@ public class ServiceInstanceHeartbeat {
      * @param providerAddress
      *            the provider address.
      */
-    public ServiceInstanceHeartbeat(String serviceName, String providerAddress) {
+    @JsonCreator
+    public ServiceInstanceHeartbeat(@JsonProperty("serviceName")String serviceName, @JsonProperty("providerAddress")String providerAddress) {
         this.serviceName = serviceName;
         this.providerAddress = providerAddress;
+        this.providerId = providerAddress;
     }
 
     /**
@@ -72,7 +88,31 @@ public class ServiceInstanceHeartbeat {
      * @return the providerAddress.
      */
     public String getProviderAddress() {
+        if (providerAddress!=null) {
+            Matcher matcher = HOST_PORT_PATTERN.matcher(providerAddress);
+            if (matcher.matches() && isValidPort(matcher.group(2))) {
+                return matcher.group(1);
+            }
+        }else if(providerId!=null){
+            Matcher matcher = HOST_PORT_PATTERN.matcher(providerId);
+            if (matcher.matches() && isValidPort(matcher.group(2))) {
+                return matcher.group(1);
+            }
+        }
         return providerAddress;
+    }
+
+    @JsonIgnore
+    private static final Pattern HOST_PORT_PATTERN = Pattern.compile("^(.*)?-(\\d*)?$");
+
+    @JsonIgnore
+    private static boolean isValidPort(String portStr) {
+        try {
+            int port = Integer.parseInt(portStr);
+            return port >= 0 && port <= 65535;
+        }catch (NumberFormatException e){
+            return false;
+        }
     }
 
     /**
@@ -80,9 +120,8 @@ public class ServiceInstanceHeartbeat {
      * @deprecated use {@link #getProviderAddress()}
      */
     @Deprecated
-    @JsonIgnore
     public String getProviderId(){
-        return getProviderAddress();
+        return providerId;
     }
 
     /**
@@ -113,26 +152,4 @@ public class ServiceInstanceHeartbeat {
         return "serviceName=" + serviceName + ", providerAddress=" + providerAddress;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean equals(Object obj) {
-        if (obj != null && obj instanceof ServiceInstanceHeartbeat) {
-            ServiceInstanceHeartbeat hb = (ServiceInstanceHeartbeat) obj;
-            return (serviceName.equals(hb.getServiceName()) && providerAddress
-                    .equals(hb.getProviderAddress()));
-        }
-        return false;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public int hashCode() {
-        int result = providerAddress != null ? providerAddress.hashCode() : 0;
-        result = 31 * result + serviceName != null ? serviceName.hashCode() : 0;
-        return result;
-    }
 }

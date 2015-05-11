@@ -235,6 +235,25 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
      * {@inheritDoc}
      */
     @Override
+    public ServiceInstance getInstanceByAddress(String serviceName, String instanceAddress)
+            throws ServiceException {
+
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateServiceName(serviceName);
+        ServiceInstanceUtils.validateAddress(instanceAddress);
+
+        ModelServiceInstance instance = getLookupService().getModelServiceInstanceByAddress(serviceName, instanceAddress);
+
+        if (instance!=null) {
+            return ServiceInstanceUtils.toServiceInstance(instance);
+        }
+        return null;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public List<ServiceInstance> getAllInstances(String serviceName)
             throws ServiceException {
 

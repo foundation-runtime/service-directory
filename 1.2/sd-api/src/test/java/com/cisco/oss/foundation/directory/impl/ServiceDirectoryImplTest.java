@@ -258,6 +258,11 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory 
         }
 
         @Override
+        public ServiceInstance getInstanceByAddress(String serviceName, String instanceAddress) throws ServiceException {
+            return null;
+        }
+
+        @Override
         public List<ServiceInstance> getAllInstances(String serviceName)
                 throws ServiceException {
             return null;

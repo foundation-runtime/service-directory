@@ -113,13 +113,32 @@ public interface LookupManager extends AutoCloseable {
      * @param serviceName
      *         the service name.
      * @param instanceId
-     *         the istanceId
+     *         the instanceId
      * @return
      *         the ServiceInstance.
      * @throws ServiceException
+     *
+     * @deprecated the providerId is used as instanceId in the API prior to 1.2. the method is replaced by {@link #getInstanceByAddress}
      */
     @Deprecated
     public ServiceInstance getInstance(String serviceName, String instanceId) throws ServiceException;
+
+
+    /**
+     * Get a ServiceInstance.
+     *
+     * It returns a ServiceInstances of the Service including the ServiceInstance of OperationalStatus DOWN.
+     *
+     * @param serviceName
+     *         the service name.
+     * @param instanceAddress
+     *         the instanceAddress
+     * @return
+     *         the ServiceInstance.
+     * @throws ServiceException
+     *
+     */
+    public ServiceInstance getInstanceByAddress(String serviceName, String instanceAddress) throws ServiceException;
 
     /**
      * Get all ServiceInstances of the target Service, including the DOWN ServiceInstance.

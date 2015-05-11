@@ -237,6 +237,7 @@ public class DirectoryLookupService extends ServiceDirectoryService {
      *         the instanceId.
      * @return
      *         the ModelServiceInstance.
+     * @deprecated replaced by {@link #getModelServiceInstanceByAddress}
      */
     @Deprecated
     public ModelServiceInstance getModelServiceInstance(String serviceName, String instanceId) {
@@ -244,6 +245,32 @@ public class DirectoryLookupService extends ServiceDirectoryService {
         if (service != null && service.getServiceInstances() != null) {
             for (ModelServiceInstance instance : service.getServiceInstances()) {
                 if (instance.getInstanceId().equals(instanceId)) {
+                    return instance;
+                }else if (instanceId.split("-")[0].equals(instance.getAddress())){
+                    //for 1.2 API old compatible, the input might be a providerId in "address-port" format
+                    return instance;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get the ModelServiceInstance by serviceName and instanceAddress.
+     *
+     * @param serviceName
+     *         the service name.
+     * @param instanceAddress
+     *         the instanceAddress.
+     * @return
+     *         the ModelServiceInstance.
+     * @since 1.2
+     */
+    public ModelServiceInstance getModelServiceInstanceByAddress(String serviceName, String instanceAddress) {
+        ModelService service = getModelService(serviceName);
+        if (service != null && service.getServiceInstances() != null) {
+            for (ModelServiceInstance instance : service.getServiceInstances()) {
+                if (instance.getAddress().equals(instanceAddress)) {
                     return instance;
                 }
             }
