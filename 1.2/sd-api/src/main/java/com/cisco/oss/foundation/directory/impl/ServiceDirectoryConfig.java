@@ -15,7 +15,7 @@ import com.cisco.oss.foundation.directory.ServiceDirectory;
  * @since 1.2
  */
 public final class ServiceDirectoryConfig {
-    //TODO, move all config key here !
+
     /**
      * The LookupManager cache enabled property.
      */

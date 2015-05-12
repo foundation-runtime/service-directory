@@ -66,8 +66,7 @@ public class NotificationTest {
                 // the handler is not myHandler
                 lookup.removeNotificationHandler("foo", mock(NotificationHandler.class));
             }catch(ServiceException e){
-                //TODO, might a specified error code for handler not found.
-                assertEquals(ErrorCode.GENERAL_ERROR,e.getErrorCode());
+                assertEquals(ErrorCode.NOTIFICATION_HANDLER_NOT_EXIST,e.getErrorCode());
             }
         }
     }

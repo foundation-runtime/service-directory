@@ -64,7 +64,7 @@ public class ServiceInstanceChangeListenerTest {
                 // the handler is not myHandler
                 lookup.removeInstanceChangeListener("foo", mock(ServiceInstanceChangeListener.class));
             }catch(ServiceException e){
-                assertEquals(ErrorCode.GENERAL_ERROR,e.getErrorCode());
+                assertEquals(ErrorCode.SERVICE_INSTANCE_LISTENER_NOT_EXIST,e.getErrorCode());
             }
         }
     }

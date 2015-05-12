@@ -55,7 +55,6 @@ public class ExceptionHandleTestCase  {
         try {
             ServiceDirectory.reinitServiceDirectoryManagerFactory(new DefaultServiceDirectoryManagerFactory());
         } catch (ServiceException e1) {
-            // TODO Auto-generated catch block
             e1.printStackTrace();
         }
 

@@ -460,8 +460,7 @@ public class DirectoryLookupService extends ServiceDirectoryService {
                    }
                 }
                 if (!found){
-                    //TODO, might a specified error code for handler not found.
-                    throw new ServiceException(ErrorCode.GENERAL_ERROR, "NotificationHandler not exist, It may has been removed or has not been registered before.");
+                    throw new ServiceException(ErrorCode.NOTIFICATION_HANDLER_NOT_EXIST);
                 }
                 if (list.isEmpty()) {
                     changeListeners.remove(serviceName);
@@ -495,7 +494,7 @@ public class DirectoryLookupService extends ServiceDirectoryService {
                 if (list.contains(listener)){
                     list.remove(listener);
                 }else{
-                    throw new ServiceException(ErrorCode.GENERAL_ERROR, "ServiceInstanceChangeListener not exist, It may has been removed or has not been registered before.");
+                    throw new ServiceException(ErrorCode.SERVICE_INSTANCE_LISTENER_NOT_EXIST);
                 }
                 if (list.isEmpty()) {
                     changeListeners.remove(serviceName);

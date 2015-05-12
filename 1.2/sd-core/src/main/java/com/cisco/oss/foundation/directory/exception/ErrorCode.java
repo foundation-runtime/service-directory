@@ -213,8 +213,19 @@ public enum ErrorCode {
     /**
      * Error when try to close a manager
      */
-    SERVICE_DIRECTORY_MANAGER_CLOSE_ERROR("500.12","Error when try to close %s.");
+    SERVICE_DIRECTORY_MANAGER_CLOSE_ERROR("500.12","Error when try to close %s."),
 
+    /**
+     * Error when unregister a not-exist NotificationHandler
+     */
+    NOTIFICATION_HANDLER_NOT_EXIST("500.13",
+            "NotificationHandler not exist, It may has been removed or has not been registered before."),
+
+    /**
+     * Error when unregister a not-exist ServiceInstanceChangeListener
+     */
+    SERVICE_INSTANCE_LISTENER_NOT_EXIST("500.14",
+            "ServiceInstanceChangeListener not exist, It may has been removed or has not been registered before.");
     /**
      * The Error code
      */
@@ -231,7 +242,7 @@ public enum ErrorCode {
      * @param code
      *            the exception code.
      */
-    private ErrorCode(String code, String template) {
+    ErrorCode(String code, String template) {
         this.code = code;
         this.msgTemplate = template;
     }
