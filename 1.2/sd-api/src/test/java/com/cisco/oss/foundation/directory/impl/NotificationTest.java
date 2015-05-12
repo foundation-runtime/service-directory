@@ -1,5 +1,7 @@
 package com.cisco.oss.foundation.directory.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -72,26 +74,27 @@ public class NotificationTest {
 
     @Test
     public void testNotifyOnAvailable() throws InterruptedException {
-        final CountDownLatch countDown = new CountDownLatch(6);
+        final CountDownLatch countDown = new CountDownLatch(2);
+        final List<ServiceInstance> instanceList = new ArrayList<>();
         NotificationHandler myHandler = new NotificationHandler() {
             @Override
             public void serviceInstanceAvailable(ServiceInstance service) {
                 System.out.printf("serviceInstance %s is Available. Status is %s \n",service,service.getStatus());
-                countDown.countDown(); //Inst1=UP, Inst2-UP
+                instanceList.add(service); //Inst1=UP, Inst2-UP
             }
 
             @Override
             public void serviceInstanceUnavailable(ServiceInstance service) {
                 System.out.printf("serviceInstance %s is Unavailable. Status is %s \n",service,service.getStatus());
-                countDown.countDown(); //1-DOWN,2-DOWN
+                instanceList.add(service); //1-DOWN,2-DOWN
 
             }
 
             @Override
             public void serviceInstanceChange(ServiceInstance service) {
                 System.out.printf("serviceInstance %s is changed \n",service);
-                countDown.countDown(); //2-add and 2-delete
-
+                instanceList.add(service); //2-add and 2-delete
+                countDown.countDown();
             }
         };
         try (LookupManager lookup = factory.getLookupManager();RegistrationManager reg = factory.getRegistrationManager()){
@@ -108,7 +111,7 @@ public class NotificationTest {
                     OperationalStatus.DOWN, null));
             reg.updateServiceOperationalStatus("foo", "192.168.1.2", OperationalStatus.UP);
             reg.unregisterService("foo", "192.168.1.2");
-            assertTrue("Shouldn't wait more than 5 sec",countDown.await(5, TimeUnit.SECONDS)); //
+            assertTrue("Shouldn't wait more than 5 sec. countDown=" + countDown.getCount(), countDown.await(5, TimeUnit.SECONDS)); //
         }
     }
 }
