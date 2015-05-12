@@ -207,8 +207,13 @@ public enum ErrorCode {
      * ServiceDirectoryManagerFactory already closed.
      */
     SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED("500.11",
-            "The ServiceDirectoryManagerFactory already closed.");
+            "The ServiceDirectoryManagerFactory already closed."),
 
+
+    /**
+     * Error when try to close a manager
+     */
+    SERVICE_DIRECTORY_MANAGER_CLOSE_ERROR("500.12","Error when try to close %s.");
 
     /**
      * The Error code

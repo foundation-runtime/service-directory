@@ -45,7 +45,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
     private final ConcurrentMap<String, ConcurrentMap<String, ModelServiceInstance>> inMemoryRegistry = new
             ConcurrentHashMap<>();
 
-    private static final int MAX_CHARGES_HISTORY_SIZE = 500; //TODO, use config
+    private static final int MAX_CHARGES_HISTORY_SIZE = 100;
 
     private final BlockingQueue<InstanceChange<ModelServiceInstance>> changeHistory =
             new ArrayBlockingQueue<>(MAX_CHARGES_HISTORY_SIZE);
@@ -73,16 +73,11 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
     // ----------------------
     //  internal helper methods to convert between model-instance and provided-instance
     // ----------------------
-    //TODO refactor the sd-core's ServiceInstanceUtils,
-    //TODO refactor ModelService/ModelServiceInstance itself
-    //TODO merge the instance/modelInstance conversion methods when we refactor model.
     //for now, use the internal methods created here
     private static ModelService _newModelService(String serviceName) {
-        // TODO might changed in the future
         // in current sd-service implementation, the 'id' equals 'serviceName'
-        // so we keep the pattern,
-        // TODO the create/modify time for service are redundancies, in instance level will do
-        // use 0L 1970-Jun-01 as created time. (should not depends on it)
+        // so we keep the pattern,the create/modify time for service are redundancies,
+        // in instance level will use 0L 1970-Jun-01 as created time. (should not depends on it)
         return new ModelService(serviceName, serviceName, new Date(0L));
 
     }
@@ -117,26 +112,27 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
         mInstance.setStatus(instance.getStatus());
         mInstance.setUri(instance.getUri());
 
-        //TODO, refactor the model, the current implementation 'id' and 'instanceId' both => providerId
         mInstance.setId(instance.getAddress());
+        // use address as instanceId
         mInstance.setInstanceId(instance.getAddress());
 
-        //TODO, refactor the model, now use the monitor enabled by default
+        // use the monitor enabled by default
         mInstance.setMonitorEnabled(true);
 
-        //TODO, refactor the model,
+        // Although problems in the model,
         // 1.) the xxxTime need not to be declared as Date, use long as milli-secs is enough
-        // 2.) create-time should never be changed, so need to be final
+        // 2.) create-time should never be changed, good to be final
+        // To maintain the compatible in JSON level. we need to keep using Date in 1.x until 2.0 when old protocol
+        // compatibility is not a requirement. or we can re-define the model in 2.0
         final long now = System.currentTimeMillis();
         mInstance.setCreateTime(new Date(now));
         mInstance.setModifiedTime(new Date(now));
 
-        //TODO, refactor the model, need to decide how to handle the field
         //now use '1970-Jan-01' as initial value.
         mInstance.setHeartbeatTime(new Date(0L));
 
-        //TODO, do we need to support metadata?
-        //for now, we don't need support metadata
+        // TODO support MetaData
+        //for now, we don't need support metadata in memory client
         mInstance.setMetadata(Collections.<String, String>emptyMap());
 
         return mInstance;
@@ -145,7 +141,6 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
     private ProvidedServiceInstance _toProvidedInstance(ModelServiceInstance mInstance) {
         return new ProvidedServiceInstance(mInstance.getServiceName(), mInstance.getAddress(),
                 mInstance.getPort(), mInstance.getUri(), mInstance.getStatus(),
-                //TODO, do not support metadata for now
                 Collections.<String, String>emptyMap());
     }
 
@@ -312,11 +307,9 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
             String providedAddress = heartbeat.getProviderAddress();
             ModelServiceInstance instance = _getInstance(serviceName, providedAddress);
             if (instance != null) {
-                //TODO, refactoring model
                 final long now = System.currentTimeMillis();
                 instance.setHeartbeatTime(new Date(now));
                 instance.setModifiedTime(new Date(now));
-                //TODO, refactor OperationResult structure
                 result.put(id, new OperationResult<String>(true, null, null));
                 LOGGER.debug("heart beat send ok for {}", instance);
             } else {
@@ -380,13 +373,11 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
 
     @Override
     public ModelMetadataKey getMetadataKey(String keyName) {
-        //TODO, should we support metadata?
         throw new UnsupportedOperationException("get metadata is not supported now");
     }
 
     @Override
     public Map<String, OperationResult<ModelMetadataKey>> getChangedMetadataKeys(Map<String, ModelMetadataKey> keys) {
-        //TODO, should we support metadata?
         throw new UnsupportedOperationException("get metadata change is not supported now");
     }
 

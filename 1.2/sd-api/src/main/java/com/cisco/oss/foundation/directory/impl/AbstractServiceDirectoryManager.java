@@ -66,9 +66,9 @@ public abstract class AbstractServiceDirectoryManager implements Stoppable, Auto
         try {
             fireClose();
         }catch(Throwable cause){
-            //TODO, close should have an ERROR Code
             LOGGER.error("{} is failed to close", this);
-            throw new ServiceException(ErrorCode.GENERAL_ERROR,cause,"STOP ERROR when try to close %s",this);
+            throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_MANAGER_CLOSE_ERROR,cause,
+                    ErrorCode.SERVICE_DIRECTORY_MANAGER_CLOSE_ERROR.getMessageTemplate(),this);
         }
         isClosed.set(true);
         LOGGER.info("{} is closed",this);

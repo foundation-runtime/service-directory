@@ -54,7 +54,7 @@ public class ConfigurableServiceDirectoryManagerFactory implements ServiceDirect
     }
 
     private final List<LookupManager> lookupManagerReferences = new ArrayList<>();
-    private final List<RegistrationManager> RegistrationManagerReferences = new ArrayList<>();
+    private final List<RegistrationManager> registrationManagerReferences = new ArrayList<>();
 
     private final CloseListener managerCloseListener = new CloseListener() {
         @Override
@@ -65,20 +65,24 @@ public class ConfigurableServiceDirectoryManagerFactory implements ServiceDirect
         @Override
         public void onManagerClose(AbstractServiceDirectoryManager manager) {
             if (manager instanceof LookupManager) {
-                synchronized (lookupManagerReferences) {
-                    if (lookupManagerReferences.contains(manager)) {
-                        lookupManagerReferences.remove(manager);
-                        manager.stop();
-                    }
-                    if (lookupManagerReferences.size() == 0) {
-                        // when all lookup manager closed, fire service close
-                        fireServiceClose(manager.getService());
-                    }
-                }
+                handleManager(lookupManagerReferences,manager);
             } else if (manager instanceof RegistrationManager) {
-                //TODO, handle Registration Mangers
+                handleManager(registrationManagerReferences,manager);
             } else {
                 throw new IllegalStateException("Unknown manager " + manager);
+            }
+        }
+
+        private <T extends AutoCloseable> void handleManager(List<T> mangerList, AbstractServiceDirectoryManager manager){
+            synchronized (mangerList) {
+                if (mangerList.contains(manager)) {
+                    mangerList.remove(manager);
+                    manager.stop();
+                }
+                if (mangerList.size() == 0) {
+                    // when all manager closed, fire service close
+                    fireServiceClose(manager.getService());
+                }
             }
         }
 
@@ -162,28 +166,27 @@ public class ConfigurableServiceDirectoryManagerFactory implements ServiceDirect
     }
 
     public LookupManager getLookupManager() throws ServiceException {
+        LookupManagerImpl lookupMgr;
         if (_config.isCacheEnabled()) {
-            //TODO, fix the force conversion
-            CachedLookupManagerImpl cachedMgr = new CachedLookupManagerImpl((CachedDirectoryLookupService) getLookupService());
-            cachedMgr.setCloseListener(managerCloseListener);
-            lookupManagerReferences.add(cachedMgr);
-            return cachedMgr;
+            lookupMgr = new CachedLookupManagerImpl((CachedDirectoryLookupService) getLookupService());
         } else {
-            LookupManagerImpl mgr = new LookupManagerImpl(getLookupService());
-            mgr.setCloseListener(managerCloseListener);
-            lookupManagerReferences.add(mgr);
-            return mgr;
+            lookupMgr = new LookupManagerImpl(getLookupService());
         }
+        lookupMgr.setCloseListener(managerCloseListener);
+        lookupManagerReferences.add(lookupMgr);
+        return lookupMgr;
     }
 
     public RegistrationManager getRegistrationManager() throws ServiceException {
-
+        RegistrationManagerImpl regMgr;
         if (_config.isHeartBeatEnabled()) {
-            //TODO, fix the conversion by extract interface
-            return new HeartbeatRegistrationManagerImpl((HeartbeatDirectoryRegistrationService) getRegistrationService());
+            regMgr = new HeartbeatRegistrationManagerImpl((HeartbeatDirectoryRegistrationService) getRegistrationService());
         } else {
-            return new RegistrationManagerImpl(getRegistrationService());
+            regMgr =  new RegistrationManagerImpl(getRegistrationService());
         }
+        regMgr.setCloseListener(managerCloseListener);
+        registrationManagerReferences.add(regMgr);
+        return regMgr;
     }
 
     @Override
@@ -201,7 +204,7 @@ public class ConfigurableServiceDirectoryManagerFactory implements ServiceDirect
         for (LookupManager lookup : new ArrayList<>(lookupManagerReferences)){
             lookup.close();
         }
-        for (RegistrationManager register : new ArrayList<>(RegistrationManagerReferences))
+        for (RegistrationManager register : new ArrayList<>(registrationManagerReferences))
         {
             register.close();
         }
