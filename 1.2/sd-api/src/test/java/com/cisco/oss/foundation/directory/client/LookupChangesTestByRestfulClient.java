@@ -30,7 +30,7 @@ public class LookupChangesTestByRestfulClient {
 
     private final static Logger LOG = LoggerFactory.getLogger(LookupChangesTestByRestfulClient.class);
 
-    private final DirectoryServiceClient restfulClient = new DirectoryServiceRestfulClient();
+    private final DirectoryServiceRestfulClient restfulClient = new DirectoryServiceRestfulClient();
 
     private final ModelServiceInstance instance;
 
@@ -47,20 +47,20 @@ public class LookupChangesTestByRestfulClient {
 
     @Before
     public void setUp(){
-        restfulClient.setInvoker(new DirectoryServiceRestfulClient.DirectoryHttpInvoker(){
+        restfulClient.setInvoker(new DirectoryServiceRestfulClient.DirectoryHttpInvoker() {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
                 LOG.debug("invoke url:{} method:{} ", uri, method);
                 List<InstanceChange<ModelServiceInstance>> list = new ArrayList<>();
-                list.add(new InstanceChange<>(0L,"test", InstanceChange.ChangeType.Create,
-                        null,instance));
-                String json = "" ;
+                list.add(new InstanceChange<>(0L, "test", InstanceChange.ChangeType.Create,
+                        null, instance));
+                String json = "";
                 try {
                     json = new String(serialize(list));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                return new HttpResponse(200,json);
+                return new HttpResponse(200, json);
             }
         });
     }

@@ -31,7 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import com.cisco.oss.foundation.directory.RegistrationManager;
 import com.cisco.oss.foundation.directory.ServiceDirectory;
-import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
+import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient.DirectoryHttpInvoker;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
@@ -68,7 +68,7 @@ public class ExceptionHandleTestCase  {
      */
     @Test
     public void testRegistrationManager() throws ServiceException {
-        final DirectoryServiceClient client = ServiceDirectoryImpl.getInstance().getDirectoryServiceClient();
+        final DirectoryServiceRestfulClient client = (DirectoryServiceRestfulClient)ServiceDirectoryImpl.getInstance().getDirectoryServiceClient();
         String serviceName = "mock-test01";
         final ProvidedServiceInstance instance = createInstance(serviceName);
 

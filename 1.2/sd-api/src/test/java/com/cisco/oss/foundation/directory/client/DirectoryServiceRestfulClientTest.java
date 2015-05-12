@@ -63,20 +63,7 @@ public class DirectoryServiceRestfulClientTest {
         metadata.put("solution", "core");
         instance.setMetadata(metadata);
 
-        /*
-        HttpUtils utils = new HttpUtils(){
-            @Override
-            public HttpResponse postJson(String urlStr, String body)
-                    throws IOException {
-                Assert.assertEquals("http://vcsdirsvc:2013/service/odrm/192.168.7.4-8901", urlStr);
-                ProvidedServiceInstance instance2 = deserialize(body.getBytes(), ProvidedServiceInstance.class);
-                compareProvidedServiceInstance(instance, instance2);
-                return new HttpResponse(201, null);
-            }
-        };
-        client.getDirectoryInvoker().setHttpUtils(utils);
-        */
-        final DirectoryInvoker mockInvoker = new DirectoryHttpInvoker(){
+        final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker(){
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
                 Assert.assertEquals("http://vcsdirsvc:2013/service/odrm/192.168.7.4",directoryAddresses+
@@ -103,20 +90,7 @@ public class DirectoryServiceRestfulClientTest {
         metadata.put("solution", "core");
         instance.setMetadata(metadata);
 
-        /*
-        HttpUtils utils = new HttpUtils(){
-            @Override
-            public HttpResponse putJson(String urlStr, String body)
-                    throws IOException {
-                Assert.assertEquals("http://vcsdirsvc:2013/service/odrm/192.168.7.4-8901", urlStr);
-                ProvidedServiceInstance instance2 = deserialize(body.getBytes(), ProvidedServiceInstance.class);
-                compareProvidedServiceInstance(instance, instance2);
-                return new HttpResponse(201, null);
-
-            }
-        };
-        */
-        final DirectoryInvoker mockInvoker = new DirectoryHttpInvoker(){
+        final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker(){
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
                 Assert.assertEquals("http://vcsdirsvc:2013/service/odrm/192.168.7.4", directoryAddresses+uri);
@@ -138,20 +112,7 @@ public class DirectoryServiceRestfulClientTest {
         final String instanceId = "192.168.7.4";
         final OperationalStatus status = OperationalStatus.DOWN;
 
-        /*
-        HttpUtils utils = new HttpUtils(){
-            @Override
-            public HttpResponse put(String urlStr, String body, Map<String, String> headers)
-                    throws IOException {
-
-                Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName + "/" + instanceId + "/status", urlStr);
-                Assert.assertEquals(body, "status=" + status + "&isOwned=true");
-                return new HttpResponse(200, null);
-
-            }
-        };
-        */
-        final DirectoryInvoker mockInvoker = new DirectoryHttpInvoker() {
+        final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker() {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
                 Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName + "/" + instanceId + "/status", directoryAddresses+uri);
@@ -173,21 +134,8 @@ public class DirectoryServiceRestfulClientTest {
         final String instanceId = "192.168.7.4";
         final String uri = "http://cisco.com/vbo/odrm/setupsession";
 
-        /*
-        HttpUtils utils = new HttpUtils(){
-            @Override
-            public HttpResponse put(String urlStr, String body, Map<String, String> headers)
-                    throws IOException {
-
-                Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName + "/" + instanceId + "/uri", urlStr);
-                Assert.assertEquals(body, "uri=" + URLEncoder.encode(uri, "UTF-8") + "&isOwned=false");
-                return new HttpResponse(200, null);
-
-            }
-        };
-        */
         final String encodedUri = URLEncoder.encode(uri, "UTF-8");
-        final DirectoryInvoker mockInvoker = new DirectoryHttpInvoker() {
+        final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker() {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
                 Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName + "/" + instanceId + "/uri", directoryAddresses+uri);
@@ -207,19 +155,8 @@ public class DirectoryServiceRestfulClientTest {
 
         final String serviceName = "odrm";
         final String instanceAddress = "192.168.7.4";
-        /*
-        HttpUtils utils = new HttpUtils(){
-            @Override
-            public HttpResponse deleteJson(String urlStr)
-                    throws IOException {
 
-                Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName + "/" + instanceId + "/true" , urlStr);
-                return new HttpResponse(200, null);
-
-            }
-        };
-        */
-        final DirectoryInvoker mockInvoker = new DirectoryHttpInvoker() {
+        final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker() {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
                 Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName + "/" + instanceAddress + "/true" , directoryAddresses+uri);
@@ -242,7 +179,7 @@ public class DirectoryServiceRestfulClientTest {
         final Map<String, OperationResult<String>> result = new HashMap<>();
         result.put("odrm/192.168.2.3", new OperationResult<>(true, "it is OK", null));
 
-        final DirectoryInvoker mockInvoker = new DirectoryHttpInvoker() {
+        final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker() {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
                 Assert.assertEquals("http://vcsdirsvc:2013/service/heartbeat", directoryAddresses+uri);
@@ -283,20 +220,7 @@ public class DirectoryServiceRestfulClientTest {
         result.setId("datacenter");
         result.setServiceInstances(instances);
 
-        /*
-        HttpUtils utils = new HttpUtils(){
-            @Override
-            public HttpResponse getJson(String urlStr)
-                    throws IOException {
-
-                Assert.assertEquals("http://vcsdirsvc:2013/metadatakey/" + keyName, urlStr);
-
-                return new HttpResponse(200, new String(serialize(result)));
-
-            }
-        };
-        */
-        final DirectoryInvoker mockInvoker = new DirectoryHttpInvoker() {
+        final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker() {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
                 Assert.assertEquals("http://vcsdirsvc:2013/metadatakey/" + keyName, directoryAddresses+uri);
@@ -337,21 +261,7 @@ public class DirectoryServiceRestfulClientTest {
         final ModelService result = new ModelService("odrm", "odrm", date);
         result.setServiceInstances(instances);
 
-        /*
-        HttpUtils utils = new HttpUtils(){
-            @Override
-            public HttpResponse getJson(String urlStr)
-                    throws IOException {
-
-                Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName, urlStr);
-
-                return new HttpResponse(200, new String(serialize(result)));
-
-            }
-        };
-        */
-
-        final DirectoryInvoker mockInvoker = new DirectoryHttpInvoker() {
+        final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker() {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
                 Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName, directoryAddresses+uri);
@@ -394,25 +304,7 @@ public class DirectoryServiceRestfulClientTest {
         final Map<String, OperationResult<ModelService>> result = new HashMap<>();
         result.put("odrm", new OperationResult<>(true, changingservice, new ServiceDirectoryError(ErrorCode.OK)));
 
-        /*
-        HttpUtils utils = new HttpUtils(){
-            @Override
-            public HttpResponse postJson(String urlStr, String body)
-                    throws IOException {
-
-                Assert.assertEquals("http://vcsdirsvc:2013/service/changing", urlStr);
-
-                Map<String, ModelService> target = deserialize(body.getBytes(), new TypeReference<Map<String, ModelService>>(){});
-                Assert.assertEquals(target.size(), 1);
-                Assert.assertEquals(target.get("odrm").getCreateTime().getTime(), date.getTime());
-                Assert.assertEquals(target.get("odrm").getName(), "odrm");
-
-                return new HttpResponse(200, new String(serialize(result)));
-
-            }
-        };
-        */
-        final DirectoryInvoker mockInvoker = new DirectoryHttpInvoker() {
+        final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker() {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
                 Assert.assertEquals("http://vcsdirsvc:2013/service/changing", directoryAddresses+uri);

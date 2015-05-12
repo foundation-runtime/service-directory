@@ -30,7 +30,8 @@ import com.cisco.oss.foundation.directory.entity.ServiceInstanceHeartbeat;
 /**
  * The interface hide the complexity how client make request to sd server
  * hide the transfer layer such as http protocol or web-socket etc.
- * @since 1.2 (previously, only http implementation)
+ *
+ * @since 1.2
  */
 public interface DirectoryServiceClient {
 
@@ -56,20 +57,11 @@ public interface DirectoryServiceClient {
     @Deprecated /* replaced by lookupChangesSince */
     Map<String, OperationResult<ModelService>> getChangedServices(Map<String, ModelService> services);
 
-    /* TODO metadata refactoring in future */
     ModelMetadataKey getMetadataKey(String keyName);
 
     @Deprecated /* replaced by lookupChangesSince */
     Map<String, OperationResult<ModelMetadataKey>> getChangedMetadataKeys(Map<String, ModelMetadataKey> keys);
 
-    /* TODO the invoker is for http only. can be eliminated from the interface */
-    void setInvoker(DirectoryInvoker invoker);
-
-    /**
-     * 1.2 API
-     */
-
     List<InstanceChange<ModelServiceInstance>> lookupChangesSince(String serviceName,long since);
-
 
 }

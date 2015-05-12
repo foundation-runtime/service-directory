@@ -247,7 +247,7 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
                 LOGGER.error("Exception converting map to JSON: ", e);
         }
 
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("Content-Type", "application/x-www-form-urlencoded");
         headers.put("api-version", ServiceDirectory.getAPIVersion());
         HttpResponse result = invoker.invoke(serviceUri, body,
@@ -497,13 +497,12 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
      * @return
      *         the DirectoryInvoker
      */
-    DirectoryInvoker getDirectoryInvoker() {
+    DirectoryHttpInvoker getDirectoryInvoker() {
         return invoker;
     }
 
-    public void setInvoker(DirectoryInvoker invoker) {
-        //TODO remove the type conversion
-        this.invoker = (DirectoryHttpInvoker) invoker;
+    public void setInvoker(DirectoryHttpInvoker invoker) {
+        this.invoker = invoker;
     }
 
     /**
@@ -648,7 +647,7 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
     }
     
     private Map<String, String>addHeader() {
-        Map<String, String> headers = new HashMap<String, String>();
+        Map<String, String> headers = new HashMap<>();
         headers.put("api-version", ServiceDirectory.getAPIVersion());
         return headers;
     }

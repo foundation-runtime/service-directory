@@ -91,11 +91,6 @@ public class DirectoryServiceDummyClient implements DirectoryServiceClient {
     }
 
     @Override
-    public void setInvoker(DirectoryInvoker invoker) {
-        //do NOTHING for NOW
-    }
-
-    @Override
     public List<InstanceChange<ModelServiceInstance>> lookupChangesSince(String serviceName, long since) {
         throw new UnsupportedOperationException("not support now for 1.2 api");
     }

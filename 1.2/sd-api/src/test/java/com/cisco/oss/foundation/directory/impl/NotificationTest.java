@@ -35,7 +35,6 @@ public class NotificationTest {
         fooInstance.setUri("http://foo/service");
         fooInstance.setStatus(OperationalStatus.DOWN);
         factory.getRegistrationManager().registerService(fooInstance);
-        TimeUnit.MILLISECONDS.sleep(1L); //make sure change check start time is later than registration.
         factory.start();
     }
 
@@ -107,7 +106,6 @@ public class NotificationTest {
 
             reg.registerService(new ProvidedServiceInstance("foo", "192.168.1.2", 2222, "http://cisco.com/foo/2",
                     OperationalStatus.DOWN, null));
-            TimeUnit.SECONDS.sleep(2L);
             reg.updateServiceOperationalStatus("foo", "192.168.1.2", OperationalStatus.UP);
             reg.unregisterService("foo", "192.168.1.2");
             assertTrue("Shouldn't wait more than 5 sec",countDown.await(5, TimeUnit.SECONDS)); //

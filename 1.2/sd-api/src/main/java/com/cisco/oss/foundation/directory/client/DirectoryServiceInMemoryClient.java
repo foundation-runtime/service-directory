@@ -390,12 +390,6 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
         throw new UnsupportedOperationException("get metadata change is not supported now");
     }
 
-    @Override
-    public void setInvoker(DirectoryInvoker invoker) {
-        //DO nothing.
-    }
-
-
     //-------------------------------
     // 1.2 API
     //-------------------------------
@@ -405,11 +399,6 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
         return service == null ? -1L : lookupService(serviceName).getModifiedTime().getTime();
     }
 
-    /**
-     * @param serviceName
-     * @param since
-     * @return
-     */
     public List<ServiceInstance> lookUpChangedServiceInstancesSince(String serviceName, long since) {
         List<ServiceInstance> changed = new ArrayList<>();
         // the latest in model
