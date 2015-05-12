@@ -2,6 +2,7 @@ package com.cisco.oss.foundation.directory.impl;
 
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -70,12 +71,16 @@ public class ServiceInstanceChangeListenerTest {
 
     @Test
     public void testOnChange() throws Exception {
-        final CountDownLatch countDown = new CountDownLatch(6);
+        final CountDownLatch countDown = new CountDownLatch(1);
+        final AtomicReference<ServiceInstance> lastInst = new AtomicReference<>();
         final ServiceInstanceChangeListener listener = new ServiceInstanceChangeListener() {
             @Override
             public void onChange(InstanceChange.ChangeType type, InstanceChange<ServiceInstance> change) throws Exception {
-                countDown.countDown();
                 System.out.printf("%s\n",change);
+                if(type== InstanceChange.ChangeType.Remove){ // the last one is remove
+                    countDown.countDown();
+                    lastInst.set(change.from);
+                }
             }
         };
         try (LookupManager lookup = factory.getLookupManager();RegistrationManager reg = factory.getRegistrationManager()){
@@ -93,7 +98,8 @@ public class ServiceInstanceChangeListenerTest {
             TimeUnit.MILLISECONDS.sleep(10L);
             reg.updateServiceOperationalStatus("foo", "192.168.1.2", OperationalStatus.UP);
             reg.unregisterService("foo", "192.168.1.2");
-            assertTrue("Shouldn't wait more than 5 sec",countDown.await(5, TimeUnit.SECONDS)); //
+            assertTrue("Shouldn't wait more than 5 sec",countDown.await(5, TimeUnit.SECONDS));
+            assertEquals("192.168.1.2",lastInst.get().getAddress());
         }
     }
 }

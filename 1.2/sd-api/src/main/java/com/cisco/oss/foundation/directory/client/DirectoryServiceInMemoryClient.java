@@ -28,9 +28,10 @@ import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 
 /**
- * It's client works as a in-memory server. so that sd-api can work as-like there is a real sd-server.
- * It's useful for unit/integration in some case. The different between {@code DirectoryServiceDummyClient} is
- * The dummy one actually do nothing. but in-memory do something really
+ * InMemory client works as a in-memory server. so that sd-api can work as-like there is a real sd-server.<p>
+ * It's useful for unit/integration test in some case. The different with {@link DirectoryServiceDummyClient}
+ * is the dummy-client actually do nothing, but the in-memory client will maintain all service instances in
+ * memory.
  *
  * @see DirectoryServiceDummyClient
  * @since 1.2
@@ -74,7 +75,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
     //  internal helper methods to convert between model-instance and provided-instance
     // ----------------------
     //for now, use the internal methods created here
-    private static ModelService _newModelService(String serviceName) {
+    private static ModelService newModelService(String serviceName) {
         // in current sd-service implementation, the 'id' equals 'serviceName'
         // so we keep the pattern,the create/modify time for service are redundancies,
         // in instance level will use 0L 1970-Jun-01 as created time. (should not depends on it)
@@ -85,7 +86,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
     /**
      * In history record, need a copy for the that-time state of the instance
      */
-    private static ModelServiceInstance _copyModelInstFrom(ModelServiceInstance original) {
+    private static ModelServiceInstance copyModelInstFrom(ModelServiceInstance original) {
         ModelServiceInstance copied = new ModelServiceInstance();
         copied.setServiceName(original.getServiceName());
         copied.setAddress(original.getAddress());
@@ -102,7 +103,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
         return copied;
     }
 
-    private static ModelServiceInstance _newModelInstFromProvidedInst(ProvidedServiceInstance instance) {
+    private static ModelServiceInstance newModelInstFromProvidedInst(ProvidedServiceInstance instance) {
 
         ModelServiceInstance mInstance = new ModelServiceInstance();
 
@@ -131,17 +132,16 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
         //now use '1970-Jan-01' as initial value.
         mInstance.setHeartbeatTime(new Date(0L));
 
-        // TODO support MetaData
-        //for now, we don't need support metadata in memory client
-        mInstance.setMetadata(Collections.<String, String>emptyMap());
+        // metadata
+        mInstance.setMetadata(instance.getMetadata());
 
         return mInstance;
     }
 
-    private ProvidedServiceInstance _toProvidedInstance(ModelServiceInstance mInstance) {
+    private ProvidedServiceInstance toProvidedInstance(ModelServiceInstance mInstance) {
         return new ProvidedServiceInstance(mInstance.getServiceName(), mInstance.getAddress(),
                 mInstance.getPort(), mInstance.getUri(), mInstance.getStatus(),
-                Collections.<String, String>emptyMap());
+                mInstance.getMetadata());
     }
 
     private static String objHashStr(Object o) {
@@ -156,7 +156,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
             LOGGER.debug("new service Map is created for {}", serviceName);
         }
         ConcurrentMap<String, ModelServiceInstance> iMap = inMemoryRegistry.get(serviceName);
-        ModelServiceInstance newInstance = _newModelInstFromProvidedInst(instance);
+        ModelServiceInstance newInstance = newModelInstFromProvidedInst(instance);
         ModelServiceInstance previous = iMap.putIfAbsent(instance.getAddress(), newInstance);
         if (previous != null) {
             LOGGER.debug("ModelServiceInstance id {} already registered by {} ", instance.getAddress(), objHashStr(previous));
@@ -165,7 +165,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
                     newInstance.getServiceName(),
                     InstanceChange.ChangeType.Create,
                     null,
-                    _copyModelInstFrom(newInstance)
+                    copyModelInstFrom(newInstance)
             ));
             LOGGER.debug("Registered new ModelServiceInstance {} with id {} ", objHashStr(newInstance), instance.getAddress());
         }
@@ -175,8 +175,6 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
     @Deprecated
     @Override
     public void updateInstance(ProvidedServiceInstance instance) {
-        throw new UnsupportedOperationException("updateInstance(ProvidedServiceInstance instance) not supported since 1.2");
-        /*
         String serviceName = instance.getServiceName();
         Map<String, ModelServiceInstance> iMap = inMemoryRegistry.get(serviceName);
         if (iMap == null) {
@@ -198,10 +196,9 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
                 LOGGER.debug("ModelServiceInstance {} is update by {}", objHashStr(mInstance), objHashStr(instance));
             }
         }
-        */
     }
 
-    private ModelServiceInstance _getInstance(String serviceName, String instanceId) {
+    private ModelServiceInstance getInstance(String serviceName, String instanceId) {
         Map<String, ModelServiceInstance> iMap = inMemoryRegistry.get(serviceName);
         if (iMap != null) {
             return iMap.get(instanceId);
@@ -214,20 +211,20 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
         if (status == null) {
             throw new NullPointerException("status is null");
         }
-        ModelServiceInstance mInstance = _getInstance(serviceName, instanceAddress);
+        ModelServiceInstance mInstance = getInstance(serviceName, instanceAddress);
         if (mInstance != null) {
             if (!isOwned) {
                 //IN this implementation, update don't care of if the service instance is owned by user
                 LOGGER.warn("do updateInstanceStatus even when isOwned is false");
             }
-            final ModelServiceInstance old = _copyModelInstFrom(mInstance);
+            final ModelServiceInstance old = copyModelInstFrom(mInstance);
             mInstance.setStatus(status);
             mInstance.setModifiedTime(new Date());
             addToHistory(new InstanceChange<>(mInstance.getModifiedTime().getTime(),
                     mInstance.getServiceName(),
                     InstanceChange.ChangeType.Status,
                     old,
-                    _copyModelInstFrom(mInstance)
+                    copyModelInstFrom(mInstance)
             ));
         } else {
             LOGGER.warn("no service instance exist for {} {}", serviceName, instanceAddress);
@@ -236,13 +233,13 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
 
     @Override
     public void updateInstanceUri(String serviceName, String instanceAddress, String uri, boolean isOwned) {
-        ModelServiceInstance mInstance = _getInstance(serviceName, instanceAddress);
+        ModelServiceInstance mInstance = getInstance(serviceName, instanceAddress);
         if (mInstance != null) {
             if (!isOwned) {
                 //IN this implementation, we allow update don't care of if the service instance is owned by user
                 LOGGER.debug("do updateInstanceUri even when isOwned is false");
             }
-            final ModelServiceInstance old = _copyModelInstFrom(mInstance);
+            final ModelServiceInstance old = copyModelInstFrom(mInstance);
 
             mInstance.setUri(uri);
             mInstance.setModifiedTime(new Date());
@@ -250,7 +247,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
             addToHistory(new InstanceChange<>(mInstance.getModifiedTime().getTime(),
                     mInstance.getServiceName(),
                     InstanceChange.ChangeType.URL,
-                    old, _copyModelInstFrom(mInstance)));
+                    old, copyModelInstFrom(mInstance)));
         } else {
             LOGGER.debug("no service instance exist for {} {}", serviceName, instanceAddress);
         }
@@ -258,13 +255,13 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
 
     @Override
     public void updateInstanceMetadata(String serviceName, String instanceAddress, Map<String, String> metadata, boolean isOwned) {
-        ModelServiceInstance mInstance = _getInstance(serviceName, instanceAddress);
+        ModelServiceInstance mInstance = getInstance(serviceName, instanceAddress);
         if (mInstance != null) {
             if (!isOwned) {
                 //IN this implementation, we allow update don't care of if the service instance is owned by user
                 LOGGER.debug("do updateInstanceMetadata even when isOwned is false");
             }
-            final ModelServiceInstance old = _copyModelInstFrom(mInstance);
+            final ModelServiceInstance old = copyModelInstFrom(mInstance);
 
             mInstance.setMetadata(metadata);
             mInstance.setModifiedTime(new Date());
@@ -272,7 +269,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
             addToHistory(new InstanceChange<>(mInstance.getModifiedTime().getTime(),
                     mInstance.getServiceName(),
                     InstanceChange.ChangeType.URL,
-                    old, _copyModelInstFrom(mInstance)));
+                    old, copyModelInstFrom(mInstance)));
         } else {
             LOGGER.debug("no service instance exist for {} {}", serviceName, instanceAddress);
         }
@@ -290,7 +287,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
                 addToHistory(new InstanceChange<>(previousInstance.getModifiedTime().getTime(),
                         previousInstance.getServiceName(),
                         InstanceChange.ChangeType.Remove,
-                        _copyModelInstFrom(previousInstance), null));
+                        copyModelInstFrom(previousInstance), null));
             } else {
                 LOGGER.debug("no service instance exist for {} {}", serviceName, instanceAddress);
             }
@@ -305,7 +302,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
             ServiceInstanceHeartbeat heartbeat = entry.getValue();
             String serviceName = heartbeat.getServiceName();
             String providedAddress = heartbeat.getProviderAddress();
-            ModelServiceInstance instance = _getInstance(serviceName, providedAddress);
+            ModelServiceInstance instance = getInstance(serviceName, providedAddress);
             if (instance != null) {
                 final long now = System.currentTimeMillis();
                 instance.setHeartbeatTime(new Date(now));
@@ -324,7 +321,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
     public ModelService lookupService(String serviceName) {
         Map<String, ModelServiceInstance> iMap = inMemoryRegistry.get(serviceName);
         if (iMap != null) {
-            ModelService service = _newModelService(serviceName);
+            ModelService service = newModelService(serviceName);
             if (!iMap.isEmpty()) {
                 List<ModelServiceInstance> instanceList = new ArrayList<>(iMap.entrySet().size());
                 List<Long> modifiedTimes = new ArrayList<>(instanceList.size());
@@ -351,13 +348,6 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
         List<ModelServiceInstance> instanceList = new ArrayList<>();
         for (Map<String, ModelServiceInstance> entry : inMemoryRegistry.values()) {
             instanceList.addAll(entry.values());
-            /*
-            try {
-                TimeUnit.SECONDS.sleep(1);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            */
         }
         LOGGER.debug("getAllInstances() {}", instanceList);
         return Collections.unmodifiableList(instanceList);
