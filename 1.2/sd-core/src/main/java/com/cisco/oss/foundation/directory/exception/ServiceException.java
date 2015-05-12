@@ -28,13 +28,13 @@ public class ServiceException extends RuntimeException {
 
     private static final long serialVersionUID = -3706093386454084825L;
 
-    private final ErrorCode _errorCode;
-    private final String _errMsgTemplate;
-    private final Object[] _errMsgArgs;
+    private final ErrorCode errorCode;
+    private final String errMsgTemplate;
+    private final Object[] errMsgArgs;
 
     @Override
     public String getMessage() {
-        return _errMsgArgs.length==0 ? _errMsgTemplate : String.format(_errMsgTemplate,_errMsgArgs);
+        return errMsgArgs.length==0 ? errMsgTemplate : String.format(errMsgTemplate, errMsgArgs);
     }
 
     public ServiceException(ErrorCode errorCode){
@@ -50,17 +50,17 @@ public class ServiceException extends RuntimeException {
 
     public ServiceException(ErrorCode errorCode, Throwable cause, String errMsgTemplate, Object ... errMsgArgs) {
         super(cause);
-        _errorCode=errorCode;
-        _errMsgTemplate = errMsgTemplate;
-        _errMsgArgs = errMsgArgs;
+        this.errorCode =errorCode;
+        this.errMsgTemplate = errMsgTemplate;
+        this.errMsgArgs = errMsgArgs;
     }
 
     public ErrorCode getErrorCode(){
-        return _errorCode;
+        return errorCode;
     }
 
     public ServiceDirectoryError getServiceDirectoryError() {
-        return new ServiceDirectoryError(_errorCode,_errMsgArgs);
+        return new ServiceDirectoryError(errorCode, errMsgArgs);
     }
 
 }

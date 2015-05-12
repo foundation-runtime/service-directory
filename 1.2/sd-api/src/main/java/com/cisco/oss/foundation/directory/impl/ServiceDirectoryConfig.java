@@ -69,64 +69,64 @@ public final class ServiceDirectoryConfig {
      */
     public static ServiceDirectoryConfig config(){ return new ServiceDirectoryConfig(new BaseConfiguration()); }
 
-    private final Configuration _apacheConfig;
+    private final Configuration apacheConfig;
 
     private ServiceDirectoryConfig(Configuration root) {
-        _apacheConfig = root;
+        apacheConfig = root;
     }
 
     public ClientType getClientType() {
         try {
-            return ClientType.valueOf(_get(SD_API_CLIENT_TYPE_PROPERTY));
+            return ClientType.valueOf(get(SD_API_CLIENT_TYPE_PROPERTY));
         } catch (Exception e) {
             throw new IllegalArgumentException("Unknown Client type");
         }
     }
 
     public ServiceDirectoryConfig setClientType(ClientType clientType) {
-        _set(SD_API_CLIENT_TYPE_PROPERTY, clientType.name());
+        set(SD_API_CLIENT_TYPE_PROPERTY, clientType.name());
         return this;
     }
 
     public ServiceDirectoryConfig setCacheEnabled(boolean cacheEnable) {
-        _set(SD_API_CACHE_ENABLED_PROPERTY, cacheEnable);
+        set(SD_API_CACHE_ENABLED_PROPERTY, cacheEnable);
         return this;
     }
 
     public boolean isCacheEnabled() {
-        return _checkEnable(SD_API_CACHE_ENABLED_PROPERTY);
+        return checkEnable(SD_API_CACHE_ENABLED_PROPERTY);
     }
 
     public ServiceDirectoryConfig setHeartbeatEnabled(boolean heartbeatEnable) {
-        _set(SD_API_HEARTBEAT_ENABLED_PROPERTY, heartbeatEnable);
+        set(SD_API_HEARTBEAT_ENABLED_PROPERTY, heartbeatEnable);
         return this;
     }
 
     public boolean isHeartBeatEnabled() {
-        return _checkEnable(SD_API_HEARTBEAT_ENABLED_PROPERTY);
+        return checkEnable(SD_API_HEARTBEAT_ENABLED_PROPERTY);
     }
 
-    private void _set(String key, Object value) {
-        _apacheConfig.setProperty(key, value);
+    private void set(String key, Object value) {
+        apacheConfig.setProperty(key, value);
         if (this == GLOBE) {
             ServiceDirectory.LOGGER.warn("GLOBE ServiceDirectoryConfig changed! '{}' = '{}'", key, value);
         }
     }
 
-    private String _get(String key) {
-        if (_apacheConfig.containsKey(key)) {
-            return _apacheConfig.getProperty(key).toString();
+    private String get(String key) {
+        if (apacheConfig.containsKey(key)) {
+            return apacheConfig.getProperty(key).toString();
         } else {
             if (this == GLOBE) { // not found in GLOBE, throw ex
                 throw new IllegalArgumentException("Unknown Service Directory configuration key '" + key + "'");
 
             }
-            return GLOBE._get(key);
+            return GLOBE.get(key);
         }
     }
 
-    private boolean _checkEnable(String key) {
-        String value = _get(key); //not null guaranteed
+    private boolean checkEnable(String key) {
+        String value = get(key); //not null guaranteed
         if (value.equalsIgnoreCase("true") || value.equalsIgnoreCase("false")) { //protector of Boolean.valuesOf/parseBoolean
             return Boolean.valueOf(value);
         } else {

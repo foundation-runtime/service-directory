@@ -41,10 +41,10 @@ public abstract class AbstractServiceDirectoryManager implements Stoppable, Auto
      */
     protected final AtomicBoolean isClosed = new AtomicBoolean(false);
 
-    private CloseListener _listener;
+    private CloseListener listener;
 
     public synchronized void setCloseListener(CloseListener listener){
-        this._listener = listener;
+        this.listener = listener;
     }
 
     @Override
@@ -75,8 +75,8 @@ public abstract class AbstractServiceDirectoryManager implements Stoppable, Auto
     }
 
     protected void fireClose() {
-        if (_listener!=null) {
-            _listener.onManagerClose(this);
+        if (listener !=null) {
+            listener.onManagerClose(this);
         }
     }
 

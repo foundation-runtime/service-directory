@@ -156,8 +156,8 @@ public class DirectoryRegistrationService extends ServiceDirectoryService{
      *         the serviceName of the ProvidedServiceInstance.
      * @param providerAddress
      *         The IP address or FQDN that the instance is running on.
-     * @param uri
-     *         the new uri.
+     * @param metadata
+     *         the meta data.
      */
     public void updateServiceMetadata(String serviceName, String providerAddress,
             Map<String, String> metadata) {

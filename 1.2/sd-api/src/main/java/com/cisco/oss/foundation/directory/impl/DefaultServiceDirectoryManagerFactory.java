@@ -113,9 +113,9 @@ public class DefaultServiceDirectoryManagerFactory implements
      */
     @Override
     public RegistrationManager getRegistrationManager(){
-       return _getRegistrationMgrImpl();
+       return getRegistrationMgrImpl();
     }
-    private static RegistrationManagerImpl _getRegistrationMgrImpl(){
+    private static RegistrationManagerImpl getRegistrationMgrImpl(){
         boolean heartbeatEnabled = getServiceDirectoryConfig().getBoolean(SD_API_HEARTBEAT_ENABLED_PROPERTY,
                 SD_API_HEARTBEAT_ENABLED_DEFAULT);
         if(heartbeatEnabled){
@@ -135,10 +135,10 @@ public class DefaultServiceDirectoryManagerFactory implements
      */
     @Override
     public LookupManager getLookupManager() {
-        return _getLookupMgrImpl();
+        return getLookupMgrImpl();
     }
 
-    private static LookupManagerImpl _getLookupMgrImpl(){
+    private static LookupManagerImpl getLookupMgrImpl(){
         boolean cacheEnabled = getServiceDirectoryConfig().getBoolean(SD_API_CACHE_ENABLED_PROPERTY,
                 SD_API_CACHE_ENABLED_DEFAULT);
         if(cacheEnabled){
@@ -162,14 +162,14 @@ public class DefaultServiceDirectoryManagerFactory implements
 
     @Override
     public void start() {
-        _getRegistrationMgrImpl().start();
-        _getLookupMgrImpl().start();
+        getRegistrationMgrImpl().start();
+        getLookupMgrImpl().start();
     }
 
     @Override
     public void stop() {
-        _getRegistrationMgrImpl().stop();
-        _getLookupMgrImpl().stop();
+        getRegistrationMgrImpl().stop();
+        getLookupMgrImpl().stop();
     }
 
 }

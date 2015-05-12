@@ -17,7 +17,6 @@ package com.cisco.oss.foundation.directory.lookup;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -35,12 +34,9 @@ import org.slf4j.LoggerFactory;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
-import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.OperationResult;
-import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
-import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 
 import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
 import static com.cisco.oss.foundation.directory.utils.JsonSerializer.serialize;

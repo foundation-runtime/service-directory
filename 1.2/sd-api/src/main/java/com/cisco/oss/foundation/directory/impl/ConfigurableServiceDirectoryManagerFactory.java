@@ -38,17 +38,17 @@ public class ConfigurableServiceDirectoryManagerFactory implements ServiceDirect
      * builder can call it
      */
     public ConfigurableServiceDirectoryManagerFactory(ServiceDirectoryConfig config) {
-        this._config = config;
-        _client = _decideClient();
-        if (_config.isCacheEnabled()) {
-            this._lookUpService = new CachedDirectoryLookupService(getDirectoryServiceClient());
+        this.config = config;
+        client = decideClient();
+        if (this.config.isCacheEnabled()) {
+            this.lookUpService = new CachedDirectoryLookupService(getDirectoryServiceClient());
         } else {
-            this._lookUpService = new DirectoryLookupService(getDirectoryServiceClient());
+            this.lookUpService = new DirectoryLookupService(getDirectoryServiceClient());
         }
-        if (_config.isHeartBeatEnabled()) {
-            this._registerService = new HeartbeatDirectoryRegistrationService(getDirectoryServiceClient());
+        if (this.config.isHeartBeatEnabled()) {
+            this.registerService = new HeartbeatDirectoryRegistrationService(getDirectoryServiceClient());
         } else {
-            this._registerService = new DirectoryRegistrationService(getDirectoryServiceClient());
+            this.registerService = new DirectoryRegistrationService(getDirectoryServiceClient());
         }
 
     }
@@ -65,33 +65,36 @@ public class ConfigurableServiceDirectoryManagerFactory implements ServiceDirect
         @Override
         public void onManagerClose(AbstractServiceDirectoryManager manager) {
             if (manager instanceof LookupManager) {
-                handleManager(lookupManagerReferences,manager);
+                synchronized (lookupManagerReferences) {
+                    handleManager(lookupManagerReferences, manager);
+                }
             } else if (manager instanceof RegistrationManager) {
-                handleManager(registrationManagerReferences,manager);
+                synchronized (registrationManagerReferences) {
+                    handleManager(registrationManagerReferences, manager);
+                }
             } else {
                 throw new IllegalStateException("Unknown manager " + manager);
             }
         }
 
-        private <T extends AutoCloseable> void handleManager(List<T> mangerList, AbstractServiceDirectoryManager manager){
-            synchronized (mangerList) {
-                if (mangerList.contains(manager)) {
-                    mangerList.remove(manager);
-                    manager.stop();
-                }
-                if (mangerList.size() == 0) {
-                    // when all manager closed, fire service close
-                    fireServiceClose(manager.getService());
-                }
+        private <T extends AutoCloseable> void handleManager(final List<T> mangerList, AbstractServiceDirectoryManager manager){
+            if (mangerList.contains(manager)) {
+                mangerList.remove(manager);
+                manager.stop();
             }
+            if (mangerList.size() == 0) {
+                // when all manager closed, fire service close
+                fireServiceClose(manager.getService());
+            }
+
         }
 
     };
 
-    private final DirectoryServiceClient _client;
-    private final ServiceDirectoryConfig _config;
-    private final DirectoryLookupService _lookUpService;
-    private final DirectoryRegistrationService _registerService;
+    private final DirectoryServiceClient client;
+    private final ServiceDirectoryConfig config;
+    private final DirectoryLookupService lookUpService;
+    private final DirectoryRegistrationService registerService;
 
     // -----------------------
     // DirectoryServiceClient
@@ -100,50 +103,50 @@ public class ConfigurableServiceDirectoryManagerFactory implements ServiceDirect
     /**
      * restful (http) client. it's not state, so that we can keep it singleton
      */
-    private static final DirectoryServiceClient _restfulClient = new DirectoryServiceRestfulClient();
+    private static final DirectoryServiceClient restfulClient = new DirectoryServiceRestfulClient();
 
     /**
      * dummy client, it's not state, so that we can keep it singleton
      */
-    private static final DirectoryServiceClient _dummyClient = new DirectoryServiceDummyClient();
+    private static final DirectoryServiceClient dummyClient = new DirectoryServiceDummyClient();
 
 
     /**
      * provided client
      */
-    private static final AtomicReference<DirectoryServiceClientProvider> _clientProvider =
+    private static final AtomicReference<DirectoryServiceClientProvider> clientProvider =
             new AtomicReference<>();
 
     public static void setClientProvider(DirectoryServiceClientProvider provider) {
         if (provider == null) {
             throw new IllegalArgumentException("DirectoryServiceClientProvider can't be null");
         }
-        _clientProvider.set(provider);
+        clientProvider.set(provider);
     }
 
 
     @Override
     public DirectoryServiceClient getDirectoryServiceClient() {
-        return _client;
+        return client;
     }
 
     /*
       use in constructor to decided which client should use by configurtion.
      */
-    private DirectoryServiceClient _decideClient(){
+    private DirectoryServiceClient decideClient(){
         DirectoryServiceClient client;
-        switch (_config.getClientType()) {
+        switch (config.getClientType()) {
             case RESTFUL:
-                client = _restfulClient;
+                client = restfulClient;
                 break;
             case DUMMY:
-                client = _dummyClient;
+                client = dummyClient;
                 break;
             case IN_MEMORY:
                 client = new DirectoryServiceInMemoryClient();
                 break;
             case PROVIDED:
-                DirectoryServiceClientProvider provider = _clientProvider.get();
+                DirectoryServiceClientProvider provider = clientProvider.get();
                 if (provider != null) {
                     client = provider.getClient();
                 } else {
@@ -152,22 +155,22 @@ public class ConfigurableServiceDirectoryManagerFactory implements ServiceDirect
                 break;
             default:
                 //don't support other client type now.
-                throw new IllegalStateException("UNKNOWN Client Type " + _config.getClientType());
+                throw new IllegalStateException("UNKNOWN Client Type " + config.getClientType());
         }
         return client;
     }
 
     DirectoryLookupService getLookupService() {
-        return this._lookUpService;
+        return this.lookUpService;
     }
 
     DirectoryRegistrationService getRegistrationService() {
-        return this._registerService;
+        return this.registerService;
     }
 
     public LookupManager getLookupManager() throws ServiceException {
         LookupManagerImpl lookupMgr;
-        if (_config.isCacheEnabled()) {
+        if (config.isCacheEnabled()) {
             lookupMgr = new CachedLookupManagerImpl((CachedDirectoryLookupService) getLookupService());
         } else {
             lookupMgr = new LookupManagerImpl(getLookupService());
@@ -179,7 +182,7 @@ public class ConfigurableServiceDirectoryManagerFactory implements ServiceDirect
 
     public RegistrationManager getRegistrationManager() throws ServiceException {
         RegistrationManagerImpl regMgr;
-        if (_config.isHeartBeatEnabled()) {
+        if (config.isHeartBeatEnabled()) {
             regMgr = new HeartbeatRegistrationManagerImpl((HeartbeatDirectoryRegistrationService) getRegistrationService());
         } else {
             regMgr =  new RegistrationManagerImpl(getRegistrationService());

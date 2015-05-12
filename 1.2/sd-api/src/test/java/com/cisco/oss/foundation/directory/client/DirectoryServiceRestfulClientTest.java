@@ -68,7 +68,7 @@ public class DirectoryServiceRestfulClientTest {
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
                 Assert.assertEquals("http://vcsdirsvc:2013/service/odrm/192.168.7.4",directoryAddresses+
                         uri);
-                ProvidedServiceInstance instance2 = client._deserialize(payload, ProvidedServiceInstance.class);
+                ProvidedServiceInstance instance2 = client.deserialize(payload, ProvidedServiceInstance.class);
                 compareProvidedServiceInstance(instance, instance2);
                 return new HttpResponse(201, null);
             }
@@ -94,7 +94,7 @@ public class DirectoryServiceRestfulClientTest {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
                 Assert.assertEquals("http://vcsdirsvc:2013/service/odrm/192.168.7.4", directoryAddresses+uri);
-                ProvidedServiceInstance instance2 = client._deserialize(payload, ProvidedServiceInstance.class);
+                ProvidedServiceInstance instance2 = client.deserialize(payload, ProvidedServiceInstance.class);
                 compareProvidedServiceInstance(instance, instance2);
                 return new HttpResponse(201, null);
             }
@@ -183,12 +183,12 @@ public class DirectoryServiceRestfulClientTest {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
                 Assert.assertEquals("http://vcsdirsvc:2013/service/heartbeat", directoryAddresses+uri);
-                Map<String, ServiceInstanceHeartbeat> hbs = client._deserialize(payload, new TypeReference<Map<String, ServiceInstanceHeartbeat>>() {
+                Map<String, ServiceInstanceHeartbeat> hbs = client.deserialize(payload, new TypeReference<Map<String, ServiceInstanceHeartbeat>>() {
                 });
                 Assert.assertEquals(hbs.size(), 1);
                 Assert.assertEquals(hbs.get("odrm/192.168.2.3").getServiceName(), "odrm");
                 Assert.assertEquals(hbs.get("odrm/192.168.2.3").getProviderAddress(), "192.168.2.3");
-                return new HttpResponse(200, client._serialize(result));
+                return new HttpResponse(200, client.serialize(result));
             }
         };
 
@@ -224,7 +224,7 @@ public class DirectoryServiceRestfulClientTest {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
                 Assert.assertEquals("http://vcsdirsvc:2013/metadatakey/" + keyName, directoryAddresses+uri);
-                return new HttpResponse(200, client._serialize(result));
+                return new HttpResponse(200, client.serialize(result));
             }
         };
 
@@ -265,7 +265,7 @@ public class DirectoryServiceRestfulClientTest {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
                 Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName, directoryAddresses+uri);
-                return new HttpResponse(200, client._serialize(result));
+                return new HttpResponse(200, client.serialize(result));
             }
         };
         client.setInvoker(mockInvoker);
@@ -309,12 +309,13 @@ public class DirectoryServiceRestfulClientTest {
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
                 Assert.assertEquals("http://vcsdirsvc:2013/service/changing", directoryAddresses+uri);
 
-                Map<String, ModelService> target = client._deserialize(payload, new TypeReference<Map<String, ModelService>>(){});
+                Map<String, ModelService> target = client.deserialize(payload, new TypeReference<Map<String, ModelService>>() {
+                });
                 Assert.assertEquals(target.size(), 1);
                 Assert.assertEquals(target.get("odrm").getCreateTime().getTime(), date.getTime());
                 Assert.assertEquals(target.get("odrm").getName(), "odrm");
 
-                return new HttpResponse(200, client._serialize(result));
+                return new HttpResponse(200, client.serialize(result));
 
             }
         };

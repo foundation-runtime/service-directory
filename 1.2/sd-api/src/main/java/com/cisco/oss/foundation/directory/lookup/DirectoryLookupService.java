@@ -42,14 +42,12 @@ import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
-import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.impl.InstanceChangeAdapter;
 import com.cisco.oss.foundation.directory.impl.ServiceDirectoryService;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 
-import static com.cisco.oss.foundation.directory.entity.InstanceChange.ChangeType.Status;
 import static com.cisco.oss.foundation.directory.entity.InstanceChange.toServiceInstanceChange;
 
 /**
@@ -118,7 +116,7 @@ public class DirectoryLookupService extends ServiceDirectoryService {
 
     private void initChangesCheckTask() {
         changesCheckService.get().scheduleWithFixedDelay(new ChangesCheckTask(System.currentTimeMillis()),
-                0L, 1L, TimeUnit.SECONDS); //TODO, interval might need to be configurable
+                0L, 1L, TimeUnit.SECONDS);
         LOGGER.info("Service Instances Changes Checking Task is started");
     }
 
