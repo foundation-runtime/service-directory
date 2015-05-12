@@ -214,9 +214,6 @@ public class ServiceDirectoryImpl {
             throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_IS_SHUTDOWN);
         }
         if(directoryManagerFactory == null){
-            // should not allow to return a null
-            // TODO, make directoryManagerFactory is immutable.
-            // TODO. remove the initialize and reinit method in ServiceDirectoryManagerFactory and ServiceDirectory
             throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
                     ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR.getMessageTemplate(),
                     "ServiceDirectoryManagerFactory");

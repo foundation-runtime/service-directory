@@ -70,7 +70,6 @@ public class RegistrationManagerImpl extends AbstractServiceDirectoryManager imp
      */
     @Override
     public void stop(){
-        //TODO, don't stop service here, use new closeListener
         getRegistrationService().stop();
         LOGGER.info("Registration Manager @{} is stopped", this);
     }
@@ -87,7 +86,7 @@ public class RegistrationManagerImpl extends AbstractServiceDirectoryManager imp
     public void registerService(ProvidedServiceInstance serviceInstance)
             throws ServiceException {
 
-        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted.get());
         ServiceInstanceUtils.validateProvidedServiceInstance(serviceInstance);
 
         getRegistrationService().registerService(serviceInstance);
@@ -100,7 +99,7 @@ public class RegistrationManagerImpl extends AbstractServiceDirectoryManager imp
     public void registerService(ProvidedServiceInstance serviceInstance,
             ServiceInstanceHealth registryHealth) throws ServiceException {
 
-        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted.get());
         ServiceInstanceUtils.validateProvidedServiceInstance(serviceInstance);
         getRegistrationService().registerService(serviceInstance, registryHealth);
     }
@@ -112,7 +111,7 @@ public class RegistrationManagerImpl extends AbstractServiceDirectoryManager imp
     public void updateServiceUri(String serviceName,
             String providerAddress, String uri) throws ServiceException {
 
-        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted.get());
         ServiceInstanceUtils.validateServiceName(serviceName);
         ServiceInstanceUtils.validateAddress(providerAddress);
         ServiceInstanceUtils.validateURI(uri);
@@ -127,7 +126,7 @@ public class RegistrationManagerImpl extends AbstractServiceDirectoryManager imp
     public void updateServiceOperationalStatus(String serviceName,
             String providerAddress, OperationalStatus status) throws ServiceException {
 
-        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted.get());
         ServiceInstanceUtils.validateServiceName(serviceName);
         ServiceInstanceUtils.validateAddress(providerAddress);
 
@@ -140,7 +139,7 @@ public class RegistrationManagerImpl extends AbstractServiceDirectoryManager imp
     @Override
     public void updateServiceMetadata(String serviceName, String providerAddress, Map<String, String> metadata) throws ServiceException {
 
-        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted.get());
         ServiceInstanceUtils.validateServiceName(serviceName);
         ServiceInstanceUtils.validateAddress(providerAddress);
 
@@ -155,7 +154,7 @@ public class RegistrationManagerImpl extends AbstractServiceDirectoryManager imp
     public void updateService(ProvidedServiceInstance serviceInstance)
             throws ServiceException {
      
-        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted.get());
         ServiceInstanceUtils.validateProvidedServiceInstance(serviceInstance);
      
         getRegistrationService().updateService(serviceInstance);
@@ -168,7 +167,7 @@ public class RegistrationManagerImpl extends AbstractServiceDirectoryManager imp
     public void unregisterService(String serviceName, String providerAddress)
             throws ServiceException {
        
-        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted.get());
         ServiceInstanceUtils.validateServiceName(serviceName);
         ServiceInstanceUtils.validateAddress(providerAddress);
         

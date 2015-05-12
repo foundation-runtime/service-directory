@@ -33,16 +33,7 @@ import com.cisco.oss.foundation.directory.exception.ServiceException;
  *
  */
 public class ServiceInstanceUtils {
-    /*
-     * TODO:
-     * 1.) add unit test cover the validation methods
-     * 2.) use 5.0 for each prefer to old java.util.Iterator
-     * 3.) refactor the validateRequired and validateOptionalField
-     * 4.) refactor ErrorCode.XXXX_FORMAT_ERROR, we don't need a lot of FORMAT_ERROR.
-     *     One ErrorCode with a well-defined msgTemplate are enough.
-     * 5.) the naming of the Class is misleading. What the class doing is generic formatting checking.
-     *
-     */
+
     public static final String nameRegEx = "^[0-9a-zA-Z][\\w-.:]{0,127}$";
     public static final String idRegEx = "^[0-9a-zA-Z][\\w-.]{0,63}$";
     public static final String urlRegEx = "^[0-9a-zA-Z{}][^\\s]{0,1023}$";
@@ -175,13 +166,8 @@ public class ServiceInstanceUtils {
      * @throws ServiceException
      */
     public static void validateURI(String uri) throws ServiceException {
-        ErrorCode ec = ErrorCode.SERVICE_INSTANCE_URI_FORMAT_ERROR;
-        //TODO, fix the wried logic
-        if (uri == null || uri.isEmpty()) {
-            throw new ServiceException(ec);
-        }
-        if (!validateRequiredField(uri, urlRegEx) || !isValidBrace(uri)) {
-            throw new ServiceException(ec);
+        if (uri == null || uri.isEmpty() || !validateRequiredField(uri, urlRegEx) || !isValidBrace(uri)) {
+            throw new ServiceException(ErrorCode.SERVICE_INSTANCE_URI_FORMAT_ERROR);
         }
     }
     
@@ -237,14 +223,12 @@ public class ServiceInstanceUtils {
      * Validate if the registration/Lookup manager is started.
      *
      * @param isStarted
-     *            AtomicBoolean to indicate the registration/lookup manager is started or not
+     *            boolean to indicate the registration/lookup manager is started or not
      * @throws ServiceException SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED 
      *         if the registration/lookup manager is not started.
      */
-    // TODO, we don't need a AtomicBoolean here, it really need to extract a static methods here?
-    public static void validateManagerIsStarted(AtomicBoolean isStarted) throws ServiceException {
-        if (!isStarted.get()) {
-            //TODO, the error code should more specified to manger is closed.
+    public static void validateManagerIsStarted(boolean isStarted) throws ServiceException {
+        if (!isStarted) {
             throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_MANAGER_FACTORY_CLOSED);
         }
     }

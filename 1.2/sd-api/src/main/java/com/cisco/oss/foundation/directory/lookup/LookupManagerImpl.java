@@ -101,7 +101,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
     public ServiceInstance lookupInstance(String serviceName)
             throws ServiceException {
 
-        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted.get());
         ServiceInstanceUtils.validateServiceName(serviceName);
         ServiceInstanceLoadBalancer lb = lbManager.getDefaultLoadBalancer();
         return lb.vote(lookupInstances(serviceName));
@@ -115,7 +115,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
     public List<ServiceInstance> lookupInstances(String serviceName)
             throws ServiceException {
         
-        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted.get());
         ServiceInstanceUtils.validateServiceName(serviceName);
 
         List<ModelServiceInstance> modelSvc = getLookupService().getUPModelInstances(serviceName);
@@ -133,7 +133,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
     public ServiceInstance queryInstanceByName(String serviceName, ServiceInstanceQuery query)
             throws ServiceException {
         
-        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted.get());
         ServiceInstanceUtils.validateServiceName(serviceName);
         if (query == null) {
             throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
@@ -151,7 +151,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
     public List<ServiceInstance> queryInstancesByName(String serviceName, ServiceInstanceQuery query)
             throws ServiceException {
         
-        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted.get());
         ServiceInstanceUtils.validateServiceName(serviceName);
         if (query == null) {
             throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
@@ -174,7 +174,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
     public ServiceInstance queryInstanceByMetadataKey(ServiceInstanceQuery query)
             throws ServiceException {
         
-        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted.get());
         validateServiceInstanceMetadataQuery(query);
 
         ServiceInstanceLoadBalancer lb = lbManager.getDefaultLoadBalancer();
@@ -188,7 +188,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
     public List<ServiceInstance> queryInstancesByMetadataKey(ServiceInstanceQuery query)
             throws ServiceException {
         
-        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted.get());
         validateServiceInstanceMetadataQuery(query);
 
         List<ServiceInstance> instances;
@@ -219,7 +219,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
     public ServiceInstance getInstance(String serviceName, String instanceId)
             throws ServiceException {
 
-        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted.get());
         ServiceInstanceUtils.validateServiceName(serviceName);
         ServiceInstanceUtils.validateServiceInstanceID(instanceId);
 
@@ -238,7 +238,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
     public ServiceInstance getInstanceByAddress(String serviceName, String instanceAddress)
             throws ServiceException {
 
-        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted.get());
         ServiceInstanceUtils.validateServiceName(serviceName);
         ServiceInstanceUtils.validateAddress(instanceAddress);
 
@@ -257,7 +257,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
     public List<ServiceInstance> getAllInstances(String serviceName)
             throws ServiceException {
 
-        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted.get());
         ServiceInstanceUtils.validateServiceName(serviceName);
 
         List<ModelServiceInstance> modelSvc = getLookupService().getModelInstances(serviceName);
@@ -275,7 +275,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
     public List<ServiceInstance> getAllInstances(String serviceName,
             ServiceInstanceQuery query) throws ServiceException {
 
-        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted.get());
         ServiceInstanceUtils.validateServiceName(serviceName);
         if (query == null) {
             throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
@@ -299,7 +299,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
     public List<ServiceInstance> getAllInstancesByMetadataKey(ServiceInstanceQuery query)
             throws ServiceException {
         
-        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted.get());
         validateServiceInstanceMetadataQuery(query);
 
         String keyName = null;
@@ -326,7 +326,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
     @Override
     public List<ServiceInstance> getAllInstances() throws ServiceException {
         
-        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted.get());
 
         List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
         List<ModelServiceInstance> allInstances = getLookupService().getAllInstances();
@@ -355,7 +355,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
     @Override
     public void addNotificationHandler(String serviceName, NotificationHandler handler) throws ServiceException {
 
-        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted.get());
         ServiceInstanceUtils.validateServiceName(serviceName);
         if (handler == null) {
             throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
@@ -382,7 +382,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
     @Override
     public void removeNotificationHandler(String serviceName, NotificationHandler handler) throws ServiceException {
 
-        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted.get());
         ServiceInstanceUtils.validateServiceName(serviceName);
         if (handler == null) {
             throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
@@ -409,7 +409,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
      */
     @Override
     public void addInstanceChangeListener(String serviceName, ServiceInstanceChangeListener listener) throws ServiceException {
-        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted.get());
         ServiceInstanceUtils.validateServiceName(serviceName);
         if (listener == null) {
             throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
@@ -435,7 +435,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
      */
     @Override
     public void removeInstanceChangeListener(String serviceName, ServiceInstanceChangeListener listener) throws ServiceException {
-        ServiceInstanceUtils.validateManagerIsStarted(isStarted);
+        ServiceInstanceUtils.validateManagerIsStarted(isStarted.get());
         ServiceInstanceUtils.validateServiceName(serviceName);
         if (listener == null) {
             throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
