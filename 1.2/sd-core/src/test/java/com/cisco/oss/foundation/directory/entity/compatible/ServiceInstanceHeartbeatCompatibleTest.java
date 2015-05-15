@@ -1,10 +1,8 @@
-package com.cisco.oss.foundation.directory.entity;
+package com.cisco.oss.foundation.directory.entity.compatible;
 
-import java.io.IOException;
-
-import com.fasterxml.jackson.core.JsonGenerationException;
 import org.junit.Test;
 
+import com.cisco.oss.foundation.directory.entity.ServiceInstanceHeartbeat;
 import com.cisco.oss.foundation.directory.utils.JsonSerializer;
 
 import static org.junit.Assert.assertEquals;
