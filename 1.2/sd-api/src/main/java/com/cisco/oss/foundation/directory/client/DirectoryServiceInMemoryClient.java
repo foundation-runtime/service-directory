@@ -90,7 +90,6 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
         ModelServiceInstance copied = new ModelServiceInstance();
         copied.setServiceName(original.getServiceName());
         copied.setAddress(original.getAddress());
-        copied.setPort(original.getPort());
         copied.setStatus(original.getStatus());
         copied.setUri(original.getUri());
         copied.setId(original.getId());
@@ -109,7 +108,6 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
 
         mInstance.setServiceName(instance.getServiceName());
         mInstance.setAddress(instance.getAddress());
-        mInstance.setPort(instance.getPort());
         mInstance.setStatus(instance.getStatus());
         mInstance.setUri(instance.getUri());
 
@@ -140,7 +138,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
 
     private ProvidedServiceInstance toProvidedInstance(ModelServiceInstance mInstance) {
         return new ProvidedServiceInstance(mInstance.getServiceName(), mInstance.getAddress(),
-                mInstance.getPort(), mInstance.getUri(), mInstance.getStatus(),
+                mInstance.getUri(), mInstance.getStatus(),
                 mInstance.getMetadata());
     }
 
@@ -186,7 +184,6 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
             } else {
                 mInstance.setServiceName(instance.getServiceName());
                 mInstance.setAddress(instance.getAddress());
-                mInstance.setPort(instance.getPort());
                 mInstance.setStatus(instance.getStatus());
                 mInstance.setUri(instance.getUri());
                 mInstance.setId(instance.getAddress());

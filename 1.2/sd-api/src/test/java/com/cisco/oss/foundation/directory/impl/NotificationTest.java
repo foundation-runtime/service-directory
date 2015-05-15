@@ -106,7 +106,7 @@ public class NotificationTest {
             reg.updateServiceOperationalStatus("foo", "192.168.1.1", OperationalStatus.UP);
             assertEquals(OperationalStatus.UP, lookup.lookupInstance("foo").getStatus());
 
-            reg.registerService(new ProvidedServiceInstance("foo", "192.168.1.2", 2222, "http://cisco.com/foo/2",
+            reg.registerService(new ProvidedServiceInstance("foo", "192.168.1.2", "http://cisco.com/foo/2",
                     OperationalStatus.DOWN, null));
             reg.updateServiceOperationalStatus("foo", "192.168.1.2", OperationalStatus.UP);
             reg.unregisterService("foo", "192.168.1.2");

@@ -22,9 +22,12 @@ import java.util.StringTokenizer;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.regex.Pattern;
 
+import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
+import com.cisco.oss.foundation.directory.entity.compatible.ModelServiceInstance11;
+import com.cisco.oss.foundation.directory.entity.compatible.ServiceInstance11;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 
@@ -62,6 +65,27 @@ public class ServiceInstanceUtils {
             }
         }
         return new ServiceInstance(modelInstance.getServiceName(),
+                modelInstance.getUri(),
+                modelInstance.isMonitorEnabled(), modelInstance.getStatus(),
+                modelInstance.getAddress(),meta);
+    }
+
+    /**
+     * convert 1.1 modelServiceInstance ot serviceInstance
+     * @param modelInstance
+     * @return
+     */
+    public static ServiceInstance11 toServiceInstance11(ModelServiceInstance11 modelInstance){
+        if (modelInstance==null) throw new NullPointerException();
+        Map<String, String> meta = new HashMap<String, String>();
+        if (modelInstance.getMetadata() != null) {
+            for (Entry<String, String> en : modelInstance.getMetadata()
+                    .entrySet()) {
+                meta.put(en.getKey(), en.getValue());
+            }
+        }
+        return new ServiceInstance11(modelInstance.getServiceName(),
+                modelInstance.getInstanceId(),
                 modelInstance.getUri(),
                 modelInstance.isMonitorEnabled(), modelInstance.getStatus(),
                 modelInstance.getAddress(), modelInstance.getPort(), meta);
@@ -210,7 +234,6 @@ public class ServiceInstanceUtils {
                
         validateServiceName(serviceInstance.getServiceName());
         validateURI(serviceInstance.getUri());
-        validatePort(serviceInstance.getPort());
         validateAddress(serviceInstance.getAddress());
         
         if (serviceInstance.getMetadata()!=null) { //allow metadata as null

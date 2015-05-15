@@ -1,3 +1,5 @@
+package com.cisco.oss.foundation.directory.entity.compatible;
+
 /**
  * Copyright 2014 Cisco Systems, Inc.
  *
@@ -13,20 +15,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.cisco.oss.foundation.directory.entity;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.cisco.oss.foundation.directory.entity.OperationalStatus;
+
+
 /**
  * Immutable ServiceInstance provided to the Service Consumer.
- *
- * @since 1.2 the old instanceId and port has been removed
- *
- * also @see {@link com.cisco.oss.foundation.directory.entity.compatible.ServiceInstance11}
  */
-public class ServiceInstance {
+public class ServiceInstance11 {
+
+    /**
+     * ServiceInstance id, unique in Service.
+     */
+    private final String instanceId;
 
     /**
      * the Service Name of the ServiceInstance
@@ -41,49 +45,68 @@ public class ServiceInstance {
     /**
      * The instance OperationalStatus
      */
-    private final OperationalStatus status;
+    private OperationalStatus status;
 
     /**
      * Whether the instance enabled Monitor in Service Directory.
      */
-    private final boolean monitorEnabled;
+    private boolean monitorEnabled = true;
 
     /**
-     * The real address of the instance, it can be real IP or host name, unique for a service.
+     * The real address of the instance, it can be real IP or host name
      */
-    private final String address;
+    private String address;
+
+    /**
+     * The real port of the instance.
+     */
+    private int port = 0;
 
     /**
      * ServiceInstance metadata
      */
     private final Map<String, String> metadata;
 
-
     /**
      * Constructor.
      *
      * @param serviceName
      *            the service name.
+     * @param instanceId
+     *            the instance id.
      * @param uri
      *            the uri.
      * @param address
      *            The real address of the instance, it can be real IP or host
      *            name.
+     * @param port
+     *            The real port of the instance.
      * @param metadata
      *            the metadata Map.
      */
-    public ServiceInstance(String serviceName, String uri,
-            boolean monitor, OperationalStatus status, String address,
-            Map<String, String> metadata) {
+    public ServiceInstance11(String serviceName, String instanceId, String uri,
+                             boolean monitor, OperationalStatus status, String address,
+                             int port, Map<String, String> metadata) {
         this.serviceName = serviceName;
+        this.instanceId = instanceId;
         this.uri = uri;
         this.monitorEnabled = monitor;
         this.status = status;
         this.address = address;
-        this.metadata = new HashMap<>();
+        this.port = port;
+        this.metadata = new HashMap<String, String>();
         if (metadata != null && metadata.size() != 0) {
             this.metadata.putAll(metadata);
         }
+    }
+
+    /**
+     * Get the instance id.
+     *
+     * @return the instance id.
+     */
+    public String getInstanceId() {
+        return instanceId;
     }
 
     /**
@@ -131,6 +154,14 @@ public class ServiceInstance {
         return address;
     }
 
+    /**
+     * Get the port.
+     *
+     * @return the port.
+     */
+    public int getPort() {
+        return port;
+    }
 
     /**
      * Get the metadata Map.
@@ -138,15 +169,40 @@ public class ServiceInstance {
      * @return the metadata Map.
      */
     public Map<String, String> getMetadata() {
-        return Collections.unmodifiableMap(this.metadata);
+        return new HashMap<String, String>(this.metadata);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+//    @Override
+//    public String toString() {
+//        return "{serviceName:" + serviceName + ",clientId:" + instanceId + "}";
+//    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ServiceInstance11) {
+            ServiceInstance11 si = (ServiceInstance11) obj;
+            if (instanceId == null || serviceName == null) {
+                return false;
+            }
+            return instanceId.equals(si.getInstanceId())
+                    && serviceName.equals(si.getServiceName());
+        }
+        return false;
     }
 
     /**
      * {@inheritDoc}
      */
     @Override
-    public String toString() {
-        return "{serviceName:" + serviceName + ", serviceAddress:" + address + "}";
+    public int hashCode() {
+        int result = instanceId != null ? instanceId.hashCode() : 0;
+        result = 31 * result + serviceName != null ? serviceName.hashCode() : 0;
+        return result;
     }
-
 }

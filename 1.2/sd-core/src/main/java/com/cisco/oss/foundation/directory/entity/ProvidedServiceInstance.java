@@ -53,11 +53,6 @@ public class ProvidedServiceInstance {
     private String address;
 
     /**
-     * The real port of the instance.
-     */
-    private int port = 0;
-
-    /**
      * The instance OperationalStatus.
      */
     private OperationalStatus status;
@@ -82,32 +77,13 @@ public class ProvidedServiceInstance {
     /**
      * Constructor.
      *
-     * Replaced by {@link #ProvidedServiceInstance(String, String)}
-     *
-     * @param serviceName
-     *            the service name.
-     * @param address
-     *            the server address, it can be real IP or host name.
-     * @param port
-     *            the port.
-     */
-    @Deprecated
-    public ProvidedServiceInstance(String serviceName, String address, int port) {
-        this(serviceName, address, port, null, null,null);
-
-    }
-    
-    /**
-     * Constructor.
-     *
      * @param serviceName
      *            the service name.
      * @param address
      *            the address that the instance is running on
      */
     public ProvidedServiceInstance(String serviceName, String address) {
-        this(serviceName, address, 1, null, null,null);
-
+        this(serviceName, address, null, null,null);
     }
 
     /**
@@ -117,8 +93,6 @@ public class ProvidedServiceInstance {
      *            the service name.
      * @param address
      *            the server address, it can be real IP or host name.
-     * @param port
-     *            the port.
      * @param uri
      *            the instance uri.
      * @param status
@@ -127,11 +101,10 @@ public class ProvidedServiceInstance {
      *            the metadata Map.
      */
     public ProvidedServiceInstance(String serviceName, String address,
-            int port, String uri, OperationalStatus status,
+            String uri, OperationalStatus status,
             Map<String, String> metadata) {
         this.serviceName = serviceName;
         this.address = address;
-        this.port = port;
         this.uri = uri;
         this.status = status;
         this.metadata = metadata;
@@ -175,24 +148,6 @@ public class ProvidedServiceInstance {
         this.address = address;
     }
 
-    /**
-     * Get the port.
-     *
-     * @return the port.
-     */
-    public int getPort() {
-        return port;
-    }
-
-    /**
-     * Set the port.
-     *
-     * @param port
-     *            the port.
-     */
-    public void setPort(int port) {
-        this.port = port;
-    }
 
     /**
      * Get the OperationalStatus.
@@ -258,23 +213,6 @@ public class ProvidedServiceInstance {
      */
     public String getServiceName() {
         return serviceName;
-    }
-
-    /**
-     * Get the composed provider id.
-     *
-     * Provider id is the unique id for service, it is composed of the address and
-     * port fields of the ProvidedServiceInstance.
-     *
-     * The address always be the real ip address or hostname of the machine that 
-     * provides the service.
-     *
-     * @deprecated the provider id should not be used anymore. replaced by {@link #getAddress()}
-     * @return the provider id.
-     */
-    @Deprecated
-    public String getProviderId() {
-        return this.address + "-" + String.valueOf(this.port);
     }
 
 }

@@ -40,7 +40,7 @@ public class LookupChangesTestByRestfulClient {
         metadata.put("datacenter", "dc01");
         metadata.put("solution", "core");
         this.instance = new ModelServiceInstance("odrm", "192.168.2.3", "192.168.2.3", "http://cisco.com/vbo/odrm/setupsession",
-                OperationalStatus.UP, null, 0, date,
+                OperationalStatus.UP, null, date,
                 date, metadata);
         this.instance.setHeartbeatTime(date);
     }

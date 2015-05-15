@@ -93,9 +93,8 @@ public class ExceptionHandleTestCase  {
         try {
             registration.registerService(instance);
         } catch (ServiceException e) {
-            Assert.assertEquals(
-                    e.getServiceDirectoryError().getExceptionCode(),
-                    ErrorCode.SERVICE_INSTANCE_NOT_EXIST);
+            Assert.assertEquals(ErrorCode.SERVICE_INSTANCE_NOT_EXIST,
+                    e.getServiceDirectoryError().getExceptionCode());
         }
 
         ServiceDirectoryError sde2 = new ServiceDirectoryError(ErrorCode.SERVICE_INSTANCE_NOT_EXIST);
@@ -155,7 +154,6 @@ public class ExceptionHandleTestCase  {
     private ProvidedServiceInstance createInstance(String serviceName) {
 
         String address = "127.0.0.1";
-        int port = 8990;
         ProvidedServiceInstance si = new ProvidedServiceInstance(serviceName,
                 address);
         si.setUri("http://www.sina.com.cn");

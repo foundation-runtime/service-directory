@@ -38,9 +38,9 @@ public class RoundRobinLoadBalancerTest {
         metadata.put("node", "n1");
         List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
         ModelServiceInstance instance1 = new ModelServiceInstance("odrm", "192.168.1.1", "192.168.1.1", "http://cisco.com/",
-                OperationalStatus.UP, "192.168.1.1", 8091, date, date,  metadata);
+                OperationalStatus.UP, "192.168.1.1", date, date,  metadata);
         ModelServiceInstance instance2 = new ModelServiceInstance("odrm", "192.168.1.2", "192.168.1.2", "http://cisco.com/",
-                OperationalStatus.UP, "192.168.1.2", 8091, date, date,  metadata);
+                OperationalStatus.UP, "192.168.1.2", date, date,  metadata);
 
         instances.add(ServiceInstanceUtils.toServiceInstance(instance2));
         instances.add(ServiceInstanceUtils.toServiceInstance(instance1));

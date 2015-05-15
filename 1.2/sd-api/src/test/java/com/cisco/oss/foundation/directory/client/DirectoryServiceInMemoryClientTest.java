@@ -61,11 +61,11 @@ public class DirectoryServiceInMemoryClientTest {
         System.out.println("");
         for (int i = 0; i<5; i++){
             exec.submit(new FindAll(fdAllCountDown));
-            exec.submit(new Update(updateCountDown).update("192.168.1.1", 8080));
-            exec.submit(new Update(updateCountDown).update("192.168.1.2", 8080));
-            exec.submit(new Update(updateCountDown).update("192.168.1.3", 8080));
-            exec.submit(new Update(updateCountDown).update("192.168.1.4", 8080));
-            exec.submit(new Update(updateCountDown).update("192.168.1.5", 8080));
+            exec.submit(new Update(updateCountDown).update("192.168.1.1"));
+            exec.submit(new Update(updateCountDown).update("192.168.1.2"));
+            exec.submit(new Update(updateCountDown).update("192.168.1.3"));
+            exec.submit(new Update(updateCountDown).update("192.168.1.4"));
+            exec.submit(new Update(updateCountDown).update("192.168.1.5"));
             exec.submit(new FindAll(fdAllCountDown));
             exec.submit(new Unregister(instance3, unregCountDown));
             exec.submit(new Unregister(instance4, unregCountDown));
@@ -148,9 +148,8 @@ public class DirectoryServiceInMemoryClientTest {
             super(countDown);
         }
 
-        public Update update(String address, Integer port) {
+        public Update update(String address) {
             instanceToUpdate.setAddress(address);
-            instanceToUpdate.setPort(port);
             return this;
         }
 

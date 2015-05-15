@@ -114,7 +114,6 @@ public class ModelServiceInstance {
      * @param address
      *            The real address of the instance, it can be real IP or host
      *            name.
-     * @param port
      *            The real port of the instance.
      * @param modifiedTime
      *            the last modified time stamp.
@@ -125,7 +124,7 @@ public class ModelServiceInstance {
      */
     public ModelServiceInstance(String serviceName, String instanceId,
             String id, String uri, OperationalStatus status, String address,
-            int port, Date modifiedTime, Date createTime,
+            Date modifiedTime, Date createTime,
             Map<String, String> metadata) {
         this.serviceName = serviceName;
         this.instanceId = instanceId;
@@ -136,7 +135,6 @@ public class ModelServiceInstance {
         this.modifiedTime = modifiedTime;
         this.createTime = createTime;
         this.address = address;
-        this.port = port;
     }
 
     /**
@@ -213,25 +211,6 @@ public class ModelServiceInstance {
      */
     public void setAddress(String address) {
         this.address = address;
-    }
-
-    /**
-     * Get the port.
-     *
-     * @return the port.
-     */
-    public int getPort() {
-        return port;
-    }
-
-    /**
-     * Set the port.
-     *
-     * @param port
-     *            the port.
-     */
-    public void setPort(int port) {
-        this.port = port;
     }
 
     /**
