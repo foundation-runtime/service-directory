@@ -34,8 +34,10 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cisco.oss.foundation.directory.impl.InstanceChangeListener;
 import com.cisco.oss.foundation.directory.NotificationHandler;
 import com.cisco.oss.foundation.directory.ServiceInstanceChangeListener;
+import com.cisco.oss.foundation.directory.adapter.ServiceInstanceChangeListenerAdapter;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.entity.InstanceChange;
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
@@ -44,11 +46,9 @@ import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
-import com.cisco.oss.foundation.directory.impl.InstanceChangeAdapter;
+import com.cisco.oss.foundation.directory.adapter.NotificationHandlerAdapter;
 import com.cisco.oss.foundation.directory.impl.ServiceDirectoryService;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
-
-import static com.cisco.oss.foundation.directory.entity.InstanceChange.toServiceInstanceChange;
 
 /**
  * It is the Directory LookupService to perform the lookup functionality.
@@ -69,7 +69,7 @@ public class DirectoryLookupService extends ServiceDirectoryService {
     /**
      * The Service Instance changes listeners Map.
      */
-    private final Map<String, List<ServiceInstanceChangeListener>> changeListeners = new HashMap<>();
+    private final Map<String, List<InstanceChangeListener<ModelServiceInstance>>> changeListeners = new HashMap<>();
 
 
     /**
@@ -169,14 +169,14 @@ public class DirectoryLookupService extends ServiceDirectoryService {
                         //oldest first
                         Collections.sort(changes, InstanceChange.Comparator);
                         for (InstanceChange<ModelServiceInstance> c : changes) {
-                            List<ServiceInstanceChangeListener> listenerList = new ArrayList<>();
+                            List<InstanceChangeListener<ModelServiceInstance>> listenerList = new ArrayList<>();
                             synchronized (changeListeners) {
                                 if (changeListeners.containsKey(c.serviceName)) {
                                     listenerList.addAll(changeListeners.get(c.serviceName));
                                 }
                             }
-                            for (ServiceInstanceChangeListener l : listenerList) {
-                                l.onChange(c.changeType,toServiceInstanceChange(c));
+                            for (InstanceChangeListener<ModelServiceInstance> l : listenerList) {
+                                l.onChange(c.changeType,c);
                             }
                         }
                         Collections.sort(changes,InstanceChange.ReverseComparator);
@@ -379,13 +379,13 @@ public class DirectoryLookupService extends ServiceDirectoryService {
 
         synchronized (changeListeners) {
             if (!changeListeners.containsKey(serviceName)) {
-                changeListeners.put(serviceName, new ArrayList<ServiceInstanceChangeListener>());
+                changeListeners.put(serviceName, new ArrayList<InstanceChangeListener<ModelServiceInstance>>());
             }
-            List<ServiceInstanceChangeListener> listeners = changeListeners.get(serviceName);
+            List<InstanceChangeListener<ModelServiceInstance>> listeners = changeListeners.get(serviceName);
             if (!listeners.isEmpty()){
-                for(ServiceInstanceChangeListener listener : listeners){
-                    if (listener instanceof InstanceChangeAdapter
-                            && ((InstanceChangeAdapter)listener).getHandler()==handler){
+                for(InstanceChangeListener<ModelServiceInstance> listener : listeners){
+                    if (listener instanceof NotificationHandlerAdapter
+                            && ((NotificationHandlerAdapter)listener).getAdapter()==handler){
                             //exist, log error and return
                             LOGGER.error("Try to register a handler {} that has already been registered.",handler);
                             return;
@@ -393,7 +393,7 @@ public class DirectoryLookupService extends ServiceDirectoryService {
 
                 }
             }
-            changeListeners.get(serviceName).add(new InstanceChangeAdapter(handler));
+            changeListeners.get(serviceName).add(new NotificationHandlerAdapter(handler));
         }
 
     }
@@ -420,11 +420,21 @@ public class DirectoryLookupService extends ServiceDirectoryService {
         }
         synchronized (changeListeners) {
             if (!changeListeners.containsKey(serviceName)) {
-                changeListeners.put(serviceName, new ArrayList<ServiceInstanceChangeListener>());
+                changeListeners.put(serviceName, new ArrayList<InstanceChangeListener<ModelServiceInstance>>());
             }
-            if (!changeListeners.get(serviceName).contains(listener)) {
-                changeListeners.get(serviceName).add(listener);
+            List<InstanceChangeListener<ModelServiceInstance>> listeners = changeListeners.get(serviceName);
+            if (!listeners.isEmpty()){
+                for(InstanceChangeListener<ModelServiceInstance> l : listeners){
+                    if (l instanceof ServiceInstanceChangeListenerAdapter
+                            && ((ServiceInstanceChangeListenerAdapter)l).getAdapter()==listener){
+                        //exist, log error and return
+                        LOGGER.error("Try to register a listener {} that has already been registered.",listener);
+                        return;
+                    }
+
+                }
             }
+            changeListeners.get(serviceName).add(new ServiceInstanceChangeListenerAdapter(listener));
         }
     }
 
@@ -447,11 +457,11 @@ public class DirectoryLookupService extends ServiceDirectoryService {
 
         synchronized (changeListeners) {
             if (changeListeners.containsKey(serviceName)) {
-                List<ServiceInstanceChangeListener> list = changeListeners.get(serviceName);
+                List<InstanceChangeListener<ModelServiceInstance>> list = changeListeners.get(serviceName);
                 boolean found = false;
-                for (ServiceInstanceChangeListener listener : list){
-                   if (listener instanceof InstanceChangeAdapter
-                           && ((InstanceChangeAdapter)listener).getHandler()==handler) {
+                for (InstanceChangeListener<ModelServiceInstance> listener : list){
+                   if (listener instanceof NotificationHandlerAdapter
+                           && ((NotificationHandlerAdapter)listener).getAdapter()==handler) {
                        list.remove(listener);
                        found = true;
                        break;
@@ -488,10 +498,17 @@ public class DirectoryLookupService extends ServiceDirectoryService {
         }
         synchronized (changeListeners) {
             if (changeListeners.containsKey(serviceName)) {
-                List<ServiceInstanceChangeListener> list = changeListeners.get(serviceName);
-                if (list.contains(listener)){
-                    list.remove(listener);
-                }else{
+                List<InstanceChangeListener<ModelServiceInstance>> list = changeListeners.get(serviceName);
+                boolean found = false;
+                for (InstanceChangeListener<ModelServiceInstance> l : list){
+                    if (l instanceof ServiceInstanceChangeListenerAdapter
+                            && ((ServiceInstanceChangeListenerAdapter)l).getAdapter()==listener) {
+                        list.remove(l);
+                        found = true;
+                        break;
+                    }
+                }
+                if (!found){
                     throw new ServiceException(ErrorCode.SERVICE_INSTANCE_LISTENER_NOT_EXIST);
                 }
                 if (list.isEmpty()) {
