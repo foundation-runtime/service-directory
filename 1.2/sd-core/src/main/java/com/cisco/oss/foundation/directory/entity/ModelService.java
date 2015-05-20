@@ -17,6 +17,7 @@ package com.cisco.oss.foundation.directory.entity;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -174,4 +175,31 @@ public class ModelService {
         this.createTime = createTime;
     }
 
+    @Override
+    public String toString() {
+        return "ModelService{" +
+                "name='" + name + '\'' +
+                ", id='" + id + '\'' +
+                ", serviceInstances=" + serviceInstances +
+                ", modifiedTime=" + modifiedTime +
+                ", createTime=" + createTime +
+                '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ModelService that = (ModelService) o;
+        return Objects.equals(name, that.name) &&
+                Objects.equals(id, that.id) &&
+                Objects.equals(serviceInstances, that.serviceInstances) &&
+                Objects.equals(modifiedTime, that.modifiedTime) &&
+                Objects.equals(createTime, that.createTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, id, serviceInstances, modifiedTime, createTime);
+    }
 }

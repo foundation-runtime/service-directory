@@ -171,7 +171,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
      *         the ModelService.
      */
     @Override
-    protected ModelService getModelService(String serviceName){
+    public ModelService getModelService(String serviceName){
         ModelService service = getCache().get(serviceName);
         if (service == null) {
             ModelService lookup = super.getModelService(serviceName);

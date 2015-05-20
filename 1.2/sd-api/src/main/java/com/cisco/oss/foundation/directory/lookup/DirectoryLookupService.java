@@ -201,7 +201,7 @@ public class DirectoryLookupService extends ServiceDirectoryService {
      * @param serviceName the Service name.
      * @return the ModelService.
      */
-    protected ModelService getModelService(String serviceName) {
+    public ModelService getModelService(String serviceName) {
         return getDirectoryServiceClient().lookupService(serviceName);
     }
 
