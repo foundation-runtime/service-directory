@@ -18,7 +18,7 @@ public class ClientCache<T> {
         return data.get();
     }
 
-    public void setDate(T value){
+    public void setData(T value){
         data.set(value);
     }
 

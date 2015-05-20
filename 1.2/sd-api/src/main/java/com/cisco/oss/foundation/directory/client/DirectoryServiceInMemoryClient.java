@@ -25,7 +25,9 @@ import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstanceHeartbeat;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
-import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
+
+import static com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils.copyModelInstFrom;
+import static com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils.toServiceInstance;
 
 /**
  * InMemory client works as a in-memory server. so that sd-api can work as-like there is a real sd-server.<p>
@@ -81,25 +83,6 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
         // in instance level will use 0L 1970-Jun-01 as created time. (should not depends on it)
         return new ModelService(serviceName, serviceName, new Date(0L));
 
-    }
-
-    /**
-     * In history record, need a copy for the that-time state of the instance
-     */
-    private static ModelServiceInstance copyModelInstFrom(ModelServiceInstance original) {
-        ModelServiceInstance copied = new ModelServiceInstance();
-        copied.setServiceName(original.getServiceName());
-        copied.setAddress(original.getAddress());
-        copied.setStatus(original.getStatus());
-        copied.setUri(original.getUri());
-        copied.setId(original.getId());
-        copied.setInstanceId(original.getInstanceId());
-        copied.setMonitorEnabled(original.isMonitorEnabled());
-        copied.setCreateTime(original.getCreateTime());
-        copied.setModifiedTime(original.getModifiedTime());
-        copied.setHeartbeatTime(original.getHeartbeatTime());
-        copied.setMetadata(original.getMetadata());
-        return copied;
     }
 
     private static ModelServiceInstance newModelInstFromProvidedInst(ProvidedServiceInstance instance) {
@@ -385,7 +368,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
             // has changes , so where is the changes?
             for (ModelServiceInstance instance : latest.getServiceInstances()) {
                 if (since < instance.getModifiedTime().getTime()) {
-                    changed.add(ServiceInstanceUtils.toServiceInstance(instance));
+                    changed.add(toServiceInstance(instance));
                 }
             }
         }

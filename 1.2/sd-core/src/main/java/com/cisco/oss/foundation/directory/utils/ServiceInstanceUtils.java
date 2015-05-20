@@ -57,7 +57,7 @@ public class ServiceInstanceUtils {
     public static ServiceInstance toServiceInstance(
             ModelServiceInstance modelInstance) {
         if (modelInstance==null) throw new NullPointerException();
-        Map<String, String> meta = new HashMap<String, String>();
+        Map<String, String> meta = new HashMap<>();
         if (modelInstance.getMetadata() != null) {
             for (Entry<String, String> en : modelInstance.getMetadata()
                     .entrySet()) {
@@ -72,12 +72,12 @@ public class ServiceInstanceUtils {
 
     /**
      * convert 1.1 modelServiceInstance ot serviceInstance
-     * @param modelInstance
-     * @return
+     * @param modelInstance the ModelServiceInstance11 object
+     * @return the ServiceInstance11 object
      */
     public static ServiceInstance11 toServiceInstance11(ModelServiceInstance11 modelInstance){
         if (modelInstance==null) throw new NullPointerException();
-        Map<String, String> meta = new HashMap<String, String>();
+        Map<String, String> meta = new HashMap<>();
         if (modelInstance.getMetadata() != null) {
             for (Entry<String, String> en : modelInstance.getMetadata()
                     .entrySet()) {
@@ -92,6 +92,28 @@ public class ServiceInstanceUtils {
     }
 
     /**
+     * Create new copy of ModelServiceInstance from the original one.
+     */
+    public static ModelServiceInstance copyModelInstFrom(ModelServiceInstance original) {
+        ModelServiceInstance copied = new ModelServiceInstance();
+        copied.setServiceName(original.getServiceName());
+        copied.setAddress(original.getAddress());
+        copied.setStatus(original.getStatus());
+        copied.setUri(original.getUri());
+        copied.setId(original.getId());
+        copied.setInstanceId(original.getInstanceId());
+        copied.setMonitorEnabled(original.isMonitorEnabled());
+        copied.setCreateTime(original.getCreateTime());
+        copied.setModifiedTime(original.getModifiedTime());
+        copied.setHeartbeatTime(original.getHeartbeatTime());
+        Map<String,String> newMeta = new HashMap<>();
+        Map<String,String> oldMeta = original.getMetadata();
+        if (oldMeta!=null) newMeta.putAll(oldMeta);
+        copied.setMetadata(newMeta);
+        return copied;
+    }
+
+    /**
      * Validate the required field String against the regex.
      *
      * @param field
@@ -101,10 +123,7 @@ public class ServiceInstanceUtils {
      * @return true if matched.
      */
     public static boolean validateRequiredField(String field, String reg) {
-        if (field == null || field.isEmpty()) {
-            return false;
-        }
-        return Pattern.matches(reg, field);
+        return !(field == null || field.isEmpty()) && Pattern.matches(reg, field);
     }
 
     /**
@@ -117,10 +136,7 @@ public class ServiceInstanceUtils {
      * @return true if field is empty of matched the pattern.
      */
     public static boolean validateOptionalField(String field, String reg) {
-        if (field == null || field.isEmpty()) {
-            return true;
-        }
-        return Pattern.matches(reg, field);
+        return field == null || field.isEmpty() || Pattern.matches(reg, field);
     }
 
     /**

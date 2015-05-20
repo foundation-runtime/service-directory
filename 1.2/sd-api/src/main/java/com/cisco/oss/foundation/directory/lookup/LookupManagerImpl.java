@@ -328,7 +328,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
         
         ServiceInstanceUtils.validateManagerIsStarted(isStarted.get());
 
-        List<ServiceInstance> instances = new ArrayList<ServiceInstance>();
+        List<ServiceInstance> instances = new ArrayList<>();
         List<ModelServiceInstance> allInstances = getLookupService().getAllInstances();
         for (ModelServiceInstance serviceInstance : allInstances) {
             instances.add(ServiceInstanceUtils.toServiceInstance(serviceInstance));
@@ -420,7 +420,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
         if (service == null) {
             throw new ServiceException(ErrorCode.SERVICE_NOT_EXIST,ErrorCode.SERVICE_NOT_EXIST.getMessageTemplate(),serviceName);
         }
-        getLookupService().addInstanceChangeListener(serviceName, listener);
+        getLookupService().addServiceInstanceChangeListener(serviceName, listener);
     }
 
     /**
@@ -443,7 +443,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
                     "ServiceInstanceChangeListener");
         }
 
-        getLookupService().removeInstanceChangeListener(serviceName, listener);
+        getLookupService().removeServiceInstanceChangeListener(serviceName, listener);
     }
 
     /**

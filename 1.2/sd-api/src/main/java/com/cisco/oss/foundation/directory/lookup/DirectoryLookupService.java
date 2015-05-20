@@ -34,9 +34,9 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.cisco.oss.foundation.directory.impl.InstanceChangeListener;
 import com.cisco.oss.foundation.directory.NotificationHandler;
 import com.cisco.oss.foundation.directory.ServiceInstanceChangeListener;
+import com.cisco.oss.foundation.directory.adapter.NotificationHandlerAdapter;
 import com.cisco.oss.foundation.directory.adapter.ServiceInstanceChangeListenerAdapter;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.entity.InstanceChange;
@@ -46,7 +46,7 @@ import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
-import com.cisco.oss.foundation.directory.adapter.NotificationHandlerAdapter;
+import com.cisco.oss.foundation.directory.impl.InstanceChangeListener;
 import com.cisco.oss.foundation.directory.impl.ServiceDirectoryService;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 
@@ -411,7 +411,7 @@ public class DirectoryLookupService extends ServiceDirectoryService {
      * @param listener
      *          the ServiceInstanceChangeListener for the service
      */
-    public void addInstanceChangeListener(String serviceName, ServiceInstanceChangeListener listener) {
+    public void addServiceInstanceChangeListener(String serviceName, ServiceInstanceChangeListener listener) {
         ServiceInstanceUtils.validateServiceName(serviceName);
         if (listener == null) {
             throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
@@ -489,7 +489,7 @@ public class DirectoryLookupService extends ServiceDirectoryService {
      * @param listener
      *          the ServiceInstanceChangeListener for the service
      */
-    public void removeInstanceChangeListener(String serviceName, ServiceInstanceChangeListener listener) {
+    public void removeServiceInstanceChangeListener(String serviceName, ServiceInstanceChangeListener listener) {
         ServiceInstanceUtils.validateServiceName(serviceName);
         if (listener == null) {
             throw new ServiceException(ErrorCode.SERVICE_DIRECTORY_NULL_ARGUMENT_ERROR,
