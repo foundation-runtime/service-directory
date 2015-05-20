@@ -20,6 +20,7 @@ package com.cisco.oss.foundation.directory.lookup;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -90,6 +91,7 @@ public class DirectoryLookupService extends ServiceDirectoryService {
         if (isStarted.compareAndSet(true, false)) {
             ScheduledExecutorService service = changesCheckService.getAndSet(newChangesCheckService());
             service.shutdown();
+            // cleanUpChangeListenerMap();
             LOGGER.info("Service Instances Changes Checking Task is stopped");
         }
     }
@@ -166,7 +168,7 @@ public class DirectoryLookupService extends ServiceDirectoryService {
 
                         for (InstanceChange<ModelServiceInstance> c : changes) {
                             List<InstanceChangeListener<ModelServiceInstance>> listenerList = changeListenerMap.get(c.serviceName);
-                            if (listenerList!=null) {
+                            if (listenerList != null) {
                                 for (InstanceChangeListener<ModelServiceInstance> l : listenerList) {
                                     l.onChange(c.changeType, c);
                                 }
@@ -489,6 +491,31 @@ public class DirectoryLookupService extends ServiceDirectoryService {
             throw new ServiceException(ErrorCode.SERVICE_NOT_EXIST, ErrorCode.SERVICE_NOT_EXIST.getMessageTemplate(), serviceName);
         }
 
+    }
+
+    /**
+     * remove all listeners by clean up the listener map.
+     * beware, the method might/might not called from shutdown of the service.
+     * If the method is called from shutdown. It means all listeners have to be registered again.
+     * But in saturation of supporting of SD restart, the notification will not work again.
+     */
+    private void cleanUpChangeListenerMap() {
+        if (LOGGER.isDebugEnabled()){
+            dumpChangeListenerMap();
+        }
+        changeListenerMap.clear();
+        LOGGER.debug("The listener map has been cleaned");
+    }
+
+    private void dumpChangeListenerMap() {
+        for(Map.Entry<String, CopyOnWriteArrayList<InstanceChangeListener<ModelServiceInstance>>> entry : changeListenerMap.entrySet()){
+            String serviceName = entry.getKey();
+            CopyOnWriteArrayList<InstanceChangeListener<ModelServiceInstance>> listenerList = entry.getValue();
+            LOGGER.debug("Dump listener List for {}",serviceName);
+            for(InstanceChangeListener<ModelServiceInstance> listener : listenerList){
+                LOGGER.debug("  {} -> {}",serviceName,listener);
+            }
+        }
     }
 
     /**

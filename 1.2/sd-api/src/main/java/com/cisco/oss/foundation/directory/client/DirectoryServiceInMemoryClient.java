@@ -306,7 +306,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
                 List<ModelServiceInstance> instanceList = new ArrayList<>(iMap.entrySet().size());
                 List<Long> modifiedTimes = new ArrayList<>(instanceList.size());
                 for (Map.Entry<String, ModelServiceInstance> entry : iMap.entrySet()) {
-                    ModelServiceInstance mInstance = entry.getValue();
+                    ModelServiceInstance mInstance = copyModelInstFrom(entry.getValue());
                     instanceList.add(mInstance);
                     modifiedTimes.add(mInstance.getModifiedTime().getTime());
                 }

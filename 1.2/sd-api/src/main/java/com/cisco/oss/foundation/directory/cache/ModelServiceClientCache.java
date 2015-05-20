@@ -23,10 +23,9 @@ public class ModelServiceClientCache extends ClientCache<ModelService> implement
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelServiceClientCache.class);
     private final String serviceName;
 
-    public ModelServiceClientCache(List<InstanceChangeListener<ModelServiceInstance>> changeListeners, ModelService data) {
+    public ModelServiceClientCache(ModelService data) {
         super(data);
         this.serviceName = data.getName();
-        changeListeners.add(this);
     }
 
     @Override
@@ -64,12 +63,15 @@ public class ModelServiceClientCache extends ClientCache<ModelService> implement
                 for (ModelServiceInstance instance : all){
                     if (instance.getInstanceId().equals(change.to.getInstanceId())){
                         if (type == InstanceChange.ChangeType.Status){
+                            LOGGER.debug("Cached service instance {} has change Status to {}",instance,change.to.getStatus());
                             instance.setStatus(change.to.getStatus());
                         }else if (type == InstanceChange.ChangeType.URL){
+                            LOGGER.debug("Cached service instance {} has change URL to {}",instance,change.to.getStatus());
                             instance.setUri(change.to.getUri());
                         }else if (type == InstanceChange.ChangeType.META){
                             Map<String,String> map = new HashMap<>();
                             map.putAll(change.to.getMetadata());
+                            LOGGER.debug("Cached service instance {} has change Metadata to {}",map);
                             instance.setMetadata(map);
                         }
                         break;
@@ -92,19 +94,5 @@ public class ModelServiceClientCache extends ClientCache<ModelService> implement
         return getData();
     }
 
-    public void removeFromChangeListenerMap(Map<String, List<InstanceChangeListener<ModelServiceInstance>>> changeListeners) {
-        List<InstanceChangeListener<ModelServiceInstance>> lList = changeListeners.get(serviceName);
-        if (lList != null) {
-            boolean removed = lList.remove(this);
-            if (removed) {
-                LOGGER.debug("Change Listener for Client Cache of service {} has been removed", serviceName);
-            }
-            else{
-                LOGGER.debug("Change Listener for client cache of service {} might already has been removed");
-            }
-        }else{
-            LOGGER.debug("No Change Listener find for service {} ");
-        }
-    }
 
 }
