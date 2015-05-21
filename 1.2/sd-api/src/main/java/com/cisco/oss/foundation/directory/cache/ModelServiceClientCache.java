@@ -63,17 +63,23 @@ public class ModelServiceClientCache extends ClientCache<ModelService> implement
                 for (ModelServiceInstance instance : all){
                     if (instance.getInstanceId().equals(change.to.getInstanceId())){
                         if (type == InstanceChange.ChangeType.Status){
-                            LOGGER.debug("Cached service instance {} has change Status to {}",instance,change.to.getStatus());
+                            LOGGER.debug("Cached service instance {} has change Status from {} to {}",instance,
+                                    change.from.getStatus(),
+                                    change.to.getStatus());
                             instance.setStatus(change.to.getStatus());
                         }else if (type == InstanceChange.ChangeType.URL){
-                            LOGGER.debug("Cached service instance {} has change URL to {}",instance,change.to.getStatus());
+                            LOGGER.debug("Cached service instance {} has change URL from {} to {}",instance,
+                                    change.from.getUri(),
+                                    change.to.getUri());
                             instance.setUri(change.to.getUri());
                         }else if (type == InstanceChange.ChangeType.META){
                             Map<String,String> map = new HashMap<>();
                             map.putAll(change.to.getMetadata());
-                            LOGGER.debug("Cached service instance {} has change Metadata to {}",map);
+                            LOGGER.debug("Cached service instance {} has change Metadata from {} to {}",instance,
+                                    instance.getMetadata(),map);
                             instance.setMetadata(map);
                         }
+                        instance.setModifiedTime(change.to.getModifiedTime()); //need to change modified time
                         break;
                     }
                 }

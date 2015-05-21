@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.cisco.oss.foundation.directory.cache.ModelServiceClientCache;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
@@ -88,7 +89,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     /**
      * Internal cache that maps the service name to a list of service instances.
      */
-    private final ConcurrentHashMap<String, ModelService> cache = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, ModelServiceClientCache> cache = new ConcurrentHashMap<>();
 
     /**
      * Internal cache that maps the metadata key name to a list of service instances.
@@ -154,8 +155,10 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
             ScheduledExecutorService service = this.syncService.getAndSet(newSyncService());
             service.shutdown();
             LOGGER.info("Cache sync Service is shutdown");
+            for (Entry<String,ModelServiceClientCache> entry : cache.entrySet()){
+               removeInstanceChangeListener(entry.getKey(),entry.getValue());
+            }
             getCache().clear();
-            getMetadataKeyCache().clear();
         }
     }
 
@@ -172,35 +175,16 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
      */
     @Override
     public ModelService getModelService(String serviceName){
-        ModelService service = getCache().get(serviceName);
-        if (service == null) {
+        ModelServiceClientCache cache = getCache().get(serviceName);
+        if (cache == null) {
             ModelService lookup = super.getModelService(serviceName);
             if (lookup!=null) {
-                getCache().putIfAbsent(serviceName, lookup);
-                service = getCache().get(serviceName);
+                getCache().putIfAbsent(serviceName, new ModelServiceClientCache(lookup));
+                cache = getCache().get(serviceName);
+                addInstanceChangeListener(serviceName,cache);
             }
         }
-        return service;
-    }
-
-    /**
-     * Get ModelMetadataKey, which is an object holding a list of service instances that contain the key name in the service metadata.
-     *
-     * It will query the cache first. If no match is found in the cache, the metadata key will be added to the cache.
-     *
-     * @param keyName
-     *         the metadata key name.
-     * @return
-     *         the ModelMetadataKey.
-     */
-    @Override
-    protected ModelMetadataKey getModelMetadataKey(String keyName){
-        ModelMetadataKey key = getMetadataKeyCache().get(keyName);
-        if (key == null) {
-            getMetadataKeyCache().putIfAbsent(keyName, super.getModelMetadataKey(keyName));
-            key = getMetadataKeyCache().get(keyName);
-        }
-        return key;
+        return cache==null ? null : cache.getData();
     }
 
     /**
@@ -214,22 +198,9 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                 SD_API_CACHE_SYNC_INTERVAL_PROPERTY,
                 SD_API_CACHE_SYNC_INTERVAL_DEFAULT);
 
-        syncService.get().scheduleWithFixedDelay(new CacheSyncTask(),
-                delay, interval, TimeUnit.SECONDS);
         LOGGER.info("Cache sync Service is started");
     }
 
-    /**
-     * Get the ServiceDirectoryCache that caches metadata key map.
-     *
-     * It is thread safe.
-     *
-     * @return
-     *         the ServiceDirectoryCache.
-     */
-    private ConcurrentHashMap<String, ModelMetadataKey> getMetadataKeyCache(){
-        return metaKeyCache;
-    }
 
     /**
      * Get the ServiceDirectoryCache that caches Services.
@@ -239,78 +210,10 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
      * @return
      *         the ServiceDirectoryCache.
      */
-    private ConcurrentHashMap<String, ModelService> getCache(){
+    private ConcurrentHashMap<String, ModelServiceClientCache> getCache(){
         return this.cache;
     }
 
-    /**
-     * Get the ModelService List for cache sync.
-     *
-     * The ModelService doesn't contain the referenced ModelServiceInstances.
-     *
-     * @return
-     *         the ModelService List.
-     */
-    private List<ModelService> getAllServicesForSync(){
-        List<ModelService> allServices = new ArrayList<>();
-        allServices.addAll(this.cache.values());
-
-        List<ModelService> syncServices = new ArrayList<>();
-        for(ModelService service : allServices){
-            ModelService syncService = new ModelService(service.getName(), service.getId(), service.getCreateTime());
-            //NOTE: here the original impl use null as modifiedTime
-            // and service-side impl will always return service as changed if the modifiedTime is null
-            // (see line#269 ServiceDirectoryServiceImpl.java in 'sd-service')
-            // so that all call of getChangedServices() will always return a list of services by the service names.
-            // The getChangedServices() actually lookupServicesByServiceNames
-            syncServices.add(syncService);
-        }
-        return syncServices;
-    }
-
-    /**
-     * Get the ModelMetadataKey List for cache sync.
-     *
-     * The ModelMetadataKey doesn't contain the referenced ModelServiceInstances.
-     *
-     * @return
-     *         the ModelMetadataKey List.
-     */
-    private List<ModelMetadataKey> getAllMetadataKeysForSync(){
-        List<ModelMetadataKey> allKeys = new ArrayList<>();
-        allKeys.addAll(this.metaKeyCache.values());
-        List<ModelMetadataKey> syncKeys = new ArrayList<>();
-        for(ModelMetadataKey service : allKeys){
-            ModelMetadataKey syncKey = new ModelMetadataKey(service.getName(), service.getId(), service.getModifiedTime(), service.getCreateTime());
-            syncKeys.add(syncKey);
-        }
-        return syncKeys;
-    }
-
-    /**
-     * Get the changed list for the MetadataKey from the server.
-     *
-     * @param keyMap
-     *         the MetadataKey list.
-     * @return
-     *         the ModelMetadataKey list that has been changed.
-     */
-    private Map<String, OperationResult<ModelMetadataKey>> getChangedMetadataKeys(Map<String, ModelMetadataKey> keyMap){
-        return this.getDirectoryServiceClient().getChangedMetadataKeys(keyMap);
-    }
-
-    /**
-     * Get the changed Services list from the server.
-     *
-     * @param serviceMap
-     *         the Service list.
-     * @return
-     *         the Service list that has been changed.
-     * @throws ServiceException
-     */
-    private Map<String, OperationResult<ModelService>> getChangedServices(Map<String, ModelService> serviceMap){
-        return this.getDirectoryServiceClient().getChangedServices(serviceMap);
-    }
 
     /**
      * Dump the ServiceCache to CacheDumpLogger Logger.
@@ -322,7 +225,9 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
         if (CacheDumpLogger.isDebugEnabled()) {
             try {
                 List<ModelService> services = new ArrayList<>();
-                services.addAll(getCache().values());
+                for (ModelServiceClientCache cache : getCache().values()){
+                    services.add(cache.getData());
+                }
                 StringBuilder sb = new StringBuilder();
                 sb.append("LookupManager dumpped Service Cache at: ").append(System.currentTimeMillis()).append("\n");
                 for (ModelService service : services) {
@@ -341,88 +246,4 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 
     }
 
-    /**
-     * The Runnable for Cache Sync.
-     *
-     *
-     */
-    private class CacheSyncTask implements Runnable{
-
-        private boolean lastCacheDump = false;
-        private final CachedDirectoryLookupService cachedLookupService = CachedDirectoryLookupService.this;
-        public CacheSyncTask(){
-        }
-        @Override
-        public void run() {
-            try{
-                List<ModelMetadataKey> keys = cachedLookupService.getAllMetadataKeysForSync();
-                if(keys.size() > 0){
-                    Map<String, ModelMetadataKey> keyMap = new HashMap<>();
-                    for(ModelMetadataKey key : keys){
-                        keyMap.put(key.getName(), key);
-                    }
-                    Map<String, OperationResult<ModelMetadataKey>> deltaKeys = cachedLookupService.getChangedMetadataKeys(keyMap);
-                    if(deltaKeys != null){
-                        for(Entry<String, OperationResult<ModelMetadataKey>> deltaKey : deltaKeys.entrySet()){
-                            String keyName = deltaKey.getKey();
-                            OperationResult<ModelMetadataKey> result = deltaKey.getValue();
-                            if(result.getResult()){
-                                ModelMetadataKey newKey = result.getobject();
-                                if(newKey != null){
-                                    cachedLookupService.getMetadataKeyCache().put(keyName, newKey);
-                                    LOGGER.info("Update the ModelMetadataKey in cache, keyName={}.", keyName);
-                                }
-                            } else {
-                                LOGGER.error("Cache sync ModelMetadataKey failed, keyName={}. {}.",
-                                            keyName, result.getError().getErrorMessage());
-                            }
-                        }
-                    } else {
-                        LOGGER.debug("No MetadataKey is changed.");
-                    }
-                } else {
-                    LOGGER.debug("No MetadataKey in the cache, skip cache sync.");
-                }
-            }catch(Exception e){
-                LOGGER.error("Sync ModelMetadataKey cache from ServiceDirectory Server failed. ", e);
-            }
-
-            try{
-                boolean cacheUpdated = false;
-                List<ModelService> services = cachedLookupService.getAllServicesForSync();
-                Map<String, ModelService> serviceMap = new HashMap<>();
-                for(ModelService service : services){
-                    serviceMap.put(service.getName(), service);
-                }
-                Map<String, OperationResult<ModelService>> deltaSvcs = cachedLookupService.getChangedServices(serviceMap);
-                if(deltaSvcs != null){
-                    cacheUpdated = true;
-                    for(Entry<String, OperationResult<ModelService>> deltaService : deltaSvcs.entrySet()){
-                        String serviceName = deltaService.getKey();
-                        OperationResult<ModelService> result = deltaService.getValue();
-                        if(result.getResult()){
-                            ModelService newService = result.getobject();
-                            if(newService != null){
-                                cachedLookupService.getCache().put(serviceName, newService);
-                                LOGGER.info("Update the ModelService in cache, serviceName={}.", serviceName );
-                            }
-                        } else {
-                            LOGGER.error("Cache sync ModelService failed, serviceName={}. {}.",
-                                            serviceName, result.getError().getErrorMessage());
-                        }
-                    }
-                } else {
-                    LOGGER.debug("No Service is changed.");
-                }
-
-                if (cacheUpdated || !lastCacheDump ) {
-                    lastCacheDump = cachedLookupService.dumpCache();
-                }
-
-            }catch(Exception e){
-                LOGGER.error("Sync ModelService cache from ServiceDirectory Server failed. ", e);
-            }
-        }
-
-    }
 }

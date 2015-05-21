@@ -186,4 +186,15 @@ public class ModelMetadataKey {
     public void setServiceInstances(List<ModelServiceInstance> serviceInstances) {
         this.serviceInstances = serviceInstances;
     }
+
+    @Override
+    public String toString() {
+        return "ModelMetadataKey{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                ", modifiedTime=" + (modifiedTime == null ? null : modifiedTime.getTime()) +
+                ", createTime=" + (createTime == null ? null : createTime.getTime()) +
+                ", serviceInstances=" + serviceInstances +
+                '}';
+    }
 }
