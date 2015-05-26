@@ -98,8 +98,68 @@ public class ServiceInstanceChangeListenerTest {
             TimeUnit.MILLISECONDS.sleep(10L);
             reg.updateServiceOperationalStatus("foo", "192.168.1.2", OperationalStatus.UP);
             reg.unregisterService("foo", "192.168.1.2");
-            assertTrue("Shouldn't wait more than 5 sec",countDown.await(5, TimeUnit.SECONDS));
-            assertEquals("192.168.1.2",lastInst.get().getAddress());
+            assertTrue("Should not wait more than 5 sec", countDown.await(5, TimeUnit.SECONDS));
+            assertEquals("192.168.1.2", lastInst.get().getAddress());
+            lookup.removeInstanceChangeListener("foo", listener);
+        }
+    }
+
+
+    @Test
+    public void testOnTimeOut() throws Exception{
+        final CountDownLatch countDown = new CountDownLatch(1);
+        final ServiceInstanceChangeListener evilOne = new ServiceInstanceChangeListener() {
+            @Override
+            public void onChange(InstanceChange.ChangeType type, InstanceChange<ServiceInstance> change) throws Exception {
+                System.out.printf("Evil One : %s\n",change);
+                TimeUnit.SECONDS.sleep(5L);
+                fail("Evil One : should not be finished!");
+            }
+        };
+        final ServiceInstanceChangeListener goodOne = new ServiceInstanceChangeListener() {
+            @Override
+            public void onChange(InstanceChange.ChangeType type, InstanceChange<ServiceInstance> change) throws Exception {
+                System.out.printf("Good One : %s\n",change);
+                countDown.countDown();
+                System.out.printf("Good One : has been countDown.\n");
+            }
+        };
+        try (LookupManager lookup = factory.getLookupManager();RegistrationManager reg = factory.getRegistrationManager()) {
+            lookup.addInstanceChangeListener("foo", evilOne);
+            lookup.addInstanceChangeListener("foo", goodOne);
+            reg.updateServiceOperationalStatus("foo", "192.168.1.1", OperationalStatus.UP);
+            assertTrue("should not wait for more than 5s", countDown.await(5, TimeUnit.SECONDS));
+            lookup.removeInstanceChangeListener("foo", evilOne); //must remove this one
+            lookup.removeInstanceChangeListener("foo",goodOne);
+        }
+    }
+
+    @Test
+    public void testOnException() throws Exception{
+        final CountDownLatch countDown = new CountDownLatch(1);
+        final ServiceInstanceChangeListener exceptionOne = new ServiceInstanceChangeListener() {
+            @Override
+            public void onChange(InstanceChange.ChangeType type, InstanceChange<ServiceInstance> change) throws Exception {
+                System.out.printf("Exception One : %s\n",change);
+                throw new Exception("Oops!");
+            }
+        };
+        final ServiceInstanceChangeListener goodOne = new ServiceInstanceChangeListener() {
+            @Override
+            public void onChange(InstanceChange.ChangeType type, InstanceChange<ServiceInstance> change) throws Exception {
+                System.out.printf("Good One : %s\n",change);
+                countDown.countDown();
+                System.out.printf("Good One : has been countDown.\n");
+            }
+        };
+
+        try (LookupManager lookup = factory.getLookupManager();RegistrationManager reg = factory.getRegistrationManager()) {
+            lookup.addInstanceChangeListener("foo", exceptionOne);
+            lookup.addInstanceChangeListener("foo", goodOne);
+            reg.updateServiceOperationalStatus("foo", "192.168.1.1", OperationalStatus.UP);
+            countDown.await();
+            lookup.removeInstanceChangeListener("foo", exceptionOne);
+            lookup.removeInstanceChangeListener("foo", goodOne);
         }
     }
 }

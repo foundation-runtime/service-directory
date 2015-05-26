@@ -25,9 +25,11 @@ import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -125,6 +127,7 @@ public class DirectoryLookupService extends ServiceDirectoryService {
     private class ChangesCheckTask implements Runnable {
         // the time-mills when the task is initialized
         private final long INIT_TIME_MILLS;
+        private final long CALL_TIMEOUT_SEC = 2L;
 
         // Although the map is not required thread-safe, since the task itself is single-threaded.
         // but is reasonable to protect it since the single thread is easy to break by changing
@@ -166,11 +169,29 @@ public class DirectoryLookupService extends ServiceDirectoryService {
                         //oldest first
                         Collections.sort(changes, InstanceChange.Comparator);
 
-                        for (InstanceChange<ModelServiceInstance> c : changes) {
+                        for (final InstanceChange<ModelServiceInstance> c : changes) {
                             List<InstanceChangeListener<ModelServiceInstance>> listenerList = changeListenerMap.get(c.serviceName);
                             if (listenerList != null) {
-                                for (InstanceChangeListener<ModelServiceInstance> l : listenerList) {
-                                    l.onChange(c.changeType, c);
+                                for (final InstanceChangeListener<ModelServiceInstance> l : listenerList) {
+                                    Future<?> f = Executors.newSingleThreadExecutor().submit(
+                                            new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    try {
+                                                        l.onChange(c.changeType, c);
+                                                    } catch (Exception e) {
+                                                        LOGGER.error("execute change listener in error ", e);
+                                                    }
+                                                }
+                                            });
+                                    try {
+                                        f.get(CALL_TIMEOUT_SEC, TimeUnit.SECONDS);
+                                    } catch (TimeoutException timeout) {
+                                        LOGGER.warn("execute change listener is timeout in {} sec", CALL_TIMEOUT_SEC);
+                                    } catch (Throwable t) {
+                                        LOGGER.error("execute change listener in error ", t);
+                                    }
+
                                 }
                             }
                         }

@@ -20,7 +20,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Timer;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -35,7 +34,6 @@ import com.cisco.oss.foundation.directory.entity.InstanceChange;
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
-import com.cisco.oss.foundation.directory.entity.OperationResult;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.lookup.CachedDirectoryLookupService;
@@ -76,7 +74,6 @@ public class LookupManagerImplTest {
         final AtomicInteger serviceInvoked = new AtomicInteger(0);
         final AtomicInteger keyInvoked = new AtomicInteger(0);
         final AtomicInteger serviceChangingInvoked = new AtomicInteger(0);
-        final AtomicInteger keyChangingInvoked = new AtomicInteger(0);
 
         CachedLookupManagerImpl impl = new CachedLookupManagerImpl(new CachedDirectoryLookupService(new DirectoryServiceRestfulClient(){
             @Override
@@ -163,8 +160,8 @@ public class LookupManagerImplTest {
         list.add("core03");
         query = new ServiceInstanceQuery().getInQueryCriterion("solution", list);
         try {
-            Assert.assertEquals(impl.getAllInstances(serviceName).get(0).getAddress(), instanceAddress);
-            Assert.assertTrue(impl.getAllInstances(serviceName, query).get(0).getUri().equals("http://cisco.com/vbo/odrm/setupsession/v02"));
+            Assert.assertEquals(instanceAddress, impl.getAllInstances(serviceName).get(0).getAddress());
+            Assert.assertEquals("http://cisco.com/vbo/odrm/setupsession/v02", impl.getAllInstances(serviceName, query).get(0).getUri());
             Assert.assertTrue(impl.getAllInstancesByMetadataKey(query).get(0).getAddress().equals(instanceAddress));
             Assert.assertTrue(impl.getAllInstancesByMetadataKey(query).get(0).getUri().equals("http://cisco.com/vbo/odrm/setupsession/v03"));
         } catch (ServiceException e) {
