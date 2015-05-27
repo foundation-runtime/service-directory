@@ -59,9 +59,6 @@ public interface DirectoryServiceClient {
 
     ModelMetadataKey getMetadataKey(String keyName);
 
-    @Deprecated /* replaced by lookupChangesSince */
-    Map<String, OperationResult<ModelMetadataKey>> getChangedMetadataKeys(Map<String, ModelMetadataKey> keys);
-
     List<InstanceChange<ModelServiceInstance>> lookupChangesSince(String serviceName,long since);
 
 }

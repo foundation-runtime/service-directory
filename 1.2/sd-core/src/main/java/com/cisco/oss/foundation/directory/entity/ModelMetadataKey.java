@@ -18,6 +18,7 @@ package com.cisco.oss.foundation.directory.entity;
 import java.util.Date;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 /**
@@ -30,30 +31,18 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ModelMetadataKey {
-    /**
-     * The MatadataKeyMapper Object id.
-     */
-    private String id;
 
     /**
      * The metadata key name.
      */
     private String name;
 
-    /**
-     * The last modified time.
-     */
-    private Date modifiedTime;
-
-    /**
-     * The creating time.
-     */
-    private Date createTime;
 
     /**
      * The list of the ServiceInstance that contains this metadata key.
      */
     private List<ModelServiceInstance> serviceInstances;
+
 
     /**
      * Constructor.
@@ -61,54 +50,15 @@ public class ModelMetadataKey {
     public ModelMetadataKey() {
 
     }
-
     /**
      * Constructor.
      *
      * @param name
      *            the key name.
      */
+    @JsonCreator
     public ModelMetadataKey(String name) {
         this.name = name;
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param name
-     *            the key name.
-     * @param id
-     *            the id.
-     * @param modifiedTime
-     *            the last modified time stamp.
-     * @param createTime
-     *            the create time stamp.
-     */
-    public ModelMetadataKey(String name, String id, Date modifiedTime,
-            Date createTime) {
-        this.id = id;
-        this.name = name;
-        this.modifiedTime = modifiedTime;
-        this.createTime = createTime;
-    }
-
-    /**
-     * Get the id.
-     *
-     * @return the id.
-     */
-    public String getId() {
-        return id;
-    }
-
-    /**
-     * Set the id.
-     *
-     * @param id
-     *            the id.
-     */
-    public void setId(String id) {
-        this.id = id;
     }
 
     /**
@@ -130,43 +80,6 @@ public class ModelMetadataKey {
         this.name = name;
     }
 
-    /**
-     * Get the last modified time stamp.
-     *
-     * @return the last modifed time stamp.
-     */
-    public Date getModifiedTime() {
-        return modifiedTime;
-    }
-
-    /**
-     * Set the last modified time stamp.
-     *
-     * @param modifiedTime
-     *            the last modified time stamp.
-     */
-    public void setModifiedTime(Date modifiedTime) {
-        this.modifiedTime = modifiedTime;
-    }
-
-    /**
-     * Get the create time stamp.
-     *
-     * @return the create time stamp.
-     */
-    public Date getCreateTime() {
-        return createTime;
-    }
-
-    /**
-     * Set the create time stamp.
-     *
-     * @param createTime
-     *            the create time stamp.
-     */
-    public void setCreateTime(Date createTime) {
-        this.createTime = createTime;
-    }
 
     /**
      * Get the ServiceInstance list.
@@ -190,10 +103,7 @@ public class ModelMetadataKey {
     @Override
     public String toString() {
         return "ModelMetadataKey{" +
-                "id='" + id + '\'' +
                 ", name='" + name + '\'' +
-                ", modifiedTime=" + (modifiedTime == null ? null : modifiedTime.getTime()) +
-                ", createTime=" + (createTime == null ? null : createTime.getTime()) +
                 ", serviceInstances=" + serviceInstances +
                 '}';
     }

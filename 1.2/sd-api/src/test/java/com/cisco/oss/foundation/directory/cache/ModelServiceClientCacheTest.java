@@ -34,8 +34,8 @@ public class ModelServiceClientCacheTest {
 
     @Before
     public void setup() {
-        client.registerInstance(new ProvidedServiceInstance("foo","192.168.1.1","http://foo.cisco.com", DOWN
-                ,null));
+        client.registerInstance(new ProvidedServiceInstance("foo", "192.168.1.1", "http://foo.cisco.com", DOWN
+                , null));
         lookupService.start();
     }
 
@@ -57,17 +57,16 @@ public class ModelServiceClientCacheTest {
         lookupService.addServiceInstanceChangeListener(fooService.getName(), new ServiceInstanceChangeListener() {
             @Override
             public void onChange(InstanceChange.ChangeType type, InstanceChange<ServiceInstance> change) throws Exception {
-                if (type == InstanceChange.ChangeType.Status){
-                    assertEquals(DOWN,change.from.getStatus());
-                    assertEquals(1,fooCache.getAllModelServiceInstance().size());
-                    assertEquals(UP,fooCache.getAllModelServiceInstance().get(0).getStatus());
-                }
+                assertEquals(InstanceChange.ChangeType.Status, type);
+                assertEquals(DOWN, change.from.getStatus());
+                assertEquals(1, fooCache.getAllModelServiceInstance().size());
+                assertEquals(UP, fooCache.getAllModelServiceInstance().get(0).getStatus());
                 latch.countDown();
             }
         });
         client.updateInstanceStatus("foo", "192.168.1.1", UP, true);
         assertTrue("error if wait 5 secs no changes found", latch.await(5, TimeUnit.SECONDS));
-        lookupService.removeInstanceChangeListener("foo",fooCache);
+        lookupService.removeInstanceChangeListener("foo", fooCache);
 
     }
 }

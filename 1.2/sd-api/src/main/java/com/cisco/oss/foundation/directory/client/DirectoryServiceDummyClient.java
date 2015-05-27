@@ -85,12 +85,6 @@ public class DirectoryServiceDummyClient implements DirectoryServiceClient {
     }
 
     @Override
-    public Map<String, OperationResult<ModelMetadataKey>> getChangedMetadataKeys(Map<String, ModelMetadataKey> keys) {
-        LOGGER.info("getChangedMetadataKeys {}",keys);
-        return Collections.emptyMap();
-    }
-
-    @Override
     public List<InstanceChange<ModelServiceInstance>> lookupChangesSince(String serviceName, long since) {
         throw new UnsupportedOperationException("not support now for 1.2 api");
     }

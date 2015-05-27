@@ -392,30 +392,6 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
     }
 
     /**
-     * Get the changed MetadataKey list.
-     *
-     * @param keys
-     *         the MetadataKey List.
-     * @return
-     *         the list of ModelMetadataKeys that have been changed.
-     */
-    @Override
-    public Map<String, OperationResult<ModelMetadataKey>> getChangedMetadataKeys(Map<String, ModelMetadataKey> keys) {
-        String body = serialize(keys);
-
-        HttpResponse result = invoker.invoke("/metadatakey/changing", body, HttpMethod.POST, addHeader());
-
-        if (result.getHttpCode() != HTTP_OK) {
-            throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
-                    "HTTP Code is not OK, code=%s", result.getHttpCode());
-        }
-
-        return deserialize(
-                result.getRetBody(), new TypeReference<Map<String, OperationResult<ModelMetadataKey>>>() {
-                });
-    }
-
-    /**
      * Deserialize a JSON String to the target object.
      *
      * @param body

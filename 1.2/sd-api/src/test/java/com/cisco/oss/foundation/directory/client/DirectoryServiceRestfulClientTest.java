@@ -215,9 +215,6 @@ public class DirectoryServiceRestfulClientTest {
         instance.setHeartbeatTime(date);
         instances.add(instance);
         final ModelMetadataKey result = new ModelMetadataKey("datacenter");
-        result.setCreateTime(date);
-        result.setModifiedTime(date);
-        result.setId("datacenter");
         result.setServiceInstances(instances);
 
         final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker() {
@@ -233,9 +230,6 @@ public class DirectoryServiceRestfulClientTest {
         ModelMetadataKey metadatakey = client.getMetadataKey(keyName);
 
         Assert.assertEquals(metadatakey.getName(), "datacenter");
-        Assert.assertEquals(metadatakey.getId(), "datacenter");
-        Assert.assertEquals(metadatakey.getCreateTime().getTime(), date.getTime());
-        Assert.assertEquals(metadatakey.getModifiedTime().getTime(), date.getTime());
         Assert.assertEquals(metadatakey.getServiceInstances().size(), 1);
 
         compareModelServiceInstance(instance, metadatakey.getServiceInstances().get(0));

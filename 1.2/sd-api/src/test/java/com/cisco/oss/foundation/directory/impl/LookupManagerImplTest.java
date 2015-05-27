@@ -68,7 +68,7 @@ public class LookupManagerImplTest {
         final ModelService result = new ModelService("odrm", "odrm", date);
         result.setServiceInstances(instances);
 
-        final ModelMetadataKey keyResult = new ModelMetadataKey(keyName, keyName, date, date);
+        final ModelMetadataKey keyResult = new ModelMetadataKey(keyName);
         keyResult.setServiceInstances(instances);
 
         final AtomicInteger serviceInvoked = new AtomicInteger(0);
@@ -100,7 +100,7 @@ public class LookupManagerImplTest {
                             date, metadata);
                     instance.setHeartbeatTime(date);
                     instances.add(instance);
-                    ModelMetadataKey key = new ModelMetadataKey(keyName, keyName, date, date);
+                    ModelMetadataKey key = new ModelMetadataKey(keyName);
                     key.setServiceInstances(instances);
                     LOGGER.debug("When {} execute getMetadataKey by {} return {}",keyInvoked.get(),keyName, key);
                     return key;
@@ -152,7 +152,7 @@ public class LookupManagerImplTest {
 
         // wait for cache sync.
         LOGGER.info("Start sleep.....");
-        TimeUnit.SECONDS.sleep(1L);
+        TimeUnit.SECONDS.sleep(2L);
         LOGGER.info("finished sleep.....");
 
         List<String> list = new ArrayList<>();

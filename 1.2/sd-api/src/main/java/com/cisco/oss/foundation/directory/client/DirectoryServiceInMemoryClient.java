@@ -346,10 +346,6 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
         throw new UnsupportedOperationException("get metadata is not supported now");
     }
 
-    @Override
-    public Map<String, OperationResult<ModelMetadataKey>> getChangedMetadataKeys(Map<String, ModelMetadataKey> keys) {
-        throw new UnsupportedOperationException("get metadata change is not supported now");
-    }
 
     //-------------------------------
     // 1.2 API
@@ -395,7 +391,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
                 //check if the instance is the service looked up for
                 if (serviceName.equals(all[i].serviceName)) {
                     LOGGER.debug("build change {} to result list", all[i]);
-                    result.add(new InstanceChange<ModelServiceInstance>(
+                    result.add(new InstanceChange<>(
                             all[i].changedTimeMills,
                             all[i].serviceName,
                             all[i].changeType,
