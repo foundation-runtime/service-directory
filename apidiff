@@ -1,0 +1,48 @@
+diff --git a/1.1/sd-api/src/main/java/com/cisco/oss/foundation/directory/impl/CachedDirectoryLookupService.java b/1.1/sd-api/src/main/java/com/cisco/oss/foundation/directory/impl/CachedDirectoryLookupService.java
+index 5e249bb..f239b2c 100644
+--- a/1.1/sd-api/src/main/java/com/cisco/oss/foundation/directory/impl/CachedDirectoryLookupService.java
++++ b/1.1/sd-api/src/main/java/com/cisco/oss/foundation/directory/impl/CachedDirectoryLookupService.java
+@@ -387,7 +387,6 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
+                 }
+                 Map<String, OperationResult<ModelService>> deltaSvcs = cachedLookupService.getChangedServices(serviceMap);
+                 if(deltaSvcs != null){
+-                    cacheUpdated = true;
+                     for(Entry<String, OperationResult<ModelService>> deltaService : deltaSvcs.entrySet()){
+                         String serviceName = deltaService.getKey();
+                         OperationResult<ModelService> result = deltaService.getValue();
+@@ -395,6 +394,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
+                             ModelService newService = result.getobject();
+                             ModelService oldService = cachedLookupService.getCache().get(serviceName);
+                             if(newService != null){
++                                cacheUpdated = true;
+                                 cachedLookupService.getCache().put(serviceName, newService);
+                                 LOGGER.info("Update the ModelService in cache, serviceName={}.", serviceName );
+                             }
+@@ -449,7 +449,7 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
+                     // Can not operate directly on newInstances or oldIntances since it will remove the item from cache
+                     List<ModelServiceInstance> newTmp = new ArrayList<ModelServiceInstance>();
+                     List<ModelServiceInstance> oldTmp = new ArrayList<ModelServiceInstance>();
+-                    
++
+                     for (ModelServiceInstance model : oldInstances) {
+                         oldTmp.add(model);
+                     }
+@@ -459,13 +459,13 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
+                     
+                     Iterator<ModelServiceInstance> itnew = newTmp.iterator();
+                     Iterator<ModelServiceInstance> itold = oldTmp.iterator();
+-                    
++                    ModelServiceInstance curnew = null;
++                    ModelServiceInstance curold = null;
+                     while (itnew.hasNext()) {
++                        curnew = itnew.next();
+                         while (itold.hasNext()) {
+-                            ModelServiceInstance curnew = itnew.next();
+-                            ModelServiceInstance curold = itold.next();
+-                    
+-                            if (curnew.getInstanceId().equals(curold.getInstanceId())) {
++                            curold = itold.next();
++                            if (curnew != null && curold != null && curnew.getInstanceId().equals(curold.getInstanceId())) {
+                                 
+                                 if(curnew.getStatus().equals(OperationalStatus.UP) && curold.getStatus().equals(OperationalStatus.DOWN)) { 
+                                     cachedLookupService.onServiceInstanceAvailable(ServiceInstanceUtils.toServiceInstance(curnew));
