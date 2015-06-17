@@ -15,14 +15,20 @@ import com.cisco.oss.foundation.directory.impl.InstanceChangeListener;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 
 /**
- * The client side cache for service instance. which work as a listener of service changes.
- * the content will be updated automatically when server side is changed
+ * The client side cache for service instance. It also implements an InstanceChangeListener for the service changes.
+ * The cache will be updated automatically when there is a server-side change.
  */
 public class ModelServiceClientCache extends ClientCache<ModelService> implements InstanceChangeListener<ModelServiceInstance> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ModelServiceClientCache.class);
     private final String serviceName;
 
+    /**
+     * Constructor.
+     *
+     * @param data
+     *            the ModelService data object
+     */
     public ModelServiceClientCache(ModelService data) {
         super(data);
         this.serviceName = data.getName();
@@ -88,14 +94,32 @@ public class ModelServiceClientCache extends ClientCache<ModelService> implement
         }
     }
 
+	/**
+	 * Get the service name.
+	 * 
+	 * @returns   the service name
+	 *            
+	 */  
     public String getServiceName() {
         return serviceName;
     }
 
+	/**
+	 * Get the list of ModelServiceInstances.
+	 * 
+	 * @returns   the list of ModelServiceInstances
+	 *            
+	 */  
     public List<ModelServiceInstance> getAllModelServiceInstance() {
         return getData() == null ? null : getData().getServiceInstances();
     }
 
+	/**
+	 * Get the ModelService from cache.
+	 * 
+	 * @returns   the ModelService
+	 *            
+	 */  
     public ModelService getCachedService(){
         return getData();
     }

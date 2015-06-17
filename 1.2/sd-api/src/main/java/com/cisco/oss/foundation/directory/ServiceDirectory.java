@@ -34,7 +34,7 @@ import com.cisco.oss.foundation.directory.impl.ServiceDirectoryVersion;
 /**
  * ServiceDirectory client class.
  *
- * Applications obtain the instance of LookupManager/RegistrationManager/ServiceDirectoryConfig from this class.
+ * Applications obtain the instance of LookupManager/RegistrationManager/Configuration from this class.
  *
  *
  */
@@ -53,9 +53,9 @@ public class ServiceDirectory {
     public static final boolean SD_API_SERVICE_DIRECTORY_ENABLED_DEFAULT = true;
 
     /**
-     * The default config load by foundation runtime from config.properties or configSchema.xml
+     * The default configuration loaded by foundation runtime from configSchema.xml
      */
-    private static final Configuration defaultConfigLoadByFoundationRuntime = ConfigurationFactory.getConfiguration();
+    private static final Configuration defaultServiceDirectoryConfig = ConfigurationFactory.getConfiguration();
 
     /**
      * The static reference to ServiceDirectoryImpl
@@ -87,13 +87,13 @@ public class ServiceDirectory {
     }
 
     /**
-     * Get the configuration of ServiceDirectory. which is static singleton load from
+     * Get the default configuration of ServiceDirectory.
      *
      * @return
      *         the ServiceDirectoryConfig
      */
     public static Configuration getServiceDirectoryConfig() {
-        return defaultConfigLoadByFoundationRuntime;
+        return defaultServiceDirectoryConfig;
     }
 
     /**

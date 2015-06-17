@@ -10,15 +10,21 @@ import static com.cisco.oss.foundation.directory.entity.OperationalStatus.UP;
 import static com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils.toServiceInstance;
 
 /**
- *  Adapter, bridge the 1.2 changes to 1.1 notification.
+ *  Adapter to bridge the 1.2 service instance changes to the 1.1 notifications.
  */
 public class NotificationHandlerAdapter extends AbstractModelChangeAdapter<NotificationHandler> {
 
+    /**
+     * Constructor.
+     *
+     * @param a
+     *            the NotificationHandler object
+     */
     public NotificationHandlerAdapter(NotificationHandler a) {
         super(a);
     }
 
-    @Override
+	@Override
     public void onChange(InstanceChange.ChangeType type, InstanceChange<ModelServiceInstance> change) throws Exception {
         Objects.requireNonNull(type);
         Objects.requireNonNull(change);

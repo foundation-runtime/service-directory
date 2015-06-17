@@ -15,11 +15,11 @@ import static com.cisco.oss.foundation.directory.entity.InstanceChange.*;
  */
 public interface ServiceInstanceChangeListener {
    /**
-    * called when service instance change is occurred
+    * called when there is a service instance change.
     *
     * @since 1.2
     * @param type URL, status, metadata
-    * @param change the changes
+    * @param change the instance changes
     * @throws Exception
     *
     */

@@ -113,7 +113,7 @@ public interface LookupManager {
      * @param serviceName
      *         the service name.
      * @param instanceId
-     *         the istanceId
+     *         the instanceId
      * @return
      *         the ServiceInstance.
      * @throws ServiceException

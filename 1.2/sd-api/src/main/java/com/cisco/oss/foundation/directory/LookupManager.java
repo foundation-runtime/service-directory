@@ -118,16 +118,16 @@ public interface LookupManager extends AutoCloseable {
      *         the ServiceInstance.
      * @throws ServiceException
      *
-     * @deprecated the providerId is used as instanceId in the API prior to 1.2. the method is replaced by {@link #getInstanceByAddress}
+     * @deprecated the providerId/instanceId is used in the 1.1 API. the method is replaced by {@link #getInstanceByAddress}
      */
     @Deprecated
     public ServiceInstance getInstance(String serviceName, String instanceId) throws ServiceException;
 
 
     /**
-     * Get a ServiceInstance.
+     * Get a ServiceInstance
      *
-     * It returns a ServiceInstances of the Service including the ServiceInstance of OperationalStatus DOWN.
+     * It returns a ServiceInstance of the Service matching the given name and address .
      *
      * @param serviceName
      *         the service name.
@@ -250,8 +250,8 @@ public interface LookupManager extends AutoCloseable {
 
 
     /**
-     * Close the Lookup
-     * The LookupManager support JDK-7 try-with-resource
+     * Close the Lookup Manager
+     * The LookupManager supports JDK-7 try-with-resource
      * @throws ServiceException
      */
     @Override
@@ -259,7 +259,7 @@ public interface LookupManager extends AutoCloseable {
 
     /**
      * If the Lookup Manager is started
-     * @return true if the manager is started, or false if not
+     * @return true if the lookup manager is started, or false if not
      * @throws ServiceException
      */
     boolean isStarted() throws ServiceException;

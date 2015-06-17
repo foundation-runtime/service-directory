@@ -28,8 +28,7 @@ import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstanceHeartbeat;
 
 /**
- * The interface hide the complexity how client make request to sd server
- * hide the transfer layer such as http protocol or web-socket etc.
+ * The interface is used for hiding the complexity of how client makes HTTP requests to the directory server.
  *
  * @since 1.2
  */
