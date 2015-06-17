@@ -99,10 +99,10 @@ public class LookupChangesTestByInMemoryClient {
 
         // default timezone is china (Asia/Shanghai, Etc/GMT+8), switch to UTC, so that the -1,0 is shown as its defined
         TimeZone.setDefault(TimeZone.getTimeZone("UTC"));
-        System.out.printf("%1tc \n",new Date(-1L)); //no different than default, notice the printf for date need to use
-        System.out.printf("%s \n",new Date(-2L));
-        System.out.printf("%s \n", new Date(0L));
-        System.out.printf("%s \n", new Date(1L));
+        System.out.printf("%1tc %n",new Date(-1L)); //no different than default, notice the printf for date need to use
+        System.out.printf("%s %n",new Date(-2L));
+        System.out.printf("%s %n", new Date(0L));
+        System.out.printf("%s %n", new Date(1L));
 
         final long now = System.currentTimeMillis();
         // happen before now

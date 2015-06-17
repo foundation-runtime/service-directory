@@ -694,10 +694,7 @@ public class HeartbeatDirectoryRegistrationService extends
 
         @Override
         public int hashCode() {
-            int result = providerAddress != null ? providerAddress.hashCode() : 0;
-            result = 31 * result + serviceName != null ? serviceName.hashCode()
-                    : 0;
-            return result;
+            return 31 *providerAddress.hashCode() + serviceName.hashCode();
         }
     }
 }

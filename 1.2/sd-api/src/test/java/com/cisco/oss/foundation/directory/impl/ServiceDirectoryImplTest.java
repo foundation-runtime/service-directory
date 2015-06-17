@@ -162,7 +162,7 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory 
         System.out.println("ServiceDirectoryManagerFactory stop.");
     }
 
-    class MockRegistration implements RegistrationManager{
+    private static class MockRegistration implements RegistrationManager{
 
         @Override
         public void registerService(ProvidedServiceInstance serviceInstance)
@@ -212,7 +212,7 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory 
 
     }
 
-    class MockLookup implements LookupManager{
+    private static class MockLookup implements LookupManager{
 
         @Override
         public ServiceInstance lookupInstance(String serviceName)

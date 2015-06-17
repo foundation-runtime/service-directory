@@ -70,7 +70,7 @@ public class DirectoryLookupService extends ServiceDirectoryService {
     /**
      * The Service Instance changes listeners Map.
      */
-    private final ConcurrentHashMap<String, CopyOnWriteArrayList<InstanceChangeListener<ModelServiceInstance>>>
+    private final static ConcurrentHashMap<String, CopyOnWriteArrayList<InstanceChangeListener<ModelServiceInstance>>>
             changeListenerMap = new ConcurrentHashMap<>();
 
 
@@ -127,7 +127,7 @@ public class DirectoryLookupService extends ServiceDirectoryService {
     private class ChangesCheckTask implements Runnable {
         // the time-mills when the task is initialized
         private final long INIT_TIME_MILLS;
-        private final long CALL_TIMEOUT_SEC = 2L;
+        private static final long CALL_TIMEOUT_SEC = 2L;
 
         // Although the map is not required thread-safe, since the task itself is single-threaded.
         // but is reasonable to protect it since the single thread is easy to break by changing
@@ -162,8 +162,7 @@ public class DirectoryLookupService extends ServiceDirectoryService {
             for (String serviceName : serviceNameList) {
                 lastChangedTimeMills.putIfAbsent(serviceName, new AtomicLong(INIT_TIME_MILLS));
                 try {
-                    List<InstanceChange<ModelServiceInstance>> changes = getDirectoryServiceClient()
-                            .lookupChangesSince(serviceName, lastChangedTimeMills.get(serviceName).longValue());
+                    List<InstanceChange<ModelServiceInstance>> changes = getDirectoryServiceClient().lookupChangesSince(serviceName, lastChangedTimeMills.get(serviceName).longValue());
                     //has changes
                     if (!changes.isEmpty()) {
                         //oldest first

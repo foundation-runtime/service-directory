@@ -49,8 +49,8 @@ public class ModelServiceInstanceCompatibleTest {
         testInstance12.setHeartbeatTime(date);
         testInstance12Str = new String(JsonSerializer.serialize(testInstance12));
 
-        System.out.printf("1.1=%s\n", testInstance11Str);
-        System.out.printf("1.2=%s\n", testInstance12Str);
+        System.out.printf("1.1=%s%n", testInstance11Str);
+        System.out.printf("1.2=%s%n", testInstance12Str);
 
         assertTrue(testInstance11Str.indexOf(",\"port\":12345") > 0);
         assertEquals(testInstance12Str, testInstance11Str.replace(",\"port\":12345", "")); //no port in

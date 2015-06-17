@@ -78,20 +78,20 @@ public class NotificationTest {
         NotificationHandler myHandler = new NotificationHandler() {
             @Override
             public void serviceInstanceAvailable(ServiceInstance service) {
-                System.out.printf("serviceInstance %s is Available. Status is %s \n",service,service.getStatus());
+                System.out.printf("serviceInstance %s is Available. Status is %s %n",service,service.getStatus());
                 instanceList.add(service); //Inst1=UP, Inst2-UP
             }
 
             @Override
             public void serviceInstanceUnavailable(ServiceInstance service) {
-                System.out.printf("serviceInstance %s is Unavailable. Status is %s \n",service,service.getStatus());
+                System.out.printf("serviceInstance %s is Unavailable. Status is %s %n",service,service.getStatus());
                 instanceList.add(service); //1-DOWN,2-DOWN
 
             }
 
             @Override
             public void serviceInstanceChange(ServiceInstance service) {
-                System.out.printf("serviceInstance %s is changed \n",service);
+                System.out.printf("serviceInstance %s is changed %n",service);
                 instanceList.add(service); //2-add and 2-delete
                 countDown.countDown();
             }

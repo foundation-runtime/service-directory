@@ -229,9 +229,9 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                     services.add(cache.getData());
                 }
                 StringBuilder sb = new StringBuilder();
-                sb.append("LookupManager dumpped Service Cache at: ").append(System.currentTimeMillis()).append("\n");
+                sb.append("LookupManager dumpped Service Cache at: ").append(System.currentTimeMillis()).append("%n");
                 for (ModelService service : services) {
-                    sb.append(new String(serialize(service))).append("\n");
+                    sb.append(new String(serialize(service))).append("%n");
                 }
                 CacheDumpLogger.debug(sb.toString());
             } catch (Exception e) {

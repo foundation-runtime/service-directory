@@ -76,7 +76,7 @@ public class ServiceInstanceChangeListenerTest {
         final ServiceInstanceChangeListener listener = new ServiceInstanceChangeListener() {
             @Override
             public void onChange(InstanceChange.ChangeType type, InstanceChange<ServiceInstance> change) throws Exception {
-                System.out.printf("%s\n",change);
+                System.out.printf("%s%n",change);
                 if(type== InstanceChange.ChangeType.Remove){ // the last one is remove
                     countDown.countDown();
                     lastInst.set(change.from);
@@ -111,7 +111,7 @@ public class ServiceInstanceChangeListenerTest {
         final ServiceInstanceChangeListener evilOne = new ServiceInstanceChangeListener() {
             @Override
             public void onChange(InstanceChange.ChangeType type, InstanceChange<ServiceInstance> change) throws Exception {
-                System.out.printf("Evil One : %s\n",change);
+                System.out.printf("Evil One : %s%n",change);
                 TimeUnit.SECONDS.sleep(5L);
                 fail("Evil One : should not be finished!");
             }
@@ -119,9 +119,9 @@ public class ServiceInstanceChangeListenerTest {
         final ServiceInstanceChangeListener goodOne = new ServiceInstanceChangeListener() {
             @Override
             public void onChange(InstanceChange.ChangeType type, InstanceChange<ServiceInstance> change) throws Exception {
-                System.out.printf("Good One : %s\n",change);
+                System.out.printf("Good One : %s%n",change);
                 countDown.countDown();
-                System.out.printf("Good One : has been countDown.\n");
+                System.out.printf("Good One : has been countDown.%n");
             }
         };
         try (LookupManager lookup = factory.getLookupManager();RegistrationManager reg = factory.getRegistrationManager()) {
@@ -140,16 +140,16 @@ public class ServiceInstanceChangeListenerTest {
         final ServiceInstanceChangeListener exceptionOne = new ServiceInstanceChangeListener() {
             @Override
             public void onChange(InstanceChange.ChangeType type, InstanceChange<ServiceInstance> change) throws Exception {
-                System.out.printf("Exception One : %s\n",change);
+                System.out.printf("Exception One : %s%n",change);
                 throw new Exception("Oops!");
             }
         };
         final ServiceInstanceChangeListener goodOne = new ServiceInstanceChangeListener() {
             @Override
             public void onChange(InstanceChange.ChangeType type, InstanceChange<ServiceInstance> change) throws Exception {
-                System.out.printf("Good One : %s\n",change);
+                System.out.printf("Good One : %s%n",change);
                 countDown.countDown();
-                System.out.printf("Good One : has been countDown.\n");
+                System.out.printf("Good One : has been countDown.%n");
             }
         };
 

@@ -63,6 +63,6 @@ public class RoundRobinLoadBalancerTest {
 
     }
 
-    class MockLB extends RoundRobinLoadBalancer{
+    private static class MockLB extends RoundRobinLoadBalancer{
     }
 }

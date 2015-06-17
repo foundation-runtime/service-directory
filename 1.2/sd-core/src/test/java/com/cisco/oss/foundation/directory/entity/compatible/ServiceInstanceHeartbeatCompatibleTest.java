@@ -20,13 +20,13 @@ public class ServiceInstanceHeartbeatCompatibleTest {
         assertEquals("1.1.1.1", heartbeat.getProviderId());
 
         String body = new String(JsonSerializer.serialize(heartbeat));
-        System.out.printf("%s\n",body);
+        System.out.printf("%s%n",body);
 
         ServiceInstanceHeartbeat heartbeat11 = new ServiceInstanceHeartbeat("foo","1.1.1.1-1234") ;; //1.1
         assertEquals("1.1.1.1",heartbeat11.getProviderAddress());
         assertEquals("1.1.1.1-1234",heartbeat11.getProviderId());
         String body11 = new String(JsonSerializer.serialize(heartbeat11));
-        System.out.printf("%s\n", body11);
+        System.out.printf("%s%n", body11);
 
     }
 
@@ -36,7 +36,7 @@ public class ServiceInstanceHeartbeatCompatibleTest {
         ServiceInstanceHeartbeat heartbeat12 = JsonSerializer.deserialize(strOld11.getBytes(),ServiceInstanceHeartbeat.class);
         assertEquals("1.1.1.1-1234", heartbeat12.getProviderId());
         assertEquals("1.1.1.1", heartbeat12.getProviderAddress());
-        System.out.printf("%s\n", new String(JsonSerializer.serialize(heartbeat12)));
+        System.out.printf("%s%n", new String(JsonSerializer.serialize(heartbeat12)));
 
     }
 }
