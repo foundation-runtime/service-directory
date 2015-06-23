@@ -7,7 +7,6 @@ public class CachedLookupManagerImpl extends LookupManagerImpl {
 
     public CachedLookupManagerImpl(CachedDirectoryLookupService service) {
         super(service);
-        service.start();
     }
 
 }

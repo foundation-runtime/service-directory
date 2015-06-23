@@ -65,7 +65,6 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
     public LookupManagerImpl(DirectoryLookupService lookupService){
         this.lbManager = new LoadBalancerManager();
         this.lookupService = lookupService;
-        lookupService.start();
         this.start();
     }
 
@@ -74,8 +73,11 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
      */
     @Override
     public void start(){
-        super.start();
-        LOGGER.info("Lookup Manager @{} is started", this);
+        if (!isStarted()) {
+            super.start();
+            lookupService.start();
+            LOGGER.info("Lookup Manager @{} is started", this);
+        }
     }
 
     /**
