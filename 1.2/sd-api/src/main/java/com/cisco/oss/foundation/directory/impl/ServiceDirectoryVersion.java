@@ -8,8 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * The Immutable Class to get version of Service Directory. <p>
- * Version information is load from "version.txt" in classpath, the file
+ * The Immutable Class to get the version of Service Directory. <p>
+ * Version information is loaded from "version.txt" in classpath, the file
  * is created by Maven build.
  *
  * @since 1.2

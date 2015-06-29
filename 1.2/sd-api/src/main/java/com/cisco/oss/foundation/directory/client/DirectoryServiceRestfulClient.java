@@ -107,13 +107,7 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
         this.invoker = new DirectoryHttpInvoker();
     }
 
-    /**
-     * Register a ServiceInstance.
-     *
-     * @param instance
-     *         the ProvidedServiceInstance.
-     * @throws ServiceException
-     */
+
     @Override
     public void registerInstance(ProvidedServiceInstance instance) {
         String body = serialize(instance);
@@ -131,12 +125,6 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
         return "/service/" + serviceName + "/" + providerAddress;
     }
 
-    /**
-     * Update a ServiceInstance.
-     *
-     * @param instance
-     *         the ProvidedServiceInstance.
-     */
     @Deprecated
     @Override
     public void updateInstance(ProvidedServiceInstance instance) {
@@ -151,18 +139,6 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
         }
     }
 
-    /**
-     * Update the ServiceInstance OperationalStatus by serviceName and instanceAddress.
-     *
-     * @param serviceName
-     *         the service name.
-     * @param instanceAddress
-     *         The IP address or FQDN that the instance is running on.
-     * @param status
-     *         the ServiceInstance OperationalStatus.
-     * @param isOwned
-     *         whether the DirectoryAPI owns this ServiceProvider.
-     */
     @Override
     public void updateInstanceStatus(String serviceName, String instanceAddress, OperationalStatus status, boolean isOwned) {
         String uri = toInstanceUri(serviceName, instanceAddress) + "/status";
@@ -188,18 +164,6 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
     }
 
 
-    /**
-     * Update the ServiceInstance attribute "uri".
-     *
-     * @param serviceName
-     *         the service name.
-     * @param instanceAddress
-     *         The IP address or FQDN that the instance is running on.
-     * @param uri
-     *         the ServiceInstance URI.
-     * @param isOwned
-     *         whether the DirectoryAPI owns this ServiceProvider.
-     */
     @Override
     public void updateInstanceUri(String serviceName, String instanceAddress, String uri, boolean isOwned) {
         String serviceUri = toInstanceUri(serviceName, instanceAddress) + "/uri";
@@ -224,18 +188,6 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
 
     
 
-    /**
-     * Update the ServiceInstance metadata.
-     *
-     * @param serviceName
-     *         the service name.
-     * @param instanceAddress
-     *         The IP address or FQDN that the instance is running on.
-     * @param metadata
-     *         the ServiceInstance metadata.
-     * @param isOwned
-     *         whether the DirectoryAPI owns this ServiceProvider.
-     */
     @Override
     public void updateInstanceMetadata(String serviceName, String instanceAddress, Map<String, String> metadata, boolean isOwned) {
         String serviceUri = toInstanceUri(serviceName, instanceAddress) + "/metadata";
@@ -258,16 +210,7 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
                     "HTTP Code is not OK, code=%s", result.getHttpCode());
         }
     }
-    /**
-     * Unregister a ServiceInstance.
-     *
-     * @param serviceName
-     *         service name.
-     * @param instanceAddress
-     *         The IP address or FQDN that the instance is running on.
-     * @param isOwned
-     *         whether the DirectoryAPI owns this ServiceProvider.
-     */
+
     @Override
     public void unregisterInstance(String serviceName, String instanceAddress, boolean isOwned) {
         String uri = toInstanceUri(serviceName, instanceAddress) + "/" + isOwned;
@@ -281,12 +224,7 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
         }
     }
 
-    /**
-     * Send ServiceInstance heartbeats.
-     *
-     * @param heartbeatMap
-     *         the ServiceInstances heartbeat Map.
-     */
+
     @Override
     public Map<String, OperationResult<String>> sendHeartBeat(Map<String, ServiceInstanceHeartbeat> heartbeatMap) {
         String body = serialize(heartbeatMap);
@@ -305,14 +243,7 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
 
     }
 
-    /**
-     * Lookup a Service by serviceName.
-     *
-     * @param serviceName
-     *         the service name.
-     * @return
-     *         the ModelService.
-     */
+
     @Override
     public ModelService lookupService(String serviceName) {
         HttpResponse result = invoker.invoke("/service/" + serviceName, null, HttpMethod.GET, addHeader());
@@ -325,12 +256,7 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
         return deserialize(result.getRetBody(), ModelService.class);
     }
 
-    /**
-     * Get all service instances.
-     *
-     * @return
-     *         the ModelServiceInstance list.
-     */
+
     @Override
     public List<ModelServiceInstance> getAllInstances() {
         HttpResponse result = invoker.invoke("/service", null, HttpMethod.GET, addHeader());
@@ -344,15 +270,7 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
         });
     }
 
-    /**
-     * Get ModelMetadataKey, which is an object holding a list of service instances that contain 
-     * the key name in the service metadata.
-     *
-     * @param keyName
-     *         the key name.
-     * @return
-     *         the ModelMetadataKey.
-     */
+
     @Override
     public ModelMetadataKey getMetadataKey(String keyName) {
         HttpResponse result = invoker.invoke("/metadatakey/" + keyName, null, HttpMethod.GET, addHeader());
@@ -366,15 +284,7 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
                 result.getRetBody(), ModelMetadataKey.class);
     }
 
-    /**
-     * Get the changed services list.
-     *
-     * @param services
-     *         the Service list.
-     * @return
-     *         the list of Services that have been changed.
-     * @throws ServiceException
-     */
+
     @Override
     public Map<String, OperationResult<ModelService>> getChangedServices(Map<String, ModelService> services) {
         String body = serialize(services);

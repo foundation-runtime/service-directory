@@ -9,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import static com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils.toServiceInstance;
 
 /**
- * The class record the service instance change in Service Directory.
+ * The class keeps track of the service instance changes in Service Directory.
  *
  * @since 1.2
  */
@@ -28,6 +28,21 @@ public class InstanceChange<T> {
     public final T from;
     public final T to;
 
+    /**
+     * Constructor.
+     *
+     * @param time
+     *            the changed time
+     * @param serviceName
+     *            the service name
+     * @param type
+     *            the change type
+     * @param from
+     *            the old value
+     * @param to
+     *            the new value            
+     *
+     */
     @JsonCreator
     public InstanceChange(@JsonProperty("changedTimeMills")long time,
                           @JsonProperty("serviceName")String serviceName,
@@ -47,6 +62,7 @@ public class InstanceChange<T> {
     public String toString() {
         return "ServiceInstanceChange{" +
                 "changedTimeMills=" + changedTimeMills +
+                ", serviceName=" + serviceName +
                 ", changeType=" + changeType +
                 ", from='" + from + '\'' +
                 ", to='" + to + '\'' +
@@ -54,7 +70,7 @@ public class InstanceChange<T> {
     }
 
     /**
-     * Order by changedTimeMills. oldest first
+     * Order by changed time, oldest first
      */
     public static final java.util.Comparator<InstanceChange> Comparator = new Comparator<InstanceChange>() {
         @Override
@@ -64,7 +80,7 @@ public class InstanceChange<T> {
     };
 
     /**
-     * latest first
+     * Order by changed time, latest first
      */
     public static final Comparator<InstanceChange> ReverseComparator = new Comparator<InstanceChange>() {
         @Override
@@ -72,7 +88,12 @@ public class InstanceChange<T> {
             return Comparator.compare(o2, o1);
         }
     };
-
+    
+    /**
+     * Convert the model service instance change to the service instance change object
+     * @param modelInstanceChange
+     * @return InstanceChange<ServiceInstance>
+     */
     public static InstanceChange<ServiceInstance> toServiceInstanceChange(InstanceChange<ModelServiceInstance> modelInstanceChange){
         Objects.requireNonNull(modelInstanceChange);
         return new InstanceChange<ServiceInstance>(modelInstanceChange.changedTimeMills,
