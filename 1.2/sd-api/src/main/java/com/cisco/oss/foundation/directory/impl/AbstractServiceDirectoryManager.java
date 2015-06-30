@@ -37,12 +37,16 @@ public abstract class AbstractServiceDirectoryManager implements Stoppable, Auto
     protected final AtomicBoolean isStarted = new AtomicBoolean(false);
 
     /**
-     * Mark the Manager is closed, when it closed, the manager can't use again.
+     * Mark the Manager closed. The manager can not be reused when it is closed.
      */
     protected final AtomicBoolean isClosed = new AtomicBoolean(false);
 
     private CloseListener listener;
-
+    /**
+     * Setter
+     * @param listener
+     *              The CloseListener
+     */
     public synchronized void setCloseListener(CloseListener listener){
         this.listener = listener;
     }
@@ -57,6 +61,11 @@ public abstract class AbstractServiceDirectoryManager implements Stoppable, Auto
         isStarted.set(false);
     }
 
+    /**
+     * Check if the manager is started or not
+     * @return boolean indicating whether it is started or not
+     * @throws ServiceException
+     */
     public boolean isStarted() throws ServiceException {
         return isStarted.get();
     }
@@ -85,5 +94,10 @@ public abstract class AbstractServiceDirectoryManager implements Stoppable, Auto
         return getClass().getSimpleName() + "@" + Integer.toHexString(hashCode());
     }
 
+    /**
+     * Getter
+     * 
+     * @return The ServiceDirectoryService
+     */
     public abstract ServiceDirectoryService getService();
 }

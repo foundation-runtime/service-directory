@@ -26,7 +26,7 @@ import com.cisco.oss.foundation.directory.registration.HeartbeatRegistrationMana
 import com.cisco.oss.foundation.directory.registration.RegistrationManagerImpl;
 
 /**
- *
+ * This class allows ServiceDirectory to be re-initialized with different configuration
  */
 public class ConfigurableServiceDirectoryManagerFactory implements ServiceDirectoryManagerFactory {
 

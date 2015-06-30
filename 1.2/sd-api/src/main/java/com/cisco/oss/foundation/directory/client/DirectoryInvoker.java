@@ -17,7 +17,7 @@ package com.cisco.oss.foundation.directory.client;
 
 /**
  * The interface to invoke the remote directory server
- *            
+ * Reserved for future extension to support both HTTP and WebSocket.
  */  
 public interface DirectoryInvoker {
 }
