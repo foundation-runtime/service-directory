@@ -20,6 +20,7 @@
 package com.cisco.oss.foundation.directory.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -252,6 +253,10 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
         List<ModelService> syncServices = new ArrayList<ModelService>();
         for(ModelService service : allServices){
             ModelService syncService = new ModelService(service.getName(), service.getId(), service.getCreateTime());
+            Date modifiedTime = service.getModifiedTime();
+            if (modifiedTime != null) {
+                syncService.setModifiedTime(modifiedTime);
+            }
             syncServices.add(syncService);
         }
         return syncServices;
@@ -393,16 +398,10 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                         if(result.getResult()){
                             ModelService newService = result.getobject();
                             ModelService oldService = cachedLookupService.getCache().get(serviceName);
-                            List<ModelServiceInstance> newInstances = newService.getServiceInstances();
-                            if(newService != null && newInstances!=null && newInstances.size()>0){
+                            if(newService != null) {
                                 cacheUpdated = true;
                                 cachedLookupService.getCache().put(serviceName, newService);
-                                StringBuffer sb = new StringBuffer();
-                                for(ModelServiceInstance instance : newInstances){
-                                    sb.append(instance.getInstanceId());
-                                    sb.append(",");
-                                }
-                                LOGGER.info("Update the ModelService in cache, serviceName={}. instances={}", serviceName, sb.toString() );
+                                LOGGER.info("Update the ModelService in cache, serviceName={}.", serviceName);
                             }
                             onServiceChanged(newService, oldService);
                         } else {
