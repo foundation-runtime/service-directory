@@ -393,10 +393,16 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                         if(result.getResult()){
                             ModelService newService = result.getobject();
                             ModelService oldService = cachedLookupService.getCache().get(serviceName);
-                            if(newService != null){
+                            List<ModelServiceInstance> newInstances = newService.getServiceInstances();
+                            if(newService != null && newInstances!=null && newInstances.size()>0){
                                 cacheUpdated = true;
                                 cachedLookupService.getCache().put(serviceName, newService);
-                                LOGGER.info("Update the ModelService in cache, serviceName={}.", serviceName );
+                                StringBuffer sb = new StringBuffer();
+                                for(ModelServiceInstance instance : newInstances){
+                                    sb.append(instance.getInstanceId());
+                                    sb.append(",");
+                                }
+                                LOGGER.info("Update the ModelService in cache, serviceName={}. instances={}", serviceName, sb.toString() );
                             }
                             onServiceChanged(newService, oldService);
                         } else {
