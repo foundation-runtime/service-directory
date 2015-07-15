@@ -88,6 +88,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
     @Override
     public void stop(){
         super.stop();
+        lookupService.stop();
         LOGGER.info("Lookup Manager @{} is stopped", this);
     }
 

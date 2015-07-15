@@ -158,8 +158,10 @@ public class HeartbeatDirectoryRegistrationService extends
         if(isStarted.compareAndSet(true,false)){
             ScheduledExecutorService healthCheck = healthCheckService.getAndSet(newHealthCheckService());
             healthCheck.shutdown();
+            LOGGER.info("the SD API RegistryHealth Check Task has stopped.");
             ScheduledExecutorService heartbeat = heartbeatService.getAndSet(newHeartbeatService());
             heartbeat.shutdown();
+            LOGGER.info("the SD API Heartbeat Task has stopped.");
         }
     }
 
