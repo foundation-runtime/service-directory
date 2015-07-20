@@ -66,6 +66,22 @@ public class ProvidedServiceInstance {
      * The instance metadata info.
      */
     private Map<String, String> metadata;
+    
+    /**
+     * The real port of the instance. Optional.
+     */
+    private int port = 0;
+
+    /**
+     *  The TLS port of the instance. Optional.
+     */
+    private int tls_port = 0;
+    
+    /**
+     * The protocol. Optional.
+     */
+    private String protocol;
+    
 
     /**
      * Constructor.
@@ -214,5 +230,65 @@ public class ProvidedServiceInstance {
     public String getServiceName() {
         return serviceName;
     }
+    
+    /**
+     * Get the port
+     * 
+     * @return port
+     *           the port on which instance runs
+     */
+    public int getPort() {
+        return port;
+    }
+
+    /**
+     * Set the port
+     * 
+     * @param port
+     *           the port on which instance runs
+     */
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    /**
+     * Get the TLS port
+     * 
+     * @return tls_port
+     *           the TLS port on which instance runs
+     */
+    public int getTls_port() {
+        return tls_port;
+    }
+
+    /**
+     * Set the port
+     * 
+     * @param port
+     *           the port on which instance runs
+     */
+    public void setTls_port(int tls_port) {
+        this.tls_port = tls_port;
+    }
+
+    /**
+     * Get the protocol e.g. http
+     * @return protocol
+     *             the transport protocol
+     */
+    public String getProtocol() {
+        return protocol;
+    }
+
+    /**
+     * Set the protocol
+     * @param protocol
+     *            the transport protocol
+     */
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
+
+
 
 }

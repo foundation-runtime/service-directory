@@ -58,23 +58,48 @@ public class ServiceInstance {
      */
     private final Map<String, String> metadata;
 
+    /**
+     * The real port of the instance. Optional.
+     */
+    private int port = 0;
 
     /**
-     * Constructor.
-     *
-     * @param serviceName
-     *            the service name.
-     * @param uri
-     *            the uri.
-     * @param address
-     *            The real address of the instance, it can be real IP or host
-     *            name.
-     * @param metadata
-     *            the metadata Map.
+     *  The TLS port of the instance. Optional.
      */
+    private int tls_port = 0;
+    
+    /**
+     * The protocol. Optional.
+     */
+    private String protocol;
+
+
+/**
+ * 
+ * Constructor
+ * 
+ * @param serviceName
+ *            the service name
+ * @param uri
+ *            the service url
+ * @param monitor
+ *            boolean to indicate whether service is monitable
+ * @param status
+ *            the service operational status
+ * @param address
+ *            the address of the service, it can be an IP address or hostname
+ * @param metadata
+ *            optional. the metadata for the service.
+ * @param port
+ *            optional. the port on which the service runs.
+ * @param tls_port
+ *            optional. the TLS port on which the service runs.
+ * @param protocol
+ *            optional. the transport protocol 
+ */
     public ServiceInstance(String serviceName, String uri,
             boolean monitor, OperationalStatus status, String address,
-            Map<String, String> metadata) {
+            Map<String, String> metadata, int port, int tls_port, String protocol) {
         this.serviceName = serviceName;
         this.uri = uri;
         this.monitorEnabled = monitor;
@@ -84,6 +109,10 @@ public class ServiceInstance {
         if (metadata != null && metadata.size() != 0) {
             this.metadata.putAll(metadata);
         }
+        this.port = port;
+        this.tls_port = tls_port;
+        this.protocol = protocol;
+        
     }
 
     /**
@@ -140,6 +169,36 @@ public class ServiceInstance {
     public Map<String, String> getMetadata() {
         return Collections.unmodifiableMap(this.metadata);
     }
+
+    /**
+     * Get the port
+     * 
+     * @return port
+     *           the port on which instance runs
+     */
+    public int getPort() {
+        return port;
+    }
+
+    /**
+     * Get the TLS port
+     * 
+     * @return tls_port
+     *           the TLS port on which instance runs
+     */
+    public int getTls_port() {
+        return tls_port;
+    }
+
+    /**
+     * Get the protocol e.g. http
+     * @return protocol
+     *             the transport protocol
+     */
+    public String getProtocol() {
+        return protocol;
+    }
+
 
     /**
      * {@inheritDoc}

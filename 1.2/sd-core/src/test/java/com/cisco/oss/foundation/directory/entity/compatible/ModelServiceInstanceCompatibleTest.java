@@ -47,14 +47,15 @@ public class ModelServiceInstanceCompatibleTest {
                 OperationalStatus.UP, "192.168.1.1",date,
                 date, metadata);
         testInstance12.setHeartbeatTime(date);
+        testInstance12.setPort(12345);
         testInstance12Str = new String(JsonSerializer.serialize(testInstance12));
 
         System.out.printf("1.1=%s%n", testInstance11Str);
         System.out.printf("1.2=%s%n", testInstance12Str);
 
         assertTrue(testInstance11Str.indexOf(",\"port\":12345") > 0);
-        assertEquals(testInstance12Str, testInstance11Str.replace(",\"port\":12345", "")); //no port in
-
+        // extra attributes in 1.2
+        assertEquals(testInstance12Str, testInstance11Str.replace(",\"port\":12345", ",\"port\":12345,\"tls_port\":0,\"protocol\":null")); 
     }
 
     @Test
@@ -77,8 +78,8 @@ public class ModelServiceInstanceCompatibleTest {
 
         // 1.2 str -> 1.1
         instance11 = JsonSerializer.deserialize(testInstance12Str.getBytes(), ModelServiceInstance11.class);
-        assertEquals(0, instance11.getPort()); //12345 is missing
-        assertEquals(testInstance11Str.replace("12345","0"),new String(JsonSerializer.serialize(instance11)));
+        assertEquals(12345, instance11.getPort()); 
+        assertEquals(testInstance11Str.replace("12345","12345"),new String(JsonSerializer.serialize(instance11)));
 
 
     }

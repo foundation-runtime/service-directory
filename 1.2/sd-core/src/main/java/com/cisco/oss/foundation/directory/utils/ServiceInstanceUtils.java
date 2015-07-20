@@ -67,7 +67,7 @@ public class ServiceInstanceUtils {
         return new ServiceInstance(modelInstance.getServiceName(),
                 modelInstance.getUri(),
                 modelInstance.isMonitorEnabled(), modelInstance.getStatus(),
-                modelInstance.getAddress(),meta);
+                modelInstance.getAddress(),meta, modelInstance.getPort(), modelInstance.getTls_port(), modelInstance.getProtocol());
     }
 
     /**
