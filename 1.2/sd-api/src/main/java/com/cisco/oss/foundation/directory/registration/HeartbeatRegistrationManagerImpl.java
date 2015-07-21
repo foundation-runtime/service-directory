@@ -1,7 +1,7 @@
 package com.cisco.oss.foundation.directory.registration;
 
 /**
- * Created by alex on 3/25/15.
+ * The heartbeat registration manager implementation.
  */
 public class HeartbeatRegistrationManagerImpl extends RegistrationManagerImpl {
     public HeartbeatRegistrationManagerImpl(HeartbeatDirectoryRegistrationService service){

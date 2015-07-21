@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * Immutable ServiceInstance provided to the Service Consumer.
  *
- * @since 1.2 the old instanceId and port has been removed
+ * @since 1.2 the old instanceId has been removed
  *
  * also @see {@link com.cisco.oss.foundation.directory.entity.compatible.ServiceInstance11}
  */

@@ -23,14 +23,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * ProvidedServiceInstance used by Service Provider to register/update a service
  * instance.
  *
- * In the ProvidedServiceInstance, the address and port are required attributes
- * for generating ProviderId to identify the multiple instances of the same
- * service.
+ * In the ProvidedServiceInstance, the address is required attribute to identify 
+ * the multiple instances of the same service.
  *
- * The providerId is defined as "address-port".
- *
- * The address is the real IP address or hostname of the running instance, 
- * the port is the port which the instance binds to.
+ * The address is the IP address or hostname of the running instance, 
+ * the port is the port which the instance binds to. The port is optional.
  *
  *
  */
@@ -48,7 +45,7 @@ public class ProvidedServiceInstance {
     private String uri;
 
     /**
-     * The real address of the instance, it can be real IP or host name
+     * The address of the instance, it can be real IP or host name
      */
     private String address;
 
@@ -63,12 +60,12 @@ public class ProvidedServiceInstance {
     private boolean monitorEnabled = true;
 
     /**
-     * The instance metadata info.
+     * The instance metadata info. Optional.
      */
     private Map<String, String> metadata;
     
     /**
-     * The real port of the instance. Optional.
+     * The port of the instance. Optional.
      */
     private int port = 0;
 

@@ -23,6 +23,8 @@ import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 
 
 /**
+ * The 1.1 version of ServiceInstance, for backward compatibility.
+ * 
  * Immutable ServiceInstance provided to the Service Consumer.
  */
 public class ServiceInstance11 {

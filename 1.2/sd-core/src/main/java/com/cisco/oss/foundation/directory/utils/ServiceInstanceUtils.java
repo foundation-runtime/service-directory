@@ -71,7 +71,7 @@ public class ServiceInstanceUtils {
     }
 
     /**
-     * convert 1.1 modelServiceInstance ot serviceInstance
+     * convert v1.1 modelServiceInstance to serviceInstance
      * @param modelInstance the ModelServiceInstance11 object
      * @return the ServiceInstance11 object
      */

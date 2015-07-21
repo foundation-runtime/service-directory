@@ -37,6 +37,12 @@ public final class ServiceDirectoryVersion {
         }
         version = ver;
     }
+    
+    /**
+     * Get the API version
+     * @return
+     *      the API version
+     */
     public static String getVersion() {
         return version;
     }

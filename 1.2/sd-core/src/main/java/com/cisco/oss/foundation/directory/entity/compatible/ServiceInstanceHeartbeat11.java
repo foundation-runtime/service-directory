@@ -16,7 +16,7 @@
 
 package com.cisco.oss.foundation.directory.entity.compatible;
 /**
- * NOTE: It's the 1.1 version of ServiceInstanceHeartbeat, for backward compatible
+ * The 1.1 version of ServiceInstanceHeartbeat, for backward compatibility.
  * <p>
  *
  * @since 1.2

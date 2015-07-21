@@ -27,9 +27,6 @@ import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 /**
  * A RoundRobin LoadBalancer abstract template based on DirectoryLookupService.
  *
- *
- *
- *
  */
 public class RoundRobinLoadBalancer implements ServiceInstanceLoadBalancer{
 

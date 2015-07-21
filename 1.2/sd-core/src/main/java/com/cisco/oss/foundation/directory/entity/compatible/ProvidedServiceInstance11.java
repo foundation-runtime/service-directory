@@ -22,8 +22,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.cisco.oss.foundation.directory.entity.OperationalStatus;
 
 /**
- * NOTE: It's the 1.1 version of ProvidedServiceInstance, for backward compatible
- * <p>
+ * The 1.1 version of ProvidedServiceInstance, for backward compatibility.
  *
  * @since 1.2
  *
