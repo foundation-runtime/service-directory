@@ -176,10 +176,10 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     @Override
     public ModelService getModelService(String serviceName){
         ModelServiceClientCache cache = getCache().get(serviceName);
-        if (cache == null) {
+        if (cache == null || cache.getData() == null) {
             ModelService lookup = super.getModelService(serviceName);
             if (lookup!=null) {
-                getCache().putIfAbsent(serviceName, new ModelServiceClientCache(lookup));
+                getCache().put(serviceName, new ModelServiceClientCache(lookup));
                 cache = getCache().get(serviceName);
                 addInstanceChangeListener(serviceName,cache);
             }

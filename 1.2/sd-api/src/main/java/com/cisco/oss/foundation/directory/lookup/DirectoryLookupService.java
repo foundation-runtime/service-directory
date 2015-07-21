@@ -223,7 +223,17 @@ public class DirectoryLookupService extends ServiceDirectoryService {
      * @return the ModelService.
      */
     public ModelService getModelService(String serviceName) {
-        return getDirectoryServiceClient().lookupService(serviceName);
+        ModelService service = null;
+        try{
+            service = getDirectoryServiceClient().lookupService(serviceName);
+        }catch(ServiceException se){
+            if (se.getErrorCode()==ErrorCode.SERVICE_NOT_EXIST){
+                LOGGER.error(se.getMessage());
+            }else {
+                LOGGER.error("Error when getModelService", se);
+            }
+        }
+        return service;
     }
 
     /**
@@ -234,7 +244,13 @@ public class DirectoryLookupService extends ServiceDirectoryService {
      * @return the ModelMetadataKey.
      */
     protected ModelMetadataKey getModelMetadataKey(String keyName) {
-        return getDirectoryServiceClient().getMetadataKey(keyName);
+        ModelMetadataKey key =  null;
+        try {
+           key = getDirectoryServiceClient().getMetadataKey(keyName);
+        }catch (ServiceException se){
+            LOGGER.error("Error when getModelMetadataKey",se);
+        }
+        return key;
     }
 
     /**
@@ -333,7 +349,13 @@ public class DirectoryLookupService extends ServiceDirectoryService {
      * @return the ModelServiceInstance List.
      */
     public List<ModelServiceInstance> getAllInstances() {
-        return getDirectoryServiceClient().getAllInstances();
+        List<ModelServiceInstance> result = Collections.emptyList();
+        try {
+            result = getDirectoryServiceClient().getAllInstances();
+        }catch (ServiceException se){
+            LOGGER.error("Error when getAllInstances()",se);
+        }
+        return result;
     }
 
     /**

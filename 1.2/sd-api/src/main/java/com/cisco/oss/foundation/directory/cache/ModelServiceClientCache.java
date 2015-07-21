@@ -97,7 +97,7 @@ public class ModelServiceClientCache extends ClientCache<ModelService> implement
 	/**
 	 * Get the service name.
 	 * 
-	 * @returns   the service name
+	 * @return   the service name
 	 *            
 	 */  
     public String getServiceName() {
@@ -107,7 +107,7 @@ public class ModelServiceClientCache extends ClientCache<ModelService> implement
 	/**
 	 * Get the list of ModelServiceInstances.
 	 * 
-	 * @returns   the list of ModelServiceInstances
+	 * @return   the list of ModelServiceInstances
 	 *            
 	 */  
     public List<ModelServiceInstance> getAllModelServiceInstance() {
@@ -117,7 +117,7 @@ public class ModelServiceClientCache extends ClientCache<ModelService> implement
 	/**
 	 * Get the ModelService from cache.
 	 * 
-	 * @returns   the ModelService
+	 * @return   the ModelService
 	 *            
 	 */  
     public ModelService getCachedService(){
