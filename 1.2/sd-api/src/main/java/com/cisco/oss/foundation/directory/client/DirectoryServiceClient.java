@@ -49,7 +49,7 @@ public interface DirectoryServiceClient {
      *
      * @param instance
      *         the ProvidedServiceInstance.
-     * @deprecated  As of release 1.2, replaced by {@link #updateInstanceMetadata()}
+     * @deprecated  As of release 1.2, replaced by {@link #updateInstanceMetadata(String, String, Map, boolean)}
      */
     @Deprecated
     void updateInstance(ProvidedServiceInstance instance);
@@ -142,7 +142,7 @@ public interface DirectoryServiceClient {
      * @return
      *         the list of Services that have been changed.
      * @throws ServiceException
-     * @deprecated  As of release 1.2, replaced by {@link #lookupChangesSince()}
+     * @deprecated  As of release 1.2, replaced by {@link #lookupChangesSince(String, long)}
      */
     @Deprecated
     Map<String, OperationResult<ModelService>> getChangedServices(Map<String, ModelService> services);

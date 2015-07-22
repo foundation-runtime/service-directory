@@ -24,7 +24,7 @@ public class ClientCache<T> {
 	/**
 	 * Get the client cache.
 	 * 
-	 * @returns   the data cache
+	 * @return   the data cache
 	 *            
 	 */  
     public T getData(){

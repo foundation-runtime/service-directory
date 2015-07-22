@@ -261,8 +261,8 @@ public class ProvidedServiceInstance {
     /**
      * Set the port
      * 
-     * @param port
-     *           the port on which instance runs
+     * @param tls_port
+     *           the TLS port on which instance runs
      */
     public void setTls_port(int tls_port) {
         this.tls_port = tls_port;
