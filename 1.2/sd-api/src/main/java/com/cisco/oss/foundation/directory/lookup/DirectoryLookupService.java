@@ -53,6 +53,8 @@ import com.cisco.oss.foundation.directory.impl.InstanceChangeListener;
 import com.cisco.oss.foundation.directory.impl.ServiceDirectoryService;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 
+import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
+
 /**
  * It is the Directory LookupService to perform the lookup functionality.
  * <p/>
@@ -61,6 +63,26 @@ import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
 public class DirectoryLookupService extends ServiceDirectoryService {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(DirectoryLookupService.class);
+
+    /**
+     * The Changes Check Task kickoff delay time property name in seconds.
+     */
+    public static final String SD_API_CHANGES_CHECK_DELAY_PROPERTY = "com.cisco.oss.foundation.directory.changes.check.delay";
+
+    /**
+     * The default delay time of Changes Check Task in seconds .
+     */
+    public static final int SD_API_CHANGES_CHECK_DELAY_DEFAULT = 0;
+
+    /**
+     * The Changes checking interval property name in seconds.
+     */
+    public static final String SD_API_CHANGES_CHECK_INTERVAL_PROPERTY = "com.cisco.oss.foundation.directory.changes.check.interval";
+
+    /**
+     * The default Changes checking interval value in seconds.
+     */
+    public static final int SD_API_CHANGES_CHECK_INTERVAL_DEFAULT = 1;
 
     /**
      * The DirectoryServiceClientManager to get the DirectoryServiceClient.
@@ -118,8 +140,14 @@ public class DirectoryLookupService extends ServiceDirectoryService {
     }
 
     private void initChangesCheckTask() {
+        int delay = getServiceDirectoryConfig().getInt(
+                SD_API_CHANGES_CHECK_DELAY_PROPERTY,
+                SD_API_CHANGES_CHECK_DELAY_DEFAULT);
+        int interval = getServiceDirectoryConfig().getInt(
+                SD_API_CHANGES_CHECK_INTERVAL_PROPERTY,
+                SD_API_CHANGES_CHECK_INTERVAL_DEFAULT);
         changesCheckService.get().scheduleWithFixedDelay(new ChangesCheckTask(System.currentTimeMillis()),
-                0L, 1L, TimeUnit.SECONDS);
+                delay, interval, TimeUnit.SECONDS);
         LOGGER.info("Service Instances Changes Checking Task is started");
     }
 

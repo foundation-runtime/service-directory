@@ -62,23 +62,27 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 
     /**
      * The LookupManager cache sync executor kickoff delay time property name in seconds.
+     * @deprecated
      */
-    public static final String SD_API_CACHE_SYNC_DELAY_PROPERTY = "com.cisco.oss.foundation.directory.cache.sync.delay";
+    public static final String SD_API_CACHE_SYNC_DELAY_PROPERTY =  SD_API_CHANGES_CHECK_DELAY_PROPERTY;
 
     /**
      * The default delay time of LookupManager cache sync executor kickoff.
+     * @deprecated
      */
-    public static final int SD_API_CACHE_SYNC_DELAY_DEFAULT = 1;
+    public static final int SD_API_CACHE_SYNC_DELAY_DEFAULT = SD_API_CHANGES_CHECK_DELAY_DEFAULT;
 
     /**
      * The LookupManager cache sync interval property name in seconds.
+     * @deprecated
      */
-    public static final String SD_API_CACHE_SYNC_INTERVAL_PROPERTY = "com.cisco.oss.foundation.directory.cache.sync.interval";
+    public static final String SD_API_CACHE_SYNC_INTERVAL_PROPERTY = SD_API_CHANGES_CHECK_INTERVAL_PROPERTY;
 
     /**
      * The default LookupManager cache sync interval value.
+     * @deprecated
      */
-    public static final int SD_API_CACHE_SYNC_INTERVAL_DEFAULT = 10;
+    public static final int SD_API_CACHE_SYNC_INTERVAL_DEFAULT = SD_API_CHANGES_CHECK_INTERVAL_DEFAULT;
 
 
     /**
@@ -191,13 +195,6 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
      * initialization of the CacheSyncTask
      */
     private void initCacheSyncTask(){
-        int delay = getServiceDirectoryConfig().getInt(
-                SD_API_CACHE_SYNC_DELAY_PROPERTY,
-                SD_API_CACHE_SYNC_DELAY_DEFAULT);
-        int interval = getServiceDirectoryConfig().getInt(
-                SD_API_CACHE_SYNC_INTERVAL_PROPERTY,
-                SD_API_CACHE_SYNC_INTERVAL_DEFAULT);
-
         LOGGER.info("Cache sync Service is started");
     }
 
