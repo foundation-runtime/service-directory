@@ -78,8 +78,8 @@ public class ServiceInstanceChangeListenerTest {
             public void onChange(InstanceChange.ChangeType type, InstanceChange<ServiceInstance> change) throws Exception {
                 System.out.printf("%s%n",change);
                 if(type== InstanceChange.ChangeType.Remove){ // the last one is remove
-                    countDown.countDown();
                     lastInst.set(change.from);
+                    countDown.countDown();
                 }
             }
         };
