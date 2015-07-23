@@ -60,8 +60,10 @@ public class RegistrationManagerImpl extends AbstractServiceDirectoryManager imp
      */
     @Override
     public void start(){
-        super.start();
-        LOGGER.info("Registration Manager @{} is started", this);
+        if (!isStarted()) {
+            super.start();
+            LOGGER.info("Registration Manager @{} is started", this);
+        }
     }
 
     /**
