@@ -48,7 +48,7 @@ public class LookupManagerImplTest {
     @Test
     public void test01 () throws InterruptedException {
         ServiceDirectory.getServiceDirectoryConfig().setProperty(HeartbeatDirectoryRegistrationService.SD_API_HEARTBEAT_INTERVAL_PROPERTY, 1);
-        ServiceDirectory.getServiceDirectoryConfig().setProperty(CachedDirectoryLookupService.SD_API_CHANGES_CHECK_INTERVAL_PROPERTY, 1);
+        ServiceDirectory.getServiceDirectoryConfig().setProperty(CachedDirectoryLookupService.SD_API_POOLING_INTERVAL_PROPERTY, 1);
 
         final String serviceName = "odrm";
         final String instanceAddress = "192.168.2.3";

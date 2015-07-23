@@ -16,15 +16,12 @@
 package com.cisco.oss.foundation.directory.lookup;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -35,11 +32,8 @@ import com.cisco.oss.foundation.directory.cache.ModelServiceClientCache;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
-import com.cisco.oss.foundation.directory.entity.OperationResult;
-import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 
-import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
 import static com.cisco.oss.foundation.directory.utils.JsonSerializer.serialize;
 
 /**
@@ -64,25 +58,25 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
      * The LookupManager cache sync executor kickoff delay time property name in seconds.
      * @deprecated
      */
-    public static final String SD_API_CACHE_SYNC_DELAY_PROPERTY =  SD_API_CHANGES_CHECK_DELAY_PROPERTY;
+    public static final String SD_API_CACHE_SYNC_DELAY_PROPERTY = SD_API_POOLING_DELAY_PROPERTY;
 
     /**
      * The default delay time of LookupManager cache sync executor kickoff.
      * @deprecated
      */
-    public static final int SD_API_CACHE_SYNC_DELAY_DEFAULT = SD_API_CHANGES_CHECK_DELAY_DEFAULT;
+    public static final int SD_API_CACHE_SYNC_DELAY_DEFAULT = SD_API_POOLING_DELAY_DEFAULT;
 
     /**
      * The LookupManager cache sync interval property name in seconds.
      * @deprecated
      */
-    public static final String SD_API_CACHE_SYNC_INTERVAL_PROPERTY = SD_API_CHANGES_CHECK_INTERVAL_PROPERTY;
+    public static final String SD_API_CACHE_SYNC_INTERVAL_PROPERTY = SD_API_POOLING_INTERVAL_PROPERTY;
 
     /**
      * The default LookupManager cache sync interval value.
      * @deprecated
      */
-    public static final int SD_API_CACHE_SYNC_INTERVAL_DEFAULT = SD_API_CHANGES_CHECK_INTERVAL_DEFAULT;
+    public static final int SD_API_CACHE_SYNC_INTERVAL_DEFAULT = SD_API_POOLING_INTERVAL_DEFAULT;
 
 
     /**
