@@ -174,15 +174,49 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     @Override
     public ModelService getModelService(String serviceName){
         ModelServiceClientCache cache = getCache().get(serviceName);
-        if (cache == null || cache.getData() == null) {
-            ModelService lookup = super.getModelService(serviceName);
-            if (lookup!=null) {
-                getCache().put(serviceName, new ModelServiceClientCache(lookup));
-                cache = getCache().get(serviceName);
-                addInstanceChangeListener(serviceName,cache);
+        ModelService lookup;
+        if (cache == null) {
+            // cache has not never been created, initialize an new one.
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("service has not been cached, try to cache the service {} ", serviceName);
+            }
+            lookup = super.getModelService(serviceName);
+            getCache().putIfAbsent(serviceName, new ModelServiceClientCache(lookup));
+            cache = getCache().get(serviceName);
+            addInstanceChangeListener(serviceName, cache);
+        } else {
+            // service cached has been removed
+            if (cache.getData() == null) {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("cached service={} is obsoleted, try to get service from server", serviceName);
+                }
+                lookup = super.getModelService(serviceName);
+                if (lookup != null) {
+                    // replace old cached service by new one
+                    if (LOGGER.isDebugEnabled()) {
+                        LOGGER.debug("try to replace the obsoleted cached service={} by service from server {}", serviceName,lookup.getServiceInstances());
+                    }
+                    removeInstanceChangeListener(serviceName, cache);
+                    boolean replaced = getCache().replace(serviceName, cache, new ModelServiceClientCache(lookup));
+                    if (replaced) {
+                        addInstanceChangeListener(serviceName, getCache().get(serviceName));
+
+                    } else {
+                        LOGGER.error("fail to replace the obsoleted cached service={}", serviceName);
+                    }
+                }else{
+                    LOGGER.error("fail to lookup service={} from server",serviceName);
+                }
+            }
+            // use the use cached service
+            else {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug("service={} has been cached, get service from cache. {}", serviceName,cache.getData().getServiceInstances());
+                }
+                lookup = cache.getData();
             }
         }
-        return cache==null ? null : cache.getData();
+        return lookup;
     }
 
     /**
