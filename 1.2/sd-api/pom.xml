@@ -294,6 +294,8 @@
           <needarch>noarch</needarch>
     
           <defineStatements>
+            <!-- Do not run /usr/lib/rpm/redhat/brp-java-repack-jars -->
+            <defineStatement><![CDATA[__os_install_post %{nil}]]></defineStatement>
             <defineStatement>_unpackaged_files_terminate_build 0</defineStatement>
             <defineStatement>_tmppath /tmp</defineStatement>
           </defineStatements>
