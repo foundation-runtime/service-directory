@@ -61,6 +61,9 @@ public class ModelServiceClientCache extends ClientCache<ModelService> implement
         } else if (type == InstanceChange.ChangeType.Create) {
             List<ModelServiceInstance> all = getAllModelServiceInstance();
             if (all!=null){
+                if(LOGGER.isDebugEnabled()){
+                    LOGGER.debug("add new created service instance {} to cache",change.to);
+                }
                 all.add(ServiceInstanceUtils.copyModelInstFrom(change.to));
             }
         } else {
