@@ -31,12 +31,19 @@ public class NotificationHandlerAdapter extends AbstractModelChangeAdapter<Notif
         switch (type) {
             case Create:
                 getAdapter().serviceInstanceChange(toServiceInstance(change.to));
+                if (change.to.getStatus()==UP) {
+                    getAdapter().serviceInstanceAvailable(toServiceInstance(change.to));
+                }else{
+                    getAdapter().serviceInstanceUnavailable(toServiceInstance(change.to));
+                }
                 break;
             case Remove:
                 getAdapter().serviceInstanceChange(toServiceInstance(change.from));
+                getAdapter().serviceInstanceUnavailable(toServiceInstance(change.from));
                 break;
             case Status:
                 Objects.requireNonNull(change.to);
+                getAdapter().serviceInstanceChange(toServiceInstance(change.to));
                 if (change.to.getStatus()== UP){
                     getAdapter().serviceInstanceAvailable(toServiceInstance(change.to));
                 }else{
