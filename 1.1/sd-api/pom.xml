@@ -95,11 +95,11 @@
       <plugin>
         <groupId>com.cisco.ipcentral</groupId>
         <artifactId>maven-ipcentral-plugin</artifactId>
-        <version>5.1.7a</version>
+        <version>5.2</version>
         <configuration>
           <username>xuzhong</username>
-          <password />
-          <businessUnit>SPVSS</businessUnit>
+          <password></password>
+          <businessUnit>SPVSS-PE</businessUnit>
           <componentEditorsGrouper>sd-dev</componentEditorsGrouper>
           <assetEditorsGrouper>sd-dev</assetEditorsGrouper>
           <url>http://ipcentral.cisco.com/ipcentral/services</url>
