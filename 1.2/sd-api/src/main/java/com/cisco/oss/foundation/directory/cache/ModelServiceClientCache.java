@@ -67,16 +67,12 @@ public class ModelServiceClientCache extends ClientCache<ModelService> implement
                 for (ModelServiceInstance instance : all){
                    if (instance.getInstanceId().equals(change.to.getInstanceId())){
                        exist = true;
-                       if (LOGGER.isDebugEnabled()) {
-                           LOGGER.debug("The service instance {} already exist in cache", change.to);
-                       }
+                       LOGGER.debug("The service instance {} already exists in cache.", change.to);
                        break;
                    }
                 }
                 if (!exist) {
-                    if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("add new created service instance {} to cache", change.to);
-                    }
+                    LOGGER.debug("Add newly created service instance {} to cache.", change.to);
                     all.add(ServiceInstanceUtils.copyModelInstFrom(change.to));
                 }
             }
