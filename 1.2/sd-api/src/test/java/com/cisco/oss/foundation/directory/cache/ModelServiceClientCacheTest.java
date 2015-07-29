@@ -57,7 +57,7 @@ public class ModelServiceClientCacheTest {
         lookupService.addServiceInstanceChangeListener(fooService.getName(), new ServiceInstanceChangeListener() {
             @Override
             public void onChange(InstanceChange.ChangeType type, InstanceChange<ServiceInstance> change) throws Exception {
-                assertEquals(InstanceChange.ChangeType.Status, type);
+                assertEquals(InstanceChange.ChangeType.STATUS, type);
                 assertEquals(DOWN, change.from.getStatus());
                 assertEquals(1, fooCache.getAllModelServiceInstance().size());
                 assertEquals(UP, fooCache.getAllModelServiceInstance().get(0).getStatus());

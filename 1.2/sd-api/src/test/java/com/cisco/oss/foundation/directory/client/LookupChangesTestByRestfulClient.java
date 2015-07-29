@@ -52,7 +52,7 @@ public class LookupChangesTestByRestfulClient {
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
                 LOG.debug("invoke url:{} method:{} ", uri, method);
                 List<InstanceChange<ModelServiceInstance>> list = new ArrayList<>();
-                list.add(new InstanceChange<>(0L, "test", InstanceChange.ChangeType.Create,
+                list.add(new InstanceChange<>(0L, "test", InstanceChange.ChangeType.ADD,
                         null, instance));
                 String json = "";
                 try {

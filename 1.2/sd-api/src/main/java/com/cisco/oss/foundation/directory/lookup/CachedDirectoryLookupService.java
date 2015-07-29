@@ -57,24 +57,28 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     /**
      * The LookupManager cache sync executor kickoff delay time property name in seconds.
      * @deprecated
+     * use {@link DirectoryLookupService#SD_API_POLLING_DELAY_PROPERTY}
      */
     public static final String SD_API_CACHE_SYNC_DELAY_PROPERTY = SD_API_POLLING_DELAY_PROPERTY;
 
     /**
      * The default delay time of LookupManager cache sync executor kickoff.
      * @deprecated
+     * use {@link DirectoryLookupService#SD_API_POLLING_DELAY_PROPERTY}
      */
     public static final int SD_API_CACHE_SYNC_DELAY_DEFAULT = SD_API_POLLING_DELAY_DEFAULT;
 
     /**
      * The LookupManager cache sync interval property name in seconds.
      * @deprecated
+     * use {@link DirectoryLookupService#SD_API_POLLING_INTERVAL_PROPERTY}
      */
     public static final String SD_API_CACHE_SYNC_INTERVAL_PROPERTY = SD_API_POLLING_INTERVAL_PROPERTY;
 
     /**
      * The default LookupManager cache sync interval value.
      * @deprecated
+     * use {@link DirectoryLookupService#SD_API_POLLING_INTERVAL_DEFAULT}
      */
     public static final int SD_API_CACHE_SYNC_INTERVAL_DEFAULT = SD_API_POLLING_INTERVAL_DEFAULT;
 

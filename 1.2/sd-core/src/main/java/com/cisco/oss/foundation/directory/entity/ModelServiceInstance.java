@@ -421,7 +421,6 @@ public class ModelServiceInstance {
         if (o == null || getClass() != o.getClass()) return false;
         ModelServiceInstance that = (ModelServiceInstance) o;
         return Objects.equals(monitorEnabled, that.monitorEnabled) &&
-                Objects.equals(port, that.port) &&
                 Objects.equals(id, that.id) &&
                 Objects.equals(instanceId, that.instanceId) &&
                 Objects.equals(uri, that.uri) &&
@@ -431,12 +430,15 @@ public class ModelServiceInstance {
                 Objects.equals(heartbeatTime, that.heartbeatTime) &&
                 Objects.equals(metadata, that.metadata) &&
                 Objects.equals(serviceName, that.serviceName) &&
-                Objects.equals(address, that.address);
+                Objects.equals(address, that.address) &&
+                Objects.equals(port, that.port) &&
+                Objects.equals(tls_port, that.tls_port) &&
+                Objects.equals(protocol, that.protocol);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, instanceId, uri, status, monitorEnabled, createTime, modifiedTime, heartbeatTime, metadata, serviceName, address, port);
+        return Objects.hash(id, instanceId, uri, status, monitorEnabled, createTime, modifiedTime, heartbeatTime, metadata, serviceName, address, port, tls_port, protocol);
     }
 
     @Override
@@ -453,7 +455,9 @@ public class ModelServiceInstance {
                 ", metadata=" + metadata +
                 ", serviceName='" + serviceName + '\'' +
                 ", address='" + address + '\'' +
-                ", port=" + port +
+                ", port=" + port + '\'' +
+                ", tls_port=" + tls_port + '\'' +
+                ", protocol=" + protocol +
                 '}';
     }
 }

@@ -15,9 +15,9 @@ import static com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils.toSe
  */
 public class InstanceChange<T> {
     public enum ChangeType {
-        Create,
-        Remove,
-        Status,
+        ADD,
+        REMOVE,
+        STATUS,
         URL,
         META
     }

@@ -68,7 +68,7 @@ public class CachedDirectoryLookupServiceTest {
         lookupService.addServiceInstanceChangeListener(fooService.getName(), new ServiceInstanceChangeListener() {
             @Override
             public void onChange(InstanceChange.ChangeType type, InstanceChange<ServiceInstance> change) throws Exception {
-                if (type == InstanceChange.ChangeType.Status && change.from.getStatus()==UP && change.to.getStatus()==DOWN) {
+                if (type == InstanceChange.ChangeType.STATUS && change.from.getStatus()==UP && change.to.getStatus()==DOWN) {
                     latch.countDown();
                 }
             }

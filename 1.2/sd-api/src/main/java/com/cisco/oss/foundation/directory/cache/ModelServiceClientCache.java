@@ -37,7 +37,7 @@ public class ModelServiceClientCache extends ClientCache<ModelService> implement
     @Override
     public void onChange(InstanceChange.ChangeType type, final InstanceChange<ModelServiceInstance> change) throws Exception {
 
-        if (type == InstanceChange.ChangeType.Remove) {
+        if (type == InstanceChange.ChangeType.REMOVE) {
             ModelService service = getData();
             if (service != null) {
                 List<ModelServiceInstance> removeList = new ArrayList<>();
@@ -58,7 +58,7 @@ public class ModelServiceClientCache extends ClientCache<ModelService> implement
 
                 }
             }
-        } else if (type == InstanceChange.ChangeType.Create) {
+        } else if (type == InstanceChange.ChangeType.ADD) {
             List<ModelServiceInstance> all = getAllModelServiceInstance();
             if (all!=null){
                 //need to check if the instance already exist, because the instance might be
@@ -81,7 +81,7 @@ public class ModelServiceClientCache extends ClientCache<ModelService> implement
             if (all!=null){
                 for (ModelServiceInstance instance : all){
                     if (instance.getInstanceId().equals(change.to.getInstanceId())){
-                        if (type == InstanceChange.ChangeType.Status){
+                        if (type == InstanceChange.ChangeType.STATUS){
                             LOGGER.debug("Cached service instance {} has change Status from {} to {}",instance,
                                     change.from.getStatus(),
                                     change.to.getStatus());

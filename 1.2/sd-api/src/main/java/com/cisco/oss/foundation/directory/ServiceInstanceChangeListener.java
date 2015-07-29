@@ -18,8 +18,10 @@ public interface ServiceInstanceChangeListener {
     * called when there is a service instance change.
     *
     * @since 1.2
-    * @param type URL, status, metadata
-    * @param change the instance changes
+    * @param type 
+    *           Add, remove, URL, status, metadata
+    * @param change 
+    *           the instance changes
     * @throws Exception
     *
     */

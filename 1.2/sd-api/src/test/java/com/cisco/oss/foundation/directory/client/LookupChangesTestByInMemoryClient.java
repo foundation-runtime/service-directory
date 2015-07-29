@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import static com.cisco.oss.foundation.directory.entity.InstanceChange.ChangeType.Status;
+import static com.cisco.oss.foundation.directory.entity.InstanceChange.ChangeType.STATUS;
 
 /**
  * test for new changed look up methods by using InMemory client
@@ -78,7 +78,7 @@ public class LookupChangesTestByInMemoryClient {
 
         List<InstanceChange<ModelServiceInstance>> changes = sharedMemoryClient.lookupChangesSince("myService", now);
         assertEquals(1, changes.size());
-        assertEquals(Status, changes.get(0).changeType);
+        assertEquals(STATUS, changes.get(0).changeType);
         assertEquals(OperationalStatus.UP, changes.get(0).to.getStatus());
         sharedMemoryClient.updateInstanceStatus("myService", "192.168.0.1", OperationalStatus.DOWN, true);
 
@@ -142,6 +142,6 @@ public class LookupChangesTestByInMemoryClient {
         sharedMemoryClient.updateInstanceStatus("newService", "192.168.1.1", OperationalStatus.UP, true);
         assertEquals(2, sharedMemoryClient.lookupChangesSince("newService", now).size());
         assertEquals(1, sharedMemoryClient.lookupChangesSince("newService", sinceCreated).size());
-        assertEquals(Status,sharedMemoryClient.lookupChangesSince("newService",sinceCreated).get(0).changeType);
+        assertEquals(STATUS,sharedMemoryClient.lookupChangesSince("newService",sinceCreated).get(0).changeType);
     }
 }

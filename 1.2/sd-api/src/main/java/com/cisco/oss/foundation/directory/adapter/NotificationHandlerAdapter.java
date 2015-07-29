@@ -29,7 +29,7 @@ public class NotificationHandlerAdapter extends AbstractModelChangeAdapter<Notif
         Objects.requireNonNull(type);
         Objects.requireNonNull(change);
         switch (type) {
-            case Create:
+            case ADD:
                 getAdapter().serviceInstanceChange(toServiceInstance(change.to));
                 if (change.to.getStatus()==UP) {
                     getAdapter().serviceInstanceAvailable(toServiceInstance(change.to));
@@ -37,11 +37,11 @@ public class NotificationHandlerAdapter extends AbstractModelChangeAdapter<Notif
                     getAdapter().serviceInstanceUnavailable(toServiceInstance(change.to));
                 }
                 break;
-            case Remove:
+            case REMOVE:
                 getAdapter().serviceInstanceChange(toServiceInstance(change.from));
                 getAdapter().serviceInstanceUnavailable(toServiceInstance(change.from));
                 break;
-            case Status:
+            case STATUS:
                 Objects.requireNonNull(change.to);
                 getAdapter().serviceInstanceChange(toServiceInstance(change.to));
                 if (change.to.getStatus()== UP){

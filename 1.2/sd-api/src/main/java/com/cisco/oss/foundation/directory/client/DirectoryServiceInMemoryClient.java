@@ -144,7 +144,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
         } else {
             addToHistory(new InstanceChange<>(newInstance.getModifiedTime().getTime(),
                     newInstance.getServiceName(),
-                    InstanceChange.ChangeType.Create,
+                    InstanceChange.ChangeType.ADD,
                     null,
                     copyModelInstFrom(newInstance)
             ));
@@ -202,7 +202,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
             mInstance.setModifiedTime(new Date());
             addToHistory(new InstanceChange<>(mInstance.getModifiedTime().getTime(),
                     mInstance.getServiceName(),
-                    InstanceChange.ChangeType.Status,
+                    InstanceChange.ChangeType.STATUS,
                     old,
                     copyModelInstFrom(mInstance)
             ));
@@ -266,7 +266,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
                 LOGGER.debug("service instance {} removed by name : {} , address : {}", previousInstance, serviceName, instanceAddress);
                 addToHistory(new InstanceChange<>(previousInstance.getModifiedTime().getTime(),
                         previousInstance.getServiceName(),
-                        InstanceChange.ChangeType.Remove,
+                        InstanceChange.ChangeType.REMOVE,
                         copyModelInstFrom(previousInstance), null));
             } else {
                 LOGGER.debug("no service instance exist for {} {}", serviceName, instanceAddress);

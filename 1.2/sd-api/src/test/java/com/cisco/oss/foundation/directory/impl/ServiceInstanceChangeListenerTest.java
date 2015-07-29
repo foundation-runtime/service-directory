@@ -77,7 +77,7 @@ public class ServiceInstanceChangeListenerTest {
             @Override
             public void onChange(InstanceChange.ChangeType type, InstanceChange<ServiceInstance> change) throws Exception {
                 System.out.printf("%s%n",change);
-                if(type== InstanceChange.ChangeType.Remove){ // the last one is remove
+                if(type== InstanceChange.ChangeType.REMOVE){ // the last one is remove
                     lastInst.set(change.from);
                     countDown.countDown();
                 }
@@ -88,8 +88,7 @@ public class ServiceInstanceChangeListenerTest {
             reg.updateServiceOperationalStatus("foo", "192.168.1.1", OperationalStatus.UP);
             assertEquals(OperationalStatus.UP, lookup.lookupInstance("foo").getStatus());
             reg.updateServiceOperationalStatus("foo", "192.168.1.1", OperationalStatus.DOWN);
-            // you can never find a DOWN
-            //assertEquals(OperationalStatus.DOWN, lookup.lookupInstance("foo").getStatus());
+            assertEquals(OperationalStatus.DOWN, lookup.getInstanceByAddress("foo","192.168.1.1").getStatus());
             reg.updateServiceOperationalStatus("foo", "192.168.1.1", OperationalStatus.UP);
             assertEquals(OperationalStatus.UP, lookup.lookupInstance("foo").getStatus());
 
