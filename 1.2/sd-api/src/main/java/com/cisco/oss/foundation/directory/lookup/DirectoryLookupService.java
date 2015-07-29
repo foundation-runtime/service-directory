@@ -22,14 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -187,6 +180,7 @@ public class DirectoryLookupService extends ServiceDirectoryService {
             //for example, when unregister a service.
             syncServiceListForChangedTimeMap(serviceNameList);
 
+            final ExecutorService execService = Executors.newFixedThreadPool(5);
             for (String serviceName : serviceNameList) {
                 lastChangedTimeMills.putIfAbsent(serviceName, new AtomicLong(INIT_TIME_MILLS));
                 try {
@@ -201,7 +195,7 @@ public class DirectoryLookupService extends ServiceDirectoryService {
                             List<InstanceChangeListener<ModelServiceInstance>> listenerList = changeListenerMap.get(c.serviceName);
                             if (listenerList != null) {
                                 for (final InstanceChangeListener<ModelServiceInstance> l : listenerList) {
-                                    Future<?> f = Executors.newSingleThreadExecutor().submit(
+                                    Future<?> f = execService.submit(
                                             new Runnable() {
                                                 @Override
                                                 public void run() {
@@ -228,9 +222,11 @@ public class DirectoryLookupService extends ServiceDirectoryService {
                         lastChangedTimeMills.get(serviceName).set(changes.get(0).changedTimeMills);
                     }
                 } catch (Throwable t) {
+                    execService.shutdownNow();
                     LOGGER.error("Error when execute ChangesCheckTask.", t);
                 }
             }
+            execService.shutdown();
         }
     }
 
