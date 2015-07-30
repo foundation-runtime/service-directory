@@ -34,7 +34,6 @@ import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
 import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.lifecycle.Stoppable;
 
-import static com.cisco.oss.foundation.directory.utils.JsonSerializer.serialize;
 
 /**
  * It is the DirectoryLookupService with client-side Cache.
@@ -49,10 +48,6 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
     private static final Logger LOGGER = LoggerFactory
             .getLogger(CachedDirectoryLookupService.class);
 
-    // Set this log to DEBUG to enable Service Cache dump in LookupManager.
-    // It will dump the whole ServiceCache to log file when the Logger Changed first time,
-    // and every time the Service Cache has new update.
-    private static final Logger CacheDumpLogger = LoggerFactory.getLogger("com.cisco.oss.foundation.directory.cache.dump");
 
     /**
      * The LookupManager cache sync executor kickoff delay time property name in seconds.
@@ -243,36 +238,5 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
         return this.cache;
     }
 
-
-    /**
-     * Dump the ServiceCache to CacheDumpLogger Logger.
-     *
-     * @return
-     *         true if dump complete.
-     */
-    private boolean dumpCache(){
-        if (CacheDumpLogger.isDebugEnabled()) {
-            try {
-                List<ModelService> services = new ArrayList<>();
-                for (ModelServiceClientCache cache : getCache().values()){
-                    services.add(cache.getData());
-                }
-                StringBuilder sb = new StringBuilder();
-                sb.append("LookupManager dumpped Service Cache at: ").append(System.currentTimeMillis()).append("%n");
-                for (ModelService service : services) {
-                    sb.append(new String(serialize(service))).append("%n");
-                }
-                CacheDumpLogger.debug(sb.toString());
-            } catch (Exception e) {
-                LOGGER.warn("Dump Service Cache failed. Set Logger {} to INFO to disable this message.",
-                            CacheDumpLogger.getName());                
-                LOGGER.trace("Dump Service Cache failed. ", e);             
-                return false;
-            }
-            return true;
-        }
-        return false;
-
-    }
 
 }

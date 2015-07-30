@@ -13,6 +13,7 @@ import com.cisco.oss.foundation.directory.entity.ModelService;
 import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.impl.InstanceChangeListener;
 import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
+import static com.cisco.oss.foundation.directory.utils.JsonSerializer.serialize;
 
 /**
  * The client side cache for service instance. It also implements an InstanceChangeListener for the service changes.
@@ -105,6 +106,7 @@ public class ModelServiceClientCache extends ClientCache<ModelService> implement
             }
 
         }
+        dumpCache();
     }
 
 	/**
@@ -136,6 +138,33 @@ public class ModelServiceClientCache extends ClientCache<ModelService> implement
     public ModelService getCachedService(){
         return getData();
     }
+
+    // Set this log to DEBUG to enable Service Cache dump in LookupManager.
+    // It will dump the whole ServiceCache to log file when the Logger Changed first time,
+    // and every time the Service Cache has new update.
+    private static final Logger CacheDumpLogger = LoggerFactory.getLogger("com.cisco.oss.foundation.directory.cache.dump");
+
+    /**
+     * Dump the ServiceCache to CacheDumpLogger Logger.
+     *
+     * @return
+     *         true if dump complete.
+     */
+    private void dumpCache(){
+        if (CacheDumpLogger.isDebugEnabled()) {
+            try {
+                StringBuilder sb = new StringBuilder();
+                sb.append("LookupManager dumped Service Cache at: ").append(System.currentTimeMillis()).append("\n");
+                sb.append(new String(serialize(getData()))).append("\n");
+                CacheDumpLogger.debug(sb.toString());
+            } catch (Exception e) {
+                LOGGER.warn("Dump Service Cache failed. Set Logger {} to INFO to disable this message.",
+                            CacheDumpLogger.getName());
+                LOGGER.trace("Dump Service Cache failed. ", e);
+            }
+        }
+    }
+
 
 
 }
