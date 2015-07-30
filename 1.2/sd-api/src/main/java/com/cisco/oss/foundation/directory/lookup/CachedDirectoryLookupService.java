@@ -180,9 +180,11 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
                 LOGGER.debug("service has not been cached, try to cache the service {} ", serviceName);
             }
             lookup = super.getModelService(serviceName);
-            getCache().putIfAbsent(serviceName, new ModelServiceClientCache(lookup));
-            cache = getCache().get(serviceName);
-            addInstanceChangeListener(serviceName, cache);
+            if (lookup!=null) {
+                getCache().putIfAbsent(serviceName, new ModelServiceClientCache(lookup));
+                cache = getCache().get(serviceName);
+                addInstanceChangeListener(serviceName, cache);
+            }
         } else {
             // service cached has been removed
             if (cache.getData() == null) {

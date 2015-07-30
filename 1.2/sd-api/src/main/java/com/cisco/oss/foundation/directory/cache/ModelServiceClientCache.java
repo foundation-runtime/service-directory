@@ -155,7 +155,8 @@ public class ModelServiceClientCache extends ClientCache<ModelService> implement
             try {
                 StringBuilder sb = new StringBuilder();
                 sb.append("LookupManager dumped Service Cache at: ").append(System.currentTimeMillis()).append("\n");
-                sb.append(new String(serialize(getData()))).append("\n");
+                ModelService service = getData();
+                sb.append(service==null ? "Cache is empty" : new String(serialize(service))).append("\n");
                 CacheDumpLogger.debug(sb.toString());
             } catch (Exception e) {
                 LOGGER.warn("Dump Service Cache failed. Set Logger {} to INFO to disable this message.",
