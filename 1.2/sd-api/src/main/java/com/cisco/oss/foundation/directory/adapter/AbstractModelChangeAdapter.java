@@ -11,11 +11,11 @@ public abstract class AbstractModelChangeAdapter<T> implements InstanceChangeLis
     /**
      * Constructor.
      *
-     * @param a
+     * @param adapter
      *            the adapter object
      */
-    public AbstractModelChangeAdapter(T a){
-        this.adapter=a;
+    public AbstractModelChangeAdapter(T adapter){
+        this.adapter=adapter;
     }
    
     /**

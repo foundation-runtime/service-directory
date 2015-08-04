@@ -513,10 +513,10 @@ public class DirectoryLookupService extends ServiceDirectoryService {
                 }
             }
             if (!found) {
-                throw new ServiceException(ErrorCode.NOTIFICATION_HANDLER_NOT_EXIST);
+               LOGGER.error(ErrorCode.NOTIFICATION_HANDLER_NOT_EXIST.getMessageTemplate());
             }
         } else {
-            throw new ServiceException(ErrorCode.SERVICE_NOT_EXIST, ErrorCode.SERVICE_NOT_EXIST.getMessageTemplate(), serviceName);
+            LOGGER.error(String.format(ErrorCode.SERVICE_NOT_EXIST.getMessageTemplate(), serviceName));
         }
 
     }
@@ -549,13 +549,13 @@ public class DirectoryLookupService extends ServiceDirectoryService {
                 }
             }
             if (!found) {
-                throw new ServiceException(ErrorCode.SERVICE_INSTANCE_LISTENER_NOT_EXIST);
+                LOGGER.error(ErrorCode.SERVICE_INSTANCE_LISTENER_NOT_EXIST.getMessageTemplate());
             }
             if (list.isEmpty()) {
                 changeListenerMap.remove(serviceName);
             }
         } else {
-            throw new ServiceException(ErrorCode.SERVICE_NOT_EXIST, ErrorCode.SERVICE_NOT_EXIST.getMessageTemplate(), serviceName);
+            LOGGER.error(String.format(ErrorCode.SERVICE_NOT_EXIST.getMessageTemplate(), serviceName));
         }
 
     }
