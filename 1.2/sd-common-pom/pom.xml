@@ -83,7 +83,7 @@
 
   <properties>
     <!--
-      The versions of sd common dependencs which not included by 'foundation-common-base'
+      The versions of sd common dependencies which are not included by 'foundation-common-base'
       or overridden by service-directory projects
     -->
     <!-- override versions -->
@@ -107,7 +107,7 @@
     <!-- codehaus mojo -->
     <build-helper-maven-plugin.version>1.9.1</build-helper-maven-plugin.version>
     <!-- cisco ipcentral plugin -->
-    <maven-ipcentral-plugin.version>5.0.6</maven-ipcentral-plugin.version>
+    <maven-ipcentral-plugin.version>5.2</maven-ipcentral-plugin.version>
 
     <!-- service directory projects shared -->
     <com.fasterxml.jackson.version>2.2.2</com.fasterxml.jackson.version>
@@ -117,19 +117,20 @@
   <build>
     <pluginManagement>
       <plugins>
-
         <plugin>
           <groupId>com.cisco.ipcentral</groupId>
           <artifactId>maven-ipcentral-plugin</artifactId>
-          <version>${maven-ipcentral-plugin.version}</version>
+          <version>5.2</version>
           <configuration>
-            <username>xuzhong</username>
-            <businessUnit>SPVSS</businessUnit>
+            <username>sdipc.gen</username>
+            <password>sdipc123</password>
+            <businessUnit>SPVSS-PE</businessUnit>
             <componentEditorsGrouper>sd-dev</componentEditorsGrouper>
             <assetEditorsGrouper>sd-dev</assetEditorsGrouper>
+            <url>http://ipcentral.cisco.com/ipcentral/services</url>
           </configuration>
         </plugin>
-
+       
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-clean-plugin</artifactId>
