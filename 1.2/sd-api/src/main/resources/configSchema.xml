@@ -63,13 +63,13 @@
       </DefaultValue>
     </Parameter>
 
-    <Parameter name="com.cisco.oss.foundation.directory.pooling.delay" type="INTEGER" description="">
+    <Parameter name="com.cisco.oss.foundation.directory.polling.delay" type="INTEGER" description="">
       <DefaultValue>
         <PrimitiveValue value="0"/>
       </DefaultValue>
     </Parameter>
 
-    <Parameter name="com.cisco.oss.foundation.directory.pooling.interval" type="INTEGER" description="">
+    <Parameter name="com.cisco.oss.foundation.directory.polling.interval" type="INTEGER" description="">
       <DefaultValue>
         <PrimitiveValue value="1"/>
       </DefaultValue>
