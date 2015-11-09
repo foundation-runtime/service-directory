@@ -565,7 +565,6 @@ public class DirectoryLookupService extends ServiceDirectoryService {
      * beware, the method might/might not called from shutdown of the service.
      * If the method is called from shutdown. It means all listeners have to be registered again.
      * But in saturation of supporting of SD restart, the notification will not work again.
-     */
     private void cleanUpChangeListenerMap() {
         if (LOGGER.isDebugEnabled()){
             dumpChangeListenerMap();
@@ -573,7 +572,9 @@ public class DirectoryLookupService extends ServiceDirectoryService {
         changeListenerMap.clear();
         LOGGER.debug("The listener map has been cleaned");
     }
+    */
 
+    /**
     private void dumpChangeListenerMap() {
         for(Map.Entry<String, CopyOnWriteArrayList<InstanceChangeListener<ModelServiceInstance>>> entry : changeListenerMap.entrySet()){
             String serviceName = entry.getKey();
@@ -584,6 +585,7 @@ public class DirectoryLookupService extends ServiceDirectoryService {
             }
         }
     }
+    */
 
     /**
      * Get the DirectoryServiceClient.

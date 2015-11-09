@@ -119,11 +119,13 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
         return mInstance;
     }
 
+    /*
     private ProvidedServiceInstance toProvidedInstance(ModelServiceInstance mInstance) {
         return new ProvidedServiceInstance(mInstance.getServiceName(), mInstance.getAddress(),
                 mInstance.getUri(), mInstance.getStatus(),
                 mInstance.getMetadata());
     }
+    */
 
     private static String objHashStr(Object o) {
         return o.getClass().getSimpleName() + "@" + Integer.toHexString(o.hashCode());

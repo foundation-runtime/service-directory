@@ -90,8 +90,8 @@ public class CachedDirectoryLookupService extends DirectoryLookupService impleme
 
     /**
      * Internal cache that maps the metadata key name to a list of service instances.
-     */
     private final ConcurrentHashMap<String, ModelMetadataKey> metaKeyCache = new ConcurrentHashMap<>();
+     */
 
     /**
      * Mark whether component is started.
