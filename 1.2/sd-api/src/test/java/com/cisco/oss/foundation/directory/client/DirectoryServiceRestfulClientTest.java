@@ -66,7 +66,7 @@ public class DirectoryServiceRestfulClientTest {
         final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker(){
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
-                Assert.assertEquals("http://vcsdirsvc:2013/service/odrm/192.168.7.4",directoryAddresses+
+                Assert.assertEquals("https://vcsdirsvc:8013/service/odrm/192.168.7.4",directoryAddresses+
                         uri);
                 ProvidedServiceInstance instance2 = client.deserialize(payload, ProvidedServiceInstance.class);
                 compareProvidedServiceInstance(instance, instance2);
@@ -93,7 +93,7 @@ public class DirectoryServiceRestfulClientTest {
         final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker(){
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
-                Assert.assertEquals("http://vcsdirsvc:2013/service/odrm/192.168.7.4", directoryAddresses+uri);
+                Assert.assertEquals("https://vcsdirsvc:8013/service/odrm/192.168.7.4", directoryAddresses+uri);
                 ProvidedServiceInstance instance2 = client.deserialize(payload, ProvidedServiceInstance.class);
                 compareProvidedServiceInstance(instance, instance2);
                 return new HttpResponse(201, null);
@@ -115,7 +115,7 @@ public class DirectoryServiceRestfulClientTest {
         final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker() {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
-                Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName + "/" + instanceId + "/status", directoryAddresses+uri);
+                Assert.assertEquals("https://vcsdirsvc:8013/service/" + serviceName + "/" + instanceId + "/status", directoryAddresses+uri);
                 Assert.assertEquals(payload, "status=" + status + "&isOwned=true");
                 return new HttpResponse(200, null);
             }
@@ -138,7 +138,7 @@ public class DirectoryServiceRestfulClientTest {
         final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker() {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
-                Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName + "/" + instanceId + "/uri", directoryAddresses+uri);
+                Assert.assertEquals("https://vcsdirsvc:8013/service/" + serviceName + "/" + instanceId + "/uri", directoryAddresses+uri);
                 Assert.assertEquals(payload, "uri=" + encodedUri + "&isOwned=false");
                 return new HttpResponse(200, null);
             }
@@ -159,7 +159,7 @@ public class DirectoryServiceRestfulClientTest {
         final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker() {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
-                Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName + "/" + instanceAddress + "/true" , directoryAddresses+uri);
+                Assert.assertEquals("https://vcsdirsvc:8013/service/" + serviceName + "/" + instanceAddress + "/true" , directoryAddresses+uri);
                 return new HttpResponse(200, null);
             }
         };
@@ -182,7 +182,7 @@ public class DirectoryServiceRestfulClientTest {
         final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker() {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
-                Assert.assertEquals("http://vcsdirsvc:2013/service/heartbeat", directoryAddresses+uri);
+                Assert.assertEquals("https://vcsdirsvc:8013/service/heartbeat", directoryAddresses+uri);
                 Map<String, ServiceInstanceHeartbeat> hbs = client.deserialize(payload, new TypeReference<Map<String, ServiceInstanceHeartbeat>>() {
                 });
                 Assert.assertEquals(hbs.size(), 1);
@@ -220,7 +220,7 @@ public class DirectoryServiceRestfulClientTest {
         final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker() {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
-                Assert.assertEquals("http://vcsdirsvc:2013/metadatakey/" + keyName, directoryAddresses+uri);
+                Assert.assertEquals("https://vcsdirsvc:8013/metadatakey/" + keyName, directoryAddresses+uri);
                 return new HttpResponse(200, client.serialize(result));
             }
         };
@@ -258,7 +258,7 @@ public class DirectoryServiceRestfulClientTest {
         final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker() {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
-                Assert.assertEquals("http://vcsdirsvc:2013/service/" + serviceName, directoryAddresses+uri);
+                Assert.assertEquals("https://vcsdirsvc:8013/service/" + serviceName, directoryAddresses+uri);
                 return new HttpResponse(200, client.serialize(result));
             }
         };
@@ -301,7 +301,7 @@ public class DirectoryServiceRestfulClientTest {
         final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker() {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
-                Assert.assertEquals("http://vcsdirsvc:2013/service/changing", directoryAddresses+uri);
+                Assert.assertEquals("https://vcsdirsvc:8013/service/changing", directoryAddresses+uri);
 
                 Map<String, ModelService> target = client.deserialize(payload, new TypeReference<Map<String, ModelService>>() {
                 });

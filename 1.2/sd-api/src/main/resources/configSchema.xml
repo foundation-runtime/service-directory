@@ -59,7 +59,7 @@
 
     <Parameter name="com.cisco.oss.foundation.directory.server.port" type="INTEGER" description="">
       <DefaultValue>
-        <PrimitiveValue value="2013"/>
+        <PrimitiveValue value="8013"/>
       </DefaultValue>
     </Parameter>
 

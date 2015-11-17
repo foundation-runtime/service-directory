@@ -225,7 +225,14 @@ public enum ErrorCode {
      * Error when unregister a not-exist ServiceInstanceChangeListener
      */
     SERVICE_INSTANCE_LISTENER_NOT_EXIST("500.14",
-            "ServiceInstanceChangeListener not exist, It may has been removed or has not been registered before.");
+            "ServiceInstanceChangeListener not exist, It may has been removed or has not been registered before."),
+    
+    /**
+     * Error when creating a secure connection to the server
+     */
+    SERVICE_DIRECTORY_SSLRUNTIMEEXCEPTION("500.15",
+            "Unable to create a secure connection to the server. %s");
+ 
     /**
      * The Error code
      */

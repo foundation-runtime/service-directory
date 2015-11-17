@@ -25,12 +25,23 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLSession;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+
 import com.google.common.io.ByteStreams;
 import com.google.common.io.CharStreams;
+import com.cisco.oss.foundation.directory.exception.ErrorCode;
+import com.cisco.oss.foundation.directory.exception.ServiceException;
+
 
 /**
  * Convenient Http Client util methods to invoke remote RESTful Service.
@@ -38,6 +49,7 @@ import com.google.common.io.CharStreams;
  *
  */
 public final class HttpUtils {
+    
     public static enum HttpMethod {
         GET, PUT, POST, DELETE
     }
@@ -57,12 +69,16 @@ public final class HttpUtils {
      *            the Http Body String.
      * @return the HttpResponse.
      * @throws IOException
+     * @throws ServiceException
      */
-    public static HttpResponse postJson(String urlStr, String body) throws IOException {
+    public static HttpResponse postJson(String urlStr, String body) throws IOException, ServiceException {
 
         URL url = new URL(urlStr);
         HttpURLConnection urlConnection = (HttpURLConnection) url
                 .openConnection();
+        if (urlConnection instanceof HttpsURLConnection) {
+            setTLSConnection((HttpsURLConnection)urlConnection);
+        }
         urlConnection.addRequestProperty("Accept", "application/json");
 
         urlConnection.setRequestMethod("POST");
@@ -91,12 +107,16 @@ public final class HttpUtils {
      *            the Http header Map.
      * @return the HttpResponse.
      * @throws IOException
+     * @throws ServiceException
      */
-    public static HttpResponse postJson(String urlStr, String body, Map<String, String> headers) throws IOException {
-
+    public static HttpResponse postJson(String urlStr, String body, Map<String, String> headers) throws IOException, ServiceException {
         URL url = new URL(urlStr);
         HttpURLConnection urlConnection = (HttpURLConnection) url
                 .openConnection();
+        if (urlConnection instanceof HttpsURLConnection) {
+            setTLSConnection((HttpsURLConnection)urlConnection);
+        }
+        
         urlConnection.addRequestProperty("Accept", "application/json");
 
         urlConnection.setRequestMethod("POST");
@@ -125,8 +145,9 @@ public final class HttpUtils {
      *            the Http Body String.
      * @return the HttpResponse.
      * @throws IOException
+     * @throws ServiceException 
      */
-    public static HttpResponse putJson(String urlStr, String body) throws IOException {
+    public static HttpResponse putJson(String urlStr, String body) throws IOException, ServiceException {
         Map<String, String> headers = new HashMap<String, String>();
         headers.put("Content-Type", "application/json");
         return put(urlStr, body, headers);
@@ -145,12 +166,17 @@ public final class HttpUtils {
      *            the Http header Map.
      * @return the HttpResponse.
      * @throws IOException
+     * @throws ServiceException
      */
     public static HttpResponse put(String urlStr, String body,
-            Map<String, String> headers) throws IOException {
+            Map<String, String> headers) throws IOException, ServiceException {
         URL url = new URL(urlStr);
         HttpURLConnection urlConnection = (HttpURLConnection) url
                 .openConnection();
+        if (urlConnection instanceof HttpsURLConnection) {
+            setTLSConnection((HttpsURLConnection)urlConnection);
+        }
+        
         urlConnection.addRequestProperty("Accept", "application/json");
 
         urlConnection.setRequestMethod("PUT");
@@ -179,11 +205,15 @@ public final class HttpUtils {
      *            the REST service URL String.
      * @return the HttpResponse.
      * @throws IOException
+     * @throws ServiceException
      */
-    public static HttpResponse getJson(String urlStr) throws IOException {
+    public static HttpResponse getJson(String urlStr) throws IOException, ServiceException {
         URL url = new URL(urlStr);
         HttpURLConnection urlConnection = (HttpURLConnection) url
                 .openConnection();
+        if (urlConnection instanceof HttpsURLConnection) {
+            setTLSConnection((HttpsURLConnection)urlConnection);
+        }
         urlConnection.addRequestProperty("Accept", "application/json");
 
         return getHttpResponse(urlConnection);
@@ -198,11 +228,15 @@ public final class HttpUtils {
      *            the Http header Map.
      * @return the HttpResponse.
      * @throws IOException
+     * @throws ServiceException
      */
-    public static HttpResponse getJson(String urlStr, Map<String, String> headers) throws IOException {
+    public static HttpResponse getJson(String urlStr, Map<String, String> headers) throws IOException, ServiceException {
         URL url = new URL(urlStr);
         HttpURLConnection urlConnection = (HttpURLConnection) url
                 .openConnection();
+        if (urlConnection instanceof HttpsURLConnection) {
+            setTLSConnection((HttpsURLConnection)urlConnection);
+        }
         urlConnection.addRequestProperty("Accept", "application/json");
         addCustomHeaders(urlConnection, headers);
 
@@ -215,11 +249,15 @@ public final class HttpUtils {
      *            the REST URL String.
      * @return the HttpResponse.
      * @throws IOException
+     * @throws ServiceException
      */
-    public static HttpResponse deleteJson(String urlStr) throws IOException {
+    public static HttpResponse deleteJson(String urlStr) throws IOException, ServiceException {
         URL url = new URL(urlStr);
         HttpURLConnection urlConnection = (HttpURLConnection) url
                 .openConnection();
+        if (urlConnection instanceof HttpsURLConnection) {
+            setTLSConnection((HttpsURLConnection)urlConnection);
+        }
         urlConnection.addRequestProperty("Accept", "application/json");
 
         urlConnection.setRequestMethod("DELETE");
@@ -236,11 +274,15 @@ public final class HttpUtils {
      *            the Http header Map.
      * @return the HttpResponse.
      * @throws IOException
+     * @throws ServiceException
      */
-    public static HttpResponse deleteJson(String urlStr, Map<String, String> headers) throws IOException {
+    public static HttpResponse deleteJson(String urlStr, Map<String, String> headers) throws IOException, ServiceException {
         URL url = new URL(urlStr);
         HttpURLConnection urlConnection = (HttpURLConnection) url
                 .openConnection();
+        if (urlConnection instanceof HttpsURLConnection) {
+            setTLSConnection((HttpsURLConnection)urlConnection);
+        }
         urlConnection.addRequestProperty("Accept", "application/json");
         addCustomHeaders(urlConnection, headers);
 
@@ -248,6 +290,44 @@ public final class HttpUtils {
 
         return getHttpResponse(urlConnection);
     }
+    
+    private static HttpsURLConnection setTLSConnection(
+            HttpsURLConnection secureConn) throws ServiceException {
+        try {
+            // TODO enable the cert authentication later
+            TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager() {
+                public java.security.cert.X509Certificate[] getAcceptedIssuers() {
+                    return null;
+                }
+
+                public void checkClientTrusted(X509Certificate[] certs,
+                        String authType) {
+                }
+
+                public void checkServerTrusted(X509Certificate[] certs,
+                        String authType) {
+                }
+            } };
+            SSLContext ctx = SSLContext.getInstance("TLS");
+            ctx.init(null, trustAllCerts, null);
+            secureConn.setSSLSocketFactory(ctx.getSocketFactory());
+
+            secureConn.setHostnameVerifier(new HostnameVerifier() {
+                @Override
+                public boolean verify(String hostname, SSLSession session) {
+                    return true;
+                }
+            });
+
+            return secureConn;
+        } catch (Throwable e) {
+            throw new ServiceException(
+                    ErrorCode.SERVICE_DIRECTORY_SSLRUNTIMEEXCEPTION,
+                    ErrorCode.SERVICE_DIRECTORY_SSLRUNTIMEEXCEPTION
+                            .getMessageTemplate(), e);
+        }
+    }
+    
     private static HttpResponse getHttpResponse(HttpURLConnection urlConnection) throws IOException {
         BufferedReader in = null;
         try {

@@ -410,7 +410,7 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
         public DirectoryHttpInvoker() {
             String sdFQDN = getServiceDirectoryConfig().getString(SD_API_SD_SERVER_FQDN_PROPERTY, SD_API_SD_SERVER_FQDN_DEFAULT);
             int port = getServiceDirectoryConfig().getInt(SD_API_SD_SERVER_PORT_PROPERTY, SD_API_SD_SERVER_PORT_DEFAULT);
-            this.directoryAddresses = "http://" + sdFQDN + ":" + port;
+            this.directoryAddresses = "https://" + sdFQDN + ":" + port;
         }
 
         /**
@@ -437,6 +437,9 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
                 }
             } catch (IOException e) {
                 String errMsg = "Send HTTP Request to remote Directory Server failed";
+                throw new ServiceException(ErrorCode.HTTP_CLIENT_ERROR, e, errMsg);
+            } catch (ServiceException e) {
+                String errMsg = "Send HTTPS Request to remote Directory Server failed";
                 throw new ServiceException(ErrorCode.HTTP_CLIENT_ERROR, e, errMsg);
             }
             // HTTP_OK 200, HTTP_MULT_CHOICE 300
@@ -490,6 +493,9 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
                 }
             } catch (IOException e) {
                 String errMsg = "Send HTTP Request to remote Directory Server failed";
+                throw new ServiceException(ErrorCode.HTTP_CLIENT_ERROR, e, errMsg);
+            } catch (ServiceException e) {
+                String errMsg = "Send HTTPS Request to remote Directory Server failed";
                 throw new ServiceException(ErrorCode.HTTP_CLIENT_ERROR, e, errMsg);
             }
             // HTTP_OK 200, HTTP_MULT_CHOICE 300

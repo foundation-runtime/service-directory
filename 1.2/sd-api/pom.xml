@@ -82,6 +82,7 @@
     <org.jboss.resteasy.version>3.0.11.Final</org.jboss.resteasy.version>
     <org.mockito.version>1.10.19</org.mockito.version>
     <sd.module.dir>/opt/jboss-as/modules/system/layers/base/com/cisco/oss/foundation/directory/main</sd.module.dir>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
   <build>
@@ -333,7 +334,7 @@
     <dependency>
       <groupId>com.cisco.oss.foundation.directory</groupId>
       <artifactId>sd-core</artifactId>
-      <version>1.2.0-0</version>
+      <version>1.2.0-1-SNAPSHOT</version>
     </dependency>
    <dependency>
      <groupId>org.jboss.resteasy</groupId>
