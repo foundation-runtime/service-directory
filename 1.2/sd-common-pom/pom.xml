@@ -107,7 +107,7 @@
     <!-- codehaus mojo -->
     <build-helper-maven-plugin.version>1.9.1</build-helper-maven-plugin.version>
     <!-- cisco ipcentral plugin -->
-    <maven-ipcentral-plugin.version>5.2</maven-ipcentral-plugin.version>
+    <maven-ipcentral-plugin.version>5.4.2a</maven-ipcentral-plugin.version>
 
     <!-- service directory projects shared -->
     <com.fasterxml.jackson.version>2.2.2</com.fasterxml.jackson.version>
