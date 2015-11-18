@@ -28,7 +28,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.cisco.oss.foundation.directory</groupId>
   <name>Service Directory Common POM</name>
-  <version>1.0.2-SNAPSHOT</version>
+  <version>1.0.3-SNAPSHOT</version>
   <artifactId>sd-common-pom</artifactId>
   <packaging>pom</packaging>
   <description>The project is the master pom of all service directory projects.</description>
@@ -120,7 +120,7 @@
         <plugin>
           <groupId>com.cisco.ipcentral</groupId>
           <artifactId>maven-ipcentral-plugin</artifactId>
-          <version>5.4.2a</version>
+          <version>${maven-ipcentral-plugin.version}</version>
           <configuration>
             <username>sdipc.gen</username>
             <password>sdipc123</password>
