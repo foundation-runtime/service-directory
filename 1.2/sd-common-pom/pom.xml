@@ -120,7 +120,7 @@
         <plugin>
           <groupId>com.cisco.ipcentral</groupId>
           <artifactId>maven-ipcentral-plugin</artifactId>
-          <version>5.2</version>
+          <version>5.4.2a</version>
           <configuration>
             <username>sdipc.gen</username>
             <password>sdipc123</password>
