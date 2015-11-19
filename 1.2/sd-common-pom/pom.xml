@@ -28,7 +28,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.cisco.oss.foundation.directory</groupId>
   <name>Service Directory Common POM</name>
-  <version>1.0.4</version>
+  <version>1.0.5-SNAPSHOT</version>
   <artifactId>sd-common-pom</artifactId>
   <packaging>pom</packaging>
   <description>The project is the master pom of all service directory projects.</description>
@@ -74,7 +74,7 @@
     <connection>scm:git:git@github.com:foundation-runtime/service-directory.git</connection>
     <developerConnection>scm:git:git@github.com:foundation-runtime/service-directory.git</developerConnection>
     <url>https://github.com/foundation-runtime/service-directory.git</url>
-    <tag>sd-common-pom-1.0.4</tag>
+    <tag>sd-common-pom-1.0.3</tag>
   </scm>
   <organization>
     <name>Cisco</name>
