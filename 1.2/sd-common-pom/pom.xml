@@ -28,7 +28,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.cisco.oss.foundation.directory</groupId>
   <name>Service Directory Common POM</name>
-  <version>1.0.3</version>
+  <version>1.0.4-SNAPSHOT</version>
   <artifactId>sd-common-pom</artifactId>
   <packaging>pom</packaging>
   <description>The project is the master pom of all service directory projects.</description>
