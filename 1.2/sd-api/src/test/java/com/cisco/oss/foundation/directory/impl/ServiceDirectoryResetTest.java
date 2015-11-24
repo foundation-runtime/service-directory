@@ -57,7 +57,7 @@ public class ServiceDirectoryResetTest {
         }
         //the SD is shutdown you can't get manager more
         try {
-            LookupManager newLookup = ServiceDirectory.getLookupManager();
+            ServiceDirectory.getLookupManager();
         } catch (ServiceException e) {
             assertEquals(ErrorCode.SERVICE_DIRECTORY_IS_SHUTDOWN, e.getErrorCode());
         }

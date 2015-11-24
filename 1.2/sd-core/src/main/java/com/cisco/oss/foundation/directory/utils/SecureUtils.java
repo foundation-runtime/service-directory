@@ -22,7 +22,7 @@ public final class SecureUtils {
 
     public static void validateNumber(String str) {
         try {
-            Integer i = Integer.decode(str);
+            Integer.decode(str);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Not a number" + str);
         }

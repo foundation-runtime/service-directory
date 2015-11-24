@@ -88,4 +88,12 @@ public class DirectoryServiceDummyClient implements DirectoryServiceClient {
     public List<InstanceChange<ModelServiceInstance>> lookupChangesSince(String serviceName, long since) {
         throw new UnsupportedOperationException("not support now for 1.2 api");
     }
+
+    @Override
+    public void registerInstance(ProvidedServiceInstance instance,
+            boolean favorMyDC, String myDC) {
+        // first get the metadata from instance. 
+        LOGGER.info("registerInstance with datacenter affinity {}, my datacenter is {}.",instance, myDC);
+        
+    }
 }

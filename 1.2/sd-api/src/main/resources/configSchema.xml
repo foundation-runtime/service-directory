@@ -92,5 +92,17 @@
         <PrimitiveValue value="RESTFUL" />
       </DefaultValue>
     </Parameter>
+    
+    <Parameter name="com.cisco.oss.foundation.directory.favor.mydatacenter" type="BOOLEAN" description="">
+      <DefaultValue>
+        <PrimitiveValue value="false" />
+      </DefaultValue>
+      
+    </Parameter>
+        <Parameter name="com.cisco.oss.foundation.directory.mydatacenter.name" type="STRING" description="">
+      <DefaultValue>
+        <PrimitiveValue value="datacenter1" />
+      </DefaultValue>
+    </Parameter>
   </NamespaceDefinition>
 </NamespaceDefinitions>

@@ -405,4 +405,21 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
         }
         return Collections.emptyList();
     }
+
+    @Override
+    public void registerInstance(ProvidedServiceInstance instance,
+            boolean favorMyDC, String myDC) {
+        if (favorMyDC) {
+            if (myDC.isEmpty()) {
+                LOGGER.warn("Datacenter affinity is set without name.");
+            } else {
+                // set or update metadata
+                instance.getMetadata().put("datacenter", myDC);
+            }
+        } else {
+            LOGGER.info("Datacenter affinity is not set.");
+        }
+        
+        registerInstance(instance);
+    }
 }

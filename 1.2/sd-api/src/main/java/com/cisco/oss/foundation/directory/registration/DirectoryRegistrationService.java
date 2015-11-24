@@ -51,11 +51,25 @@ public class DirectoryRegistrationService extends ServiceDirectoryService{
     public static final boolean SD_API_REGISTRY_DISABLE_OWNER_ERROR_DEFAULT = false;
 
     /**
+     * The property to favor my datacenter or not
+     */
+    public static final String SD_API_DC_AFFINITY_PROPERTY = "com.cisco.oss.foundation.directory.favor.mydatacenter";
+
+    /**
+     * The property to set my datacenter name
+     */
+    public static final String SD_API_MY_DC_NAME_PROPERTY = "com.cisco.oss.foundation.directory.mydatacenter.name";
+
+    /**
      * The remote ServiceDirectory client.
      */
     private final DirectoryServiceClient directoryServiceClient;
 
     private boolean disableOwnerError = false;
+    
+    private boolean favorMyDC = false;
+    
+    private String myDC = "";
 
     /**
      * Constructor.
@@ -68,6 +82,8 @@ public class DirectoryRegistrationService extends ServiceDirectoryService{
         this.directoryServiceClient = directoryServiceClient;
         disableOwnerError = getServiceDirectoryConfig().getBoolean(SD_API_REGISTRY_DISABLE_OWNER_ERROR_PROPERTY_NAME,
                 SD_API_REGISTRY_DISABLE_OWNER_ERROR_DEFAULT);
+        favorMyDC = getServiceDirectoryConfig().getBoolean(SD_API_DC_AFFINITY_PROPERTY);
+        myDC = getServiceDirectoryConfig().getString(SD_API_MY_DC_NAME_PROPERTY);
     }
 
     /**
@@ -77,7 +93,7 @@ public class DirectoryRegistrationService extends ServiceDirectoryService{
      *         the ProvidedServiceInstance.
      */
     public void registerService(ProvidedServiceInstance serviceInstance) {
-        getServiceDirectoryClient().registerInstance(serviceInstance);
+        getServiceDirectoryClient().registerInstance(serviceInstance, favorMyDC, myDC);
     }
 
     /**

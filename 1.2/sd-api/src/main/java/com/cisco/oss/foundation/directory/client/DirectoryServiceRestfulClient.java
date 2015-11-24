@@ -49,7 +49,6 @@ import com.cisco.oss.foundation.directory.utils.JsonSerializer;
 import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_MULT_CHOICE;
 import static java.net.HttpURLConnection.HTTP_OK;
-
 import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
 import static com.cisco.oss.foundation.directory.utils.JsonSerializer.deserialize;
 
@@ -541,6 +540,26 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
         Map<String, String> headers = new HashMap<>();
         headers.put("api-version", ServiceDirectory.getAPIVersion());
         return headers;
+    }
+
+
+    @Override
+    public void registerInstance(ProvidedServiceInstance instance,
+            boolean favorMyDC, String myDC) throws ServiceException {
+        
+        if (favorMyDC) {
+            if (myDC.isEmpty()) {
+                LOGGER.warn("Datacenter affinity is set without name.");
+            } else {
+                // set or update metadata
+                instance.getMetadata().put("datacenter", myDC);
+            }
+        } else {
+            LOGGER.info("Datacenter affinity is not set.");
+        }
+        
+        registerInstance(instance);
+        
     }
 }
 
