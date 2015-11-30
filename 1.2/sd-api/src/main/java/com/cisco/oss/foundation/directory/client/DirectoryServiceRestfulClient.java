@@ -519,8 +519,10 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
                         throw new ServiceException(sde.getExceptionCode(), sde.getErrorMessage());
                     }
                 }
+                return result;
+            }else{
+                throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,"null response");
             }
-            return result;
         }
     }
 

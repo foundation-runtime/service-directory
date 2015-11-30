@@ -1,9 +1,6 @@
 package com.cisco.oss.foundation.directory.cache;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,7 +123,7 @@ public class ModelServiceClientCache extends ClientCache<ModelService> implement
 	 *            
 	 */  
     public List<ModelServiceInstance> getAllModelServiceInstance() {
-        return getData() == null ? null : getData().getServiceInstances();
+        return getData() == null ? Collections.<ModelServiceInstance>emptyList() : getData().getServiceInstances();
     }
 
 	/**
@@ -147,8 +144,6 @@ public class ModelServiceClientCache extends ClientCache<ModelService> implement
     /**
      * Dump the ServiceCache to CacheDumpLogger Logger.
      *
-     * @return
-     *         true if dump complete.
      */
     private void dumpCache(){
         if (CacheDumpLogger.isDebugEnabled()) {

@@ -11,6 +11,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+import com.cisco.oss.foundation.directory.exception.ServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -320,7 +321,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
             return service;
         } else {
             LOGGER.debug("Service {} not exist", serviceName);
-            return null;
+            throw new ServiceException(ErrorCode.SERVICE_NOT_EXIST);
         }
 
     }
@@ -355,18 +356,20 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
 
     public long getLastChangedTimeMills(String serviceName) {
         ModelService service = lookupService(serviceName);
-        return service == null ? -1L : lookupService(serviceName).getModifiedTime().getTime();
+        return service == null ? -1L : service.getModifiedTime().getTime();
     }
 
     public List<ServiceInstance> lookUpChangedServiceInstancesSince(String serviceName, long since) {
         List<ServiceInstance> changed = new ArrayList<>();
         // the latest in model
         ModelService latest = lookupService(serviceName);
-        if (since < latest.getModifiedTime().getTime()) {
-            // has changes , so where is the changes?
-            for (ModelServiceInstance instance : latest.getServiceInstances()) {
-                if (since < instance.getModifiedTime().getTime()) {
-                    changed.add(toServiceInstance(instance));
+        if (latest!=null) {
+            if (since < latest.getModifiedTime().getTime()) {
+                // has changes , so where is the changes?
+                for (ModelServiceInstance instance : latest.getServiceInstances()) {
+                    if (since < instance.getModifiedTime().getTime()) {
+                        changed.add(toServiceInstance(instance));
+                    }
                 }
             }
         }

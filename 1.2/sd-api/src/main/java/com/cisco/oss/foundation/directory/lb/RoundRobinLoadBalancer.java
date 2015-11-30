@@ -51,7 +51,7 @@ public class RoundRobinLoadBalancer implements ServiceInstanceLoadBalancer{
     @Override
     public ServiceInstance vote(List<ServiceInstance> instances) {
         if (instances==null||instances.isEmpty()){
-            return null;
+            throw new IllegalArgumentException("input instances are null or empty");
         }
         int i = index.getAndIncrement();
         int pos = i % instances.size();

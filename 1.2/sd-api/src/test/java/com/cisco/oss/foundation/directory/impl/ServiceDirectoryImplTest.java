@@ -15,9 +15,12 @@
  */
 package com.cisco.oss.foundation.directory.impl;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import com.cisco.oss.foundation.directory.client.DirectoryServiceDummyClient;
+import com.cisco.oss.foundation.directory.entity.*;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -29,16 +32,20 @@ import com.cisco.oss.foundation.directory.ServiceDirectoryManagerFactory;
 import com.cisco.oss.foundation.directory.ServiceInstanceChangeListener;
 import com.cisco.oss.foundation.directory.ServiceInstanceHealth;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceClient;
-import com.cisco.oss.foundation.directory.entity.OperationalStatus;
-import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
-import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.query.ServiceInstanceQuery;
 
+import javax.ws.rs.NotSupportedException;
+
 import static org.junit.Assert.fail;
 
 public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory {
+
+    private final static DirectoryServiceClient dummyClient = new DirectoryServiceDummyClient();
+    private final static RegistrationManager mockReg = new MockRegistration();
+    private final static LookupManager mockLookup = new MockLookup();
+
     @Test
     public void testSetFactory() {
 
@@ -52,8 +59,8 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory 
         }
 
         try {
-            Assert.assertNull(ServiceDirectory.getLookupManager());
-            Assert.assertNull(ServiceDirectory.getRegistrationManager());
+            Assert.assertEquals(mockLookup, ServiceDirectory.getLookupManager());
+            Assert.assertEquals(mockReg, ServiceDirectory.getRegistrationManager());
         } catch (ServiceException e) {
             e.printStackTrace();
             Assert.assertTrue(false);
@@ -78,7 +85,7 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory 
 
             @Override
             public DirectoryServiceClient getDirectoryServiceClient() {
-                return null;
+                return dummyClient;
             }
 
             @Override
@@ -138,18 +145,19 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory 
     @Override
     public RegistrationManager getRegistrationManager() throws ServiceException {
         // TODO Auto-generated method stub
-        return null;
+        return mockReg;
     }
 
     @Override
     public LookupManager getLookupManager() throws ServiceException {
         // TODO Auto-generated method stub
-        return null;
+        return mockLookup;
     }
+
 
     @Override
     public DirectoryServiceClient getDirectoryServiceClient() {
-        return null;
+        return dummyClient;
     }
 
     @Override
@@ -217,73 +225,73 @@ public class ServiceDirectoryImplTest implements ServiceDirectoryManagerFactory 
         @Override
         public ServiceInstance lookupInstance(String serviceName)
                 throws ServiceException {
-            return null;
+            throw new UnsupportedOperationException() ; // should not be called
         }
 
         @Override
         public List<ServiceInstance> lookupInstances(String serviceName)
                 throws ServiceException {
-            return null;
+            return Collections.emptyList();
         }
 
         @Override
         public ServiceInstance queryInstanceByName(String serviceName,
                 ServiceInstanceQuery query) throws ServiceException {
-            return null;
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public List<ServiceInstance> queryInstancesByName(
                 String serviceName, ServiceInstanceQuery query)
                 throws ServiceException {
-            return null;
+            return Collections.emptyList();
         }
 
         @Override
         public ServiceInstance queryInstanceByMetadataKey(ServiceInstanceQuery query)
                 throws ServiceException {
-            return null;
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public List<ServiceInstance> queryInstancesByMetadataKey(
                 ServiceInstanceQuery query) throws ServiceException {
-            return null;
+            return Collections.emptyList();
         }
 
         @Override
         public ServiceInstance getInstance(String serviceName,
                 String instanceId) throws ServiceException {
-            return null;
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public ServiceInstance getInstanceByAddress(String serviceName, String instanceAddress) throws ServiceException {
-            return null;
+            throw new UnsupportedOperationException();
         }
 
         @Override
         public List<ServiceInstance> getAllInstances(String serviceName)
                 throws ServiceException {
-            return null;
+            return Collections.emptyList();
         }
 
         @Override
         public List<ServiceInstance> getAllInstances(String serviceName,
                 ServiceInstanceQuery query) throws ServiceException {
-            return null;
+            return Collections.emptyList();
         }
 
         @Override
         public List<ServiceInstance> getAllInstances() throws ServiceException {
             // TODO Auto-generated method stub
-            return null;
+            return Collections.emptyList();
         }
 
         @Override
         public List<ServiceInstance> getAllInstancesByMetadataKey(
                 ServiceInstanceQuery query) throws ServiceException {
-            return null;
+            return Collections.emptyList();
         }
 
         @Override
