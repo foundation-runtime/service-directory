@@ -204,7 +204,7 @@ public class ServiceInstance11 {
     @Override
     public int hashCode() {
         int result = instanceId != null ? instanceId.hashCode() : 0;
-        result = 31 * result + serviceName != null ? serviceName.hashCode() : 0;
+        result = 31 * result + (serviceName != null ? serviceName.hashCode() : 0);
         return result;
     }
 }

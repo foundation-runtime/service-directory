@@ -181,8 +181,8 @@ public class ModelService {
                 "name='" + name + '\'' +
                 ", id='" + id + '\'' +
                 ", serviceInstances=" + serviceInstances +
-                ", modifiedTime=" + (modifiedTime==null? null: modifiedTime.getTime()) +
-                ", createTime=" + (createTime==null? null: createTime.getTime()) +
+                ", modifiedTime=" + (modifiedTime==null? "": modifiedTime.getTime()) +
+                ", createTime=" + (createTime==null? "": createTime.getTime()) +
                 '}';
     }
 

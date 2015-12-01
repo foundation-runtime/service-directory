@@ -125,7 +125,7 @@ public class ServiceInstanceHeartbeat11 {
     @Override
     public int hashCode() {
         int result = providerId != null ? providerId.hashCode() : 0;
-        result = 31 * result + serviceName != null ? serviceName.hashCode() : 0;
+        result = 31 * result + (serviceName != null ? serviceName.hashCode() : 0);
         return result;
     }
 }

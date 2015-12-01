@@ -301,8 +301,8 @@ public class HeartbeatDirectoryRegistrationService extends
      *         the ServiceInstanceHealth callback.
      */
     private void registerCachedServiceInstance(ProvidedServiceInstance instance, ServiceInstanceHealth registryHealth) {
+        write.lock();
         try {
-            write.lock();
             ServiceInstanceId id = new ServiceInstanceId(instance.getServiceName(),
                     instance.getAddress());
             CachedProviderServiceInstance cachedInstance = getCacheServiceInstances().get(id);
@@ -329,8 +329,8 @@ public class HeartbeatDirectoryRegistrationService extends
      *         the ProvidedServiceInstance.
      */
     private void editCachedServiceInstance(ProvidedServiceInstance instance) {
+        write.lock();
         try {
-            write.lock();
             ServiceInstanceId id = new ServiceInstanceId(instance.getServiceName(),
                     instance.getAddress());
             CachedProviderServiceInstance cachedInstance = getCacheServiceInstances().get(id);

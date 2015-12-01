@@ -23,9 +23,7 @@ import org.junit.Test;
 import com.cisco.oss.foundation.directory.ServiceDirectory;
 import com.cisco.oss.foundation.directory.impl.ServiceDirectoryConfig;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * TestCases to cover load configures from the config.properties file.
@@ -97,6 +95,7 @@ public class ServiceDirectoryConfigTest {
 
     @Test
     public void testSDBuildByConfig(){
+        assertNotNull(ServiceDirectoryConfig.config());
         ServiceDirectoryConfig.config().build();
     }
 
