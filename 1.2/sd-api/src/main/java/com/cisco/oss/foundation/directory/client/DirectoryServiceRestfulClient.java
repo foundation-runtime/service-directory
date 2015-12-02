@@ -412,60 +412,6 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
             this.directoryAddresses = "https://" + sdFQDN + ":" + port;
         }
 
-        /**
-         * Invoke the HTTP RESTful Service.
-         *
-         * @param uri        The URI of the RESTful service.
-         * @param payload    The HTTP body String.
-         * @param method     The HTTP method.
-         * @return
-         *         the HttpResponse.
-         */
-        public HttpResponse invoke(String uri, String payload, HttpMethod method) {
-            HttpResponse result = null;
-            String url = directoryAddresses + uri;
-            try {
-                if (method == null || method == HttpMethod.GET) {
-                    result = HttpUtils.getJson(url);
-                } else if (method == HttpMethod.POST) {
-                    result = HttpUtils.postJson(url, payload);
-                } else if (method == HttpMethod.PUT) {
-                    result = HttpUtils.putJson(url, payload);
-                } else if (method == HttpMethod.DELETE) {
-                    result = HttpUtils.deleteJson(url);
-                }
-            } catch (IOException e) {
-                String errMsg = "Send HTTP Request to remote Directory Server failed";
-                throw new ServiceException(ErrorCode.HTTP_CLIENT_ERROR, e, errMsg);
-            } catch (ServiceException e) {
-                String errMsg = "Send HTTPS Request to remote Directory Server failed";
-                throw new ServiceException(ErrorCode.HTTP_CLIENT_ERROR, e, errMsg);
-            }
-            // HTTP_OK 200, HTTP_MULT_CHOICE 300
-            if (result != null) {
-                if (result.getHttpCode() < HTTP_OK || result.getHttpCode() >= HTTP_MULT_CHOICE) {
-                    String errorBody = result.getRetBody();
-
-                    if (errorBody == null || errorBody.isEmpty()) {
-                        throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR,
-                                ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR.getMessageTemplate(),
-                                "Error Message body is empty.");
-                    }
-                    ServiceDirectoryError sde;
-                    try {
-                        sde = JsonSerializer.deserialize(errorBody.getBytes(), ServiceDirectoryError.class);
-                    } catch (IOException e) {
-                        String errMsg = "Deserialize error body message failed";
-                        throw new ServiceException(ErrorCode.REMOTE_DIRECTORY_SERVER_ERROR, e, errMsg);
-                    }
-
-                    if (sde != null) {
-                        throw new ServiceException(sde.getExceptionCode(), sde.getErrorMessage());
-                    }
-                }
-            }
-            return result;
-        }
 
         /**
          * Invoke the HTTP RESTful Service.
@@ -499,6 +445,9 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
             }
             // HTTP_OK 200, HTTP_MULT_CHOICE 300
             if (result != null) {
+                if (LOGGER.isTraceEnabled()){
+                    LOGGER.trace(String.format("HTTP Response Tracing : URL=[%s],PAYLOAD=[%s],METHOD=[%s],HTTP_CODE=[%d],RESULT_BODY=[%s]",uri,payload,method,result.getHttpCode(),result.getRetBody()));
+                }
                 if (result.getHttpCode() < HTTP_OK || result.getHttpCode() >= HTTP_MULT_CHOICE) {
                     String errorBody = result.getRetBody();
 

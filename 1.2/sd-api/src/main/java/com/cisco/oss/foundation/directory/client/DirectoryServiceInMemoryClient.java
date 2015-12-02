@@ -321,7 +321,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
             return service;
         } else {
             LOGGER.debug("Service {} not exist", serviceName);
-            throw new ServiceException(ErrorCode.SERVICE_NOT_EXIST);
+            throw new ServiceException(ErrorCode.SERVICE_NOT_EXIST,ErrorCode.SERVICE_NOT_EXIST.getMessageTemplate(),serviceName);
         }
 
     }
@@ -355,7 +355,12 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
     //-------------------------------
 
     public long getLastChangedTimeMills(String serviceName) {
-        ModelService service = lookupService(serviceName);
+        ModelService service = null;
+        try {
+            service=lookupService(serviceName);
+        }catch (ServiceException e){
+            LOGGER.debug(String.format("Exception when lookup service by name=[%s], error=[%s]",serviceName,e.getMessage()));
+        }
         return service == null ? -1L : service.getModifiedTime().getTime();
     }
 

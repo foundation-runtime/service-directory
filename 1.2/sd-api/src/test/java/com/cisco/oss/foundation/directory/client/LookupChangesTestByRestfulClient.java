@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import com.cisco.oss.foundation.directory.exception.ServiceException;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -72,6 +73,34 @@ public class LookupChangesTestByRestfulClient {
         List<InstanceChange<ModelServiceInstance>> result = restfulClient.lookupChangesSince("test", now);
         assertEquals(1, result.size());
         LOG.debug("{}", result.get(0));
+    }
+
+    @Test
+    public void testLookupInError() throws InterruptedException{
+        final long now = System.currentTimeMillis();
+        TimeUnit.MILLISECONDS.sleep(10L);
+        DirectoryServiceRestfulClient client = new DirectoryServiceRestfulClient();
+        client.setInvoker(new DirectoryServiceRestfulClient.DirectoryHttpInvoker() {
+            @Override
+            public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
+                LOG.debug("invoke url:{} method:{} ", uri, method);
+                List<InstanceChange<ModelServiceInstance>> list = new ArrayList<>();
+                list.add(new InstanceChange<>(0L, "test", InstanceChange.ChangeType.ADD,
+                        null, instance));
+                String json = "";
+                try {
+                    json = new String(serialize(list));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                return new HttpResponse(199, json);
+            }
+        });;
+        try {
+            List<InstanceChange<ModelServiceInstance>> result = client.lookupChangesSince("test", now);
+        }catch (ServiceException se){
+            assertEquals("Unknown HTTP Code, code=199", se.getMessage());
+        }
     }
 
 }
