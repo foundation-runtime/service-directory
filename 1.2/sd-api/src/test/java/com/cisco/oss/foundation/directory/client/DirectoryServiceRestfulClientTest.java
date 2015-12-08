@@ -25,9 +25,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient.DirectoryHttpInvoker;
 import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
@@ -43,15 +41,34 @@ import com.cisco.oss.foundation.directory.exception.ServiceException;
 import com.cisco.oss.foundation.directory.utils.HttpResponse;
 import com.cisco.oss.foundation.directory.utils.HttpUtils;
 
+import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
+import static com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+
 public class DirectoryServiceRestfulClientTest {
 
-    @BeforeClass
-    public static void setup(){
+    private final boolean savedFavorMyDC;
+    private final String savedMyDC;
 
+    public DirectoryServiceRestfulClientTest(){
+        savedFavorMyDC = getServiceDirectoryConfig().getBoolean(SD_API_DC_AFFINITY_PROPERTY);
+        savedMyDC = getServiceDirectoryConfig().getString(SD_API_MY_DC_NAME_PROPERTY);
+        assertFalse(savedFavorMyDC);
+        assertEquals(SD_API_MY_DC_NAME_DEAFULT,savedMyDC);
+    }
+
+    @After
+    public void recoveryDefaultConfig(){
+        //due to the idiot singleton of default config ,need to recovery to default after every @test method is called
+        getServiceDirectoryConfig().setProperty(SD_API_DC_AFFINITY_PROPERTY, savedFavorMyDC);
+        getServiceDirectoryConfig().setProperty(SD_API_MY_DC_NAME_PROPERTY, savedMyDC);
     }
 
     @Test
     public void testRegisterInstance() throws Exception{
+
         final DirectoryServiceRestfulClient client = new DirectoryServiceRestfulClient();
 
         final ProvidedServiceInstance instance = new ProvidedServiceInstance("odrm", "192.168.7.4");
@@ -68,8 +85,70 @@ public class DirectoryServiceRestfulClientTest {
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
                 Assert.assertEquals("https://vcsdirsvc:8013/service/odrm/192.168.7.4",directoryAddresses+
                         uri);
+                System.out.println(payload);
                 ProvidedServiceInstance instance2 = client.deserialize(payload, ProvidedServiceInstance.class);
                 compareProvidedServiceInstance(instance, instance2);
+                return new HttpResponse(201, null);
+            }
+        };
+        client.setInvoker(mockInvoker);
+        client.registerInstance(instance);
+    }
+
+    @Test
+    public void testRegisterInstanceByDataCenter() throws Exception{
+        // must before the client object being constructed
+        getServiceDirectoryConfig().setProperty(SD_API_DC_AFFINITY_PROPERTY, true);
+
+        final DirectoryServiceRestfulClient client = new DirectoryServiceRestfulClient();
+        final ProvidedServiceInstance instance = new ProvidedServiceInstance("odrm", "192.168.7.4");
+        instance.setMonitorEnabled(true);
+        instance.setStatus(OperationalStatus.UP);
+        instance.setUri("http://cisco.com/vbo/odrm/setupsession");
+        Map<String, String> metadata = new HashMap<>();
+        metadata.put("datacenter", "dc01");
+        metadata.put("solution", "core");
+        instance.setMetadata(metadata);
+
+         final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker(){
+            @Override
+            public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
+                Assert.assertEquals("https://vcsdirsvc:8013/service/odrm/192.168.7.4", directoryAddresses +
+                        uri);
+                System.out.println(payload);
+                ProvidedServiceInstance instance2 = client.deserialize(payload, ProvidedServiceInstance.class);
+                String dcName= instance2.getMetadata().get(SD_API_MY_DC_META_KEY);
+                assertNotNull(dcName);
+                assertEquals(dcName, SD_API_MY_DC_NAME_DEAFULT); //not dc01 here, because the dc-favor is open, the datacenter name is decied by configuration
+                return new HttpResponse(201, null);
+            }
+        };
+        client.setInvoker(mockInvoker);
+        client.registerInstance(instance);
+    }
+
+        @Test
+    public void testRegisterInstanceByDataCenter2() throws Exception{
+        // must before the client object being constructed
+        getServiceDirectoryConfig().setProperty(SD_API_DC_AFFINITY_PROPERTY, true);
+        getServiceDirectoryConfig().setProperty(SD_API_MY_DC_NAME_PROPERTY, "BOX");
+
+        final DirectoryServiceRestfulClient client = new DirectoryServiceRestfulClient();
+        final ProvidedServiceInstance instance = new ProvidedServiceInstance("odrm", "192.168.7.4");
+        instance.setMonitorEnabled(true);
+        instance.setStatus(OperationalStatus.UP);
+        instance.setUri("http://cisco.com/vbo/odrm/setupsession");
+        Map<String, String> metadata = new HashMap<>();
+        instance.setMetadata(metadata);
+
+         final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker(){
+            @Override
+            public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
+                System.out.println(payload);
+                ProvidedServiceInstance instance2 = client.deserialize(payload, ProvidedServiceInstance.class);
+                String dcName= instance2.getMetadata().get(SD_API_MY_DC_META_KEY);
+                assertNotNull(dcName);
+                assertEquals(dcName, "BOX") ; //BOX this time
                 return new HttpResponse(201, null);
             }
         };

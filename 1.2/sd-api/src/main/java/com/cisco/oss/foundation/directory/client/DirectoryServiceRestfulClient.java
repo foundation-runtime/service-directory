@@ -15,29 +15,8 @@
  */
 package com.cisco.oss.foundation.directory.client;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.cisco.oss.foundation.directory.ServiceDirectory;
-import com.cisco.oss.foundation.directory.entity.InstanceChange;
-import com.cisco.oss.foundation.directory.entity.ModelMetadataKey;
-import com.cisco.oss.foundation.directory.entity.ModelService;
-import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
-import com.cisco.oss.foundation.directory.entity.OperationResult;
-import com.cisco.oss.foundation.directory.entity.OperationalStatus;
-import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
-import com.cisco.oss.foundation.directory.entity.ServiceInstanceHeartbeat;
+import com.cisco.oss.foundation.directory.entity.*;
 import com.cisco.oss.foundation.directory.exception.ErrorCode;
 import com.cisco.oss.foundation.directory.exception.ServiceDirectoryError;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
@@ -45,12 +24,22 @@ import com.cisco.oss.foundation.directory.utils.HttpResponse;
 import com.cisco.oss.foundation.directory.utils.HttpUtils;
 import com.cisco.oss.foundation.directory.utils.HttpUtils.HttpMethod;
 import com.cisco.oss.foundation.directory.utils.JsonSerializer;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import static java.net.HttpURLConnection.HTTP_CREATED;
-import static java.net.HttpURLConnection.HTTP_MULT_CHOICE;
-import static java.net.HttpURLConnection.HTTP_OK;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
-import static com.cisco.oss.foundation.directory.utils.JsonSerializer.deserialize;
+import static java.net.HttpURLConnection.*;
 
 /**
  * This is the client object to invoke the remote service in ServiceDirectory Server Node.
@@ -99,19 +88,82 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
      */
     private DirectoryHttpInvoker invoker;
 
+
+    /**
+     * The property to favor my datacenter or not
+     */
+    public static final String SD_API_DC_AFFINITY_PROPERTY = "com.cisco.oss.foundation.directory.favor.mydatacenter";
+    public static final Boolean SD_API_DC_AFFINITY_DEFAULT = false;
+
+    /**
+     * The property to set my datacenter name
+     */
+    public static final String SD_API_MY_DC_NAME_PROPERTY = "com.cisco.oss.foundation.directory.mydatacenter.name";
+    public static final String SD_API_MY_DC_NAME_DEAFULT = "datacenter1";
+
+    /**
+     * The MataData Key for referencing the datacenter name
+     */
+    public static final String SD_API_MY_DC_META_KEY= "datacenter";
+
+    private final boolean favorMyDC ;
+    private final String myDC ;
+
     /**
      * Constructor.
      */
     public DirectoryServiceRestfulClient() {
         this.invoker = new DirectoryHttpInvoker();
+        favorMyDC = getServiceDirectoryConfig().getBoolean(SD_API_DC_AFFINITY_PROPERTY,SD_API_DC_AFFINITY_DEFAULT);
+        myDC = getServiceDirectoryConfig().getString(SD_API_MY_DC_NAME_PROPERTY,SD_API_MY_DC_NAME_DEAFULT);
+       if (favorMyDC) {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Datacenter affinity is set.");
+            }
+            if (myDC==null||myDC.isEmpty()){
+                LOGGER.warn("Datacenter affinity is set without name.");
+            }
+       }else {
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("Datacenter affinity is not set.");
+            }
+        }
     }
 
 
     @Override
     public void registerInstance(ProvidedServiceInstance instance) throws ServiceException{
+        if (isFavorMyDC()) {
+            registerInstanceByDataCenter(instance,myDC);
+        }else {
+            registerInst(instance);
+        }
+    }
+
+    private boolean isFavorMyDC(){
+        return favorMyDC;
+    }
+
+    private void registerInstanceByDataCenter(ProvidedServiceInstance instance,
+                                              String dataCenterName) throws ServiceException {
+        if (dataCenterName == null || dataCenterName.isEmpty()) {
+            throw new IllegalArgumentException("dataCenterName");
+        }
+        // need to copy the instance, because it's dangerous to change the instance owned by caller in the background.
+        ProvidedServiceInstance copiedInstance = deserialize(serialize(instance), ProvidedServiceInstance.class);
+        // set or update metadata
+        if (copiedInstance.getMetadata() == null) {
+            copiedInstance.setMetadata(new HashMap<String, String>());
+        }
+        copiedInstance.getMetadata().put(SD_API_MY_DC_META_KEY, myDC);
+        registerInst(copiedInstance);
+
+    }
+
+    private void registerInst(ProvidedServiceInstance instance){
         String body = serialize(instance);
 
-        HttpResponse result = invoker.invoke(toInstanceUri(instance.getServiceName(), instance.getAddress()), body, 
+        HttpResponse result = invoker.invoke(toInstanceUri(instance.getServiceName(), instance.getAddress()), body,
                 HttpMethod.POST, addHeader());
 
         if (result.getHttpCode() != HTTP_CREATED) {
@@ -199,7 +251,16 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
         String serviceUri = toInstanceUri(serviceName, instanceAddress) + "/metadata";
         String body = null;
         try {
-            String meta = new ObjectMapper().writeValueAsString(metadata);
+            Map<String,String> copied;
+            if (isFavorMyDC()){
+                copied= new HashMap<>();
+                copied.putAll(metadata);
+                copied.put(SD_API_MY_DC_META_KEY,myDC);
+            }else{
+                copied = metadata;
+            }
+            String meta = new ObjectMapper().writeValueAsString(copied);
+
             body = "metadata=" + URLEncoder.encode(meta, "UTF-8") + "&isOwned=" + isOwned;
         } catch (JsonProcessingException | UnsupportedEncodingException e) {
                 LOGGER.error("Exception converting map to JSON: ", e);
@@ -249,6 +310,42 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
 
     @Override
     public ModelService lookupService(String serviceName) throws ServiceException{
+        ModelService service = lookupService0(serviceName);
+        if(isFavorMyDC()){
+            List<ModelServiceInstance> instances = service.getServiceInstances();
+            if (instances!=null){
+                service.setServiceInstances(filterServiceInstancesByDataCenter(instances,myDC));
+            }
+        }
+        return service;
+    }
+
+    private List<ModelServiceInstance> filterServiceInstancesByDataCenter(List<ModelServiceInstance> instances, String dCName){
+        List<ModelServiceInstance> inMyDC = new ArrayList<>();
+        for (ModelServiceInstance ins : instances) {
+            if (isInstanceInMyDC(ins)) {
+                inMyDC.add(ins);
+            }
+        }
+        return inMyDC;
+    }
+    private boolean isInstanceInMyDC(ModelServiceInstance instance){
+        if (instance==null){
+            throw new IllegalArgumentException("instance should not be null");
+        }
+        if (instance.getMetadata()!=null&&instance.getMetadata().containsKey(SD_API_MY_DC_META_KEY)){
+            String dcName = instance.getMetadata().get(SD_API_MY_DC_META_KEY);
+            if (myDC.equals(dcName)) {
+                return true;
+            } else {
+                if (LOGGER.isDebugEnabled()) {
+                    LOGGER.debug(String.format("%s is be ignored because data-center metadata is [%s] not [%s]", instance, dcName, myDC));
+                }
+            }
+        }
+        return false;
+    }
+    private ModelService lookupService0(String serviceName) throws ServiceException{
         HttpResponse result = invoker.invoke("/service/" + serviceName, null, HttpMethod.GET, addHeader());
 
         if (result.getHttpCode() != HTTP_OK) {
@@ -257,7 +354,6 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
 
         return deserialize(result.getRetBody(), ModelService.class);
     }
-
 
     @Override
     public List<ModelServiceInstance> getAllInstances() throws ServiceException{
@@ -477,14 +573,33 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
 
     @Override
     public List<InstanceChange<ModelServiceInstance>> lookupChangesSince(String serviceName, long since) {
-        HttpResponse result = invoker.invoke("/v1.2/service/changes/" + serviceName+ "/"+since, null, HttpMethod.GET, addHeader());
+        HttpResponse result = invoker.invoke("/v1.2/service/changes/" + serviceName + "/" + since, null, HttpMethod.GET, addHeader());
 
         if (result.getHttpCode() != HTTP_OK) {
             handleHttpError(result.getHttpCode());
         }
 
-        return deserialize(result.getRetBody(), new TypeReference<List<InstanceChange<ModelServiceInstance>>>() {
+        List<InstanceChange<ModelServiceInstance>> changes = deserialize(result.getRetBody(), new TypeReference<List<InstanceChange<ModelServiceInstance>>>() {
         });
+
+        if (isFavorMyDC()){
+            List<InstanceChange<ModelServiceInstance>> changesInMyDC = new ArrayList<>();
+            for(InstanceChange<ModelServiceInstance> change : changes){
+                ModelServiceInstance checkInstance;
+                if (change.from!=null){
+                    checkInstance = change.from;
+                }else if (change.to!=null){
+                    checkInstance = change.to;
+                }else{
+                    throw new NullPointerException("Should not be both null");
+                }
+                if (isInstanceInMyDC(checkInstance)){
+                   changesInMyDC.add(change);
+                }
+            }
+            return changesInMyDC;
+        }
+        return changes;
     }
     
     private Map<String, String>addHeader() {
@@ -494,23 +609,6 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
     }
 
 
-    @Override
-    public void registerInstance(ProvidedServiceInstance instance,
-            boolean favorMyDC, String myDC) throws ServiceException {
-        
-        if (favorMyDC) {
-            if (myDC.isEmpty()) {
-                LOGGER.warn("Datacenter affinity is set without name.");
-            } else {
-                // set or update metadata
-                instance.getMetadata().put("datacenter", myDC);
-            }
-        } else {
-            LOGGER.info("Datacenter affinity is not set.");
-        }
-        
-        registerInstance(instance);
-        
-    }
+
 }
 

@@ -44,18 +44,7 @@ public interface DirectoryServiceClient {
      */
     void registerInstance(ProvidedServiceInstance instance);
 
-    /**
-     * Register a ServiceInstance with datacenter affinity
-     * 
-     * @param serviceInstance
-     * @param favorMyDC
-     *          whether my datacenter is favored or not
-     * @param myDC
-     *          my datacenter name
-     */
-    void registerInstance(ProvidedServiceInstance serviceInstance,
-            boolean favorMyDC, String myDC);
-    
+
     /**
      * Update a ServiceInstance.
      *
