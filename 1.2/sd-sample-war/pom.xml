@@ -1,0 +1,103 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+    	<groupId>com.cisco.oss.foundation.directory</groupId>
+    	<artifactId>sd-common-pom</artifactId>
+    	<version>1.0.4</version>
+    </parent>
+
+    <artifactId>sd-sample-war</artifactId>
+    <name>The Service Directory Sample war</name>
+    <packaging>war</packaging>
+    <version>1.0.0-0-SNAPSHOT</version>
+   
+    <properties>
+       <sd.api.version>1.2.0-1-SNAPSHOT</sd.api.version>
+       <server.platform>jboss</server.platform>
+    </properties>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+        </dependency>
+        <dependency>
+          <groupId>com.cisco.oss.foundation.directory</groupId>
+          <artifactId>sd-core</artifactId>
+          <version>${sd.api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.cisco.oss.foundation.directory</groupId>
+            <artifactId>sd-api</artifactId>
+            <version>${sd.api.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.2</version>
+            <scope>test</scope>
+        </dependency>
+   </dependencies>
+
+    
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>*.xml</include>
+                </includes>
+                <excludes>
+                    <exclude>jboss</exclude>
+                    <exclude>generic</exclude>
+                </excludes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                  <execution>
+                    <id>default-copy-resources</id>
+                    <phase>process-resources</phase>
+                    <goals>
+                      <goal>copy-resources</goal>
+                    </goals>
+                    <configuration>
+                      <overwrite>true</overwrite>
+                      <outputDirectory>${project.build.directory}/${project.artifactId}-${project.version}/WEB-INF/</outputDirectory>
+                      <resources>
+                        <resource>
+                          <filtering>true</filtering>
+                          <directory>${project.basedir}/src/main/resources/${server.platform}</directory>
+                        </resource>
+                      </resources>
+                    </configuration>
+                  </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>8.1.16.v20140903</version>
+                <configuration>
+                    <stopPort>9999</stopPort>
+                    <stopKey>STOP</stopKey>
+                    <scanIntervalSeconds>10</scanIntervalSeconds>
+                    <webApp>
+                        <contextPath>/abc</contextPath>
+                    </webApp>
+                </configuration>
+            </plugin>
+        </plugins>
+
+    </build>
+    
+</project>
