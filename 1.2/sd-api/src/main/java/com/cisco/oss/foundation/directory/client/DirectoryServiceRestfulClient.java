@@ -27,6 +27,7 @@ import com.cisco.oss.foundation.directory.utils.JsonSerializer;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -99,33 +100,54 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
      * The property to set my datacenter name
      */
     public static final String SD_API_MY_DC_NAME_PROPERTY = "com.cisco.oss.foundation.directory.mydatacenter.name";
-    public static final String SD_API_MY_DC_NAME_DEAFULT = "datacenter1";
+    public static final String SD_API_MY_DC_NAME_DEFAULT = "datacenter1";
 
     /**
      * The MataData Key for referencing the datacenter name
      */
-    public static final String SD_API_MY_DC_META_KEY= "datacenter";
+    public static final String SD_API_MY_DC_META_KEY= "MY_DATA_CENTER_NAME";
 
     private final boolean favorMyDC ;
     private final String myDC ;
+
+    /**
+     * The property for if keep instance without being removed on the server side even the max living time is exceed
+     * It's false by default
+     */
+    public static final String SD_API_NO_AUTO_REMOVE_INST_ON_SERVER_SIDE_PROPERTY = "com.cisco.oss.foundation.directory.not.auto.remove.instance";
+    public static final boolean SD_API_NO_AUTO_REMOVE_INST_ON_SERVER_SIDE_DEFAULT = false;
+    public static final String SD_API_NO_AUTO_REMOVE_INST_ON_SERVER_SIDE_META_KEY = "NOT_AUTO_REMOVE";
+    public final boolean noAutoRemove ;
 
     /**
      * Constructor.
      */
     public DirectoryServiceRestfulClient() {
         this.invoker = new DirectoryHttpInvoker();
-        favorMyDC = getServiceDirectoryConfig().getBoolean(SD_API_DC_AFFINITY_PROPERTY,SD_API_DC_AFFINITY_DEFAULT);
-        myDC = getServiceDirectoryConfig().getString(SD_API_MY_DC_NAME_PROPERTY,SD_API_MY_DC_NAME_DEAFULT);
-       if (favorMyDC) {
+        favorMyDC = getServiceDirectoryConfig().getBoolean(SD_API_DC_AFFINITY_PROPERTY, SD_API_DC_AFFINITY_DEFAULT);
+        myDC = getServiceDirectoryConfig().getString(SD_API_MY_DC_NAME_PROPERTY, SD_API_MY_DC_NAME_DEFAULT);
+        noAutoRemove = getServiceDirectoryConfig().getBoolean(SD_API_NO_AUTO_REMOVE_INST_ON_SERVER_SIDE_PROPERTY,
+                SD_API_NO_AUTO_REMOVE_INST_ON_SERVER_SIDE_DEFAULT);
+        if (favorMyDC) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Datacenter affinity is set.");
             }
-            if (myDC==null||myDC.isEmpty()){
+            if (myDC == null || myDC.isEmpty()) {
                 LOGGER.warn("Datacenter affinity is set without name.");
             }
-       }else {
+        } else {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Datacenter affinity is not set.");
+            }
+        }
+
+        if (noAutoRemove){
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("no auto remove instance on server side is set.");
+            }
+        }else{
+            if (LOGGER.isDebugEnabled()) {
+                LOGGER.debug("no auto remove instance on server side is not set.");
             }
         }
     }
@@ -133,31 +155,42 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
 
     @Override
     public void registerInstance(ProvidedServiceInstance instance) throws ServiceException{
-        if (isFavorMyDC()) {
-            registerInstanceByDataCenter(instance,myDC);
-        }else {
-            registerInst(instance);
-        }
+        instance = handleInstanceForHiddenMataData(instance);
+        registerInst(instance);
     }
 
-    private boolean isFavorMyDC(){
-        return favorMyDC;
-    }
-
-    private void registerInstanceByDataCenter(ProvidedServiceInstance instance,
-                                              String dataCenterName) throws ServiceException {
-        if (dataCenterName == null || dataCenterName.isEmpty()) {
-            throw new IllegalArgumentException("dataCenterName");
-        }
-        // need to copy the instance, because it's dangerous to change the instance owned by caller in the background.
+    private ProvidedServiceInstance handleInstanceForHiddenMataData(ProvidedServiceInstance instance) throws ServiceException {
+       // need to copy the instance, because it's dangerous to change the instance owned by caller in the background.
         ProvidedServiceInstance copiedInstance = deserialize(serialize(instance), ProvidedServiceInstance.class);
         // set or update metadata
-        if (copiedInstance.getMetadata() == null) {
-            copiedInstance.setMetadata(new HashMap<String, String>());
+        Map<String,String> metaData = copiedInstance.getMetadata();
+        if (metaData == null) {
+           metaData = new HashMap<>();
         }
-        copiedInstance.getMetadata().put(SD_API_MY_DC_META_KEY, myDC);
-        registerInst(copiedInstance);
+        metaData = handleHiddenMetaData(metaData);
+        copiedInstance.setMetadata(metaData);
+        return copiedInstance;
+    }
 
+    private Map<String,String> handleHiddenMetaData(Map<String,String> metaData){
+        if(metaData==null) throw new IllegalArgumentException("metaData should not be null");
+        if (favorMyDC) {
+            metaData = addKeyValueToMetaData(metaData,SD_API_MY_DC_META_KEY,myDC);
+        }
+        if (noAutoRemove){
+            metaData = addKeyValueToMetaData(metaData,SD_API_NO_AUTO_REMOVE_INST_ON_SERVER_SIDE_META_KEY,
+                    Boolean.TRUE.toString());
+        }
+        return metaData;
+    }
+    private Map<String,String> addKeyValueToMetaData(Map<String,String> metaData,String key,String value){
+        if (metaData==null) throw new IllegalArgumentException("metaData map should not be null");
+        if (StringUtils.isEmpty(key)) throw new IllegalArgumentException("metaData key should not be empty");
+        if (StringUtils.isEmpty(value)) throw new IllegalArgumentException("metaData value should not be empty");
+        Map<String,String> copied= new HashMap<>();
+        copied.putAll(metaData);
+        copied.put(key,value);
+        return copied;
     }
 
     private void registerInst(ProvidedServiceInstance instance){
@@ -244,22 +277,13 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
         }
     }
 
-    
-
     @Override
     public void updateInstanceMetadata(String serviceName, String instanceAddress, Map<String, String> metadata, boolean isOwned) throws ServiceException{
         String serviceUri = toInstanceUri(serviceName, instanceAddress) + "/metadata";
         String body = null;
         try {
-            Map<String,String> copied;
-            if (isFavorMyDC()){
-                copied= new HashMap<>();
-                copied.putAll(metadata);
-                copied.put(SD_API_MY_DC_META_KEY,myDC);
-            }else{
-                copied = metadata;
-            }
-            String meta = new ObjectMapper().writeValueAsString(copied);
+            metadata = handleHiddenMetaData(metadata);
+            String meta = new ObjectMapper().writeValueAsString(metadata);
 
             body = "metadata=" + URLEncoder.encode(meta, "UTF-8") + "&isOwned=" + isOwned;
         } catch (JsonProcessingException | UnsupportedEncodingException e) {
@@ -276,6 +300,8 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
             handleHttpError(result.getHttpCode());
         }
     }
+
+
 
     @Override
     public void unregisterInstance(String serviceName, String instanceAddress, boolean isOwned) throws ServiceException{
@@ -311,7 +337,7 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
     @Override
     public ModelService lookupService(String serviceName) throws ServiceException{
         ModelService service = lookupService0(serviceName);
-        if(isFavorMyDC()){
+        if(favorMyDC){
             List<ModelServiceInstance> instances = service.getServiceInstances();
             if (instances!=null){
                 service.setServiceInstances(filterServiceInstancesByDataCenter(instances,myDC));
@@ -582,7 +608,7 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
         List<InstanceChange<ModelServiceInstance>> changes = deserialize(result.getRetBody(), new TypeReference<List<InstanceChange<ModelServiceInstance>>>() {
         });
 
-        if (isFavorMyDC()){
+        if (favorMyDC){
             List<InstanceChange<ModelServiceInstance>> changesInMyDC = new ArrayList<>();
             for(InstanceChange<ModelServiceInstance> change : changes){
                 ModelServiceInstance checkInstance;

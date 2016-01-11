@@ -56,7 +56,7 @@ public class DirectoryServiceRestfulClientTest {
         savedFavorMyDC = getServiceDirectoryConfig().getBoolean(SD_API_DC_AFFINITY_PROPERTY);
         savedMyDC = getServiceDirectoryConfig().getString(SD_API_MY_DC_NAME_PROPERTY);
         assertFalse(savedFavorMyDC);
-        assertEquals(SD_API_MY_DC_NAME_DEAFULT,savedMyDC);
+        assertEquals(SD_API_MY_DC_NAME_DEFAULT,savedMyDC);
     }
 
     @After
@@ -119,7 +119,7 @@ public class DirectoryServiceRestfulClientTest {
                 ProvidedServiceInstance instance2 = client.deserialize(payload, ProvidedServiceInstance.class);
                 String dcName= instance2.getMetadata().get(SD_API_MY_DC_META_KEY);
                 assertNotNull(dcName);
-                assertEquals(dcName, SD_API_MY_DC_NAME_DEAFULT); //not dc01 here, because the dc-favor is open, the datacenter name is decied by configuration
+                assertEquals(dcName, SD_API_MY_DC_NAME_DEFAULT); //not dc01 here, because the dc-favor is open, the datacenter name is decied by configuration
                 return new HttpResponse(201, null);
             }
         };
@@ -141,7 +141,7 @@ public class DirectoryServiceRestfulClientTest {
         Map<String, String> metadata = new HashMap<>();
         instance.setMetadata(metadata);
 
-         final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker(){
+        final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker(){
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
                 System.out.println(payload);
@@ -154,6 +154,38 @@ public class DirectoryServiceRestfulClientTest {
         };
         client.setInvoker(mockInvoker);
         client.registerInstance(instance);
+        getServiceDirectoryConfig().setProperty(SD_API_DC_AFFINITY_PROPERTY, SD_API_DC_AFFINITY_DEFAULT);
+        getServiceDirectoryConfig().setProperty(SD_API_MY_DC_NAME_PROPERTY, SD_API_MY_DC_NAME_DEFAULT);
+    }
+
+    @Test
+    public void testNotAutoRemove() throws Exception {
+        //by default is false
+        assertFalse(getServiceDirectoryConfig().getBoolean(SD_API_NO_AUTO_REMOVE_INST_ON_SERVER_SIDE_PROPERTY));
+        //disable the auto-remove
+        getServiceDirectoryConfig().setProperty(SD_API_NO_AUTO_REMOVE_INST_ON_SERVER_SIDE_PROPERTY, true);
+        final DirectoryServiceRestfulClient client = new DirectoryServiceRestfulClient();
+        final ProvidedServiceInstance instance = new ProvidedServiceInstance("odrm", "192.168.7.4");
+        instance.setMonitorEnabled(true);
+        instance.setStatus(OperationalStatus.UP);
+        instance.setUri("http://cisco.com/vbo/odrm/setupsession");
+
+        final DirectoryHttpInvoker mockInvoker = new DirectoryHttpInvoker(){
+            @Override
+            public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
+                System.out.println(payload);
+                ProvidedServiceInstance instance2 = client.deserialize(payload, ProvidedServiceInstance.class);
+                String autoRemove = instance2.getMetadata().get(SD_API_NO_AUTO_REMOVE_INST_ON_SERVER_SIDE_META_KEY);
+                assertNotNull(autoRemove);
+                assertEquals(autoRemove, "true") ; //BOX this time
+                return new HttpResponse(201, null);
+            }
+        };
+        client.setInvoker(mockInvoker);
+        client.registerInstance(instance);
+
+        getServiceDirectoryConfig().setProperty(SD_API_NO_AUTO_REMOVE_INST_ON_SERVER_SIDE_PROPERTY,
+                SD_API_NO_AUTO_REMOVE_INST_ON_SERVER_SIDE_DEFAULT);
     }
 
     @Test
