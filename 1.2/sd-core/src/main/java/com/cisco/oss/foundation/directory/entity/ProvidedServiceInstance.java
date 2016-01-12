@@ -15,6 +15,7 @@
  */
 package com.cisco.oss.foundation.directory.entity;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -284,6 +285,31 @@ public class ProvidedServiceInstance {
      */
     public void setProtocol(String protocol) {
         this.protocol = protocol;
+    }
+
+    /**
+     * set auto removed to false, which will set a metadata to let the instance will not be removed automatically if max living time is exceeed
+     * on the server side. The default setting always true to allow auto-removing..
+     */
+    public void setAutoRemoved(boolean autoRemove){
+        if (!autoRemove) {
+            if (getMetadata() == null) {
+                setMetadata(new HashMap<String, String>());
+            }
+            getMetadata().put("autoRemoved", "false");
+        }
+    }
+
+    /**
+     * get the autoRemoved property of the service instance.
+     * @return true by default
+     */
+    public boolean getAutoRemove(){
+        Map<String, String> meta = getMetadata();
+        if (meta!=null&&meta.containsKey("autoRemoved")){
+            return !"false".equals(meta.get("autoRemoved"));
+        }
+        return true;
     }
 
 
