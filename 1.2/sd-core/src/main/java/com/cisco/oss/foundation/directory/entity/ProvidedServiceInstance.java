@@ -304,7 +304,7 @@ public class ProvidedServiceInstance {
      * get the autoRemoved property of the service instance.
      * @return true by default
      */
-    public boolean getAutoRemove(){
+    public boolean getAutoRemoved(){
         Map<String, String> meta = getMetadata();
         if (meta!=null&&meta.containsKey("autoRemoved")){
             return !"false".equals(meta.get("autoRemoved"));
