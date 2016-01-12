@@ -43,9 +43,7 @@ import com.cisco.oss.foundation.directory.utils.HttpUtils;
 
 import static com.cisco.oss.foundation.directory.ServiceDirectory.getServiceDirectoryConfig;
 import static com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient.*;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class DirectoryServiceRestfulClientTest {
 
@@ -160,10 +158,10 @@ public class DirectoryServiceRestfulClientTest {
 
     @Test
     public void testNotAutoRemove() throws Exception {
-        //by default is false
-        assertFalse(getServiceDirectoryConfig().getBoolean(SD_API_NO_AUTO_REMOVE_INST_ON_SERVER_SIDE_PROPERTY));
+        //by default is true
+        assertTrue(getServiceDirectoryConfig().getBoolean(SD_API_AUTO_REMOVE_INST_ON_SERVER_SIDE_PROPERTY));
         //disable the auto-remove
-        getServiceDirectoryConfig().setProperty(SD_API_NO_AUTO_REMOVE_INST_ON_SERVER_SIDE_PROPERTY, true);
+        getServiceDirectoryConfig().setProperty(SD_API_AUTO_REMOVE_INST_ON_SERVER_SIDE_PROPERTY, false);
         final DirectoryServiceRestfulClient client = new DirectoryServiceRestfulClient();
         final ProvidedServiceInstance instance = new ProvidedServiceInstance("odrm", "192.168.7.4");
         instance.setMonitorEnabled(true);
@@ -175,17 +173,17 @@ public class DirectoryServiceRestfulClientTest {
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String> headers) {
                 System.out.println(payload);
                 ProvidedServiceInstance instance2 = client.deserialize(payload, ProvidedServiceInstance.class);
-                String autoRemove = instance2.getMetadata().get(SD_API_NO_AUTO_REMOVE_INST_ON_SERVER_SIDE_META_KEY);
+                String autoRemove = instance2.getMetadata().get(SD_API_AUTO_REMOVE_INST_ON_SERVER_SIDE_META_KEY);
                 assertNotNull(autoRemove);
-                assertEquals(autoRemove, "true") ; //BOX this time
+                assertEquals(autoRemove, "false") ; //auto-remove is disabled this time
                 return new HttpResponse(201, null);
             }
         };
         client.setInvoker(mockInvoker);
         client.registerInstance(instance);
 
-        getServiceDirectoryConfig().setProperty(SD_API_NO_AUTO_REMOVE_INST_ON_SERVER_SIDE_PROPERTY,
-                SD_API_NO_AUTO_REMOVE_INST_ON_SERVER_SIDE_DEFAULT);
+        getServiceDirectoryConfig().setProperty(SD_API_AUTO_REMOVE_INST_ON_SERVER_SIDE_PROPERTY,
+                SD_API_AUTO_REMOVE_INST_ON_SERVER_SIDE_DEFAULT);
     }
 
     @Test

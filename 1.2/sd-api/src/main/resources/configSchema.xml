@@ -105,9 +105,9 @@
       </DefaultValue>
     </Parameter>
 
-    <Parameter name="com.cisco.oss.foundation.directory.not.auto.remove.instance" type="BOOLEAN" description="">
+    <Parameter name="com.cisco.oss.foundation.directory.auto.remove.instance" type="BOOLEAN" description="">
       <DefaultValue>
-        <PrimitiveValue value="false" />
+        <PrimitiveValue value="true" />
       </DefaultValue>
     </Parameter>
 

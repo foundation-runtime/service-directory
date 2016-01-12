@@ -105,19 +105,19 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
     /**
      * The MataData Key for referencing the datacenter name
      */
-    public static final String SD_API_MY_DC_META_KEY= "MY_DATA_CENTER_NAME";
+    public static final String SD_API_MY_DC_META_KEY= "datacenter";
 
     private final boolean favorMyDC ;
     private final String myDC ;
 
     /**
-     * The property for if keep instance without being removed on the server side even the max living time is exceed
-     * It's false by default
+     * The property to control if keep instance without being removed on the server side even the max living time is exceed
+     * It's true by default to remove the instance.
      */
-    public static final String SD_API_NO_AUTO_REMOVE_INST_ON_SERVER_SIDE_PROPERTY = "com.cisco.oss.foundation.directory.not.auto.remove.instance";
-    public static final boolean SD_API_NO_AUTO_REMOVE_INST_ON_SERVER_SIDE_DEFAULT = false;
-    public static final String SD_API_NO_AUTO_REMOVE_INST_ON_SERVER_SIDE_META_KEY = "NOT_AUTO_REMOVE";
-    public final boolean noAutoRemove ;
+    public static final String SD_API_AUTO_REMOVE_INST_ON_SERVER_SIDE_PROPERTY = "com.cisco.oss.foundation.directory.auto.remove.instance";
+    public static final boolean SD_API_AUTO_REMOVE_INST_ON_SERVER_SIDE_DEFAULT = true;
+    public static final String SD_API_AUTO_REMOVE_INST_ON_SERVER_SIDE_META_KEY = "autoRemoved";
+    public final boolean autoRemove ;
 
     /**
      * Constructor.
@@ -126,8 +126,8 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
         this.invoker = new DirectoryHttpInvoker();
         favorMyDC = getServiceDirectoryConfig().getBoolean(SD_API_DC_AFFINITY_PROPERTY, SD_API_DC_AFFINITY_DEFAULT);
         myDC = getServiceDirectoryConfig().getString(SD_API_MY_DC_NAME_PROPERTY, SD_API_MY_DC_NAME_DEFAULT);
-        noAutoRemove = getServiceDirectoryConfig().getBoolean(SD_API_NO_AUTO_REMOVE_INST_ON_SERVER_SIDE_PROPERTY,
-                SD_API_NO_AUTO_REMOVE_INST_ON_SERVER_SIDE_DEFAULT);
+        autoRemove = getServiceDirectoryConfig().getBoolean(SD_API_AUTO_REMOVE_INST_ON_SERVER_SIDE_PROPERTY,
+                SD_API_AUTO_REMOVE_INST_ON_SERVER_SIDE_DEFAULT);
         if (favorMyDC) {
             if (LOGGER.isDebugEnabled()) {
                 LOGGER.debug("Datacenter affinity is set.");
@@ -141,13 +141,13 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
             }
         }
 
-        if (noAutoRemove){
+        if (!autoRemove){
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("no auto remove instance on server side is set.");
+                LOGGER.debug("auto remove instance on server side is false, try to disable auto-remove instance on server side.");
             }
         }else{
             if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("no auto remove instance on server side is not set.");
+                LOGGER.debug("auto remove instance on server side is true, server side will keep auto-removing instance by default.");
             }
         }
     }
@@ -177,9 +177,9 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
         if (favorMyDC) {
             metaData = addKeyValueToMetaData(metaData,SD_API_MY_DC_META_KEY,myDC);
         }
-        if (noAutoRemove){
-            metaData = addKeyValueToMetaData(metaData,SD_API_NO_AUTO_REMOVE_INST_ON_SERVER_SIDE_META_KEY,
-                    Boolean.TRUE.toString());
+        if (!autoRemove){
+            metaData = addKeyValueToMetaData(metaData,SD_API_AUTO_REMOVE_INST_ON_SERVER_SIDE_META_KEY,
+                    Boolean.FALSE.toString());
         }
         return metaData;
     }
