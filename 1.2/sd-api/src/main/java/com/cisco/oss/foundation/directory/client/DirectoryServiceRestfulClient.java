@@ -80,10 +80,22 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
     public static final String SD_API_SD_SERVER_PORT_PROPERTY = "com.cisco.oss.foundation.directory.server.port";
 
     /**
+     * The Service Directory server port property name.
+     */
+    public static final String SD_API_SD_SERVER_HTTPS_PORT_PROPERTY = "com.cisco.oss.foundation.directory.server.https.port";
+
+    
+    /**
      * The default Service Directory server port.
      */
     public static final int SD_API_SD_SERVER_PORT_DEFAULT = 2013;
 
+    
+    /**
+     * The default Service Directory server HTTPS port.
+     */
+    public static final int SD_API_SD_SERVER_HTTPS_PORT_DEFAULT = 0;
+    
     /**
      * The HTTP invoker to access remote ServiceDirectory node.
      */
@@ -531,7 +543,13 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
         public DirectoryHttpInvoker() {
             String sdFQDN = getServiceDirectoryConfig().getString(SD_API_SD_SERVER_FQDN_PROPERTY, SD_API_SD_SERVER_FQDN_DEFAULT);
             int port = getServiceDirectoryConfig().getInt(SD_API_SD_SERVER_PORT_PROPERTY, SD_API_SD_SERVER_PORT_DEFAULT);
-            this.directoryAddresses = "https://" + sdFQDN + ":" + port;
+            int https_port = getServiceDirectoryConfig().getInt(SD_API_SD_SERVER_HTTPS_PORT_PROPERTY, SD_API_SD_SERVER_HTTPS_PORT_DEFAULT);
+            if (https_port == 0) {
+               directoryAddresses = "http://" + sdFQDN + ":" + port;
+            } else {
+               directoryAddresses = "https://" + sdFQDN + ":" + https_port;
+            }
+            
         }
 
 
@@ -559,7 +577,7 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
                     result = HttpUtils.deleteJson(url, headers);
                 }
             } catch (IOException e) {
-                String errMsg = "Send HTTP Request to remote Directory Server failed";
+                String errMsg = "Send HTTP Request to remote Directory Server " + url + "failed";
                 throw new ServiceException(ErrorCode.HTTP_CLIENT_ERROR, e, errMsg);
             } catch (ServiceException e) {
                 String errMsg = "Send HTTPS Request to remote Directory Server failed";

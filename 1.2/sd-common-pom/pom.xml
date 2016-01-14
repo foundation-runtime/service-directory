@@ -123,7 +123,7 @@
           <version>${maven-ipcentral-plugin.version}</version>
           <configuration>
             <username>sdipc.gen</username>
-            <password>sdipc123</password>
+            <password>sdipc123!</password>
             <businessUnit>SPVSS-PE</businessUnit>
             <componentEditorsGrouper>sd-dev</componentEditorsGrouper>
             <assetEditorsGrouper>sd-dev</assetEditorsGrouper>

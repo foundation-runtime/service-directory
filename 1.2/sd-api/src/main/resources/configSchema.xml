@@ -59,10 +59,16 @@
 
     <Parameter name="com.cisco.oss.foundation.directory.server.port" type="INTEGER" description="">
       <DefaultValue>
-        <PrimitiveValue value="8013"/>
+        <PrimitiveValue value="2013"/>
       </DefaultValue>
     </Parameter>
 
+    <Parameter name="com.cisco.oss.foundation.directory.server.https.port" type="INTEGER" description="">
+      <DefaultValue>
+        <PrimitiveValue value="0"/>
+      </DefaultValue>
+    </Parameter>
+    
     <Parameter name="com.cisco.oss.foundation.directory.polling.delay" type="INTEGER" description="">
       <DefaultValue>
         <PrimitiveValue value="0"/>

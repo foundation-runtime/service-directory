@@ -79,7 +79,7 @@ public class ExceptionHandleTestCase  {
             @Override
             public HttpResponse invoke(String uri, String payload, HttpUtils.HttpMethod method, Map<String, String>headers) {
 
-                Assert.assertEquals("https://vcsdirsvc:8013/service/mock-test01/" + instance.getAddress(), directoryAddresses+uri);
+                Assert.assertEquals("http://vcsdirsvc:2013/service/mock-test01/" + instance.getAddress(), directoryAddresses+uri);
                 throw new ServiceException(error.get().getExceptionCode(),error.get().getErrorMessage());
             }
         };
