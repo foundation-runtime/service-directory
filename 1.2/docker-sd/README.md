@@ -22,7 +22,7 @@ There are parameters that can be used to configure Service Directory (with defau
 An example docker run command is:
 
 ```
-docker run -dt --cap-add SYS_PTRACE engci-docker.cisco.com:5008/ccm:<version> --oracle_host=oracle
+docker run -dt engci-docker.cisco.com:5008/sd:<version>
 ```
 
 NOTE: replace 'version' with relevant tag label.
