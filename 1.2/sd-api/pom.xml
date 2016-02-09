@@ -79,7 +79,7 @@
   <properties>
     <timestamp>${maven.build.timestamp}</timestamp>
     <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
-    <org.jboss.resteasy.version>3.0.11.Final</org.jboss.resteasy.version>
+    <org.jboss.resteasy.version>3.0.14.Final</org.jboss.resteasy.version>
     <org.mockito.version>1.10.19</org.mockito.version>
     <sd.module.dir>/opt/jboss-as/modules/system/layers/base/com/cisco/oss/foundation/directory/main</sd.module.dir>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
