@@ -57,7 +57,7 @@ public class NotificationTest {
                 lookup.addNotificationHandler("not_exist", myHandler);
                 fail();
             } catch (ServiceException e) {
-                assertEquals(ErrorCode.SERVICE_NOT_EXIST, e.getErrorCode());
+                assertEquals(ErrorCode.SERVICE_DOES_NOT_EXIST, e.getErrorCode());
             }
 
             // test for handler not found
@@ -66,7 +66,7 @@ public class NotificationTest {
                 // the handler is not myHandler
                 lookup.removeNotificationHandler("foo", mock(NotificationHandler.class));
             }catch(ServiceException e){
-                assertEquals(ErrorCode.NOTIFICATION_HANDLER_NOT_EXIST,e.getErrorCode());
+                assertEquals(ErrorCode.NOTIFICATION_HANDLER_DOES_NOT_EXIST,e.getErrorCode());
             }
         }
     }

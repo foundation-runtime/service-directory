@@ -71,7 +71,7 @@ public class ExceptionHandleTestCase  {
         String serviceName = "mock-test01";
         final ProvidedServiceInstance instance = createInstance(serviceName);
 
-        ServiceDirectoryError sde1 = new ServiceDirectoryError(ErrorCode.SERVICE_INSTANCE_NOT_EXIST);
+        ServiceDirectoryError sde1 = new ServiceDirectoryError(ErrorCode.SERVICE_INSTANCE_DOES_NOT_EXIST);
         final AtomicReference<ServiceDirectoryError> error = new AtomicReference<>();
         error.set(sde1);
 
@@ -93,11 +93,11 @@ public class ExceptionHandleTestCase  {
         try {
             registration.registerService(instance);
         } catch (ServiceException e) {
-            Assert.assertEquals(ErrorCode.SERVICE_INSTANCE_NOT_EXIST,
+            Assert.assertEquals(ErrorCode.SERVICE_INSTANCE_DOES_NOT_EXIST,
                     e.getServiceDirectoryError().getExceptionCode());
         }
 
-        ServiceDirectoryError sde2 = new ServiceDirectoryError(ErrorCode.SERVICE_INSTANCE_NOT_EXIST);
+        ServiceDirectoryError sde2 = new ServiceDirectoryError(ErrorCode.SERVICE_INSTANCE_DOES_NOT_EXIST);
         error.set(sde2);
         try {
             registration.updateService(instance);

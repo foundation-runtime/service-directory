@@ -294,7 +294,7 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
                 LOGGER.debug("heart beat send ok for {}", instance);
             } else {
                 LOGGER.debug("no service instance exist for {} {}", serviceName, providedAddress);
-                result.put(id, new OperationResult<String>(false, null, new ServiceDirectoryError(ErrorCode.SERVICE_INSTANCE_NOT_EXIST, id)));
+                result.put(id, new OperationResult<String>(false, null, new ServiceDirectoryError(ErrorCode.SERVICE_INSTANCE_DOES_NOT_EXIST, id)));
             }
         }
         return result;
@@ -320,8 +320,8 @@ public class DirectoryServiceInMemoryClient implements DirectoryServiceClient {
             }
             return service;
         } else {
-            LOGGER.debug("Service {} not exist", serviceName);
-            throw new ServiceException(ErrorCode.SERVICE_NOT_EXIST,ErrorCode.SERVICE_NOT_EXIST.getMessageTemplate(),serviceName);
+            LOGGER.debug("Service {} does not exist", serviceName);
+            throw new ServiceException(ErrorCode.SERVICE_DOES_NOT_EXIST,ErrorCode.SERVICE_DOES_NOT_EXIST.getMessageTemplate(),serviceName);
         }
 
     }

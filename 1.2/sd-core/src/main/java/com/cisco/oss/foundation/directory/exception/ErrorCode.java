@@ -99,14 +99,14 @@ public enum ErrorCode {
 
     // Service Instance operation error.
     /**
-     * Service Instance not exists. Message: The ServiceInstance doesn't exist.
+     * Service Instance does not exist. Message: The Service Instance does not exist.
      */
-    SERVICE_INSTANCE_NOT_EXIST("404.1","The ServiceInstance does not exist"),
+    SERVICE_INSTANCE_DOES_NOT_EXIST("404.1","The Service Instance does not exist"),
 
     /**
-     * Service not exists. Message: The Service doesn't exist.
+     * Service does not exist. Message: The Service does not exist.
      */
-    SERVICE_NOT_EXIST("404.2","The Service '%s' does not exist."),
+    SERVICE_DOES_NOT_EXIST("404.2","The Service '%s' does not exist."),
 
     /**
      * Service Instance metadata key not exists. Message: The MetadataKey
@@ -218,13 +218,13 @@ public enum ErrorCode {
     /**
      * Error when unregister a not-exist NotificationHandler
      */
-    NOTIFICATION_HANDLER_NOT_EXIST("500.13",
+    NOTIFICATION_HANDLER_DOES_NOT_EXIST("500.13",
             "NotificationHandler not exist, It may has been removed or has not been registered before."),
 
     /**
      * Error when unregister a not-exist ServiceInstanceChangeListener
      */
-    SERVICE_INSTANCE_LISTENER_NOT_EXIST("500.14",
+    SERVICE_INSTANCE_LISTENER_DOES_NOT_EXIST("500.14",
             "ServiceInstanceChangeListener not exist, It may has been removed or has not been registered before."),
     
     /**

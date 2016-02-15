@@ -251,7 +251,7 @@ public class DirectoryLookupService extends ServiceDirectoryService {
         try{
             service = getDirectoryServiceClient().lookupService(serviceName);
         }catch(ServiceException se){
-            if (se.getErrorCode()==ErrorCode.SERVICE_NOT_EXIST){
+            if (se.getErrorCode()==ErrorCode.SERVICE_DOES_NOT_EXIST){
                 LOGGER.error(se.getMessage());
             }else {
                 LOGGER.error("Error when getModelService", se);
@@ -513,10 +513,10 @@ public class DirectoryLookupService extends ServiceDirectoryService {
                 }
             }
             if (!found) {
-               LOGGER.error(ErrorCode.NOTIFICATION_HANDLER_NOT_EXIST.getMessageTemplate());
+               LOGGER.error(ErrorCode.NOTIFICATION_HANDLER_DOES_NOT_EXIST.getMessageTemplate());
             }
         } else {
-            LOGGER.error(String.format(ErrorCode.SERVICE_NOT_EXIST.getMessageTemplate(), serviceName));
+            LOGGER.error(String.format(ErrorCode.SERVICE_DOES_NOT_EXIST.getMessageTemplate(), serviceName));
         }
 
     }
@@ -549,13 +549,13 @@ public class DirectoryLookupService extends ServiceDirectoryService {
                 }
             }
             if (!found) {
-                LOGGER.error(ErrorCode.SERVICE_INSTANCE_LISTENER_NOT_EXIST.getMessageTemplate());
+                LOGGER.error(ErrorCode.SERVICE_INSTANCE_LISTENER_DOES_NOT_EXIST.getMessageTemplate());
             }
             if (list.isEmpty()) {
                 changeListenerMap.remove(serviceName);
             }
         } else {
-            LOGGER.error(String.format(ErrorCode.SERVICE_NOT_EXIST.getMessageTemplate(), serviceName));
+            LOGGER.error(String.format(ErrorCode.SERVICE_DOES_NOT_EXIST.getMessageTemplate(), serviceName));
         }
 
     }

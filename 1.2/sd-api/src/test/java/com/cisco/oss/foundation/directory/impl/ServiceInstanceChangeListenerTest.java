@@ -55,7 +55,7 @@ public class ServiceInstanceChangeListenerTest {
                 lookup.addInstanceChangeListener("not_exist", listener);
                 fail();
             } catch (ServiceException e) {
-                assertEquals(ErrorCode.SERVICE_NOT_EXIST, e.getErrorCode());
+                assertEquals(ErrorCode.SERVICE_DOES_NOT_EXIST, e.getErrorCode());
             }
 
             // test for handler not found
@@ -64,7 +64,7 @@ public class ServiceInstanceChangeListenerTest {
                 // the handler is not myHandler
                 lookup.removeInstanceChangeListener("foo", mock(ServiceInstanceChangeListener.class));
             }catch(ServiceException e){
-                assertEquals(ErrorCode.SERVICE_INSTANCE_LISTENER_NOT_EXIST,e.getErrorCode());
+                assertEquals(ErrorCode.SERVICE_INSTANCE_LISTENER_DOES_NOT_EXIST,e.getErrorCode());
             }
         }
     }

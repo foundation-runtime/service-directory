@@ -24,7 +24,7 @@ public class SDErrorWithJSonTest {
 
     @Test
     public void testServiceDirectoryErrorWithMsgArgs() throws Exception{
-        ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_NOT_EXIST,
+        ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DOES_NOT_EXIST,
                 "fooService");
         String body = new String(serialize(error));
         System.out.println(body);
@@ -35,7 +35,7 @@ public class SDErrorWithJSonTest {
 
     @Test
     public void testServiceDirectoryErrorWithWrongMsgArgs() throws Exception{
-        ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_NOT_EXIST);
+        ServiceDirectoryError error = new ServiceDirectoryError(ErrorCode.SERVICE_DOES_NOT_EXIST);
         String body = new String(serialize(error));
         System.out.println(body);
         ServiceDirectoryError errorBack = deserialize(body.getBytes(),

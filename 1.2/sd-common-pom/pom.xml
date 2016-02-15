@@ -23,7 +23,7 @@
   <parent>
     <groupId>com.cisco.oss.foundation</groupId>
     <artifactId>foundation-common-base</artifactId>
-    <version>1.0.1-5</version>
+    <version>1.0.1-8</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.cisco.oss.foundation.directory</groupId>
@@ -88,7 +88,7 @@
     -->
     <!-- override versions -->
     <junit-version>4.12</junit-version>
-    <configuration-api-version>1.0.2-4</configuration-api-version>
+    <configuration-api-version>1.0.2-5</configuration-api-version>
     <configuration-lib-version>1.0.2-5</configuration-lib-version>
     
     <!-- maven plugins -->
@@ -110,7 +110,7 @@
     <maven-ipcentral-plugin.version>5.4.5</maven-ipcentral-plugin.version>
 
     <!-- service directory projects shared -->
-    <com.fasterxml.jackson.version>2.2.2</com.fasterxml.jackson.version>
+    <com.fasterxml.jackson.version>2.6.5</com.fasterxml.jackson.version>
 
   </properties>
 

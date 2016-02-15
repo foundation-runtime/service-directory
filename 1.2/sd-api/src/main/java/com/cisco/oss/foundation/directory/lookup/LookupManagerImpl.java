@@ -367,7 +367,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
         }
         ModelService service = getLookupService().getModelService(serviceName);
         if (service == null) {
-            throw new ServiceException(ErrorCode.SERVICE_NOT_EXIST,ErrorCode.SERVICE_NOT_EXIST.getMessageTemplate(),serviceName);
+            throw new ServiceException(ErrorCode.SERVICE_DOES_NOT_EXIST,ErrorCode.SERVICE_DOES_NOT_EXIST.getMessageTemplate(),serviceName);
         }
         getLookupService().addNotificationHandler(serviceName, handler);
 
@@ -421,7 +421,7 @@ public class LookupManagerImpl extends AbstractServiceDirectoryManager implement
         }
         ModelService service = getLookupService().getModelService(serviceName);
         if (service == null) {
-            throw new ServiceException(ErrorCode.SERVICE_NOT_EXIST,ErrorCode.SERVICE_NOT_EXIST.getMessageTemplate(),serviceName);
+            throw new ServiceException(ErrorCode.SERVICE_DOES_NOT_EXIST,ErrorCode.SERVICE_DOES_NOT_EXIST.getMessageTemplate(),serviceName);
         }
         getLookupService().addServiceInstanceChangeListener(serviceName, listener);
     }
