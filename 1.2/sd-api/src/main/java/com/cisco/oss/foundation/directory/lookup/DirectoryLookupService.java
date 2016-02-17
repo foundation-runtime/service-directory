@@ -256,6 +256,7 @@ public class DirectoryLookupService extends ServiceDirectoryService {
             }else {
                 LOGGER.error("Error when getModelService", se);
             }
+            throw se;
         }
         return service;
     }
