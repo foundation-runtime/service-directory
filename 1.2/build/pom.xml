@@ -12,6 +12,8 @@
     <module>../sd-common-pom</module>
     <module>../sd-core</module>
     <module>../sd-api</module>
+    <module>../sd-sample-war</module>
+    <module>../sd-client</module>
   </modules>
 
 </project>

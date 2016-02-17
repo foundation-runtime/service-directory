@@ -577,11 +577,10 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
                     result = HttpUtils.deleteJson(url, headers);
                 }
             } catch (IOException e) {
-                String errMsg = "Send HTTP Request to remote Directory Server " + url + "failed";
-                throw new ServiceException(ErrorCode.HTTP_CLIENT_ERROR, e, errMsg);
+                String errMsg = "Send HTTP Request to remote Directory Server '" + url + "' failed";
+                throw new ServiceException(ErrorCode.HTTP_CLIENT_ERROR, e, ErrorCode.HTTP_CLIENT_ERROR.getMessageTemplate(),errMsg);
             } catch (ServiceException e) {
-                String errMsg = "Send HTTPS Request to remote Directory Server failed";
-                throw new ServiceException(ErrorCode.HTTP_CLIENT_ERROR, e, errMsg);
+                throw new ServiceException(ErrorCode.HTTP_CLIENT_ERROR, e, ErrorCode.HTTP_CLIENT_ERROR.getMessageTemplate(), e.getMessage());
             }
             // HTTP_OK 200, HTTP_MULT_CHOICE 300
             if (result != null) {
