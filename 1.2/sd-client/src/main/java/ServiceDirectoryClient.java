@@ -50,8 +50,7 @@ public class ServiceDirectoryClient {
     enum CMD {
         getAllServices(0),
         getInstanceOf(1),
-        getAllInstancesOf(1),
-        testConnection(0);
+        getAllInstancesOf(1);
         private final int sizeOfArgs;
 
         CMD(int sizeOfArgs) {
@@ -70,7 +69,6 @@ public class ServiceDirectoryClient {
         commands.put(CMD.getAllServices, "");
         commands.put(CMD.getInstanceOf, "<serviceName>");
         commands.put(CMD.getAllInstancesOf, "<serviceName>");
-        commands.put(CMD.testConnection, "");
     }
 
     /**
@@ -134,11 +132,11 @@ public class ServiceDirectoryClient {
                         case getAllInstancesOf:
                             lookupInstances(cmdArgs);
                             break;
-                        case testConnection:
-                            connectToServer();
+                        case getAllServices:
+                            getAllServices();
                             break;
                         default:
-                            fail("command " + cmd + " is unsupported now");
+                            fail("command " + cmd + " is unsupported yet");
                             break;
                     }
                 } catch (IllegalArgumentException e) {
@@ -173,9 +171,9 @@ public class ServiceDirectoryClient {
     }
 
     /**
-     * Do the connect command.
+     * Do the getAllServices command.
      */
-    private void connectToServer() {
+    private void getAllServices() {
         try {
             new DirectoryServiceRestfulClient().getAllInstances();
         } catch (ServiceException e) {
@@ -185,12 +183,9 @@ public class ServiceDirectoryClient {
 
     /**
      * Do the lookupInstance command.
-     *
-     * @return true if complete.
      */
     private void lookupInstance(String args[]) {
-
-        String serviceName = args[1].trim();
+        String serviceName = args[1];
         System.out.println("lookupInstance, serviceName=" + serviceName);
         try {
             ServiceInstance instance = ServiceDirectory.getLookupManager().lookupInstance(serviceName);
@@ -202,11 +197,9 @@ public class ServiceDirectoryClient {
 
     /**
      * Do the lookupInstances command.
-     *
-     * @return true if complete.
      */
     private void lookupInstances(String args[]) {
-        String serviceName = args[1].trim();
+        String serviceName = args[1];
         System.out.println("lookupInstances, serviceName=" + serviceName);
         try {
             List<ServiceInstance> instances = ServiceDirectory.getLookupManager().lookupInstances(serviceName);
