@@ -34,8 +34,8 @@ public class OutputTest {
     }
 
     @Test
-    public void testPermissionDenied() {
-        String location = "/root";
+    public void testPermissionDenied() throws IOException {
+        String location = "/root/test";
         File test = new File(location);
         ServiceDirectoryClient.main(new String[]{"-help","-o",location});
         assertFalse(test.exists());
