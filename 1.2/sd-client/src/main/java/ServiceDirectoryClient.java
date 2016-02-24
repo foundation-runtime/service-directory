@@ -45,7 +45,7 @@ public class ServiceDirectoryClient {
                 .desc("the command and arguments to execute")
                 .build();
         Option output = Option.builder("o").longOpt("output").required(false).numberOfArgs(1)
-                .desc("execution output fle location. output to STDOUT by default")
+                .desc("Output to the file as specified. The default output is STDOUT.")
                 .build();
         options.addOption(help);
         options.addOption(server);
