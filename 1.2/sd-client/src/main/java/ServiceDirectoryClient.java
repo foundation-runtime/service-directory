@@ -3,11 +3,18 @@
  * All rights reserved.
  */
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.StringTokenizer;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -34,11 +41,15 @@ public class ServiceDirectoryClient {
                 build(); //boolean option
         Option server = Option.builder("s").longOpt("server").required(false).numberOfArgs(1).desc(
                 "the server address and port").argName("host:port").build();
-        Option command = Option.builder("exec").longOpt("command").required(true).numberOfArgs(1)
+        Option command = Option.builder("exec").longOpt("command").required(false).numberOfArgs(1)
                 .desc("the command and arguments to execute")
+                .build();
+        Option output = Option.builder("o").longOpt("output").required(false).numberOfArgs(1)
+                .desc("execution output fle location. output to STDOUT by default")
                 .build();
         options.addOption(help);
         options.addOption(server);
+        options.addOption(output);
         options.addOption(command);
     }
 
@@ -93,20 +104,38 @@ public class ServiceDirectoryClient {
         String port;
         CMD cmd;
         String[] cmdArgs;
+        final PrintStream CONSOLE = System.out;
         try {
             // parse the command line arguments
             line = clParser.parse(options, args);
-            if (line.hasOption("help")) {
-                printUsage();
+
+            if (line.hasOption("output")){
+                String location = line.getOptionValue("output");
+                File output = new File(location);
+                FileOutputStream fos;
+                try {
+                    fos = new FileOutputStream(output);
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    throw new ParseException(String.format("Wrong -o option. args %s\n",Arrays.asList(args)));
+                }
+                PrintStream out = new PrintStream(fos);
+                System.setOut(out);
+
+            }
+            if (line.getOptions().length==0 || line.hasOption("help")) {
+                if ((line.getOptions().length > 2) || (line.getOptions().length==2 && !line.hasOption("output"))){
+                    throw new ParseException(String.format("Wrong -help option. args %s\n", Arrays.asList(args)));
+                }
+                printUsage(System.out);
             }
             if (line.hasOption("server")) {
                 String server = line.getOptionValue("server");
                 try {
                     host = server.split(":")[0];
                     port = server.split(":")[1];
-                    System.out.printf("server %s \n", server);
                 }catch (Exception e){
-                    throw new ParseException(String.format("wrong -server option %S\n",server));
+                    throw new ParseException(String.format("Wrong -server option. args %s\n", Arrays.asList(args)));
                 }
                 ServiceDirectory.getServiceDirectoryConfig().setProperty(
                         DirectoryServiceRestfulClient.SD_API_SD_SERVER_FQDN_PROPERTY,
@@ -115,6 +144,7 @@ public class ServiceDirectoryClient {
                         DirectoryServiceRestfulClient.SD_API_SD_SERVER_PORT_PROPERTY,
                         port);
             }
+
             if (line.hasOption("exec")) {
                 String commandString = line.getOptionValue("exec");
                 try {
@@ -125,7 +155,8 @@ public class ServiceDirectoryClient {
                                 String.format("Wrong arguments number for command %s, required %s but %s \n",
                                         cmdArgs[0], cmd.sizeOfArgs, cmdArgs.length - 1));
                     }
-                    switch (cmd) {
+                   switch (cmd) {
+
                         case getInstanceOf:
                             lookupInstance(cmdArgs);
                             break;
@@ -145,9 +176,15 @@ public class ServiceDirectoryClient {
             }
         } catch (ParseException exp) {
             // oops, something went wrong
-            System.out.println(exp.getMessage());
-            printUsage();
+            exp.printStackTrace();
+            try {
+                TimeUnit.MILLISECONDS.sleep(100L);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            printUsage(System.err);
         }
+        System.setOut(CONSOLE);
     }
 
     private static String[] parseCommand(String cmdString) {
@@ -161,12 +198,15 @@ public class ServiceDirectoryClient {
         return args;
     }
 
-    private static void printUsage() {
+    private static void printUsage(PrintStream out) {
         HelpFormatter formatter = new HelpFormatter();
         formatter.setOptionComparator(null);
-        formatter.printHelp("SDClient", options);
+        PrintWriter pw = new PrintWriter(out);
+        formatter.printHelp(pw, formatter.getWidth(), "SDClient", null, options, formatter.getLeftPadding(), formatter.getDescPadding(), null, false);
+        pw.flush();
+
         for (Map.Entry<CMD, String> cmd : commands.entrySet()) {
-            System.out.println("\t" + cmd.getKey() + " \t" + cmd.getValue());
+            out.println("\t" + cmd.getKey() + " \t" + cmd.getValue());
         }
     }
 
@@ -216,7 +256,7 @@ public class ServiceDirectoryClient {
     }
 
     private static void fail(String msg) {
-        System.out.println("Fail - " + msg);
+        System.err.println("Fail - " + msg);
     }
 
     private void print(String msg) {

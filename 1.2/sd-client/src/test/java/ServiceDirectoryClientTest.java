@@ -1,8 +1,27 @@
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 public class ServiceDirectoryClientTest {
+
+    Lock sequential = new ReentrantLock();
+
+    @Before
+    public void setUp() throws Exception {
+        sequential.lock();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        TimeUnit.SECONDS.sleep(1L);
+        sequential.unlock();
+    }
+
     @Test
     public void testNoArgument(){
         ServiceDirectoryClient.main(new String[]{});
@@ -43,5 +62,7 @@ public class ServiceDirectoryClientTest {
     public void testSpacesInCommandArgs2(){
         ServiceDirectoryClient.main(new String[]{"-exec","getInstanceOf    test "});
     }
+
+
 
 }
