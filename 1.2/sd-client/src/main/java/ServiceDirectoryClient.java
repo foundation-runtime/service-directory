@@ -3,9 +3,12 @@
  * All rights reserved.
  */
 
+import static com.cisco.oss.foundation.directory.utils.JsonSerializer.deserialize;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Arrays;
@@ -26,8 +29,11 @@ import org.apache.commons.cli.ParseException;
 
 import com.cisco.oss.foundation.directory.ServiceDirectory;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient;
+import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
  * The ServiceDirectory Tool to operate ServiceInstance in the remote Directory Server.
@@ -61,7 +67,8 @@ public class ServiceDirectoryClient {
     enum CMD {
         getAllServices(0),
         getInstanceOf(1),
-        getAllInstancesOf(1);
+        getAllInstancesOf(1),
+        registerService(1);
         private final int sizeOfArgs;
 
         CMD(int sizeOfArgs) {
@@ -80,6 +87,7 @@ public class ServiceDirectoryClient {
         commands.put(CMD.getAllServices, "");
         commands.put(CMD.getInstanceOf, "<serviceName>");
         commands.put(CMD.getAllInstancesOf, "<serviceName>");
+        commands.put(CMD.registerService, "<service>");
     }
 
     /**
@@ -165,6 +173,9 @@ public class ServiceDirectoryClient {
                             break;
                         case getAllServices:
                             getAllServices();
+                            break;
+                        case registerService:
+                            registerService(cmdArgs);
                             break;
                         default:
                             fail("command " + cmd + " is unsupported yet");
@@ -253,6 +264,42 @@ public class ServiceDirectoryClient {
         } catch (ServiceException e) {
             fail(e.getServiceDirectoryError().getErrorMessage());
         }
+    }
+    
+
+    private void registerService(String args[]) {
+        String serviceJson = args[1];
+        ProvidedServiceInstance instance = null;
+
+        try {
+            instance = jsonToProvidedServiceInstance(serviceJson);
+        } catch (Exception e) {
+            fail("deserialize ProvidedServiceInstance failed - "
+                    + e.getMessage());
+        }
+        if (instance != null) {
+            try {
+                ServiceDirectory.getRegistrationManager().registerService(
+                        instance);
+            } catch (ServiceException e) {
+                fail(e.getServiceDirectoryError().getErrorMessage());
+            }
+        }
+    }
+
+    /**
+     * Convert the ProvidedServiceInstance Json String to ProvidedServiceInstance.
+     * 
+     * @param jsonString
+     *         the ProvidedServiceInstance Json String.
+     * @return
+     *         the ProvidedServiceInstance Object.
+     * @throws JsonParseException
+     * @throws JsonMappingException
+     * @throws IOException
+     */
+    private ProvidedServiceInstance jsonToProvidedServiceInstance(String jsonString) throws JsonParseException, JsonMappingException, IOException{
+        return deserialize(jsonString.getBytes(), ProvidedServiceInstance.class);
     }
 
     private static void fail(String msg) {
