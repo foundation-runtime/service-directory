@@ -29,9 +29,12 @@ import org.apache.commons.cli.ParseException;
 
 import com.cisco.oss.foundation.directory.ServiceDirectory;
 import com.cisco.oss.foundation.directory.client.DirectoryServiceRestfulClient;
+import com.cisco.oss.foundation.directory.entity.ModelServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ProvidedServiceInstance;
 import com.cisco.oss.foundation.directory.entity.ServiceInstance;
 import com.cisco.oss.foundation.directory.exception.ServiceException;
+import com.cisco.oss.foundation.directory.utils.ServiceInstanceUtils;
+
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
@@ -155,35 +158,35 @@ public class ServiceDirectoryClient {
 
             if (line.hasOption("exec")) {
                 String commandString = line.getOptionValue("exec");
+                cmdArgs = parseCommand(commandString);
                 try {
-                    cmdArgs = parseCommand(commandString);
                     cmd = CMD.valueOf(cmdArgs[0]);
-                    if (cmd.sizeOfArgs + 1 != cmdArgs.length) {
-                        throw new ParseException(
-                                String.format("Wrong arguments number for command %s, required %s but %s \n",
-                                        cmdArgs[0], cmd.sizeOfArgs, cmdArgs.length - 1));
-                    }
-                   switch (cmd) {
-
-                        case getInstanceOf:
-                            lookupInstance(cmdArgs);
-                            break;
-                        case getAllInstancesOf:
-                            lookupInstances(cmdArgs);
-                            break;
-                        case getAllServices:
-                            getAllServices();
-                            break;
-                        case registerService:
-                            registerService(cmdArgs);
-                            break;
-                        default:
-                            fail("command " + cmd + " is unsupported yet");
-                            break;
-                    }
                 } catch (IllegalArgumentException e) {
                     throw new ParseException(String.format("Unknown command [ %s ] \n", commandString));
                 }
+                if (cmd.sizeOfArgs + 1 != cmdArgs.length) {
+                    throw new ParseException(
+                            String.format("Wrong arguments number for command %s, required %s but %s \n",
+                                    cmdArgs[0], cmd.sizeOfArgs, cmdArgs.length - 1));
+                }
+                switch (cmd) {
+                    case getInstanceOf:
+                        lookupInstance(cmdArgs);
+                        break;
+                    case getAllInstancesOf:
+                        lookupInstances(cmdArgs);
+                        break;
+                    case getAllServices:
+                        getAllServices();
+                        break;
+                    case registerService:
+                        registerService(cmdArgs);
+                        break;
+                    default:
+                        fail("command " + cmd + " is unsupported yet");
+                        break;
+                }
+
             }
         } catch (ParseException exp) {
             // oops, something went wrong
@@ -226,8 +229,12 @@ public class ServiceDirectoryClient {
      */
     private void getAllServices() {
         try {
-            new DirectoryServiceRestfulClient().getAllInstances();
+            List<ModelServiceInstance> instances = new DirectoryServiceRestfulClient().getAllInstances();
+            for (ModelServiceInstance instance :instances){
+                printServiceInstance(ServiceInstanceUtils.toServiceInstance(instance));
+            }
         } catch (ServiceException e) {
+            e.printStackTrace();
             fail(e.getServiceDirectoryError().getErrorMessage());
         }
     }
@@ -242,6 +249,7 @@ public class ServiceDirectoryClient {
             ServiceInstance instance = ServiceDirectory.getLookupManager().lookupInstance(serviceName);
             printServiceInstance(instance);
         } catch (ServiceException e) {
+            e.printStackTrace();
             fail(e.getServiceDirectoryError().getErrorMessage());
         }
     }
@@ -262,6 +270,7 @@ public class ServiceDirectoryClient {
                 }
             }
         } catch (ServiceException e) {
+            e.printStackTrace();
             fail(e.getServiceDirectoryError().getErrorMessage());
         }
     }
