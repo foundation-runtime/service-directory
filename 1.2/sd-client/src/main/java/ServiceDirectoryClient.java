@@ -217,6 +217,7 @@ public class ServiceDirectoryClient {
         try {
             new DirectoryServiceRestfulClient().getAllInstances();
         } catch (ServiceException e) {
+            e.printStackTrace();
             fail(e.getServiceDirectoryError().getErrorMessage());
         }
     }
@@ -231,6 +232,7 @@ public class ServiceDirectoryClient {
             ServiceInstance instance = ServiceDirectory.getLookupManager().lookupInstance(serviceName);
             printServiceInstance(instance);
         } catch (ServiceException e) {
+            e.printStackTrace();
             fail(e.getServiceDirectoryError().getErrorMessage());
         }
     }
@@ -251,6 +253,7 @@ public class ServiceDirectoryClient {
                 }
             }
         } catch (ServiceException e) {
+            e.printStackTrace();
             fail(e.getServiceDirectoryError().getErrorMessage());
         }
     }
