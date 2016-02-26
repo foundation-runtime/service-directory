@@ -604,7 +604,8 @@ public class DirectoryServiceRestfulClient implements DirectoryServiceClient {
                     }
 
                     if (sde != null) {
-                        throw new ServiceException(sde.getExceptionCode(), sde.getErrorMessage());
+                        throw new ServiceException(sde.getExceptionCode(),
+                                sde.getExceptionCode().getMessageTemplate(),sde.getParams());
                     }
                 }
                 return result;
